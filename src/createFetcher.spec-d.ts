@@ -1,10 +1,10 @@
 import { expectTypeOf, test } from 'vitest'
-import { upfetchFactory } from './upfetchFactory'
+import { createFetcher } from './createFetcher'
 
 const fakeFetch = () => Promise.resolve({ then: () => {} })
 
 test('return type', () => {
-   const upfetch1 = upfetchFactory.create(
+   const upfetch1 = createFetcher(
       () => ({
          parseSuccess: () =>
             Promise.resolve({
@@ -23,7 +23,7 @@ test('return type', () => {
       expectTypeOf(data).toEqualTypeOf<{ c: boolean; d: boolean }>()
    })
 
-   const upfetch2 = upfetchFactory.create(() => ({}), fakeFetch)
+   const upfetch2 = createFetcher(() => ({}), fakeFetch)
 
    upfetch2().then((data) => {
       expectTypeOf(data).toBeAny()
@@ -33,7 +33,7 @@ test('return type', () => {
       expectTypeOf(data).toBeNumber()
    })
 
-   const upfetch3 = upfetchFactory.create(
+   const upfetch3 = createFetcher(
       () => ({
          parseSuccess: () => Promise.resolve(1),
       }),
@@ -46,7 +46,7 @@ test('return type', () => {
 })
 
 test('error type', () => {
-   upfetchFactory.create(
+   createFetcher(
       () => ({
          onError(error) {
             expectTypeOf(error).toEqualTypeOf<any>()
@@ -57,7 +57,7 @@ test('error type', () => {
 })
 
 test('success type', () => {
-   upfetchFactory.create(
+   createFetcher(
       () => ({
          onSuccess(data) {
             expectTypeOf(data).toEqualTypeOf<any>()

@@ -1,4 +1,4 @@
-import { FactoryConfig, UpfetchConfig } from './upfetchFactory'
+import { FactoryConfig, UpfetchConfig } from './createFetcher'
 import { ResponseError } from './ResponseError'
 import { withQuestionMark } from './withQuestionMark'
 

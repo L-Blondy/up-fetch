@@ -32,8 +32,9 @@ upfetch({
 // With Authentication
 upfetch({
    url: 'https://example.com/todos',
+   method: 'POST',
    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}`},
-   params: { q: 'Hello world' },
+   body: { title: 'Hello', content: 'World' },
 })
    .then((todos)=> console.log(todos))
    .catch((error) => console.log(error))
@@ -42,16 +43,17 @@ upfetch({
 Optionally you can create a custom instance in order to set some defaults
 
 ```ts
-import {upfetchFactory} from 'up-fetch'
+import {createFetcher} from 'up-fetch'
 
-const upfetch = upfetchFactory.create(()=>({
+const upfetch = createFetcher(()=>({
    baseUrl: 'https://example.com,
    headers: { Authorization: `Bearer ${AUTH_TOKEN}`}
 }))
 
 upfetch({
-    url: '/todos',
-    params: { q: 'Hello world' },
+   url: '/todos',
+   method: 'POST',
+   body: { title: 'Hello', content: 'World' },
 })
    .then((todos)=> console.log(todos))
    .catch((error) => console.log(error))

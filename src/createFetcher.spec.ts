@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
-import { upfetchFactory } from './upfetchFactory'
+import { createFetcher } from './createFetcher'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { ResponseError } from './ResponseError'
@@ -24,7 +24,7 @@ const fakeFetch = ((...args: Parameters<typeof fetch>) => {
 describe('Config', () => {
    describe('Automatic "content-type: application/json"', async () => {
       test('Should be applied when no "content-type" header is present', async () => {
-         const fetchClient = upfetchFactory.create(() => {
+         const fetchClient = createFetcher(() => {
             return {
                baseUrl: 'https://a.b.c',
                method: 'POST',
@@ -51,7 +51,7 @@ describe('Config', () => {
       })
 
       test('Should not be applied when the "content-type" header is present', async () => {
-         const fetchClient = upfetchFactory.create(() => {
+         const fetchClient = createFetcher(() => {
             return {
                baseUrl: 'https://a.b.c',
                method: 'POST',
@@ -87,7 +87,7 @@ describe('Config', () => {
       const parseSuccess = (s: any) => s.json()
       const parseError = (e: any) => e.text()
 
-      const fetchClient = upfetchFactory.create(
+      const fetchClient = createFetcher(
          () => ({
             baseUrl: 'https://a.b.c',
             method: 'POST',
@@ -130,7 +130,7 @@ describe('Config', () => {
    })
 
    test('fetchConfig config should override factoryConfig()', async () => {
-      const fetchClient = upfetchFactory.create(() => {
+      const fetchClient = createFetcher(() => {
          return {
             baseUrl: 'https://a.b.c',
             method: 'POST',
@@ -204,7 +204,7 @@ describe('Config', () => {
    })
 
    test('If params is a string, serializeParams should do nothing', async () => {
-      const fetchClient = upfetchFactory.create(() => {
+      const fetchClient = createFetcher(() => {
          return {
             baseUrl: 'https://a.b.c',
             serializeParams: () => '456',
@@ -218,7 +218,7 @@ describe('Config', () => {
    })
 
    test('If body is a string, serializeBody should do nothing', async () => {
-      const fetchClient = upfetchFactory.create(() => {
+      const fetchClient = createFetcher(() => {
          return {
             baseUrl: 'https://a.b.c',
             method: 'POST',
@@ -233,7 +233,7 @@ describe('Config', () => {
    })
 
    test('An empty fetchClient baseUrl should override the defaults() baseUrl', async () => {
-      const fetchClient = upfetchFactory.create(() => {
+      const fetchClient = createFetcher(() => {
          return { baseUrl: 'https://a.b.c/' }
       }, fakeFetch)
 
@@ -258,7 +258,7 @@ describe('tests with server', () => {
          }),
       )
 
-      const upfetch = upfetchFactory.create(() => ({
+      const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
       }))
       const data = await upfetch()
@@ -272,7 +272,7 @@ describe('tests with server', () => {
          }),
       )
 
-      const upfetch = upfetchFactory.create(() => ({
+      const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
       }))
       const data = await upfetch()
@@ -291,7 +291,7 @@ describe('tests with server', () => {
 
       let count = 1
 
-      const upfetch = upfetchFactory.create(() => ({
+      const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
          onSuccess(data) {
             if (count === 1) {
@@ -323,7 +323,7 @@ describe('tests with server', () => {
 
       let count = 1
 
-      const upfetch = upfetchFactory.create(() => ({
+      const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
          onError(error: ResponseError) {
             expect(error instanceof ResponseError).toBeTruthy()
@@ -375,7 +375,7 @@ describe('tests with server', () => {
 
       let count = 1
 
-      const upfetch = upfetchFactory.create(() => ({
+      const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
          parseSuccess: (res) => res.json(),
          onError(error) {
@@ -402,7 +402,7 @@ describe('tests with server', () => {
 
       let count = 1
 
-      const upfetch = upfetchFactory.create(() => ({
+      const upfetch = createFetcher(() => ({
          onError(error) {
             expect(error.name).toBe('TypeError')
             count++

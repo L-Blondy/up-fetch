@@ -1,4 +1,4 @@
-import { upfetchFactory } from './upfetchFactory'
-export { upfetchFactory } from './upfetchFactory'
+import { createFetcher } from './createFetcher'
+export { createFetcher } from './createFetcher'
 export { ResponseError, isResponseError } from './ResponseError'
-export const upfetch = upfetchFactory.create()
+export const upfetch = createFetcher()

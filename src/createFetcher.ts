@@ -24,7 +24,7 @@ export interface UpfetchConfig<D = any> extends SharedConfig<D> {
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
-const create = <DD = any>(
+export const createFetcher = <DD = any>(
    factoryConfig?: () => FactoryConfig<DD>,
    fetchFn: typeof fetch = fetch,
 ) => {
@@ -48,5 +48,3 @@ const create = <DD = any>(
          })
    }
 }
-
-export const upfetchFactory = { create }

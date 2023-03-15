@@ -1,4 +1,4 @@
-import { FactoryConfig, UpfetchConfig } from './upfetchFactory'
+import { FactoryConfig, UpfetchConfig } from './createFetcher'
 import { DefaultConfig, defaultConfig } from './defaultConfig'
 
 export const specificFactoryConfigKeys = ['onError', 'onSuccess'] as const

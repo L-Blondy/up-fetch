@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, expect, test } from 'vitest'
-import { upfetchFactory } from './upfetchFactory'
+import { createFetcher } from './createFetcher'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { isResponseError, ResponseError } from './ResponseError'
@@ -16,7 +16,7 @@ test('fetch response error should be parsed to an instanceof ResponseError and s
       }),
    )
 
-   const upfetch = upfetchFactory.create(() => ({
+   const upfetch = createFetcher(() => ({
       baseUrl: 'https://example.com',
       onError(error) {
          expect(error instanceof ResponseError).toBeTruthy()
@@ -34,7 +34,7 @@ test('When receiving a ResponseError, "isResponseError(error)" should be true', 
       }),
    )
 
-   const upfetch = upfetchFactory.create(() => ({
+   const upfetch = createFetcher(() => ({
       baseUrl: 'https://example.com',
       onError(error) {
          expect(isResponseError(error)).toBe(true)

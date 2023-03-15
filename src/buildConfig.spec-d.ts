@@ -1,6 +1,6 @@
 import { expectTypeOf, test } from 'vitest'
 import { specificFactoryConfigKeys, specificUpfetchConfigKeys } from './buildConfig'
-import { FactoryConfig, UpfetchConfig } from './upfetchFactory'
+import { FactoryConfig, UpfetchConfig } from './createFetcher'
 
 type TupleToUnion<T extends readonly unknown[]> = T[number]
 
