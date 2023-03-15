@@ -26,7 +26,7 @@ upfetch({
    url: 'https://example.com/todos',
    params: { q: 'Hello world' },
 })
-   .then((todos)=> console.log(todos))
+   .then((todos) => console.log(todos))
    .catch((error) => console.log(error))
 
 // With Authentication
@@ -36,7 +36,7 @@ upfetch({
    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}`},
    body: { title: 'Hello', content: 'World' },
 })
-   .then((todos)=> console.log(todos))
+   .then((data) => console.log(data))
    .catch((error) => console.log(error))
 ```
 
@@ -45,18 +45,21 @@ Optionally you can create a custom instance in order to set some defaults
 ```ts
 import {createFetcher} from 'up-fetch'
 
-const upfetch = createFetcher(()=>({
-   baseUrl: 'https://example.com,
-   headers: { Authorization: `Bearer ${AUTH_TOKEN}`}
+const upfetch = createFetcher(() => ({
+   baseUrl: 'https://example.com',
+   headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
 }))
+
+upfetch({
+   url: '/todos',
+   params: { q: 'Hello world' },
+})
 
 upfetch({
    url: '/todos',
    method: 'POST',
    body: { title: 'Hello', content: 'World' },
 })
-   .then((todos)=> console.log(todos))
-   .catch((error) => console.log(error))
 ```
 
 ### Authentication
