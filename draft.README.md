@@ -1,4 +1,4 @@
-# nanio
+# up-fetch
 
 Tiny Fetch API wrapper with configurable defaults
 
@@ -8,14 +8,14 @@ Tiny Fetch API wrapper with configurable defaults
 * **Simple** - stays close to the fetch API
 * **Intuitive** - automatic body and URL search params (de)serialization, response parsing
 * **Customizable** - create instances with custom defaults
-* **Type safe** - writen with typescript
+* **Type safe** - written with typescript
 * **throws by default**
 * --> works with Next.js 13 fetch
 
-## Quickstart
+## QuickStart
 
 ```bash
-npm i nanio
+npm i up-fetch
 ```
 
 ```ts

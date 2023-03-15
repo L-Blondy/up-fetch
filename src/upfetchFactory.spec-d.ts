@@ -1,10 +1,10 @@
 import { expectTypeOf, test } from 'vitest'
-import { nanioFactory } from './nanioFactory'
+import { upfetchFactory } from './upfetchFactory'
 
 const fakeFetch = () => Promise.resolve({ then: () => {} })
 
 test('return type', () => {
-   const nanio1 = nanioFactory.create(
+   const upfetch1 = upfetchFactory.create(
       () => ({
          parseSuccess: () =>
             Promise.resolve({
@@ -15,38 +15,38 @@ test('return type', () => {
       fakeFetch,
    )
 
-   nanio1().then((data) => {
+   upfetch1().then((data) => {
       expectTypeOf(data).toEqualTypeOf<{ a: number; b: number }>()
    })
 
-   nanio1({ parseSuccess: () => Promise.resolve({ c: true, d: false }) }).then((data) => {
+   upfetch1({ parseSuccess: () => Promise.resolve({ c: true, d: false }) }).then((data) => {
       expectTypeOf(data).toEqualTypeOf<{ c: boolean; d: boolean }>()
    })
 
-   const nanio2 = nanioFactory.create(() => ({}), fakeFetch)
+   const upfetch2 = upfetchFactory.create(() => ({}), fakeFetch)
 
-   nanio2().then((data) => {
+   upfetch2().then((data) => {
       expectTypeOf(data).toBeAny()
    })
 
-   nanio2({ parseSuccess: () => Promise.resolve(1) }).then((data) => {
+   upfetch2({ parseSuccess: () => Promise.resolve(1) }).then((data) => {
       expectTypeOf(data).toBeNumber()
    })
 
-   const nanio3 = nanioFactory.create(
+   const upfetch3 = upfetchFactory.create(
       () => ({
          parseSuccess: () => Promise.resolve(1),
       }),
       fakeFetch,
    )
 
-   nanio3().then((data) => {
+   upfetch3().then((data) => {
       expectTypeOf(data).toBeNumber()
    })
 })
 
 test('error type', () => {
-   nanioFactory.create(
+   upfetchFactory.create(
       () => ({
          onError(error) {
             expectTypeOf(error).toEqualTypeOf<any>()
@@ -57,7 +57,7 @@ test('error type', () => {
 })
 
 test('success type', () => {
-   nanioFactory.create(
+   upfetchFactory.create(
       () => ({
          onSuccess(data) {
             expectTypeOf(data).toEqualTypeOf<any>()

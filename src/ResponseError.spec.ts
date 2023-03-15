@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, expect, test } from 'vitest'
-import { nanioFactory } from './nanioFactory'
+import { upfetchFactory } from './upfetchFactory'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { isResponseError, ResponseError } from './ResponseError'
@@ -16,13 +16,13 @@ test('fetch response error should be parsed to an instanceof ResponseError and s
       }),
    )
 
-   const nanio = nanioFactory.create(() => ({
+   const upfetch = upfetchFactory.create(() => ({
       baseUrl: 'https://example.com',
       onError(error) {
          expect(error instanceof ResponseError).toBeTruthy()
       },
    }))
-   await nanio().catch((error) => {
+   await upfetch().catch((error) => {
       expect(error instanceof ResponseError).toBeTruthy()
    })
 })
@@ -34,13 +34,13 @@ test('When receiving a ResponseError, "isResponseError(error)" should be true', 
       }),
    )
 
-   const nanio = nanioFactory.create(() => ({
+   const upfetch = upfetchFactory.create(() => ({
       baseUrl: 'https://example.com',
       onError(error) {
          expect(isResponseError(error)).toBe(true)
       },
    }))
-   await nanio().catch((error) => {
+   await upfetch().catch((error) => {
       expect(isResponseError(error)).toBe(true)
    })
 })

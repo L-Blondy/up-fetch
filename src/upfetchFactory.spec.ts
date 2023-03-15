@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
-import { nanioFactory } from './nanioFactory'
+import { upfetchFactory } from './upfetchFactory'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { ResponseError } from './ResponseError'
@@ -24,7 +24,7 @@ const fakeFetch = ((...args: Parameters<typeof fetch>) => {
 describe('Config', () => {
    describe('Automatic "content-type: application/json"', async () => {
       test('Should be applied when no "content-type" header is present', async () => {
-         const fetchClient = nanioFactory.create(() => {
+         const fetchClient = upfetchFactory.create(() => {
             return {
                baseUrl: 'https://a.b.c',
                method: 'POST',
@@ -51,7 +51,7 @@ describe('Config', () => {
       })
 
       test('Should not be applied when the "content-type" header is present', async () => {
-         const fetchClient = nanioFactory.create(() => {
+         const fetchClient = upfetchFactory.create(() => {
             return {
                baseUrl: 'https://a.b.c',
                method: 'POST',
@@ -87,7 +87,7 @@ describe('Config', () => {
       const parseSuccess = (s: any) => s.json()
       const parseError = (e: any) => e.text()
 
-      const fetchClient = nanioFactory.create(
+      const fetchClient = upfetchFactory.create(
          () => ({
             baseUrl: 'https://a.b.c',
             method: 'POST',
@@ -130,7 +130,7 @@ describe('Config', () => {
    })
 
    test('fetchConfig config should override factoryConfig()', async () => {
-      const fetchClient = nanioFactory.create(() => {
+      const fetchClient = upfetchFactory.create(() => {
          return {
             baseUrl: 'https://a.b.c',
             method: 'POST',
@@ -158,7 +158,7 @@ describe('Config', () => {
       const serializeParams = (x: any) => x
       const parseSuccess = (s: any) => s.json() as Promise<any>
       const parseError = (e: any) => e.text() as Promise<any>
-      const signal = 'nanio signal' as any
+      const signal = 'upfetch signal' as any
 
       const final = await fetchClient({
          baseUrl: 'https://1.2.3',
@@ -204,7 +204,7 @@ describe('Config', () => {
    })
 
    test('If params is a string, serializeParams should do nothing', async () => {
-      const fetchClient = nanioFactory.create(() => {
+      const fetchClient = upfetchFactory.create(() => {
          return {
             baseUrl: 'https://a.b.c',
             serializeParams: () => '456',
@@ -218,7 +218,7 @@ describe('Config', () => {
    })
 
    test('If body is a string, serializeBody should do nothing', async () => {
-      const fetchClient = nanioFactory.create(() => {
+      const fetchClient = upfetchFactory.create(() => {
          return {
             baseUrl: 'https://a.b.c',
             method: 'POST',
@@ -233,7 +233,7 @@ describe('Config', () => {
    })
 
    test('An empty fetchClient baseUrl should override the defaults() baseUrl', async () => {
-      const fetchClient = nanioFactory.create(() => {
+      const fetchClient = upfetchFactory.create(() => {
          return { baseUrl: 'https://a.b.c/' }
       }, fakeFetch)
 
@@ -258,10 +258,10 @@ describe('tests with server', () => {
          }),
       )
 
-      const nanio = nanioFactory.create(() => ({
+      const upfetch = upfetchFactory.create(() => ({
          baseUrl: 'https://example.com',
       }))
-      const data = await nanio()
+      const data = await upfetch()
       expect(data).toEqual({ hello: 'world' })
    })
 
@@ -272,10 +272,10 @@ describe('tests with server', () => {
          }),
       )
 
-      const nanio = nanioFactory.create(() => ({
+      const upfetch = upfetchFactory.create(() => ({
          baseUrl: 'https://example.com',
       }))
-      const data = await nanio()
+      const data = await upfetch()
       expect(data).toEqual('some text')
    })
 
@@ -291,7 +291,7 @@ describe('tests with server', () => {
 
       let count = 1
 
-      const nanio = nanioFactory.create(() => ({
+      const upfetch = upfetchFactory.create(() => ({
          baseUrl: 'https://example.com',
          onSuccess(data) {
             if (count === 1) {
@@ -307,8 +307,8 @@ describe('tests with server', () => {
          },
       }))
 
-      await nanio()
-      await nanio({ url: '/id' })
+      await upfetch()
+      await upfetch({ url: '/id' })
    })
 
    test('!response.ok, a ResponseError containing the parsed data (text or json) should be triggered, the Response Error should be passed to onError', async () => {
@@ -323,7 +323,7 @@ describe('tests with server', () => {
 
       let count = 1
 
-      const nanio = nanioFactory.create(() => ({
+      const upfetch = upfetchFactory.create(() => ({
          baseUrl: 'https://example.com',
          onError(error: ResponseError) {
             expect(error instanceof ResponseError).toBeTruthy()
@@ -344,7 +344,7 @@ describe('tests with server', () => {
          },
       }))
 
-      await nanio().catch((error) => {
+      await upfetch().catch((error) => {
          // the same error as onError with count === 1
          expect(error.status).toEqual(400)
          expect(error.message).toEqual('Request failed with status 400')
@@ -354,7 +354,7 @@ describe('tests with server', () => {
             throw error
          }
       })
-      await nanio({ url: '/id' }).catch((error) => {
+      await upfetch({ url: '/id' }).catch((error) => {
          // the same error as onError with count === 2
          expect(error.status).toEqual(401)
          expect(error.message).toEqual('Request failed with status 401')
@@ -375,7 +375,7 @@ describe('tests with server', () => {
 
       let count = 1
 
-      const nanio = nanioFactory.create(() => ({
+      const upfetch = upfetchFactory.create(() => ({
          baseUrl: 'https://example.com',
          parseSuccess: (res) => res.json(),
          onError(error) {
@@ -384,7 +384,7 @@ describe('tests with server', () => {
          },
       }))
 
-      await nanio().catch((error) => {
+      await upfetch().catch((error) => {
          if (error.name === 'AssertionError') {
             throw error
          }
@@ -402,14 +402,14 @@ describe('tests with server', () => {
 
       let count = 1
 
-      const nanio = nanioFactory.create(() => ({
+      const upfetch = upfetchFactory.create(() => ({
          onError(error) {
             expect(error.name).toBe('TypeError')
             count++
          },
       }))
 
-      await nanio().catch((error) => {
+      await upfetch().catch((error) => {
          if (error.name === 'AssertionError') {
             throw error
          }

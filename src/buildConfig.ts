@@ -1,26 +1,30 @@
-import { FactoryConfig, NanioConfig } from './nanioFactory'
+import { FactoryConfig, UpfetchConfig } from './upfetchFactory'
 import { DefaultConfig, defaultConfig } from './defaultConfig'
 
 export const specificFactoryConfigKeys = ['onError', 'onSuccess'] as const
 
-export const specificNanioConfigKeys = ['body', 'url', 'params'] as const
+export const specificUpfetchConfigKeys = ['body', 'url', 'params'] as const
 
 export type Config = Omit<DefaultConfig, 'headers'> & {
    headers: Headers
    body?: BodyInit | null
 } & Omit<FactoryConfig, keyof DefaultConfig> &
-   Omit<NanioConfig, keyof DefaultConfig | 'body'>
+   Omit<UpfetchConfig, keyof DefaultConfig | 'body'>
 
-export const buildConfig = (factoryConfig?: FactoryConfig, nanioConfig?: NanioConfig): Config => {
-   const config: DefaultConfig & FactoryConfig & NanioConfig & { headers: Headers } = Object.assign(
-      {},
-      defaultConfig,
-      stripUndefined(omit(factoryConfig, specificNanioConfigKeys)),
-      stripUndefined(omit(nanioConfig, specificFactoryConfigKeys)),
-      {
-         headers: mergeHeaders(nanioConfig?.headers, factoryConfig?.headers),
-      },
-   )
+export const buildConfig = (
+   factoryConfig?: FactoryConfig,
+   upfetchConfig?: UpfetchConfig,
+): Config => {
+   const config: DefaultConfig & FactoryConfig & UpfetchConfig & { headers: Headers } =
+      Object.assign(
+         {},
+         defaultConfig,
+         stripUndefined(omit(factoryConfig, specificUpfetchConfigKeys)),
+         stripUndefined(omit(upfetchConfig, specificFactoryConfigKeys)),
+         {
+            headers: mergeHeaders(upfetchConfig?.headers, factoryConfig?.headers),
+         },
+      )
 
    const body: BodyInit | null | undefined = isJsonificable(config.body)
       ? config.serializeBody(config.body)
@@ -44,7 +48,7 @@ export const buildConfig = (factoryConfig?: FactoryConfig, nanioConfig?: NanioCo
  *
  * class instances without a toJSON() method will NOT be considered jsonificable
  */
-export function isJsonificable(body: NanioConfig['body']): body is object {
+export function isJsonificable(body: UpfetchConfig['body']): body is object {
    return (
       body?.constructor?.name === 'Object' ||
       Array.isArray(body) ||
@@ -62,9 +66,9 @@ export function isJson(body: any): boolean {
    }
 }
 
-export function mergeHeaders(nanioHeaders?: HeadersInit, factoryHeaders?: HeadersInit): Headers {
+export function mergeHeaders(upfetchHeaders?: HeadersInit, factoryHeaders?: HeadersInit): Headers {
    const headers = new Headers()
-   new Headers(nanioHeaders).forEach((value, key) => {
+   new Headers(upfetchHeaders).forEach((value, key) => {
       value !== 'undefined' && headers.set(key, value)
    })
    // add the defaults to the headers

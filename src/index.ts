@@ -1,4 +1,4 @@
-import { nanioFactory } from './nanioFactory'
-export { nanioFactory } from './nanioFactory'
+import { upfetchFactory } from './upfetchFactory'
+export { upfetchFactory } from './upfetchFactory'
 export { ResponseError, isResponseError } from './ResponseError'
-export const nanio = nanioFactory.create()
+export const upfetch = upfetchFactory.create()

@@ -1,4 +1,4 @@
-import { FactoryConfig, NanioConfig } from './nanioFactory'
+import { FactoryConfig, UpfetchConfig } from './upfetchFactory'
 import { ResponseError } from './ResponseError'
 import { withQuestionMark } from './withQuestionMark'
 
@@ -6,15 +6,15 @@ import { withQuestionMark } from './withQuestionMark'
 // as for typescript 4.9.5
 export type DefaultConfig = Required<{
    baseUrl?: FactoryConfig['baseUrl']
-   headers?: NanioConfig['headers']
+   headers?: UpfetchConfig['headers']
    onError?: FactoryConfig['onError']
    onSuccess?: FactoryConfig['onSuccess']
-   params?: NanioConfig['params']
-   parseSuccess?: NanioConfig['parseSuccess']
+   params?: UpfetchConfig['params']
+   parseSuccess?: UpfetchConfig['parseSuccess']
    parseError?: (res: Response) => Promise<ResponseError<any>>
-   serializeBody?: NanioConfig['serializeBody']
-   serializeParams?: NanioConfig['serializeParams']
-   url?: NanioConfig['url']
+   serializeBody?: UpfetchConfig['serializeBody']
+   serializeParams?: UpfetchConfig['serializeParams']
+   url?: UpfetchConfig['url']
 }>
 
 export const defaultConfig: DefaultConfig = {

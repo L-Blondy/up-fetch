@@ -6,7 +6,7 @@ type ParamValue = string | number | Date | boolean | null | undefined
 
 export interface SharedConfig<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string | URL
-   serializeParams?: (search: NanioConfig['params']) => string
+   serializeParams?: (search: UpfetchConfig['params']) => string
    serializeBody?: (body: PlainObject | Array<any>) => string
    parseSuccess?: (response: Response) => Promise<D>
    parseError?: (res: Response) => Promise<any>
@@ -18,7 +18,7 @@ export interface FactoryConfig<DD = any> extends SharedConfig<DD> {
    onSuccess?: (error: any) => void
 }
 
-export interface NanioConfig<D = any> extends SharedConfig<D> {
+export interface UpfetchConfig<D = any> extends SharedConfig<D> {
    url?: string
    params?: string | Record<string, ParamValue | ParamValue[]>
    body?: BodyInit | PlainObject | Array<any> | null
@@ -28,8 +28,8 @@ const create = <DD = any>(
    factoryConfig?: () => FactoryConfig<DD>,
    fetchFn: typeof fetch = fetch,
 ) => {
-   return async <D = DD>(nanioConfig?: NanioConfig<D>) => {
-      const config = buildConfig(factoryConfig?.(), nanioConfig)
+   return async <D = DD>(upfetchConfig?: UpfetchConfig<D>) => {
+      const config = buildConfig(factoryConfig?.(), upfetchConfig)
       const url = buildUrl(config)
 
       return await fetchFn(url, config)
@@ -49,4 +49,4 @@ const create = <DD = any>(
    }
 }
 
-export const nanioFactory = { create }
+export const upfetchFactory = { create }

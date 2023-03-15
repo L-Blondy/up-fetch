@@ -1,6 +1,6 @@
 import { expectTypeOf, test } from 'vitest'
-import { specificFactoryConfigKeys, specificNanioConfigKeys } from './buildConfig'
-import { FactoryConfig, NanioConfig } from './nanioFactory'
+import { specificFactoryConfigKeys, specificUpfetchConfigKeys } from './buildConfig'
+import { FactoryConfig, UpfetchConfig } from './upfetchFactory'
 
 type TupleToUnion<T extends readonly unknown[]> = T[number]
 
@@ -8,16 +8,16 @@ test('specific Factory Config Keys', () => {
    const _specificFactoryConfigKeysAsUnionType = 'onError' as TupleToUnion<
       typeof specificFactoryConfigKeys
    >
-   type SpecificFactoryConfigKeys = Exclude<keyof FactoryConfig, keyof NanioConfig>
+   type SpecificFactoryConfigKeys = Exclude<keyof FactoryConfig, keyof UpfetchConfig>
 
    expectTypeOf(_specificFactoryConfigKeysAsUnionType).toEqualTypeOf<SpecificFactoryConfigKeys>()
 })
 
-test('specific Nanio Config Keys', () => {
-   const _specificNanioConfigKeysAsUnionType = 'body' as TupleToUnion<
-      typeof specificNanioConfigKeys
+test('specific Upfetch Config Keys', () => {
+   const _specificUpfetchConfigKeysAsUnionType = 'body' as TupleToUnion<
+      typeof specificUpfetchConfigKeys
    >
-   type SpecificNanioConfigKeys = Exclude<keyof NanioConfig, keyof FactoryConfig>
+   type SpecificUpfetchConfigKeys = Exclude<keyof UpfetchConfig, keyof FactoryConfig>
 
-   expectTypeOf(_specificNanioConfigKeysAsUnionType).toEqualTypeOf<SpecificNanioConfigKeys>()
+   expectTypeOf(_specificUpfetchConfigKeysAsUnionType).toEqualTypeOf<SpecificUpfetchConfigKeys>()
 })
