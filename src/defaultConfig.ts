@@ -17,30 +17,25 @@ export type DefaultConfig = Required<{
    url?: UpfetchConfig['url']
 }>
 
+const defaultParser = async <T = any>(res: Response) => {
+   return (await res
+      .clone()
+      .json()
+      .catch(() => res.clone().text())) as T
+}
+
 export const defaultConfig: DefaultConfig = {
    baseUrl: '',
    headers: new Headers(),
    onError: () => {},
    onSuccess: () => {},
    params: {},
-   parseSuccess: async <T = any>(res: Response) => {
-      return (await res
-         .clone()
-         .json()
-         .catch(() => res.clone().text())) as T
-   },
-   parseError: async (res: Response) => {
-      const data = await res
-         .clone()
-         .json()
-         .catch(() => res.clone().text())
-
-      return new ResponseError(res, data)
-   },
+   parseSuccess: defaultParser,
+   parseError: defaultParser,
    serializeBody: (body: object | any[]) => JSON.stringify(body),
-   serializeParams: (search?: DefaultConfig['params']): string => {
+   serializeParams: (params?: DefaultConfig['params']): string => {
       // recursively transforms Dates to ISO string and strips undefined
-      const clean = JSON.parse(JSON.stringify(search))
+      const clean = JSON.parse(JSON.stringify(params))
       return withQuestionMark(new URLSearchParams(clean).toString())
    },
    url: '',

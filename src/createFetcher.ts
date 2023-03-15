@@ -6,7 +6,7 @@ type ParamValue = string | number | Date | boolean | null | undefined
 
 export interface SharedConfig<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string | URL
-   serializeParams?: (search: UpfetchConfig['params']) => string
+   serializeParams?: (params: UpfetchConfig['params']) => string
    serializeBody?: (body: PlainObject | Array<any>) => string
    parseSuccess?: (response: Response) => Promise<D>
    parseError?: (res: Response) => Promise<any>
