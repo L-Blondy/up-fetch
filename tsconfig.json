@@ -1,0 +1,17 @@
+{
+   "compilerOptions": {
+      "baseUrl": ".",
+      "target": "ES2017",
+      "module": "commonjs",
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "strict": true,
+      "noImplicitReturns": true,
+      "skipLibCheck": true,
+      "noEmit": true,
+      "paths": {
+         "src/*": ["./src/*"]
+      }
+   },
+   "include": ["src"]
+}

@@ -1,0 +1,43 @@
+{
+  "name": "up-fetch",
+  "version": "0.0.1-beta.0",
+  "description": "Tiny Fetch API wrapper with configurable defaults",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "build": "tsup",
+    "dev": "vitest",
+    "test": "vitest run && tsc --noEmit",
+    "prepublish": "pnpm build && pnpm test",
+    "postpublish": "git add . && git commit -a && cross-var git tag v%npm_package_version% && git push --tags && git push"
+  },
+  "keywords": [
+    "fetch"
+  ],
+  "author": "Laurent Blondy",
+  "license": "ISC",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
+    "cross-var": "^1.1.0",
+    "eslint": "^8.34.0",
+    "jsdom": "^21.1.0",
+    "msw": "^1.1.0",
+    "terser": "^5.16.5",
+    "tsup": "^6.6.3",
+    "typescript": "^4.9.5",
+    "vitest": "^0.28.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "branches": [
+      "master"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/L-Blondy/up-fetch"
+  }
+}
