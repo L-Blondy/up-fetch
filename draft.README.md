@@ -23,8 +23,8 @@ import {upfetch} from 'up-fetch'
 
 // A simple GET request
 upfetch({
-   url: 'https://example.com/todos',
-   params: { q: 'Hello world' },
+	url: 'https://example.com/todos',
+	params: { q: 'Hello world' },
 })
 	.then((todos)=> console.log(todos))
 	.catch((error) => console.log(error))
