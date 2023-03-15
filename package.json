@@ -11,7 +11,7 @@
     "dev": "vitest",
     "test": "vitest run && tsc --noEmit",
     "prepublish": "pnpm build && pnpm test",
-    "postpublish": "git add . && git commit -a && cross-var git tag v%npm_package_version% && git push --tags && git push"
+    "postpublish": "git add . && git commit -a && cross-var git tag v$npm_package_version && git push --tags && git push"
   },
   "keywords": [
     "fetch"
