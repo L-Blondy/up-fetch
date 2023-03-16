@@ -99,20 +99,12 @@ Path to append to the baseUrl, or an entire url.
 **Examples:**
 
 ```ts
-upfetch({ url: 'https://example.com/todos' })
+const upfetch = createFetcher({ baseUrl: 'https://my.url' })
 
-// OR
+upfetch({ url: '/id' })
 
-upfetch({ 
-   baseUrl: 'https://example.com',
-   url: '/todos',
-})
-
-// OR
-
-const upfetch = createFetcher({ baseUrl: 'https://example.com' })
-
-upfetch({ url: '/todos' })
+// You can override the baseUrl in the url directly
+upfetch({ url: 'https://another.url/todos' })
 ```
 
 
