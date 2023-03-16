@@ -1,28 +1,28 @@
-import { FactoryConfig, UpfetchConfig } from './createFetcher'
+import { FactoryConfig, RequestConfig } from './createFetcher'
 import { DefaultConfig, defaultConfig } from './defaultConfig'
 
-export const specificFactoryConfigKeys = ['onError', 'onSuccess'] as const
+export const specificFactoryConfigKeys = ['onError', 'onSuccess', 'onFetch'] as const
 
-export const specificUpfetchConfigKeys = ['body', 'url', 'params'] as const
+export const specificRequestConfigKeys = ['body', 'url', 'params'] as const
 
 export type Config = Omit<DefaultConfig, 'headers'> & {
    headers: Headers
    body?: BodyInit | null
 } & Omit<FactoryConfig, keyof DefaultConfig> &
-   Omit<UpfetchConfig, keyof DefaultConfig | 'body'>
+   Omit<RequestConfig, keyof DefaultConfig | 'body'>
 
 export const buildConfig = (
    factoryConfig?: FactoryConfig,
-   upfetchConfig?: UpfetchConfig,
+   requestConfig?: RequestConfig,
 ): Config => {
-   const config: DefaultConfig & FactoryConfig & UpfetchConfig & { headers: Headers } =
+   const config: DefaultConfig & FactoryConfig & RequestConfig & { headers: Headers } =
       Object.assign(
          {},
          defaultConfig,
-         stripUndefined(omit(factoryConfig, specificUpfetchConfigKeys)),
-         stripUndefined(omit(upfetchConfig, specificFactoryConfigKeys)),
+         stripUndefined(omit(factoryConfig, specificRequestConfigKeys)),
+         stripUndefined(omit(requestConfig, specificFactoryConfigKeys)),
          {
-            headers: mergeHeaders(upfetchConfig?.headers, factoryConfig?.headers),
+            headers: mergeHeaders(requestConfig?.headers, factoryConfig?.headers),
          },
       )
 
@@ -48,7 +48,7 @@ export const buildConfig = (
  *
  * class instances without a toJSON() method will NOT be considered jsonificable
  */
-export function isJsonificable(body: UpfetchConfig['body']): body is object {
+export function isJsonificable(body: RequestConfig['body']): body is object {
    return (
       body?.constructor?.name === 'Object' ||
       Array.isArray(body) ||

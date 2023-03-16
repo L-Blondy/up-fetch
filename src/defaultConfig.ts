@@ -1,4 +1,4 @@
-import { FactoryConfig, UpfetchConfig } from './createFetcher'
+import { FactoryConfig, RequestConfig } from './createFetcher'
 import { ResponseError } from './ResponseError'
 import { withQuestionMark } from './withQuestionMark'
 
@@ -6,15 +6,16 @@ import { withQuestionMark } from './withQuestionMark'
 // as for typescript 4.9.5
 export type DefaultConfig = Required<{
    baseUrl?: FactoryConfig['baseUrl']
-   headers?: UpfetchConfig['headers']
+   headers?: RequestConfig['headers']
    onError?: FactoryConfig['onError']
    onSuccess?: FactoryConfig['onSuccess']
-   params?: UpfetchConfig['params']
-   parseSuccess?: UpfetchConfig['parseSuccess']
+   onFetchStart?: FactoryConfig['onFetchStart']
+   params?: RequestConfig['params']
+   parseSuccess?: RequestConfig['parseSuccess']
    parseError?: (res: Response) => Promise<ResponseError<any>>
-   serializeBody?: UpfetchConfig['serializeBody']
-   serializeParams?: UpfetchConfig['serializeParams']
-   url?: UpfetchConfig['url']
+   serializeBody?: RequestConfig['serializeBody']
+   serializeParams?: RequestConfig['serializeParams']
+   url?: RequestConfig['url']
 }>
 
 export const defaultConfig: DefaultConfig = {
@@ -22,6 +23,7 @@ export const defaultConfig: DefaultConfig = {
    headers: new Headers(),
    onError: () => {},
    onSuccess: () => {},
+   onFetchStart: () => {},
    params: {},
    parseSuccess: async <T = any>(res: Response) => {
       return (await res

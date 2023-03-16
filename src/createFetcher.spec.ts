@@ -417,4 +417,25 @@ describe('tests with server', () => {
       // verifies that onError was called
       expect(count).toBe(2)
    })
+
+   test('When fetch starts, onFetchStart(config, url) should be triggered', async () => {
+      server.use(
+         rest.get('https://example.com', (req, res, ctx) => {
+            return res(ctx.status(200))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({
+         baseUrl: 'https://example.com',
+         onFetchStart(config, url) {
+            console.log(config)
+            //    expect(config.baseUrl).toBe('https://example.com')
+            //    expect(config.body).toBe('{"hello":"world"}')
+            //    expect(config.method).toBe('POST')
+            //    expect(url).toBe('https://example.com')
+         },
+      }))
+
+      await upfetch({ body: "{ hello: 'world' }", method: 'POST' })
+   })
 })

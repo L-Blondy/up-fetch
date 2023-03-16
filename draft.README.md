@@ -69,7 +69,7 @@ upfetch({
 The request config extends the [Fetch API options](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
 
 ```ts
-interface UpfetchConfig extends RequestInit {
+interface RequestConfig extends RequestInit {
    // e.g. https://some-domain.com/api/
    baseUrl?: string | URL
    // `url` will be appended to the URL 
@@ -86,7 +86,7 @@ interface UpfetchConfig extends RequestInit {
    // takes the `params` object as an argument and returns the query string
    // that will be appended to the url
    // You may omit the question mark
-   serializeParams?: (params: UpfetchConfig['params']) => string
+   serializeParams?: (params: RequestConfig['params']) => string
    // override the default `body` serialization function
    // takes the `body` (plain object or array only) as an argument and returns a string
    // defaults to (body) => JSON.stringify(body)
