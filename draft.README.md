@@ -77,12 +77,12 @@ upfetch({
 **Example:**
 
 ```ts
-const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/todos' }))
+const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/id' }))
 
 upfetch()
 
 // Override the default baseUrl
-upfetch({ baseUrl: 'https://example.com/todos' })
+upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
 ### \<url\> 
