@@ -5,26 +5,26 @@ export const specificFactoryConfigKeys = ['onError', 'onSuccess', 'onFetchStart'
 
 export const specificRequestConfigKeys = ['body', 'url', 'params'] as const
 
-export type Config = Omit<DefaultConfig, 'headers'> & {
-   headers: Headers
-   body?: BodyInit | null
-} & Omit<FactoryConfig, keyof DefaultConfig> &
-   Omit<RequestConfig, keyof DefaultConfig | 'body'>
+export type Config = Omit<DefaultConfig, 'headers' | 'body'> &
+   Omit<FactoryConfig, keyof DefaultConfig | 'headers' | 'body'> &
+   Omit<RequestConfig, keyof DefaultConfig | 'headers' | 'body'> & {
+      headers: Headers
+      body?: BodyInit | null
+   }
 
 export const buildConfig = (
    factoryConfig?: FactoryConfig,
    requestConfig?: RequestConfig,
 ): Config => {
-   const config: DefaultConfig & FactoryConfig & RequestConfig & { headers: Headers } =
-      Object.assign(
-         {},
-         defaultConfig,
-         omit(factoryConfig, specificRequestConfigKeys),
-         omit(requestConfig, specificFactoryConfigKeys),
-         {
-            headers: mergeHeaders(requestConfig?.headers, factoryConfig?.headers),
-         },
-      )
+   const config = Object.assign(
+      {},
+      defaultConfig,
+      omit(factoryConfig, specificRequestConfigKeys),
+      omit(requestConfig, specificFactoryConfigKeys),
+      {
+         headers: mergeHeaders(requestConfig?.headers, factoryConfig?.headers),
+      },
+   )
 
    const body: BodyInit | null | undefined = isJsonificable(config.body)
       ? config.serializeBody(config.body)

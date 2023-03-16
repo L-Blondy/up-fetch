@@ -6,16 +6,16 @@ type ParamValue = string | number | Date | boolean | null | undefined
 
 export interface SharedConfig<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string | URL
-   serializeParams?: (params: RequestConfig['params']) => string
-   serializeBody?: (body: PlainObject | Array<any>) => string
-   parseSuccess?: (response: Response) => Promise<D>
-   parseError?: (res: Response) => Promise<any>
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
+   parseError?: (res: Response) => Promise<any>
+   parseSuccess?: (response: Response) => Promise<D>
+   serializeBody?: (body: PlainObject | Array<any>) => string
+   serializeParams?: (params: RequestConfig['params']) => string
 }
 
 export interface FactoryConfig<DD = any> extends SharedConfig<DD> {
-   onFetchStart?: (config: Config, url: string) => void
    onError?: (error: any) => void
+   onFetchStart?: (config: Config, url: string) => void
    onSuccess?: (error: any) => void
 }
 

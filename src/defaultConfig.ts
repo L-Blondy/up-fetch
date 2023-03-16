@@ -2,21 +2,20 @@ import { FactoryConfig, RequestConfig } from './createFetcher'
 import { ResponseError } from './ResponseError'
 import { withQuestionMark } from './withQuestionMark'
 
-// all props have to be marked as optional in order to get Required<{...}> to strip undefined
-// as for typescript 4.9.5
-export type DefaultConfig = Required<{
-   baseUrl?: FactoryConfig['baseUrl']
-   headers?: RequestConfig['headers']
-   onError?: FactoryConfig['onError']
-   onSuccess?: FactoryConfig['onSuccess']
-   onFetchStart?: FactoryConfig['onFetchStart']
-   params?: RequestConfig['params']
-   parseSuccess?: RequestConfig['parseSuccess']
-   parseError?: (res: Response) => Promise<ResponseError<any>>
-   serializeBody?: RequestConfig['serializeBody']
-   serializeParams?: RequestConfig['serializeParams']
-   url?: RequestConfig['url']
-}>
+export type DefaultConfig = Required<
+   Pick<FactoryConfig, 'onError' | 'onFetchStart' | 'onSuccess'> &
+      Pick<
+         RequestConfig,
+         | 'baseUrl'
+         | 'headers'
+         | 'params'
+         | 'parseError'
+         | 'parseSuccess'
+         | 'serializeBody'
+         | 'serializeParams'
+         | 'url'
+      >
+>
 
 export const defaultConfig: DefaultConfig = {
    baseUrl: '',
@@ -25,11 +24,11 @@ export const defaultConfig: DefaultConfig = {
    onSuccess: () => {},
    onFetchStart: () => {},
    params: {},
-   parseSuccess: async <T = any>(res: Response) => {
-      return (await res
+   parseSuccess: async (res: Response) => {
+      return await res
          .clone()
          .json()
-         .catch(() => res.clone().text())) as T
+         .catch(() => res.clone().text())
    },
    parseError: async (res: Response) => {
       const data = await res
