@@ -420,7 +420,7 @@ describe('tests with server', () => {
 
    test('When fetch starts, onFetchStart(config, url) should be triggered', async () => {
       server.use(
-         rest.get('https://example.com', (req, res, ctx) => {
+         rest.post('https://example.com', (req, res, ctx) => {
             return res(ctx.status(200))
          }),
       )
@@ -428,14 +428,13 @@ describe('tests with server', () => {
       const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
          onFetchStart(config, url) {
-            console.log(config)
-            //    expect(config.baseUrl).toBe('https://example.com')
-            //    expect(config.body).toBe('{"hello":"world"}')
-            //    expect(config.method).toBe('POST')
-            //    expect(url).toBe('https://example.com')
+            expect(config.baseUrl).toBe('https://example.com')
+            expect(config.body).toBe('{"hello":"world"}')
+            expect(config.method).toBe('POST')
+            expect(url).toBe('https://example.com')
          },
       }))
 
-      await upfetch({ body: "{ hello: 'world' }", method: 'POST' })
+      await upfetch({ body: { hello: 'world' }, method: 'POST' })
    })
 })
