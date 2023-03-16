@@ -64,6 +64,27 @@ upfetch({
 
 ## API
 
+### baseUrl
+
+**Type:** `string | URL`
+
+**Default:** `''`
+
+**Availability:** `upfetch`, `createFetcher`.
+
+**Description:** sets the base url for the requests
+
+**Example:**
+
+```ts
+upfetch({ baseUrl: 'https://example.com/todos' })
+upfetch({ baseUrl: new URL('todos', 'https://example.com') })
+
+createFetcher(() => ({ baseUrl: 'https://example.com/todos' }))
+createFetcher(() => ({ baseUrl: new URL('todos', 'https://example.com') }))
+```
+
+
 ## Request Config
 
 The request config extends the [Fetch API options](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
