@@ -77,13 +77,12 @@ upfetch({
 **Example:**
 
 ```ts
-upfetch({ baseUrl: 'https://example.com/todos' })
-
-// OR
-
 const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/todos' }))
 
 upfetch()
+
+// Override the default baseUrl
+upfetch({ baseUrl: 'https://example.com/todos' })
 ```
 
 ### \<url\> 
@@ -104,7 +103,7 @@ const upfetch = createFetcher({ baseUrl: 'https://my.url' })
 upfetch({ url: '/id' })
 
 // You can override the baseUrl in the url directly
-upfetch({ url: 'https://another.url/todos' })
+upfetch({ url: 'https://another.url/id' })
 ```
 
 
