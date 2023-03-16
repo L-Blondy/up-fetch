@@ -103,6 +103,13 @@ upfetch({ url: 'https://example.com/todos' })
 
 // OR
 
+upfetch({ 
+   baseUrl: 'https://example.com',
+   url: '/todos',
+})
+
+// OR
+
 const upfetch = createFetcher({ baseUrl: 'https://example.com' })
 
 upfetch({ url: '/todos' })
