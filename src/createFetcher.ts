@@ -1,4 +1,4 @@
-import { buildConfig, Config, omit } from './buildConfig'
+import { buildConfig, Config } from './buildConfig'
 import { buildUrl } from './buildUrl'
 
 type PlainObject = Record<string, any>
