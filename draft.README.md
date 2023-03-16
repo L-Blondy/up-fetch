@@ -102,7 +102,7 @@ const upfetch = createFetcher({ baseUrl: 'https://example.com' })
 
 upfetch({ url: '/id' })
 
-// You can override the baseUrl in the url directly
+// Override the baseUrl
 upfetch({ url: 'https://another-url.com/id' })
 ```
 
