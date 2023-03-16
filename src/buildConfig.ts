@@ -1,7 +1,7 @@
 import { FactoryConfig, RequestConfig } from './createFetcher'
 import { DefaultConfig, defaultConfig } from './defaultConfig'
 
-export const specificFactoryConfigKeys = ['onError', 'onSuccess', 'onFetch'] as const
+export const specificFactoryConfigKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
 
 export const specificRequestConfigKeys = ['body', 'url', 'params'] as const
 

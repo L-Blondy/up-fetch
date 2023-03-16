@@ -6,6 +6,6 @@ export default defineConfig({
    clean: true,
    dts: true,
    format: ['cjs', 'esm'],
-   // minify: 'terser',
+   minify: 'terser',
    outDir: 'dist',
 })
