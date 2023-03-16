@@ -13,7 +13,7 @@ export interface SharedConfig<D = any> extends Omit<RequestInit, 'body' | 'metho
    serializeParams?: (params: RequestConfig['params']) => string
 }
 
-export interface FactoryConfig<DD = any> extends SharedConfig<DD> {
+export interface DefaultConfig<DD = any> extends SharedConfig<DD> {
    onError?: (error: any) => void
    onFetchStart?: (config: Config, url: string) => void
    onSuccess?: (error: any) => void
@@ -26,11 +26,11 @@ export interface RequestConfig<D = any> extends SharedConfig<D> {
 }
 
 export const createFetcher = <DD = any>(
-   factoryConfig?: () => FactoryConfig<DD>,
+   defaultConfig?: () => DefaultConfig<DD>,
    fetchFn: typeof fetch = fetch,
 ) => {
    return async <D = DD>(requestConfig?: RequestConfig<D>) => {
-      const config = buildConfig(factoryConfig?.(), requestConfig)
+      const config = buildConfig(defaultConfig?.(), requestConfig)
       const url = buildUrl(config)
 
       config.onFetchStart(config, url)

@@ -1,28 +1,28 @@
-import { FactoryConfig, RequestConfig } from './createFetcher'
-import { DefaultConfig, defaultConfig } from './defaultConfig'
+import { DefaultConfig, RequestConfig } from './createFetcher'
+import { FallbackConfig, fallbackConfig } from './fallbackConfig'
 
-export const specificFactoryConfigKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
+export const specificDefaultConfigKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
 
 export const specificRequestConfigKeys = ['body', 'url', 'params'] as const
 
-export type Config = Omit<DefaultConfig, 'headers' | 'body'> &
-   Omit<FactoryConfig, keyof DefaultConfig | 'headers' | 'body'> &
-   Omit<RequestConfig, keyof DefaultConfig | 'headers' | 'body'> & {
+export type Config = Omit<FallbackConfig, 'headers' | 'body'> &
+   Omit<DefaultConfig, keyof FallbackConfig | 'headers' | 'body'> &
+   Omit<RequestConfig, keyof FallbackConfig | 'headers' | 'body'> & {
       headers: Headers
       body?: BodyInit | null
    }
 
 export const buildConfig = (
-   factoryConfig?: FactoryConfig,
+   defaultConfig?: DefaultConfig,
    requestConfig?: RequestConfig,
 ): Config => {
    const config = Object.assign(
       {},
-      defaultConfig,
-      omit(factoryConfig, specificRequestConfigKeys),
-      omit(requestConfig, specificFactoryConfigKeys),
+      fallbackConfig,
+      omit(defaultConfig, specificRequestConfigKeys),
+      omit(requestConfig, specificDefaultConfigKeys),
       {
-         headers: mergeHeaders(requestConfig?.headers, factoryConfig?.headers),
+         headers: mergeHeaders(requestConfig?.headers, defaultConfig?.headers),
       },
    )
 
@@ -66,13 +66,13 @@ export function isJson(body: any): boolean {
    }
 }
 
-export function mergeHeaders(upfetchHeaders?: HeadersInit, factoryHeaders?: HeadersInit): Headers {
+export function mergeHeaders(requestHeaders?: HeadersInit, defaultHeaders?: HeadersInit): Headers {
    const headers = new Headers()
-   new Headers(upfetchHeaders).forEach((value, key) => {
+   new Headers(requestHeaders).forEach((value, key) => {
       value !== 'undefined' && headers.set(key, value)
    })
    // add the defaults to the headers
-   new Headers(factoryHeaders).forEach((value, key) => {
+   new Headers(defaultHeaders).forEach((value, key) => {
       !headers.has(key) && value !== 'undefined' && headers.set(key, value)
    })
    return headers

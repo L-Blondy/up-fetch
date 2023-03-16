@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { defaultConfig } from './defaultConfig'
+import { fallbackConfig } from './fallbackConfig'
 import { ResponseError } from './ResponseError'
 
 class SomeClass {
@@ -35,8 +35,8 @@ test.each`
    ${{ key5: [true, false, null, undefined, 7] }}                       | ${'?key5=true%2Cfalse%2C%2C%2C7'}
    ${{ key5: [1, [2, true, null]] }}                                    | ${'?key5=1%2C2%2Ctrue%2C'}
    ${new SomeClass()}                                                   | ${'?a=1'}
-`('defaultConfig.serializeParams: $input', ({ input, output }) => {
-   expect(defaultConfig.serializeParams(input)).toBe(output)
+`('fallbackConfig.serializeParams: $input', ({ input, output }) => {
+   expect(fallbackConfig.serializeParams(input)).toBe(output)
 })
 
 test('parseError JSON', async () => {
@@ -44,7 +44,7 @@ test('parseError JSON', async () => {
       return Promise.resolve(new Response('{"a":1}', { status: 400 }))
    }
 
-   const error = await fakeFetch().then(defaultConfig.parseError)
+   const error = await fakeFetch().then(fallbackConfig.parseError)
 
    expect(error instanceof ResponseError).toEqual(true)
    expect(error.data).toEqual({ a: 1 })
@@ -56,7 +56,7 @@ test('parseError TEXT', async () => {
       return Promise.resolve(new Response('this is some text', { status: 400 }))
    }
 
-   const error = await fakeFetch().then(defaultConfig.parseError)
+   const error = await fakeFetch().then(fallbackConfig.parseError)
 
    expect(error instanceof ResponseError).toEqual(true)
    expect(error.data).toEqual('this is some text')
@@ -68,7 +68,7 @@ test('parseSuccess JSON should work by default', async () => {
       return Promise.resolve(new Response('{"a":1}', { status: 200 }))
    }
 
-   const data = await fakeFetch().then(defaultConfig.parseSuccess)
+   const data = await fakeFetch().then(fallbackConfig.parseSuccess)
 
    expect(data).toEqual({ a: 1 })
 })
@@ -78,7 +78,7 @@ test('parseSuccess TEXT should work by default', async () => {
       return Promise.resolve(new Response('this is some text', { status: 200 }))
    }
 
-   const data = await fakeFetch().then(defaultConfig.parseSuccess)
+   const data = await fakeFetch().then(fallbackConfig.parseSuccess)
 
    expect(data).toEqual('this is some text')
 })

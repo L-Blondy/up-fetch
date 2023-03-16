@@ -81,7 +81,7 @@ describe('Config', () => {
       })
    })
 
-   test('factoryConfig() should override the defaults', async () => {
+   test('defaultConfig() should override the fallbackConfig', async () => {
       const serializeBody = () => '123'
       const serializeParams = () => '456'
       const parseSuccess = (s: any) => s.json()
@@ -129,7 +129,7 @@ describe('Config', () => {
       expect(final.config.parseError).toEqual(parseError)
    })
 
-   test('fetchConfig config should override factoryConfig()', async () => {
+   test('fetchConfig config should override defaultConfig()', async () => {
       const fetchClient = createFetcher(() => {
          return {
             baseUrl: 'https://a.b.c',
@@ -150,7 +150,7 @@ describe('Config', () => {
             window: undefined,
             parseSuccess: () => Promise.resolve(321),
             parseError: () => Promise.resolve(654),
-            signal: 'factory signal' as any,
+            signal: 'default signal' as any,
          }
       }, fakeFetch)
 
@@ -232,7 +232,7 @@ describe('Config', () => {
       expect(final.config.body).toEqual('test body')
    })
 
-   test('An empty fetchClient baseUrl should override the defaults() baseUrl', async () => {
+   test('An empty fetchClient baseUrl should override the fallbackConfig().baseUrl', async () => {
       const fetchClient = createFetcher(() => {
          return { baseUrl: 'https://a.b.c/' }
       }, fakeFetch)
