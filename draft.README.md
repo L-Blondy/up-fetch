@@ -70,9 +70,9 @@ upfetch({
 
 **Default:** `''`
 
-**Description:** sets the base url for the requests
-
 **Available in:** `upfetch`, `createFetcher`.
+
+**Description:** sets the base url for the requests
 
 **Examples:**
 
@@ -90,9 +90,9 @@ createFetcher(() => ({ baseUrl: new URL('todos', 'https://example.com') }))
 
 **Default:** `''`
 
-**Description:** A path to append to the baseUrl, or an entire url.
-
 **Available in:** `upfetch`.
+
+**Description:** A path to append to the baseUrl, or an entire url.
 
 **Examples:**
 
