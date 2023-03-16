@@ -78,12 +78,9 @@ upfetch({
 
 ```ts
 upfetch({ baseUrl: 'https://example.com/todos' })
-// same as:
-upfetch({ baseUrl: new URL('todos', 'https://example.com') })
-
+// OR
 const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/todos' }))
-// same as:
-const upfetch = createFetcher(() => ({ baseUrl: new URL('todos', 'https://example.com') }))
+upfetch()
 ```
 
 ### \<url\> 
