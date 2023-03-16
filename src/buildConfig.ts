@@ -19,8 +19,8 @@ export const buildConfig = (
       Object.assign(
          {},
          defaultConfig,
-         stripUndefined(omit(factoryConfig, specificRequestConfigKeys)),
-         stripUndefined(omit(requestConfig, specificFactoryConfigKeys)),
+         omit(factoryConfig, specificRequestConfigKeys),
+         omit(requestConfig, specificFactoryConfigKeys),
          {
             headers: mergeHeaders(requestConfig?.headers, factoryConfig?.headers),
          },
@@ -78,24 +78,17 @@ export function mergeHeaders(upfetchHeaders?: HeadersInit, factoryHeaders?: Head
    return headers
 }
 
-function stripUndefined<O extends Record<string, any>>(obj?: O): O | undefined {
-   if (!obj) return obj
-   const copy = { ...obj }
-   Object.entries(copy).forEach(([key, value]) => {
-      if (typeof value === 'undefined') {
-         delete copy[key]
-      }
-   })
-   return copy
-}
-
+// also removes keys when the value is undefined
 function omit<O extends Record<string, any>, K extends string>(
    obj: O | undefined,
    keys: readonly K[],
-): Omit<O, K> | undefined {
+): Omit<O, K> {
    const copy = { ...obj } as O
-   for (const key of keys) {
-      delete copy[key]
-   }
+
+   Object.entries(copy).forEach(([key, value]) => {
+      if (keys.includes(key as K) || typeof value === 'undefined') {
+         delete copy[key]
+      }
+   })
    return copy
 }
