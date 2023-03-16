@@ -64,17 +64,17 @@ upfetch({
 
 ## API
 
-### baseUrl
+### \<baseUrl\> 
 
 **Type:** `string | URL`
 
 **Default:** `''`
 
-**Availability:** `upfetch`, `createFetcher`.
-
 **Description:** sets the base url for the requests
 
-**Example:**
+**Available in:** `upfetch`, `createFetcher`.
+
+**Examples:**
 
 ```ts
 upfetch({ baseUrl: 'https://example.com/todos' })
@@ -82,6 +82,47 @@ upfetch({ baseUrl: new URL('todos', 'https://example.com') })
 
 createFetcher(() => ({ baseUrl: 'https://example.com/todos' }))
 createFetcher(() => ({ baseUrl: new URL('todos', 'https://example.com') }))
+```
+
+### \<url\> 
+
+**Type:** `string`
+
+**Default:** `''`
+
+**Description:** A path to append to the baseUrl, or an entire url.
+
+**Available in:** `upfetch`.
+
+**Examples:**
+
+```ts
+// All of the examples will produce the same result
+
+upfetch({ 
+   url: 'https://example.com/todos',
+})
+
+// using the baseUrl
+upfetch({ 
+   baseUrl: 'https://example.com',
+   url: '/todos',
+})
+
+// the leading slash can be omitted
+upfetch({ 
+   baseUrl: 'https://example.com',
+   url: 'todos',
+})
+
+// the baseUrl can be set on `createFetcher`
+const upfetch = createFetcher(() => ({ 
+   baseUrl: 'https://example.com' 
+}))
+
+upfetch({ 
+   url: '/todos',
+})
 ```
 
 
