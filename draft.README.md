@@ -78,8 +78,11 @@ upfetch({
 
 ```ts
 upfetch({ baseUrl: 'https://example.com/todos' })
+
 // OR
+
 const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/todos' }))
+
 upfetch()
 ```
 
@@ -97,8 +100,11 @@ Path to append to the baseUrl, or an entire url.
 
 ```ts
 upfetch({ url: 'https://example.com/todos' })
+
 // OR
+
 const upfetch = createFetcher({ baseUrl: 'https://example.com' })
+
 upfetch({ url: '/todos' })
 ```
 
