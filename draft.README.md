@@ -64,7 +64,7 @@ const data = await upfetch({
 
 > **createFetcher(() => config)**
 
-### \<baseUrl\> <small>`upfetch` `createFetcher`*</small>
+### \<baseUrl\> <sub><sup>`upfetch` `createFetcher`*</sub></sup>
 
 **Available in:** `upfetch`, `createFetcher`.
 
