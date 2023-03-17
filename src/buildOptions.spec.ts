@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { isJson, isJsonificable, mergeHeaders } from './buildConfig'
+import { isJson, isJsonificable, mergeHeaders } from './buildOptions'
 
 test.each`
    body           | output

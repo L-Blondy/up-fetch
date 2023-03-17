@@ -1,11 +1,11 @@
-import { DefaultConfig, RequestConfig } from './createFetcher'
+import { DefaultOptions, RequestOptions } from './createFetcher'
 import { ResponseError } from './ResponseError'
 import { withQuestionMark } from './withQuestionMark'
 
-export type FallbackConfig = Required<
-   Pick<DefaultConfig, 'onError' | 'onFetchStart' | 'onSuccess'> &
+export type FallbackOptions = Required<
+   Pick<DefaultOptions, 'onError' | 'onFetchStart' | 'onSuccess'> &
       Pick<
-         RequestConfig,
+         RequestOptions,
          | 'baseUrl'
          | 'headers'
          | 'params'
@@ -17,7 +17,7 @@ export type FallbackConfig = Required<
       >
 >
 
-export const fallbackConfig: FallbackConfig = {
+export const fallbackOptions: FallbackOptions = {
    baseUrl: '',
    headers: new Headers(),
    onError: () => {},
@@ -39,7 +39,7 @@ export const fallbackConfig: FallbackConfig = {
       return new ResponseError(res, data)
    },
    serializeBody: (body: object | any[]) => JSON.stringify(body),
-   serializeParams: (params?: FallbackConfig['params']): string => {
+   serializeParams: (params?: FallbackOptions['params']): string => {
       // recursively transforms Dates to ISO string and strips undefined
       const clean = JSON.parse(JSON.stringify(params))
       return withQuestionMark(new URLSearchParams(clean).toString())

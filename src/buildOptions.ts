@@ -1,41 +1,41 @@
-import { DefaultConfig, RequestConfig } from './createFetcher'
-import { FallbackConfig, fallbackConfig } from './fallbackConfig'
+import { DefaultOptions, RequestOptions } from './createFetcher'
+import { FallbackOptions, fallbackOptions } from './fallbackOptions'
 
-export const specificDefaultConfigKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
+export const specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
 
-export const specificRequestConfigKeys = ['body', 'url', 'params'] as const
+export const specificRequestOptionsKeys = ['body', 'url', 'params'] as const
 
-export type Config = Omit<FallbackConfig, 'headers' | 'body'> &
-   Omit<DefaultConfig, keyof FallbackConfig | 'headers' | 'body'> &
-   Omit<RequestConfig, keyof FallbackConfig | 'headers' | 'body'> & {
+export type Options = Omit<FallbackOptions, 'headers' | 'body'> &
+   Omit<DefaultOptions, keyof FallbackOptions | 'headers' | 'body'> &
+   Omit<RequestOptions, keyof FallbackOptions | 'headers' | 'body'> & {
       headers: Headers
       body?: BodyInit | null
    }
 
-export const buildConfig = (
-   defaultConfig?: DefaultConfig,
-   requestConfig?: RequestConfig,
-): Config => {
-   const config = Object.assign(
+export const buildOptions = (
+   defaultOptions?: DefaultOptions,
+   requestOptions?: RequestOptions,
+): Options => {
+   const options = Object.assign(
       {},
-      fallbackConfig,
-      omit(defaultConfig, specificRequestConfigKeys),
-      omit(requestConfig, specificDefaultConfigKeys),
+      fallbackOptions,
+      omit(defaultOptions, specificRequestOptionsKeys),
+      omit(requestOptions, specificDefaultOptionsKeys),
       {
-         headers: mergeHeaders(requestConfig?.headers, defaultConfig?.headers),
+         headers: mergeHeaders(requestOptions?.headers, defaultOptions?.headers),
       },
    )
 
-   const body: BodyInit | null | undefined = isJsonificable(config.body)
-      ? config.serializeBody(config.body)
-      : config.body
+   const body: BodyInit | null | undefined = isJsonificable(options.body)
+      ? options.serializeBody(options.body)
+      : options.body
 
    isJson(body) &&
-      !config.headers.has('content-type') &&
-      config.headers.set('content-type', 'application/json')
+      !options.headers.has('content-type') &&
+      options.headers.set('content-type', 'application/json')
 
    return {
-      ...config,
+      ...options,
       body,
    }
 }
@@ -48,7 +48,7 @@ export const buildConfig = (
  *
  * class instances without a toJSON() method will NOT be considered jsonificable
  */
-export function isJsonificable(body: RequestConfig['body']): body is object {
+export function isJsonificable(body: RequestOptions['body']): body is object {
    return (
       body?.constructor?.name === 'Object' ||
       Array.isArray(body) ||

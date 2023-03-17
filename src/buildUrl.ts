@@ -1,7 +1,7 @@
 import { withQuestionMark } from './withQuestionMark'
-import { Config } from './buildConfig'
+import { Options } from './buildOptions'
 
-export const buildUrl = ({ baseUrl, url, params, serializeParams }: Config) => {
+export const buildUrl = ({ baseUrl, url, params, serializeParams }: Options) => {
    const base = typeof baseUrl === 'string' ? baseUrl : baseUrl.origin + baseUrl.pathname
    // params of type string are already considered serialized
    const serializedParams = withQuestionMark(

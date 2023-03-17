@@ -1,52 +1,52 @@
-import { buildConfig, Config } from './buildConfig'
+import { buildOptions, Options } from './buildOptions'
 import { buildUrl } from './buildUrl'
 
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
 
-export interface SharedConfig<D = any> extends Omit<RequestInit, 'body' | 'method'> {
+export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string | URL
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
    parseError?: (res: Response) => Promise<any>
    parseSuccess?: (response: Response) => Promise<D>
    serializeBody?: (body: PlainObject | Array<any>) => string
-   serializeParams?: (params: RequestConfig['params']) => string
+   serializeParams?: (params: RequestOptions['params']) => string
 }
 
-export interface DefaultConfig<DD = any> extends SharedConfig<DD> {
+export interface DefaultOptions<DD = any> extends SharedOptions<DD> {
    onError?: (error: any) => void
-   onFetchStart?: (config: Config, url: string) => void
+   onFetchStart?: (options: Options, url: string) => void
    onSuccess?: (error: any) => void
 }
 
-export interface RequestConfig<D = any> extends SharedConfig<D> {
+export interface RequestOptions<D = any> extends SharedOptions<D> {
    url?: string
    params?: string | Record<string, ParamValue | ParamValue[]>
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
 export const createFetcher = <DD = any>(
-   defaultConfig?: () => DefaultConfig<DD>,
+   defaultOptions?: () => DefaultOptions<DD>,
    fetchFn: typeof fetch = fetch,
 ) => {
-   return async <D = DD>(requestConfig?: RequestConfig<D>) => {
-      const config = buildConfig(defaultConfig?.(), requestConfig)
-      const url = buildUrl(config)
+   return async <D = DD>(requestOptions?: RequestOptions<D>) => {
+      const options = buildOptions(defaultOptions?.(), requestOptions)
+      const url = buildUrl(options)
 
-      config.onFetchStart(config, url)
+      options.onFetchStart(options, url)
 
-      return await fetchFn(url, config)
+      return await fetchFn(url, options)
          .then(async (res) => {
             if (res.ok) {
-               const data: D = await config.parseSuccess(res)
-               config.onSuccess(data)
+               const data: D = await options.parseSuccess(res)
+               options.onSuccess(data)
                return data
             } else {
-               throw await config.parseError(res)
+               throw await options.parseError(res)
             }
          })
          .catch((error) => {
-            config.onError(error)
+            options.onError(error)
             throw error
          })
    }
