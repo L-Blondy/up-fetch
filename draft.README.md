@@ -41,7 +41,7 @@ const todo = await upfetch({
 })
 ```
 
-You can create a custom instance in order to set a few defaults, like the auth headers or the base url.
+You can create a **custom instance** in order to set a few **defaults**, like the auth headers or the base url.
 
 ```ts
 import { createFetcher } from 'up-fetch'
@@ -76,12 +76,10 @@ try {
    })
 }
 catch(error) {
-   // A response was received from the server with ok === false (status was not in the range 200-299)
-   if(isResponseError(error)) { 
+   if(isResponseError(error)) { // response status not in the range 200-299
       console.log(error.status, error.data)
    }
-   // Unknown error type
-   else {
+   else {// unknown error
       console.log(error)
    }
 }
