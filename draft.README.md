@@ -22,22 +22,18 @@ npm i up-fetch
 import {upfetch} from 'up-fetch'
 
 // A simple GET request
-upfetch({
+const todo = await upfetch({
    url: 'https://example.com/todos',
    params: { q: 'Hello world' },
 })
-   .then((todos) => console.log(todos))
-   .catch((error) => console.log(error))
 
 // With Authentication
-upfetch({
+const data = await upfetch({
    url: 'https://example.com/todos',
    method: 'POST',
    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}`},
    body: { title: 'Hello', content: 'World' },
 })
-   .then((data) => console.log(data))
-   .catch((error) => console.log(error))
 ```
 
 Optionally you can create a custom instance in order to set some defaults
@@ -50,12 +46,12 @@ const upfetch = createFetcher(() => ({
    headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
 }))
 
-upfetch({
+const todo = await upfetch({
    url: '/todos',
    params: { q: 'Hello world' },
 })
 
-upfetch({
+const data = await upfetch({
    url: '/todos',
    method: 'POST',
    body: { title: 'Hello', content: 'World' },
@@ -64,7 +60,13 @@ upfetch({
 
 ## API
 
-### \<baseUrl\> 
+### upFetch(config)
+
+### createFetcher(() => config, fetchFn?)
+
+### Config
+
+#### \<baseUrl\> 
 
 **Type:** `string | URL`
 
@@ -85,7 +87,7 @@ upfetch()
 upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
-### \<url\> 
+#### \<url\> 
 
 **Type:** `string`
 
