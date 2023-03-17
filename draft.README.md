@@ -185,6 +185,28 @@ upfetch({ url: '/id' })
 upfetch({ url: 'https://another-url.com/id' })
 ```
 
+### <\params\> <kbd>upfetch</kbd> 
+
+**Type:** `string | Record<string, PrimitiveOrDate | PrimitiveOrDate[]>`
+
+**Default:** `''`
+
+The url search params.
+Can be a string or an object (1 level deep), in which case the possible values are `string | number | boolean | Date | null` or an array of those.
+
+In the case you pass an object, you might customize the serialization with the `serializeParams` option.
+
+**Example:**
+
+```ts
+const upfetch = createFetcher({ baseUrl: 'https://example.com' })
+
+upfetch({ url: '/id' })
+
+// Override the baseUrl
+upfetch({ url: 'https://another-url.com/id' })
+```
+
 
 
 
