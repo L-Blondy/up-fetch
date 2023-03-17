@@ -22,22 +22,18 @@ npm i up-fetch
 import {upfetch} from 'up-fetch'
 
 // A simple GET request
-upfetch({
+const todo = await upfetch({
    url: 'https://example.com/todos',
    params: { q: 'Hello world' },
 })
-   .then((todos) => console.log(todos))
-   .catch((error) => console.log(error))
 
 // With Authentication
-upfetch({
+const data = await upfetch({
    url: 'https://example.com/todos',
    method: 'POST',
    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}`},
    body: { title: 'Hello', content: 'World' },
 })
-   .then((data) => console.log(data))
-   .catch((error) => console.log(error))
 ```
 
 Optionally you can create a custom instance in order to set some defaults
@@ -50,12 +46,12 @@ const upfetch = createFetcher(() => ({
    headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
 }))
 
-upfetch({
+const todo = await upfetch({
    url: '/todos',
    params: { q: 'Hello world' },
 })
 
-upfetch({
+const data = await upfetch({
    url: '/todos',
    method: 'POST',
    body: { title: 'Hello', content: 'World' },
@@ -64,24 +60,29 @@ upfetch({
 
 ## API
 
-### \<baseUrl\> 
+> **upfetch(options)**
 
-**Type:** `string | URL`
+> **createFetcher(() => options)**
 
-**Default:** `''`
+### \<baseUrl\>
 
-**Description:** sets the base url for the requests
+**Type:** `string | URL` 
 
-**Available in:** `upfetch`, `createFetcher`.
+**Default:** `''` 
 
-**Examples:**
+**Available in:** `upfetch`, `createFetcher`
+
+Sets the base url for the requests
+
+**Example:**
 
 ```ts
-upfetch({ baseUrl: 'https://example.com/todos' })
-upfetch({ baseUrl: new URL('todos', 'https://example.com') })
+const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/id' }))
 
-createFetcher(() => ({ baseUrl: 'https://example.com/todos' }))
-createFetcher(() => ({ baseUrl: new URL('todos', 'https://example.com') }))
+upfetch()
+
+// Override the default baseUrl
+upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
 ### \<url\> 
@@ -90,40 +91,39 @@ createFetcher(() => ({ baseUrl: new URL('todos', 'https://example.com') }))
 
 **Default:** `''`
 
-**Description:** A path to append to the baseUrl, or an entire url.
+**Available in:** `upfetch`
 
-**Available in:** `upfetch`.
+Path to append to the baseUrl, or an entire url.
 
-**Examples:**
+**Example:**
 
 ```ts
-// All of the examples will produce the same result
+const upfetch = createFetcher({ baseUrl: 'https://example.com' })
 
-upfetch({ 
-   url: 'https://example.com/todos',
-})
+upfetch({ url: '/id' })
 
-// using the baseUrl
-upfetch({ 
-   baseUrl: 'https://example.com',
-   url: '/todos',
-})
-
-// the leading slash can be omitted
-upfetch({ 
-   baseUrl: 'https://example.com',
-   url: 'todos',
-})
-
-// the baseUrl can be set on `createFetcher`
-const upfetch = createFetcher(() => ({ 
-   baseUrl: 'https://example.com' 
-}))
-
-upfetch({ 
-   url: '/todos',
-})
+// Override the baseUrl
+upfetch({ url: 'https://another-url.com/id' })
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Request Config
