@@ -147,7 +147,7 @@ createFetcher(() => ({
 }))
 ```
 
-### \> <samp>baseUrl</samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+### <samp>\<baseUrl\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
 **Type:** `string | URL` 
 
@@ -166,7 +166,7 @@ upfetch()
 upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
-### \> <samp>url</samp> <kbd>upfetch</kbd> 
+### \> <samp>\< url \></samp> <kbd>upfetch</kbd> 
 
 **Type:** `string`
 
