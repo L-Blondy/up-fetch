@@ -60,13 +60,13 @@ const data = await upfetch({
 
 ## API
 
-### upFetch(config)
+#### upFetch(config)
 
-### createFetcher(() => config, fetchFn?)
+#### createFetcher(() => config)
 
 ### Config
 
-#### \<baseUrl\> 
+### \<baseUrl\> 
 
 **Type:** `string | URL`
 
@@ -74,7 +74,7 @@ const data = await upfetch({
 
 **Available in:** `upfetch`, `createFetcher`.
 
-**Description:** sets the base url for the requests
+Sets the base url for the requests
 
 **Example:**
 
@@ -87,7 +87,7 @@ upfetch()
 upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
-#### \<url\> 
+### \<url\> 
 
 **Type:** `string`
 
@@ -107,6 +107,25 @@ upfetch({ url: '/id' })
 // Override the baseUrl
 upfetch({ url: 'https://another-url.com/id' })
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Request Config
