@@ -79,7 +79,7 @@ catch(error) {
    if(isResponseError(error)) { // response status not in the range 200-299
       console.log(error.status, error.data)
    }
-   else {// unknown error
+   else { // unknown error
       console.log(error)
    }
 }
@@ -89,7 +89,57 @@ catch(error) {
 
 > **upfetch(options)**
 
+```ts
+upfetch({
+   baseUrl,
+   body,
+   cache,
+   credentials,
+   headers,
+   integrity,
+   keepalive,
+   method,
+   mode,
+   params,
+   parseError,
+   parseSuccess,
+   redirect,
+   referrer,
+   referrerPolicy,
+   serializeBody,
+   serializeParams,
+   signal,
+   url,
+   window,
+})
+```
+
 > **createFetcher(() => options)**
+
+```ts
+createFetcher(() => ({
+   baseUrl,
+   cache,
+   credentials,
+   headers,
+   integrity,
+   keepalive,
+   method,
+   mode,
+   onError,
+   onFetchStart,
+   onSuccess,
+   parseError,
+   parseSuccess,
+   redirect,
+   referrer,
+   referrerPolicy,
+   serializeBody,
+   serializeParams,
+   signal,
+   window,
+}))
+```
 
 ### \<baseUrl\>
 
