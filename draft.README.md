@@ -93,12 +93,12 @@ catch(error) {
 upfetch({
    // custom options
    baseUrl,
+   url,
    params,
    parseError,
    parseSuccess,
    serializeBody,
    serializeParams,
-   url,
    // tweaked fetch options
    body,
    headers,
