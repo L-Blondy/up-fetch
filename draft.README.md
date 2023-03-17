@@ -185,7 +185,7 @@ upfetch({ url: '/id' })
 upfetch({ url: 'https://another-url.com/id' })
 ```
 
-### <\params\> <kbd>upfetch</kbd> 
+### \<params\> <kbd>upfetch</kbd> 
 
 **Type:** `string | Record<string, PrimitiveOrDate | PrimitiveOrDate[]>`
 
