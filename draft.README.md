@@ -192,9 +192,9 @@ upfetch({ url: 'https://another-url.com/id' })
 **Default:** `''`
 
 The url search params.
-Can be a string or an object (1 level deep), in which case the possible values are `string | number | boolean | Date | null` or an array of those.
+Can be a string or an object containing primitive values or Dates, or an array of those
 
-In the case you pass an object, you might customize the serialization with the `serializeParams` option.
+The serialization of the params object can be customized with the `serializeParams` option.
 
 **Example:**
 
