@@ -166,7 +166,7 @@ upfetch()
 upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
-### \> <samp>\< url \></samp> <kbd>upfetch</kbd> 
+### <samp>\< url \></samp> <kbd>upfetch</kbd> 
 
 **Type:** `string`
 
