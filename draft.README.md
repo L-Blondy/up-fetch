@@ -147,7 +147,7 @@ createFetcher(() => ({
 }))
 ```
 
-### \<baseUrl\> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+### \> <samp>baseUrl</samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
 **Type:** `string | URL` 
 
@@ -166,7 +166,7 @@ upfetch()
 upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
-### <\url\> <kbd>upfetch</kbd> 
+### \> <samp>url</samp> <kbd>upfetch</kbd> 
 
 **Type:** `string`
 
@@ -192,7 +192,7 @@ upfetch({ url: 'https://another-url.com/id' })
 **Default:** `''`
 
 The url search params.
-Can be a string or an object containing primitive values or Dates, or an array of those. \
+Can be a string or an object containing primitive values, Dates, or an array of those. \
 The serialization of the params object can be customized with the `serializeParams` option.
 
 **Example:**
