@@ -147,13 +147,11 @@ createFetcher(() => ({
 }))
 ```
 
-### \<baseUrl?\> <kbd>optional</kbd>
+### \<baseUrl\> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
 **Type:** `string | URL` 
 
 **Default:** `''` 
-
-**Available in:** `upfetch`, `createFetcher`
 
 Sets the base url for the requests
 
@@ -168,13 +166,11 @@ upfetch()
 upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
-### <\url\> <kbd>optional</kbd>
+### <\url\> <kbd>upfetch</kbd> 
 
 **Type:** `string`
 
 **Default:** `''`
-
-**Available in:** `upfetch`
 
 Path to append to the baseUrl, or an entire url.
 
