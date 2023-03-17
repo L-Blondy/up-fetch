@@ -91,25 +91,28 @@ catch(error) {
 
 ```ts
 upfetch({
+   // custom options
    baseUrl,
+   params,
+   parseError,
+   parseSuccess,
+   serializeBody,
+   serializeParams,
+   url,
+   // tweaked fetch options
    body,
+   headers,
+   // normal fetch options
    cache,
    credentials,
-   headers,
    integrity,
    keepalive,
    method,
    mode,
-   params,
-   parseError,
-   parseSuccess,
    redirect,
    referrer,
    referrerPolicy,
-   serializeBody,
-   serializeParams,
    signal,
-   url,
    window,
 })
 ```
@@ -118,24 +121,27 @@ upfetch({
 
 ```ts
 createFetcher(() => ({
+   // custom options
    baseUrl,
-   cache,
-   credentials,
-   headers,
-   integrity,
-   keepalive,
-   method,
-   mode,
    onError,
    onFetchStart,
    onSuccess,
    parseError,
    parseSuccess,
+   serializeBody,
+   serializeParams,
+   // tweaked fetch options
+   headers,
+   // normal fetch options
+   cache,
+   credentials,
+   integrity,
+   keepalive,
+   method,
+   mode,
    redirect,
    referrer,
    referrerPolicy,
-   serializeBody,
-   serializeParams,
    signal,
    window,
 }))
