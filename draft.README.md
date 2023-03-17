@@ -66,9 +66,10 @@ const data = await upfetch({
 
 ### \<baseUrl\>
 
-**Available in:** `upfetch`, `createFetcher`. \
+**Available:** `upfetch`, `createFetcher`. \
 **Type:** `string | URL` \
-**Default:** `''` \
+**Default:** `''` 
+
 Sets the base url for the requests
 
 ```ts
