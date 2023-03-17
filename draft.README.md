@@ -147,11 +147,13 @@ createFetcher(() => ({
 }))
 ```
 
-### \<baseUrl?\> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+### \<baseUrl?\> <kbd>optional</kbd>
 
 **Type:** `string | URL` 
 
 **Default:** `''` 
+
+**Available in:** `upfetch`, `createFetcher`
 
 Sets the base url for the requests
 
