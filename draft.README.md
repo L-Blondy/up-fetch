@@ -66,8 +66,10 @@ const data = await upfetch({
 
 ### \<baseUrl\>
 
-**Type:** `string | URL` \
-**Default:** `''` \
+**Type:** `string | URL` 
+
+**Default:** `''` 
+
 **Available:** `upfetch`, `createFetcher`
 
 Sets the base url for the requests
@@ -87,7 +89,7 @@ upfetch({ baseUrl: 'https://another-url.com/id' })
 
 **Default:** `''`
 
-**Available:** `upfetch`.
+**Available in:** `upfetch`
 
 Path to append to the baseUrl, or an entire url.
 
