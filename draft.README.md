@@ -21,22 +21,13 @@ npm i up-fetch
 ```ts
 import {upfetch} from 'up-fetch'
 
-// A simple GET request
 const todo = await upfetch({
    url: 'https://example.com/todos',
    params: { q: 'Hello world' },
 })
-
-// With Authentication
-const data = await upfetch({
-   url: 'https://example.com/todos',
-   method: 'POST',
-   headers: { 'Authorization': `Bearer ${AUTH_TOKEN}`},
-   body: { title: 'Hello', content: 'World' },
-})
 ```
 
-Optionally you can create a custom instance in order to set some defaults
+You can create a custom instance in order to set a few defaults, like the auth headers or the base url.
 
 ```ts
 import {createFetcher} from 'up-fetch'
