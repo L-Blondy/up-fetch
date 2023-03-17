@@ -66,16 +66,11 @@ const data = await upfetch({
 
 ### \<baseUrl\> 
 
-**Type:** `string | URL`
-
-**Default:** `''`
-
-**Available in:** `upfetch`, `createFetcher`.
-
-Sets the base url for the requests
-
-**Example:**
-
+> **Type:** `string | URL`\
+**Default:** `''`\
+**Available in:** `upfetch`, `createFetcher`.\
+Sets the base url for the requests\
+**Example:**\
 ```ts
 const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/id' }))
 
