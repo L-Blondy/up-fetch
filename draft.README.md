@@ -66,11 +66,17 @@ const data = await upfetch({
 
 ### \<baseUrl\> 
 
-> **Type:** `string | URL`\
-**Default:** `''`\
-**Available in:** `upfetch`, `createFetcher`.\
-Sets the base url for the requests\
-**Example:**\
+**Available in:** `upfetch`, `createFetcher`.
+
+**Type:** `string | URL`
+
+**Default:** `''`
+
+
+Sets the base url for the requests
+
+**Example:**
+
 ```ts
 const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/id' }))
 
@@ -82,11 +88,12 @@ upfetch({ baseUrl: 'https://another-url.com/id' })
 
 ### \<url\> 
 
+**Available in:** `upfetch`.
+
 **Type:** `string`
 
 **Default:** `''`
 
-**Available in:** `upfetch`.
 
 Path to append to the baseUrl, or an entire url.
 
