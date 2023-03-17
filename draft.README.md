@@ -87,11 +87,11 @@ upfetch({ baseUrl: 'https://another-url.com/id' })
 
 **Default:** `''`
 
-**Available in:** `upfetch`.
+**Available:** `upfetch`.
 
 Path to append to the baseUrl, or an entire url.
 
-**Examples:**
+**Example:**
 
 ```ts
 const upfetch = createFetcher({ baseUrl: 'https://example.com' })
