@@ -60,11 +60,9 @@ const data = await upfetch({
 
 ## API
 
-#### upFetch(config)
+> **upFetch(config)**
 
-#### createFetcher(() => config)
-
-### Config
+> **createFetcher(() => config)**
 
 ### \<baseUrl\> 
 
