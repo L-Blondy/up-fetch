@@ -70,9 +70,11 @@ const data = await upfetch({
 
 **Default:** `''` 
 
-**Available:** `upfetch`, `createFetcher`
+**Available in:** `upfetch`, `createFetcher`
 
 Sets the base url for the requests
+
+**Example:**
 
 ```ts
 const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/id' }))
