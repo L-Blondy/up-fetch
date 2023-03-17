@@ -19,18 +19,32 @@ npm i up-fetch
 ```
 
 ```ts
-import {upfetch} from 'up-fetch'
+import { upfetch } from 'up-fetch'
 
+/**
+ * - Search params can be defined as object
+ * - `json` and `text` responses are parsed by default
+ */
 const todo = await upfetch({
    url: 'https://example.com/todos',
    params: { q: 'Hello world' },
+})
+
+/**
+ * - `body` is serialized by default
+ * - {'content-type': 'application/json'} is handled automatically
+ */
+const todo = await upfetch({
+   url: 'https://example.com/todos',
+   method: 'POST',
+   body: { username: 'John', password: '@TempPwd1!' },
 })
 ```
 
 You can create a custom instance in order to set a few defaults, like the auth headers or the base url.
 
 ```ts
-import {createFetcher} from 'up-fetch'
+import { createFetcher } from 'up-fetch'
 
 const upfetch = createFetcher(() => ({
    baseUrl: 'https://example.com',
@@ -47,6 +61,30 @@ const data = await upfetch({
    method: 'POST',
    body: { title: 'Hello', content: 'World' },
 })
+```
+
+Failed requests **throw by default**
+
+```ts
+import { upfetch, isResponseError } from 'up-fetch'
+
+try {
+   const data = await upfetch({
+      url: '/todos',
+      method: 'POST',
+      body: { title: 'Hello', content: 'World' },
+   })
+}
+catch(error) {
+   // A response was received from the server with ok === false (status was not in the range 200-299)
+   if(isResponseError(error)) { 
+      console.log(error.status, error.data)
+   }
+   // Unknown error type
+   else {
+      console.log(error)
+   }
+}
 ```
 
 ## API
