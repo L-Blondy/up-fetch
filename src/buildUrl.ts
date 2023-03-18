@@ -1,7 +1,14 @@
+import { RequestOptions } from './createFetcher'
 import { withQuestionMark } from './withQuestionMark'
-import { Options } from './buildOptions'
 
-export const buildUrl = ({ baseUrl, url, params, serializeParams }: Options) => {
+type Config = Required<{
+   baseUrl?: RequestOptions['baseUrl']
+   url?: RequestOptions['url']
+   params?: RequestOptions['params']
+   serializeParams?: RequestOptions['serializeParams']
+}>
+
+export const buildUrl = ({ baseUrl, url, params, serializeParams }: Config) => {
    const base = typeof baseUrl === 'string' ? baseUrl : baseUrl.origin + baseUrl.pathname
    // params of type string are already considered serialized
    const serializedParams = withQuestionMark(

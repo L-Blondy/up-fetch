@@ -191,7 +191,7 @@ upfetch({ url: 'https://another-url.com/id' })
 
 **Default:** `''`
 
-The url search params.
+The url search params. \
 Can be a string or an object containing primitive values, Dates, or an array of those. \
 The serialization of the params object can be customized with the `serializeParams` option.
 

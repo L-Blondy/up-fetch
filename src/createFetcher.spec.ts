@@ -427,11 +427,11 @@ describe('tests with server', () => {
 
       const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
-         onFetchStart(options, url) {
+         onFetchStart(options) {
             expect(options.baseUrl).toBe('https://example.com')
             expect(options.body).toBe('{"hello":"world"}')
             expect(options.method).toBe('POST')
-            expect(url).toBe('https://example.com')
+            expect(options.href).toBe('https://example.com')
          },
       }))
 

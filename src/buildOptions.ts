@@ -1,43 +1,36 @@
 import { DefaultOptions, RequestOptions } from './createFetcher'
-import { FallbackOptions, fallbackOptions } from './fallbackOptions'
+import { fallbackOptions } from './fallbackOptions'
+import { buildUrl } from './buildUrl'
 
 export const specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
 
 export const specificRequestOptionsKeys = ['body', 'url', 'params'] as const
 
-export type Options = Omit<FallbackOptions, 'headers' | 'body'> &
-   Omit<DefaultOptions, keyof FallbackOptions | 'headers' | 'body'> &
-   Omit<RequestOptions, keyof FallbackOptions | 'headers' | 'body'> & {
-      headers: Headers
-      body?: BodyInit | null
-   }
-
-export const buildOptions = (
-   defaultOptions?: DefaultOptions,
-   requestOptions?: RequestOptions,
-): Options => {
-   const options = Object.assign(
-      {},
-      fallbackOptions,
-      omit(defaultOptions, specificRequestOptionsKeys),
-      omit(requestOptions, specificDefaultOptionsKeys),
-      {
-         headers: mergeHeaders(requestOptions?.headers, defaultOptions?.headers),
+export const buildOptions = (defaultOptions?: DefaultOptions, requestOptions?: RequestOptions) => {
+   const options = {
+      ...Object.assign(
+         {},
+         fallbackOptions,
+         omit(defaultOptions, specificRequestOptionsKeys),
+         omit(requestOptions, specificDefaultOptionsKeys),
+      ),
+      rawHeaders: mergeHeaders(requestOptions?.headers, defaultOptions?.headers),
+      rawBody: requestOptions?.body,
+      get body(): BodyInit | null | undefined {
+         return isJsonificable(this.rawBody) ? this.serializeBody(this.rawBody) : this.rawBody
       },
-   )
-
-   const body: BodyInit | null | undefined = isJsonificable(options.body)
-      ? options.serializeBody(options.body)
-      : options.body
-
-   isJson(body) &&
-      !options.headers.has('content-type') &&
-      options.headers.set('content-type', 'application/json')
-
-   return {
-      ...options,
-      body,
+      get headers(): Headers {
+         const _headers = new Headers(this.rawHeaders)
+         isJson(this.body) &&
+            !this.rawHeaders.has('content-type') &&
+            _headers.set('content-type', 'application/json')
+         return _headers
+      },
+      get href(): string {
+         return buildUrl(this)
+      },
    }
+   return options
 }
 
 /**

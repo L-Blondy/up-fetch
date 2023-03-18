@@ -1,4 +1,4 @@
-import { buildOptions, Options } from './buildOptions'
+import { buildOptions } from './buildOptions'
 import { buildUrl } from './buildUrl'
 
 type PlainObject = Record<string, any>
@@ -15,7 +15,7 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
 
 export interface DefaultOptions<DD = any> extends SharedOptions<DD> {
    onError?: (error: any) => void
-   onFetchStart?: (options: Options, url: string) => void
+   onFetchStart?: (options: ReturnType<typeof buildOptions>) => void
    onSuccess?: (error: any) => void
 }
 
@@ -31,11 +31,10 @@ export const createFetcher = <DD = any>(
 ) => {
    return async <D = DD>(requestOptions?: RequestOptions<D>) => {
       const options = buildOptions(defaultOptions?.(), requestOptions)
-      const url = buildUrl(options)
 
-      options.onFetchStart(options, url)
+      options.onFetchStart(options)
 
-      return await fetchFn(url, options)
+      return await fetchFn(options.href, options)
          .then(async (res) => {
             if (res.ok) {
                const data: D = await options.parseSuccess(res)
