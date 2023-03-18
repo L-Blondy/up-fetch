@@ -8,12 +8,9 @@ export const specificRequestOptionsKeys = ['body', 'url', 'params'] as const
 
 export const buildOptions = (defaultOptions?: DefaultOptions, requestOptions?: RequestOptions) => {
    const options = {
-      ...Object.assign(
-         {},
-         fallbackOptions,
-         omit(defaultOptions, specificRequestOptionsKeys),
-         omit(requestOptions, specificDefaultOptionsKeys),
-      ),
+      ...fallbackOptions,
+      ...omit(defaultOptions, specificRequestOptionsKeys),
+      ...omit(requestOptions, specificDefaultOptionsKeys),
       rawHeaders: mergeHeaders(requestOptions?.headers, defaultOptions?.headers),
       rawBody: requestOptions?.body,
       get body(): BodyInit | null | undefined {
