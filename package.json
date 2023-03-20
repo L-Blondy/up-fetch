@@ -53,6 +53,7 @@
     "jsdom": "^21.1.0",
     "msw": "^1.1.0",
     "typescript": "^4.9.5",
+    "tsup": "^6.7.0",
     "vitest": "^0.28.5"
   },
   "publishConfig": {
@@ -65,9 +66,5 @@
     "type": "git",
     "url": "https://github.com/L-Blondy/up-fetch"
   },
-  "dependencies": {
-    "del-cli": "^5.0.0",
-    "terser": "^5.16.6",
-    "tsup": "^6.7.0"
-  }
+  "dependencies": {}
 }
