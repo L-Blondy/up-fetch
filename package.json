@@ -1,10 +1,9 @@
 {
   "name": "up-fetch",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "description": "Tiny Fetch API wrapper with configurable defaults",
   "type": "module",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -14,7 +13,7 @@
   },
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "build": "del-cli dist && tsc",
+    "build": "tsup src/index.ts",
     "dev": "vitest",
     "test": "vitest run && tsc --noEmit",
     "prepublish": "pnpm build && pnpm test",
@@ -65,6 +64,8 @@
     "url": "https://github.com/L-Blondy/up-fetch"
   },
   "dependencies": {
-    "del-cli": "^5.0.0"
+    "del-cli": "^5.0.0",
+    "terser": "^5.16.6",
+    "tsup": "^6.7.0"
   }
 }
