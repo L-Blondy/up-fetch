@@ -1,6 +1,6 @@
 {
   "name": "up-fetch",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1-beta.5",
   "description": "Tiny Fetch API wrapper with configurable defaults",
   "type": "module",
   "main": "dist/index.js",
@@ -39,7 +39,9 @@
     "browser",
     "got",
     "axios",
-    "node-fetch"
+    "node-fetch",
+    "wretch",
+    "wrapper"
   ],
   "author": "Laurent Blondy",
   "license": "ISC",
