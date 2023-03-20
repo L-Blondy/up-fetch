@@ -1,5 +1,5 @@
-import { buildOptions } from './buildOptions'
-import { ResponseError } from './ResponseError'
+import { buildOptions } from './buildOptions.js'
+import { ResponseError } from './ResponseError.js'
 
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
@@ -24,7 +24,7 @@ export interface RequestOptions<D = any> extends SharedOptions<D> {
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
-export type Config = ReturnType<typeof buildOptions>
+export type FinalOptions = ReturnType<typeof buildOptions>
 
 export const createFetcher = <DD = any>(
    defaultOptions?: () => DefaultOptions<DD>,

@@ -1,8 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
-import { createFetcher, parseError } from './createFetcher'
+import { createFetcher } from './createFetcher.js'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { ResponseError } from './ResponseError'
+import { ResponseError } from './ResponseError.js'
 
 const fakeFetch = ((...args: Parameters<typeof fetch>) => {
    const returnedObject = {

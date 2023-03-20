@@ -1,17 +1,36 @@
+// credits @sindresorhus/tsconfig https://github.com/sindresorhus/tsconfig
 {
    "compilerOptions": {
       "baseUrl": ".",
+      "declaration": true,
       "target": "ES2020",
+      "pretty": true,
+      "newLine": "lf",
       "module": "Node16",
+      "moduleResolution": "node16",
+      "moduleDetection": "force",
       "esModuleInterop": true,
-      "forceConsistentCasingInFileNames": true,
+      "allowSyntheticDefaultImports": true, // To provide backwards compatibility, Node.js allows you to import most CommonJS packages with a default import. This flag tells TypeScript that it's okay to use import on CommonJS modules. (credits @sindresorhus/tsconfig https://github.com/sindresorhus/tsconfig)
+      "stripInternal": true,
       "strict": true,
       "noImplicitReturns": true,
+      "noImplicitOverride": true,
+      "noUnusedLocals": true,
+      // "noUnusedParameters": true,
+      "noFallthroughCasesInSwitch": true,
+      "noUncheckedIndexedAccess": true,
+      "noPropertyAccessFromIndexSignature": true,
+      "noEmitOnError": true,
+      "useDefineForClassFields": true,
+      "forceConsistentCasingInFileNames": true,
       "skipLibCheck": true,
-      "noEmit": true,
       "paths": {
          "src/*": ["./src/*"]
-      }
+      },
+      "sourceMap": true,
+      "inlineSources": true,
+      "rootDir": "./src",
+      "outDir": "./dist"
    },
-   "include": ["src"]
+   "include": ["src/index.ts"]
 }

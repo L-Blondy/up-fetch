@@ -1,4 +1,4 @@
-import { DefaultOptions, RequestOptions } from './createFetcher'
+import { DefaultOptions, RequestOptions } from './createFetcher.js'
 
 export const specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
 

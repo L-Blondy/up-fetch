@@ -1,14 +1,14 @@
 const isResponseErrorSymbol = Symbol.for('ResponseError')
 
 export class ResponseError<TErrorData = any> extends Error {
+   override name: 'ResponseError'
    data: TErrorData
    headers: Headers
    redirected: boolean
    url: string
    type: ResponseType
    status: number
-   statusText: string
-   name: 'ResponseError';
+   statusText: string;
    [isResponseErrorSymbol]: true
 
    constructor(res: Response, data: TErrorData) {

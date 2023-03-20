@@ -1,6 +1,6 @@
 import { expectTypeOf, test } from 'vitest'
-import { specificDefaultOptionsKeys, specificRequestOptionsKeys } from './buildOptions'
-import { DefaultOptions, RequestOptions } from './createFetcher'
+import { specificDefaultOptionsKeys, specificRequestOptionsKeys } from './buildOptions.js'
+import { DefaultOptions, RequestOptions } from './createFetcher.js'
 
 type TupleToUnion<T extends readonly unknown[]> = T[number]
 

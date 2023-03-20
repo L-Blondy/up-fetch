@@ -1,5 +1,5 @@
 import { expectTypeOf, test } from 'vitest'
-import { createFetcher } from './createFetcher'
+import { createFetcher } from './createFetcher.js'
 
 const fakeFetch = () => Promise.resolve({ then: () => {} })
 

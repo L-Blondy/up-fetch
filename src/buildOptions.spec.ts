@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { buildOptions, isJson, isJsonificable, mergeHeaders } from './buildOptions'
-import { createFetcher } from './createFetcher'
+import { buildOptions, isJson, isJsonificable, mergeHeaders } from './buildOptions.js'
 
 describe('isJson', () => {
    test.each`
@@ -80,6 +79,10 @@ describe('serializeParams', () => {
 
       get b() {
          return 2
+      }
+
+      get z() {
+         return this.#z
       }
 
       set c(v: number) {

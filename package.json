@@ -2,19 +2,45 @@
   "name": "up-fetch",
   "version": "0.0.1-beta.1",
   "description": "Tiny Fetch API wrapper with configurable defaults",
+  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=14.16"
+  },
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "build": "tsup",
+    "build": "del-cli dist && tsc",
     "dev": "vitest",
     "test": "vitest run && tsc --noEmit",
     "prepublish": "pnpm build && pnpm test",
     "postpublish": "git add . && git commit -a && cross-var git tag v$npm_package_version && git push --tags && git push"
   },
   "keywords": [
-    "fetch"
+    "fetch",
+    "request",
+    "requests",
+    "http",
+    "https",
+    "fetching",
+    "get",
+    "url",
+    "curl",
+    "wget",
+    "net",
+    "network",
+    "ajax",
+    "api",
+    "rest",
+    "xhr",
+    "browser",
+    "got",
+    "axios",
+    "node-fetch"
   ],
   "author": "Laurent Blondy",
   "license": "ISC",
@@ -25,8 +51,6 @@
     "eslint": "^8.34.0",
     "jsdom": "^21.1.0",
     "msw": "^1.1.0",
-    "terser": "^5.16.5",
-    "tsup": "^6.6.3",
     "typescript": "^4.9.5",
     "vitest": "^0.28.5"
   },
@@ -39,5 +63,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/L-Blondy/up-fetch"
+  },
+  "dependencies": {
+    "del-cli": "^5.0.0"
   }
 }

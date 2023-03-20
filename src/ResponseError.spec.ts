@@ -1,8 +1,8 @@
 import { afterAll, afterEach, beforeAll, expect, test } from 'vitest'
-import { createFetcher } from './createFetcher'
+import { createFetcher } from './createFetcher.js'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { isResponseError, ResponseError } from './ResponseError'
+import { isResponseError, ResponseError } from './ResponseError.js'
 
 const server = setupServer()
 beforeAll(() => server.listen())

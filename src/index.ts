@@ -1,5 +1,5 @@
-import { createFetcher } from './createFetcher'
-export { createFetcher } from './createFetcher'
-export { RequestOptions, DefaultOptions } from './createFetcher'
-export { ResponseError, isResponseError } from './ResponseError'
+import { createFetcher } from './createFetcher.js'
+export { createFetcher } from './createFetcher.js'
+export { RequestOptions, DefaultOptions, FinalOptions } from './createFetcher.js'
+export { ResponseError, isResponseError } from './ResponseError.js'
 export const upfetch = createFetcher()
