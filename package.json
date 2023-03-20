@@ -1,6 +1,6 @@
 {
   "name": "up-fetch",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "description": "Tiny Fetch API wrapper with configurable defaults",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

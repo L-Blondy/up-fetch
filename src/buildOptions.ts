@@ -1,6 +1,4 @@
 import { DefaultOptions, RequestOptions } from './createFetcher'
-import { fallbackOptions } from './fallbackOptions'
-import { buildUrl } from './buildUrl'
 
 export const specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
 
@@ -8,13 +6,21 @@ export const specificRequestOptionsKeys = ['body', 'url', 'params'] as const
 
 export const buildOptions = (defaultOptions?: DefaultOptions, requestOptions?: RequestOptions) => {
    const options = {
-      ...fallbackOptions,
+      parseResponseOk: async (res: Response) => {
+         return await res
+            .clone()
+            .json()
+            .catch(() => res.clone().text())
+      },
+
       ...omit(defaultOptions, specificRequestOptionsKeys),
       ...omit(requestOptions, specificDefaultOptionsKeys),
       rawHeaders: mergeHeaders(requestOptions?.headers, defaultOptions?.headers),
       rawBody: requestOptions?.body,
       get body(): BodyInit | null | undefined {
-         return isJsonificable(this.rawBody) ? this.serializeBody(this.rawBody) : this.rawBody
+         const serializeBody =
+            this.serializeBody ?? ((body: object | any[]) => JSON.stringify(body))
+         return isJsonificable(this.rawBody) ? serializeBody(this.rawBody) : this.rawBody
       },
       get headers(): Headers {
          const _headers = new Headers(this.rawHeaders)
@@ -24,7 +30,33 @@ export const buildOptions = (defaultOptions?: DefaultOptions, requestOptions?: R
          return _headers
       },
       get href(): string {
-         return buildUrl(this)
+         const {
+            baseUrl = '',
+            url = '',
+            params = '',
+            serializeParams = (params?: typeof this.params): string => {
+               // recursively transforms Dates to ISO string and strips undefined
+               const clean = JSON.parse(JSON.stringify(params))
+               return withQuestionMark(new URLSearchParams(clean).toString())
+            },
+         } = this
+         const base = typeof baseUrl === 'string' ? baseUrl : baseUrl.origin + baseUrl.pathname
+         // params of type string are already considered serialized
+         const serializedParams = withQuestionMark(
+            typeof params === 'string'
+               ? params
+               : typeof params === 'object' && params
+               ? serializeParams(params)
+               : '',
+         )
+         if (base && url && !isFullUrl(url)) {
+            return `${addTrailingSlash(base)}${stripLeadingSlash(url)}${serializedParams}`
+         }
+         if (base && !url) {
+            return `${base}${serializedParams}`
+         }
+
+         return `${url}${serializedParams}`
       },
    }
    return options
@@ -81,4 +113,23 @@ function omit<O extends Record<string, any>, K extends string>(
       }
    })
    return copy
+}
+
+function withQuestionMark(str: string) {
+   if (!str) return ''
+   return str.startsWith('?') ? str : `?${str}`
+}
+
+function addTrailingSlash(str: string) {
+   if (!str) return ''
+   return str.endsWith('/') ? str : `${str}/`
+}
+
+function stripLeadingSlash(str: string) {
+   if (!str) return ''
+   return str.startsWith('/') ? str.slice(1) : str
+}
+
+function isFullUrl(url: string): boolean {
+   return url.startsWith('http://') || url.startsWith('https://')
 }

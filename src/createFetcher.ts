@@ -1,5 +1,5 @@
 import { buildOptions } from './buildOptions'
-import { buildUrl } from './buildUrl'
+import { ResponseError } from './ResponseError'
 
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
@@ -7,8 +7,7 @@ type ParamValue = string | number | Date | boolean | null | undefined
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string | URL
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
-   parseError?: (res: Response) => Promise<any>
-   parseSuccess?: (response: Response) => Promise<D>
+   parseResponseOk?: (response: Response) => Promise<D>
    serializeBody?: (body: PlainObject | Array<any>) => string
    serializeParams?: (params: RequestOptions['params']) => string
 }
@@ -25,6 +24,8 @@ export interface RequestOptions<D = any> extends SharedOptions<D> {
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
+export type Config = ReturnType<typeof buildOptions>
+
 export const createFetcher = <DD = any>(
    defaultOptions?: () => DefaultOptions<DD>,
    fetchFn: typeof fetch = fetch,
@@ -32,21 +33,30 @@ export const createFetcher = <DD = any>(
    return async <D = DD>(requestOptions?: RequestOptions<D>) => {
       const options = buildOptions(defaultOptions?.(), requestOptions)
 
-      options.onFetchStart(options)
+      options.onFetchStart?.(options)
 
       return await fetchFn(options.href, options)
          .then(async (res) => {
             if (res.ok) {
-               const data: D = await options.parseSuccess(res)
-               options.onSuccess(data)
+               const data: D = await options.parseResponseOk(res)
+               options.onSuccess?.(data)
                return data
             } else {
-               throw await options.parseError(res)
+               throw await parseError(res)
             }
          })
          .catch((error) => {
-            options.onError(error)
+            options.onError?.(error)
             throw error
          })
    }
+}
+
+export async function parseError(res: Response) {
+   const data = await res
+      .clone()
+      .json()
+      .catch(() => res.clone().text())
+
+   return new ResponseError(res, data)
 }

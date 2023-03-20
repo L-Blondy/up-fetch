@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
-import { createFetcher } from './createFetcher'
+import { createFetcher, parseError } from './createFetcher'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { ResponseError } from './ResponseError'
@@ -84,8 +84,7 @@ describe('Options', () => {
    test('defaultOptions() should override the fallbackOptions', async () => {
       const serializeBody = () => '123'
       const serializeParams = () => '456'
-      const parseSuccess = (s: any) => s.json()
-      const parseError = (e: any) => e.text()
+      const parseResponseOk = (s: any) => s.json()
 
       const fetchClient = createFetcher(
          () => ({
@@ -105,8 +104,7 @@ describe('Options', () => {
             serializeBody,
             serializeParams,
             window: null,
-            parseError,
-            parseSuccess,
+            parseResponseOk,
          }),
          fakeFetch,
       )
@@ -125,8 +123,7 @@ describe('Options', () => {
       expect(final.options.headers.get('content-type')).toEqual('text/html')
       expect(final.options.method).toEqual('POST')
       expect(final.options.window).toEqual(null)
-      expect(final.options.parseSuccess).toEqual(parseSuccess)
-      expect(final.options.parseError).toEqual(parseError)
+      expect(final.options.parseResponseOk).toEqual(parseResponseOk)
    })
 
    test('fetchOptions options should override defaultOptions()', async () => {
@@ -148,16 +145,14 @@ describe('Options', () => {
             serializeBody: () => '123',
             serializeParams: () => '456',
             window: undefined,
-            parseSuccess: () => Promise.resolve(321),
-            parseError: () => Promise.resolve(654),
+            parseResponseOk: () => Promise.resolve(321),
             signal: 'default signal' as any,
          }
       }, fakeFetch)
 
       const serializeBody = (x: any) => x
       const serializeParams = (x: any) => x
-      const parseSuccess = (s: any) => s.json() as Promise<any>
-      const parseError = (e: any) => e.text() as Promise<any>
+      const parseResponseOk = (s: any) => s.json() as Promise<any>
       const signal = 'upfetch signal' as any
 
       const final = await fetchClient({
@@ -181,8 +176,7 @@ describe('Options', () => {
          signal,
          url: '4/5',
          window: null,
-         parseSuccess,
-         parseError,
+         parseResponseOk,
       })
 
       expect(final.url).toBe('https://1.2.3/4/5?a=a')
@@ -199,8 +193,7 @@ describe('Options', () => {
       expect(final.options.method).toEqual('DELETE')
       expect(final.options.signal).toEqual(signal)
       expect(final.options.window).toEqual(null)
-      expect(final.options.parseSuccess).toEqual(parseSuccess)
-      expect(final.options.parseError).toEqual(parseError)
+      expect(final.options.parseResponseOk).toEqual(parseResponseOk)
    })
 
    test('If params is a string, serializeParams should do nothing', async () => {
@@ -377,7 +370,7 @@ describe('tests with server', () => {
 
       const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
-         parseSuccess: (res) => res.json(),
+         parseResponseOk: (res) => res.json(),
          onError(error) {
             expect(error.name).toBe('SyntaxError')
             count++
@@ -436,5 +429,75 @@ describe('tests with server', () => {
       }))
 
       await upfetch({ body: { hello: 'world' }, method: 'POST' })
+   })
+
+   test('`parseError` should return a ResponseError instance', async () => {
+      server.use(
+         rest.get('https://example.com', (req, res, ctx) => {
+            return res(ctx.status(400), ctx.json({ some: 'json' }))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
+
+      await upfetch().catch((error) => {
+         expect(error instanceof ResponseError).toEqual(true)
+      })
+   })
+
+   test('`parseError` should parse JSON properly', async () => {
+      server.use(
+         rest.get('https://example.com', (req, res, ctx) => {
+            return res(ctx.status(400), ctx.json({ some: 'json' }))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
+
+      await upfetch().catch((error) => {
+         expect(error.data).toEqual({ some: 'json' })
+      })
+   })
+
+   test('`parseError` should parse TEXT properly', async () => {
+      server.use(
+         rest.get('https://example.com', (req, res, ctx) => {
+            return res(ctx.status(400), ctx.text('hello world'))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
+
+      await upfetch().catch((error) => {
+         expect(error.data).toEqual('hello world')
+      })
+   })
+
+   test('parseResponseOk default implementation should parse JSON properly', async () => {
+      server.use(
+         rest.get('https://example.com', (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json({ some: 'json' }))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
+
+      await upfetch().then((data) => {
+         expect(data).toEqual({ some: 'json' })
+      })
+   })
+
+   test('parseResponseOk default implementation should parse TEXT properly', async () => {
+      server.use(
+         rest.get('https://example.com', (req, res, ctx) => {
+            return res(ctx.status(200), ctx.text('hello world'))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
+
+      await upfetch().then((data) => {
+         expect(data).toEqual('hello world')
+      })
    })
 })

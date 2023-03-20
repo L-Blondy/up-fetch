@@ -95,8 +95,7 @@ upfetch({
    baseUrl,
    url,
    params,
-   parseError,
-   parseSuccess,
+   parseResponseOk,
    serializeBody,
    serializeParams,
    // tweaked fetch options
@@ -126,8 +125,7 @@ createFetcher(() => ({
    onError,
    onFetchStart,
    onSuccess,
-   parseError,
-   parseSuccess,
+   parseResponseOk,
    serializeBody,
    serializeParams,
    // tweaked fetch options
@@ -253,17 +251,11 @@ interface RequestOptions extends RequestInit {
    // takes the `body` (plain object or array only) as an argument and returns a string
    // defaults to (body) => JSON.stringify(body)
    serializeBody?: (body: PlainObject | Array<any>) => string
-   // override the default `parseSuccess` function
-   // `parseSuccess` is called when `response.ok` is true
+   // override the default `parseResponseOk` function
+   // `parseResponseOk` is called when `response.ok` is true
    // e.g. (response) => response.blob()
    // parses `text` and `json` responses by default
-   parseSuccess?: (response: Response) => Promise<D>
-   // override the default `parseError` function
-   // `parseError` is called when `response.ok` is false
-   // e.g. (response) => response.json()
-   // returns a `ResponseError` containing the parsed `text` or `json` response by default
-   // check the Error section for more details on `ResponseError`
-   parseError?: (res: Response) => Promise<any>
+   parseResponseOk?: (response: Response) => Promise<D>
 
    // TODO: RequestInit methods
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
