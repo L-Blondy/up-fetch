@@ -10,7 +10,7 @@ export const buildOptions = (defaultOptions?: DefaultOptions, requestOptions?: R
          return await res
             .clone()
             .json()
-            .catch(() => res.clone().text())
+            .catch(() => res.text())
       },
 
       ...omit(defaultOptions, specificRequestOptionsKeys),

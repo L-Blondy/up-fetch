@@ -56,7 +56,7 @@ export async function parseError(res: Response) {
    const data = await res
       .clone()
       .json()
-      .catch(() => res.clone().text())
+      .catch(() => res.text())
 
    return new ResponseError(res, data)
 }
