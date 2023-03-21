@@ -24,7 +24,7 @@ export const buildOptions = <DD, D = DD>(
             await parseResponse(res),
          )
       },
-      serializeBody: (body: any) => JSON.stringify(body),
+      serializeBody: JSON.stringify,
       serializeParams(params?: RequestOptions['params']): string {
          // recursively transforms Dates to ISO string and strips undefined
          const clean = JSON.parse(JSON.stringify(params))
