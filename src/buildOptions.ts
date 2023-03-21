@@ -4,9 +4,12 @@ export const specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart
 
 export const specificRequestOptionsKeys = ['body', 'url', 'params'] as const
 
-export const buildOptions = (defaultOptions?: DefaultOptions, requestOptions?: RequestOptions) => {
+export const buildOptions = <DD, D = DD>(
+   defaultOptions?: DefaultOptions<DD>,
+   requestOptions?: RequestOptions<D>,
+) => {
    const options = {
-      parseResponseOk: async (res: Response) => {
+      parseResponseOk: async (res: Response): Promise<D> => {
          return await res
             .clone()
             .json()

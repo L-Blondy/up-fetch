@@ -14,7 +14,7 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
 
 export interface DefaultOptions<DD = any> extends SharedOptions<DD> {
    onError?: (error: any) => void
-   onFetchStart?: (options: ReturnType<typeof buildOptions>) => void
+   onFetchStart?: (options: ReturnType<typeof buildOptions<DD, any>>) => void
    onSuccess?: (error: any) => void
 }
 
@@ -24,21 +24,21 @@ export interface RequestOptions<D = any> extends SharedOptions<D> {
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
-export type FinalOptions = ReturnType<typeof buildOptions>
+export type FinalOptions<DD, D> = ReturnType<typeof buildOptions<DD, D>>
 
 export const createFetcher = <DD = any>(
    defaultOptions?: () => DefaultOptions<DD>,
    fetchFn: typeof fetch = fetch,
 ) => {
    return async <D = DD>(requestOptions?: RequestOptions<D>) => {
-      const options = buildOptions(defaultOptions?.(), requestOptions)
+      const options = buildOptions<DD, D>(defaultOptions?.(), requestOptions)
 
       options.onFetchStart?.(options)
 
       return await fetchFn(options.href, options)
          .then(async (res) => {
             if (res.ok) {
-               const data: D = await options.parseResponseOk(res)
+               const data = (await options.parseResponseOk(res)) as D
                options.onSuccess?.(data)
                return data
             } else {
