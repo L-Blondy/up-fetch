@@ -43,6 +43,28 @@ test('return type', () => {
    upfetch3().then((data) => {
       expectTypeOf(data).toBeNumber()
    })
+
+   const upfetch4 = createFetcher(
+      () => ({
+         parseSuccess: (res) => res.text(),
+      }),
+      fakeFetch,
+   )
+
+   upfetch4().then((data) => {
+      expectTypeOf(data).toBeString()
+   })
+
+   const upfetch5 = createFetcher(
+      () => ({
+         parseSuccess: (res) => res.text(),
+      }),
+      fakeFetch,
+   )
+
+   upfetch5({ parseSuccess: () => Promise.resolve(1) }).then((data) => {
+      expectTypeOf(data).toBeNumber()
+   })
 })
 
 test('`onFetchStart` should receive `MergedOptions', () => {

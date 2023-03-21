@@ -30,12 +30,12 @@ export const createFetcher = <DD = any>(
    defaultOptions?: () => DefaultOptions<DD>,
    fetchFn: typeof fetch = fetch,
 ) => {
-   return async <D = DD>(requestOptions?: RequestOptions<D>) => {
+   return <D = DD>(requestOptions?: RequestOptions<D>) => {
       const options: MergedOptions<DD, D> = buildOptions<DD, D>(defaultOptions?.(), requestOptions)
 
       options.onFetchStart?.(options)
 
-      return await fetchFn(options.href, options)
+      return fetchFn(options.href, options)
          .then(async (res) => {
             if (res.ok) {
                const data = (await options.parseSuccess(res)) as D
@@ -51,3 +51,21 @@ export const createFetcher = <DD = any>(
          })
    }
 }
+
+// COSTS 20B
+// function baseFetcher<D>(options: MergedOptions<any, D>, fetchFn: typeof fetch = fetch): Promise<D> {
+//    return fetchFn(options.href, options)
+//       .then(async (res) => {
+//          if (res.ok) {
+//             const data = (await options.parseSuccess(res)) as D
+//             options.onSuccess?.(data, options)
+//             return data
+//          } else {
+//             throw await options.parseError(res)
+//          }
+//       })
+//       .catch((error) => {
+//          options.onError?.(error, options)
+//          throw error
+//       })
+// }
