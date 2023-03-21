@@ -31,7 +31,7 @@ export const createFetcher = <DD = any>(
    fetchFn: typeof fetch = fetch,
 ) => {
    return async <D = DD>(requestOptions?: RequestOptions<D>) => {
-      const options = buildOptions<DD, D>(defaultOptions?.(), requestOptions)
+      const options: FinalOptions<DD, D> = buildOptions<DD, D>(defaultOptions?.(), requestOptions)
 
       options.onFetchStart?.(options)
 
