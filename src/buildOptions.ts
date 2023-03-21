@@ -8,7 +8,7 @@ export const buildOptions = <DD, D = DD>(
    defaultOptions?: DefaultOptions<DD>,
    requestOptions?: RequestOptions<D>,
 ) => {
-   const options = {
+   const mergedOptions = {
       parseResponseOk: async (res: Response): Promise<D> => {
          return await res
             .clone()
@@ -62,7 +62,7 @@ export const buildOptions = <DD, D = DD>(
          return `${url}${serializedParams}`
       },
    }
-   return options
+   return mergedOptions
 }
 
 /**

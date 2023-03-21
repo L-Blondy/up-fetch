@@ -22,6 +22,11 @@ const fakeFetch = ((...args: Parameters<typeof fetch>) => {
 }) as any
 
 describe('Options', () => {
+   const server = setupServer()
+   beforeAll(() => server.listen())
+   afterEach(() => server.resetHandlers())
+   afterAll(() => server.close())
+
    describe('Automatic "content-type: application/json"', async () => {
       test('Should be applied when no "content-type" header is present', async () => {
          const fetchClient = createFetcher(() => {
@@ -236,13 +241,6 @@ describe('Options', () => {
       })
       expect(final.url).toBe('/a')
    })
-})
-
-describe('tests with server', () => {
-   const server = setupServer()
-   beforeAll(() => server.listen())
-   afterEach(() => server.resetHandlers())
-   afterAll(() => server.close())
 
    test('Json responses should be parsed by default', async () => {
       server.use(
@@ -499,5 +497,17 @@ describe('tests with server', () => {
       await upfetch().then((data) => {
          expect(data).toEqual('hello world')
       })
+   })
+
+   test('mutating the mergedOptions should work properly', async () => {
+      server.use(
+         rest.get('https://example.com/todos', (req, res, ctx) => {
+            return res(ctx.status(200), ctx.text('hello world'))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({ onFetchStart(mergedOptions) {} }))
+
+      await upfetch()
    })
 })

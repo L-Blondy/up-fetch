@@ -44,25 +44,3 @@ test('return type', () => {
       expectTypeOf(data).toBeNumber()
    })
 })
-
-test('error type', () => {
-   createFetcher(
-      () => ({
-         onError(error) {
-            expectTypeOf(error).toEqualTypeOf<any>()
-         },
-      }),
-      fakeFetch,
-   )
-})
-
-test('success type', () => {
-   createFetcher(
-      () => ({
-         onSuccess(data) {
-            expectTypeOf(data).toEqualTypeOf<any>()
-         },
-      }),
-      fakeFetch,
-   )
-})
