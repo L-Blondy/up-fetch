@@ -7,7 +7,7 @@ type ParamValue = string | number | Date | boolean | null | undefined
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string | URL
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
-   parseResponseOk?: (response: Response) => Promise<D>
+   parseSuccess?: (response: Response) => Promise<D>
    serializeBody?: (body: PlainObject | Array<any>) => string
    serializeParams?: (params: RequestOptions['params']) => string
 }
@@ -41,7 +41,7 @@ export const createFetcher = <DD = any>(
       return await fetchFn(mergedOptions.href, mergedOptions)
          .then(async (res) => {
             if (res.ok) {
-               const data = (await mergedOptions.parseResponseOk(res)) as D
+               const data = (await mergedOptions.parseSuccess(res)) as D
                mergedOptions.onSuccess?.(data)
                return data
             } else {

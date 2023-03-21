@@ -89,7 +89,7 @@ describe('Options', () => {
    test('defaultOptions() should override the fallbackOptions', async () => {
       const serializeBody = () => '123'
       const serializeParams = () => '456'
-      const parseResponseOk = (s: any) => s.json()
+      const parseSuccess = (s: any) => s.json()
 
       const fetchClient = createFetcher(
          () => ({
@@ -109,7 +109,7 @@ describe('Options', () => {
             serializeBody,
             serializeParams,
             window: null,
-            parseResponseOk,
+            parseSuccess,
          }),
          fakeFetch,
       )
@@ -128,7 +128,7 @@ describe('Options', () => {
       expect(final.options.headers.get('content-type')).toEqual('text/html')
       expect(final.options.method).toEqual('POST')
       expect(final.options.window).toEqual(null)
-      expect(final.options.parseResponseOk).toEqual(parseResponseOk)
+      expect(final.options.parseSuccess).toEqual(parseSuccess)
    })
 
    test('fetchOptions options should override defaultOptions()', async () => {
@@ -150,14 +150,14 @@ describe('Options', () => {
             serializeBody: () => '123',
             serializeParams: () => '456',
             window: undefined,
-            parseResponseOk: () => Promise.resolve(321),
+            parseSuccess: () => Promise.resolve(321),
             signal: 'default signal' as any,
          }
       }, fakeFetch)
 
       const serializeBody = (x: any) => x
       const serializeParams = (x: any) => x
-      const parseResponseOk = (s: any) => s.json() as Promise<any>
+      const parseSuccess = (s: any) => s.json() as Promise<any>
       const signal = 'upfetch signal' as any
 
       const final = await fetchClient({
@@ -181,7 +181,7 @@ describe('Options', () => {
          signal,
          url: '4/5',
          window: null,
-         parseResponseOk,
+         parseSuccess,
       })
 
       expect(final.url).toBe('https://1.2.3/4/5?a=a')
@@ -198,7 +198,7 @@ describe('Options', () => {
       expect(final.options.method).toEqual('DELETE')
       expect(final.options.signal).toEqual(signal)
       expect(final.options.window).toEqual(null)
-      expect(final.options.parseResponseOk).toEqual(parseResponseOk)
+      expect(final.options.parseSuccess).toEqual(parseSuccess)
    })
 
    test('If params is a string, serializeParams should do nothing', async () => {
@@ -368,7 +368,7 @@ describe('Options', () => {
 
       const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
-         parseResponseOk: (res) => res.json(),
+         parseSuccess: (res) => res.json(),
          onError(error) {
             expect(error.name).toBe('SyntaxError')
             count++
@@ -471,7 +471,7 @@ describe('Options', () => {
       })
    })
 
-   test('parseResponseOk default implementation should parse JSON properly', async () => {
+   test('parseSuccess default implementation should parse JSON properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(200), ctx.json({ some: 'json' }))
@@ -485,7 +485,7 @@ describe('Options', () => {
       })
    })
 
-   test('parseResponseOk default implementation should parse TEXT properly', async () => {
+   test('parseSuccess default implementation should parse TEXT properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(200), ctx.text('hello world'))

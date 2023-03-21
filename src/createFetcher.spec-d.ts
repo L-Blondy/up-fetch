@@ -6,7 +6,7 @@ const fakeFetch = () => Promise.resolve({ then: () => {} })
 test('return type', () => {
    const upfetch1 = createFetcher(
       () => ({
-         parseResponseOk: () =>
+         parseSuccess: () =>
             Promise.resolve({
                a: 1,
                b: 2,
@@ -19,7 +19,7 @@ test('return type', () => {
       expectTypeOf(data).toEqualTypeOf<{ a: number; b: number }>()
    })
 
-   upfetch1({ parseResponseOk: () => Promise.resolve({ c: true, d: false }) }).then((data) => {
+   upfetch1({ parseSuccess: () => Promise.resolve({ c: true, d: false }) }).then((data) => {
       expectTypeOf(data).toEqualTypeOf<{ c: boolean; d: boolean }>()
    })
 
@@ -29,13 +29,13 @@ test('return type', () => {
       expectTypeOf(data).toBeAny()
    })
 
-   upfetch2({ parseResponseOk: () => Promise.resolve(1) }).then((data) => {
+   upfetch2({ parseSuccess: () => Promise.resolve(1) }).then((data) => {
       expectTypeOf(data).toBeNumber()
    })
 
    const upfetch3 = createFetcher(
       () => ({
-         parseResponseOk: () => Promise.resolve(1),
+         parseSuccess: () => Promise.resolve(1),
       }),
       fakeFetch,
    )

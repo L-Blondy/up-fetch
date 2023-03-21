@@ -9,7 +9,7 @@ export const buildOptions = <DD, D = DD>(
    requestOptions?: RequestOptions<D>,
 ) => {
    const mergedOptions = {
-      parseResponseOk: async (res: Response): Promise<D> => {
+      parseSuccess: async (res: Response): Promise<D> => {
          return await res
             .clone()
             .json()

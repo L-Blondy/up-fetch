@@ -95,7 +95,7 @@ upfetch({
    baseUrl,
    url,
    params,
-   parseResponseOk,
+   parseSuccess,
    serializeBody,
    serializeParams,
    // tweaked fetch options
@@ -125,7 +125,7 @@ createFetcher(() => ({
    onError,
    onFetchStart,
    onSuccess,
-   parseResponseOk,
+   parseSuccess,
    serializeBody,
    serializeParams,
    // tweaked fetch options
@@ -251,11 +251,11 @@ interface RequestOptions extends RequestInit {
    // takes the `body` (plain object or array only) as an argument and returns a string
    // defaults to (body) => JSON.stringify(body)
    serializeBody?: (body: PlainObject | Array<any>) => string
-   // override the default `parseResponseOk` function
-   // `parseResponseOk` is called when `response.ok` is true
+   // override the default `parseSuccess` function
+   // `parseSuccess` is called when `response.ok` is true
    // e.g. (response) => response.blob()
    // parses `text` and `json` responses by default
-   parseResponseOk?: (response: Response) => Promise<D>
+   parseSuccess?: (response: Response) => Promise<D>
 
    // TODO: RequestInit methods
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
