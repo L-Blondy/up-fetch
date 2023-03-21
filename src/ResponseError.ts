@@ -1,6 +1,7 @@
-const isResponseErrorSymbol = Symbol.for('ResponseError')
+const isResponseErrorSymbol = Symbol()
 
 export class ResponseError<TErrorData = any> extends Error {
+   [isResponseErrorSymbol] = true
    override name: 'ResponseError'
    data: TErrorData
    headers: Headers
@@ -8,29 +9,18 @@ export class ResponseError<TErrorData = any> extends Error {
    url: string
    type: ResponseType
    status: number
-   statusText: string;
-   [isResponseErrorSymbol]: true
+   statusText: string
 
    constructor(res: Response, data: TErrorData) {
-      const message = `Request failed with status ${res.status}`
-      super(message)
-      this.data = data
-      this.headers = new Headers(res.headers)
+      super(`Request failed with status ${res.status}`)
       this.name = 'ResponseError'
+      this.data = data
+      this.headers = res.headers
       this.redirected = res.redirected
       this.url = res.url
       this.type = res.type
       this.status = res.status
       this.statusText = res.statusText
-      this[isResponseErrorSymbol] = true
-   }
-
-   toJSON() {
-      return {
-         ...this,
-         message: this.message,
-         stack: this.stack,
-      }
    }
 }
 

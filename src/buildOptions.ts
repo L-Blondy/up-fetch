@@ -5,25 +5,23 @@ export const specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart
 
 export const specificRequestOptionsKeys = ['body', 'url', 'params'] as const
 
+const parseResponse = (res: Response) =>
+   res
+      .clone()
+      .json()
+      .catch(() => res.text())
+
 export const buildOptions = <DD, D = DD>(
    defaultOptions?: DefaultOptions<DD>,
    requestOptions?: RequestOptions<D>,
 ) => {
    const mergedOptions = {
-      parseSuccess: (res: Response): Promise<D> => {
-         return res
-            .clone()
-            .json()
-            .catch(() => res.text())
-      },
+      parseSuccess: (res: Response): Promise<D> => parseResponse(res),
       parseError: async (res: Response) => {
          return new ResponseError(
             res,
             // await here to avoid creating a new variable. This saves a few bytes
-            await res
-               .clone()
-               .json()
-               .catch(() => res.text()),
+            await parseResponse(res),
          )
       },
       serializeBody: (body: any) => JSON.stringify(body),
@@ -89,8 +87,7 @@ export function isJsonificable(body: RequestOptions['body']): body is object {
 export function isJson(body: any): boolean {
    if (typeof body !== 'string') return false
    try {
-      const parsed = JSON.parse(body)
-      return parsed !== null && typeof parsed === 'object'
+      return JSON.parse(body) !== null
    } catch (e) {
       return false
    }
@@ -124,18 +121,15 @@ function omit<O extends Record<string, any>, K extends string>(
 }
 
 function withQuestionMark(str: string) {
-   if (!str) return ''
-   return str.startsWith('?') ? str : `?${str}`
+   return !str ? '' : str.startsWith('?') ? str : `?${str}`
 }
 
 function addTrailingSlash(str: string) {
-   if (!str) return ''
-   return str.endsWith('/') ? str : `${str}/`
+   return !str ? '' : str.endsWith('/') ? str : `${str}/`
 }
 
 function stripLeadingSlash(str: string) {
-   if (!str) return ''
-   return str.startsWith('/') ? str.slice(1) : str
+   return !str ? '' : str.startsWith('/') ? str.slice(1) : str
 }
 
 function isFullUrl(url: string): boolean {

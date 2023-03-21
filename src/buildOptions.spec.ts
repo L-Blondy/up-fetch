@@ -11,6 +11,11 @@ describe('isJson', () => {
       ${'[1]'}       | ${true}
       ${'null'}      | ${false}
       ${'undefined'} | ${false}
+      ${null}        | ${false}
+      ${undefined}   | ${false}
+      ${{ a: 1 }}    | ${false}
+      ${{ a: 1 }}    | ${false}
+      ${[1]}         | ${false}
    `('Input: $body', ({ body, output }) => {
       expect(isJson(body)).toEqual(output)
    })
