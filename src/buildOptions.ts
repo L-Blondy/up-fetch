@@ -10,28 +10,34 @@ export const buildOptions = <DD, D = DD>(
    requestOptions?: RequestOptions<D>,
 ) => {
    const mergedOptions = {
-      parseSuccess: async (res: Response): Promise<D> => {
-         return await res
+      parseSuccess: (res: Response): Promise<D> => {
+         return res
             .clone()
             .json()
             .catch(() => res.text())
       },
       parseError: async (res: Response) => {
-         const data = await res
-            .clone()
-            .json()
-            .catch(() => res.text())
-
-         return new ResponseError(res, data)
+         return new ResponseError(
+            res,
+            // await here to avoid creating a new variable. This saves a few bytes
+            await res
+               .clone()
+               .json()
+               .catch(() => res.text()),
+         )
+      },
+      serializeBody: (body: any) => JSON.stringify(body),
+      serializeParams(params?: RequestOptions['params']): string {
+         // recursively transforms Dates to ISO string and strips undefined
+         const clean = JSON.parse(JSON.stringify(params))
+         return withQuestionMark(new URLSearchParams(clean).toString())
       },
       ...omit(defaultOptions, specificRequestOptionsKeys),
       ...omit(requestOptions, specificDefaultOptionsKeys),
       rawHeaders: mergeHeaders(requestOptions?.headers, defaultOptions?.headers),
       rawBody: requestOptions?.body,
       get body(): BodyInit | null | undefined {
-         const serializeBody =
-            this.serializeBody ?? ((body: object | any[]) => JSON.stringify(body))
-         return isJsonificable(this.rawBody) ? serializeBody(this.rawBody) : this.rawBody
+         return isJsonificable(this.rawBody) ? this.serializeBody(this.rawBody) : this.rawBody
       },
       get headers(): Headers {
          const _headers = new Headers(this.rawHeaders)
@@ -41,16 +47,7 @@ export const buildOptions = <DD, D = DD>(
          return _headers
       },
       get href(): string {
-         const {
-            baseUrl = '',
-            url = '',
-            params = '',
-            serializeParams = (params?: typeof this.params): string => {
-               // recursively transforms Dates to ISO string and strips undefined
-               const clean = JSON.parse(JSON.stringify(params))
-               return withQuestionMark(new URLSearchParams(clean).toString())
-            },
-         } = this
+         const { baseUrl = '', url = '', params = '', serializeParams } = this
          const base = typeof baseUrl === 'string' ? baseUrl : baseUrl.origin + baseUrl.pathname
          // params of type string are already considered serialized
          const serializedParams = withQuestionMark(
