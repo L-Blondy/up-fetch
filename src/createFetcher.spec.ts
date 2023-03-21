@@ -506,8 +506,15 @@ describe('Options', () => {
          }),
       )
 
-      const upfetch = createFetcher(() => ({ onFetchStart(mergedOptions) {} }))
+      const upfetch = createFetcher(() => ({
+         onFetchStart(mergedOptions) {
+            mergedOptions.baseUrl = 'https://example.com'
+            mergedOptions.url = 'todos'
+         },
+      }))
 
-      await upfetch()
+      await upfetch().then((res) => {
+         expect(res).toBe('hello world')
+      })
    })
 })
