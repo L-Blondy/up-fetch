@@ -1,5 +1,4 @@
 import { buildOptions } from './buildOptions.js'
-import { ResponseError } from './ResponseError.js'
 
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
@@ -8,14 +7,15 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    baseUrl?: string | URL
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
    parseSuccess?: (response: Response) => Promise<D>
+   parseError?: (response: Response) => Promise<any>
    serializeBody?: (body: PlainObject | Array<any>) => string
    serializeParams?: (params: RequestOptions['params']) => string
 }
 
 export interface DefaultOptions<DD = any> extends SharedOptions<DD> {
-   onError?: (error: any) => void
-   onFetchStart?: (mergedOptions: MergedOptions<DD, any>) => void
-   onSuccess?: (error: any) => void
+   onError?: (error: any, options: MergedOptions<DD, any>) => void
+   onFetchStart?: (options: MergedOptions<DD, any>) => void
+   onSuccess?: (error: any, options: MergedOptions<DD, any>) => void
 }
 
 export interface RequestOptions<D = any> extends SharedOptions<D> {
@@ -31,35 +31,23 @@ export const createFetcher = <DD = any>(
    fetchFn: typeof fetch = fetch,
 ) => {
    return async <D = DD>(requestOptions?: RequestOptions<D>) => {
-      const mergedOptions: MergedOptions<DD, D> = buildOptions<DD, D>(
-         defaultOptions?.(),
-         requestOptions,
-      )
+      const options: MergedOptions<DD, D> = buildOptions<DD, D>(defaultOptions?.(), requestOptions)
 
-      mergedOptions.onFetchStart?.(mergedOptions)
+      options.onFetchStart?.(options)
 
-      return await fetchFn(mergedOptions.href, mergedOptions)
+      return await fetchFn(options.href, options)
          .then(async (res) => {
             if (res.ok) {
-               const data = (await mergedOptions.parseSuccess(res)) as D
-               mergedOptions.onSuccess?.(data)
+               const data = (await options.parseSuccess(res)) as D
+               options.onSuccess?.(data, options)
                return data
             } else {
-               throw await parseError(res)
+               throw await options.parseError(res)
             }
          })
          .catch((error) => {
-            mergedOptions.onError?.(error)
+            options.onError?.(error, options)
             throw error
          })
    }
-}
-
-export async function parseError(res: Response) {
-   const data = await res
-      .clone()
-      .json()
-      .catch(() => res.text())
-
-   return new ResponseError(res, data)
 }

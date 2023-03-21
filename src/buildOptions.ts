@@ -1,4 +1,5 @@
 import { DefaultOptions, RequestOptions } from './createFetcher.js'
+import { ResponseError } from './ResponseError.js'
 
 export const specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
 
@@ -15,7 +16,14 @@ export const buildOptions = <DD, D = DD>(
             .json()
             .catch(() => res.text())
       },
+      parseError: async (res: Response) => {
+         const data = await res
+            .clone()
+            .json()
+            .catch(() => res.text())
 
+         return new ResponseError(res, data)
+      },
       ...omit(defaultOptions, specificRequestOptionsKeys),
       ...omit(requestOptions, specificDefaultOptionsKeys),
       rawHeaders: mergeHeaders(requestOptions?.headers, defaultOptions?.headers),

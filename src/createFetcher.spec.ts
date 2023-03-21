@@ -443,7 +443,7 @@ describe('Options', () => {
       })
    })
 
-   test('`parseError` should parse JSON properly', async () => {
+   test('`parseError` default implementation should parse JSON properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(400), ctx.json({ some: 'json' }))
@@ -457,7 +457,7 @@ describe('Options', () => {
       })
    })
 
-   test('`parseError` should parse TEXT properly', async () => {
+   test('`parseError` default implementation should parse TEXT properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(400), ctx.text('hello world'))
@@ -507,9 +507,9 @@ describe('Options', () => {
       )
 
       const upfetch = createFetcher(() => ({
-         onFetchStart(mergedOptions) {
-            mergedOptions.baseUrl = 'https://example.com'
-            mergedOptions.url = 'todos'
+         onFetchStart(options) {
+            options.baseUrl = 'https://example.com'
+            options.url = 'todos'
          },
       }))
 
