@@ -51,21 +51,3 @@ export const createFetcher = <DD = any>(
          })
    }
 }
-
-// COSTS 20B
-// function baseFetcher<D>(options: MergedOptions<any, D>, fetchFn: typeof fetch = fetch): Promise<D> {
-//    return fetchFn(options.href, options)
-//       .then(async (res) => {
-//          if (res.ok) {
-//             const data = (await options.parseSuccess(res)) as D
-//             options.onSuccess?.(data, options)
-//             return data
-//          } else {
-//             throw await options.parseError(res)
-//          }
-//       })
-//       .catch((error) => {
-//          options.onError?.(error, options)
-//          throw error
-//       })
-// }

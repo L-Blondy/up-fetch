@@ -143,3 +143,21 @@ describe('href', () => {
       expect(buildOptions({}, input).href).toBe(output)
    })
 })
+
+describe('mergedOptions', () => {
+   test('spreading the mergedOptions should preserve the getters', async () => {
+      const options = buildOptions(
+         { baseUrl: 'http://a.b.c' },
+         { headers: { Authorization: 'Bearer me' }, body: { hello: 'world' }, url: '/todos' },
+      )
+      expect(options.href).toEqual('http://a.b.c/todos')
+      expect(options.body).toEqual('{"hello":"world"}')
+      expect(options.headers.get('Authorization')).toEqual('Bearer me')
+
+      const copy = { ...options }
+
+      expect(copy.href).toEqual('http://a.b.c/todos')
+      expect(copy.body).toEqual('{"hello":"world"}')
+      expect(copy.headers.get('Authorization')).toEqual('Bearer me')
+   })
+})
