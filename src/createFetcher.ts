@@ -1,7 +1,13 @@
 import { buildOptions } from './buildOptions.js'
+import { withRetry } from './plugins/withRetry.js'
 
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
+
+export type FetchLike<AdditionalOptions extends Record<string, any> = {}> = (
+   url: any,
+   init?: RequestInit & AdditionalOptions,
+) => Promise<Response>
 
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string | URL
@@ -12,37 +18,40 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    serializeParams?: (params: FetcherOptions['params']) => string
 }
 
-export interface DefaultOptions<DD = any> extends SharedOptions<DD> {
-   onError?: (error: any, options: RequestOptions<DD, any>) => void
-   onFetchStart?: (options: RequestOptions<DD, any>) => void
-   onSuccess?: (error: any, options: RequestOptions<DD, any>) => void
-}
+export type DefaultOptions<
+   AdditionalOptions extends Record<string, any> = {},
+   DD = any,
+> = SharedOptions<DD> &
+   Omit<AdditionalOptions, 'body' | 'method'> &
+   Omit<RequestInit, 'body' | 'method'> & {
+      // TODO: why replacing {} by AdditionalOptions crashes
+      onError?: (error: any, options: RequestOptions<{}, DD, any>) => void
+      onFetchStart?: (options: RequestOptions<{}, DD, any>) => void
+      onSuccess?: (data: any, options: RequestOptions<{}, DD, any>) => void
+   }
 
-export interface FetcherOptions<D = any> extends SharedOptions<D> {
-   url?: string
-   params?: string | Record<string, ParamValue | ParamValue[]>
-   body?: BodyInit | PlainObject | Array<any> | null
-}
+export type FetcherOptions<AdditionalOptions = {}, D = any> = SharedOptions<D> &
+   Omit<AdditionalOptions, 'body' | 'method'> &
+   Omit<RequestInit, 'body' | 'method'> & {
+      url?: string
+      params?: string | Record<string, ParamValue | ParamValue[]>
+      body?: BodyInit | PlainObject | Array<any> | null
+   }
 
-export type RequestOptions<DD, D> = ReturnType<typeof buildOptions<DD, D>>
+export type RequestOptions<AdditionalOptions extends Record<string, any>, DD, D> = ReturnType<
+   typeof buildOptions<AdditionalOptions, DD, D>
+>
 
-export type FetchLike<Init extends Record<string, any>> = (
-   url: any,
-   init?: RequestInit & Init,
-) => Promise<Response>
-
-export const createFetcher = <DD = any, Init extends Record<string, any> = {}>(
-   defaultOptions?: () => DefaultOptions<DD> &
-      Omit<Init, 'body' | 'method'> &
-      Omit<RequestInit, 'body' | 'method'>,
-   fetchFn: FetchLike<Init> = fetch,
+export const createFetcher = <DD = any, AdditionalOptions extends Record<string, any> = {}>(
+   defaultOptions?: () => DefaultOptions<AdditionalOptions, DD>,
+   fetchFn: FetchLike<AdditionalOptions> = fetch,
 ) => {
-   return <D = DD>(
-      fetcherOptions?: FetcherOptions<D> &
-         Omit<Init, 'body' | 'method'> &
-         Omit<RequestInit, 'body' | 'method'>,
-   ) => {
-      const options: RequestOptions<DD, D> = buildOptions<DD, D>(defaultOptions?.(), fetcherOptions)
+   return <D = DD>(fetcherOptions?: FetcherOptions<AdditionalOptions, D>) => {
+      const options: RequestOptions<AdditionalOptions, DD, D> = buildOptions<
+         AdditionalOptions,
+         DD,
+         D
+      >(defaultOptions?.(), fetcherOptions)
 
       options.onFetchStart?.(options)
 
@@ -62,3 +71,20 @@ export const createFetcher = <DD = any, Init extends Record<string, any> = {}>(
          })
    }
 }
+
+// createFetcher(
+//    () => ({
+//       onFetchStart: (options) => {
+//          console.log(options.)
+//       },
+//       cache: 'force-cache',
+
+//    }),
+//    withRetry(fetch),
+// )({
+//    retryDelay: () => 5000,
+// })
+
+// const y: FetcherOptions<{ a: number }> = {
+//    a: 31,
+// }

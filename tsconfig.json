@@ -18,7 +18,7 @@
       "noUnusedLocals": true,
       "noFallthroughCasesInSwitch": true,
       "noUncheckedIndexedAccess": true,
-      "noPropertyAccessFromIndexSignature": true,
+      "noPropertyAccessFromIndexSignature": false,
       "noEmitOnError": true,
       "forceConsistentCasingInFileNames": true,
       "skipLibCheck": true,

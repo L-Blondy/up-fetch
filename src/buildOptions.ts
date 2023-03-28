@@ -11,11 +11,11 @@ const parseResponse = (res: Response) =>
       .json()
       .catch(() => res.text())
 
-export const buildOptions = <DD, D = DD>(
-   defaultOptions?: DefaultOptions<DD>,
-   fetcherOptions?: FetcherOptions<D>,
+export const buildOptions = <AdditionalOptions extends Record<string, any>, DD, D = DD>(
+   defaultOptions?: DefaultOptions<AdditionalOptions, DD>,
+   fetcherOptions?: FetcherOptions<AdditionalOptions, D>,
 ) => {
-   const requestOptions = {
+   return {
       parseSuccess: (res: Response): Promise<D> => parseResponse(res),
       parseError: async (res: Response) => {
          return new ResponseError(
@@ -65,7 +65,6 @@ export const buildOptions = <DD, D = DD>(
          return `${url}${serializedParams}`
       },
    }
-   return requestOptions
 }
 
 /**
