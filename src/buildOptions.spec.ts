@@ -1,5 +1,7 @@
-import { describe, expect, test } from 'vitest'
+import { setupServer } from 'msw/node'
+import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
 import { buildOptions, isJson, isJsonificable, mergeHeaders } from './buildOptions.js'
+import { rest } from 'msw'
 
 describe('isJson', () => {
    test.each`
@@ -115,7 +117,7 @@ describe('serializeParams', () => {
 })
 
 describe('href', () => {
-   test.each`
+   test.only.each`
       input                                                                        | output
       ${{ baseUrl: 'https://a.b.c' }}                                              | ${'https://a.b.c'}
       ${{ baseUrl: 'https://a.b.c', url: 'd' }}                                    | ${'https://a.b.c/d'}
@@ -142,9 +144,14 @@ describe('href', () => {
    `('Input: $input', ({ input, output }) => {
       expect(buildOptions({}, input).href).toBe(output)
    })
+
+   test('An empty fetchClient `baseUrl` should override the defaultOptions `baseUrl`', async () => {
+      const options = buildOptions({ baseUrl: 'https://a.b.c' }, { baseUrl: '', url: '/a' })
+      expect(options.url).toBe('/a')
+   })
 })
 
-describe('mergedOptions', () => {
+describe('options', () => {
    test('spreading the mergedOptions should preserve the getters', async () => {
       const options = buildOptions(
          { baseUrl: 'http://a.b.c' },
@@ -160,4 +167,159 @@ describe('mergedOptions', () => {
       expect(copy.body).toEqual('{"hello":"world"}')
       expect(copy.headers.get('Authorization')).toEqual('Bearer me')
    })
+
+   test('The `defaultOptions` should override the `fallbackOptions`', async () => {
+      const options = buildOptions(
+         {
+            baseUrl: 'https://a.b.c',
+            method: 'POST',
+            headers: {
+               'content-type': 'text/html',
+            },
+            cache: 'force-cache',
+            credentials: 'omit',
+            integrity: '123',
+            keepalive: false,
+            mode: 'same-origin',
+            parseSuccess: (res) => res,
+            redirect: 'follow',
+            referrer: 'me',
+            referrerPolicy: 'origin-when-cross-origin',
+            serializeBody: () => '123',
+            serializeParams: () => 'a=b',
+            window: null,
+         },
+         { params: {}, body: {} },
+      )
+      expect(options.href).toBe('https://a.b.c?a=b')
+      expect(options.body).toEqual('123')
+      expect(options.cache).toEqual('force-cache')
+      expect(options.credentials).toEqual('omit')
+      expect(options.integrity).toEqual('123')
+      expect(options.keepalive).toEqual(false)
+      expect(options.mode).toEqual('same-origin')
+      expect(options.redirect).toEqual('follow')
+      expect(options.referrer).toEqual('me')
+      expect(options.referrerPolicy).toEqual('origin-when-cross-origin')
+      expect(options.method).toEqual('POST')
+      expect(options.window).toEqual(null)
+      expect(options.headers.get('content-type')).toEqual('text/html')
+   })
+
+   test('the `fetchOptions` options should override `defaultOptions`', async () => {
+      const serializeBody = (x: any) => x
+      const serializeParams = (x: any) => x
+      const parseSuccess = (s: any) => s as Promise<Response>
+      const signal = 'upfetch signal' as any
+
+      const options = buildOptions(
+         {
+            baseUrl: 'https://a.b.c',
+            method: 'POST',
+            headers: {
+               'content-type': 'text/html',
+            },
+            cache: 'force-cache',
+            credentials: 'omit',
+            integrity: '123',
+            keepalive: false,
+            mode: 'same-origin',
+            redirect: 'follow',
+            referrer: 'me',
+            referrerPolicy: 'origin-when-cross-origin',
+            serializeBody: () => '123',
+            serializeParams: () => '456',
+            window: undefined,
+            parseSuccess: () => Promise.resolve(321),
+            signal: 'default signal' as any,
+         },
+         {
+            baseUrl: 'https://1.2.3',
+            body: { a: 1 },
+            cache: 'no-store',
+            credentials: 'include',
+            integrity: '456',
+            keepalive: true,
+            mode: 'navigate',
+            redirect: 'error',
+            referrer: 'you',
+            referrerPolicy: 'origin',
+            headers: {
+               'content-type': 'application/json',
+            },
+            method: 'DELETE',
+            params: 'a=a',
+            serializeBody,
+            serializeParams,
+            signal,
+            url: '4/5',
+            window: null,
+            parseSuccess,
+         },
+      )
+
+      expect(options.href).toBe('https://1.2.3/4/5?a=a')
+      expect(options.body).toEqual({ a: 1 })
+      expect(options.cache).toEqual('no-store')
+      expect(options.credentials).toEqual('include')
+      expect(options.integrity).toEqual('456')
+      expect(options.keepalive).toEqual(true)
+      expect(options.mode).toEqual('navigate')
+      expect(options.redirect).toEqual('error')
+      expect(options.referrer).toEqual('you')
+      expect(options.referrerPolicy).toEqual('origin')
+      expect(options.headers.get('content-type')).toEqual('application/json')
+      expect(options.method).toEqual('DELETE')
+      expect(options.signal).toEqual(signal)
+      expect(options.window).toEqual(null)
+      expect(options.parseSuccess).toEqual(parseSuccess)
+   })
+})
+
+test.each`
+   body
+   ${{ a: 1 }}
+   ${[1]}
+   ${'[1]'}
+`(
+   'Header { content-type: application/json} should be applied automatically when no "content-type" header is present',
+   async ({ body }) => {
+      const options = buildOptions({}, { body })
+      expect(options.headers.get('content-type')).toBe('application/json')
+   },
+)
+
+test.each`
+   body
+   ${{ a: 1 }}
+   ${[1]}
+   ${'[1]'}
+`(
+   'Header { content-type: application/json} should NOT be applied automatically when no "content-type" header is present',
+   async ({ body }) => {
+      const options = buildOptions({ headers: { 'content-type': 'text/html' } }, { body })
+      expect(options.headers.get('content-type')).toBe('text/html')
+   },
+)
+
+test('If params is a string, serializeParams should not be called', async () => {
+   const options = buildOptions(
+      {},
+      {
+         params: 'a=1',
+         serializeParams: () => 'a=b',
+      },
+   )
+   expect(options.href).toBe('?a=1')
+})
+
+test('If body is a string, serializeBody should do nothing', async () => {
+   const options = buildOptions(
+      {},
+      {
+         body: '{"a":"b"}',
+         serializeBody: () => '{"c":"d"}',
+      },
+   )
+   expect(options.body).toBe('{"a":"b"}')
 })

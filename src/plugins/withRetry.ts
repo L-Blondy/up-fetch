@@ -1,8 +1,8 @@
+import { FetchLike } from 'src/createFetcher.js'
+
 const waitFor = (ms = 0) => new Promise<void>((resolve) => setTimeout(() => resolve(), ms))
 
-export function withRetry<F extends (url: any, options?: Record<string, any>) => Promise<Response>>(
-   fetchFn: F,
-) {
+export function withRetry<F extends FetchLike>(fetchFn: F) {
    type Url = Parameters<F>[0]
    type Options = Parameters<F>[1]
    type AddedOptions = {

@@ -1,24 +1,7 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { withRetry } from './withRetry.js'
-
-const fakeFetch = ((...args: Parameters<typeof fetch>) => {
-   const returnedObject = {
-      url: args[0],
-      options: args[1],
-      catch: () => ({ ...returnedObject }),
-   }
-   return Promise.resolve({
-      ok: true,
-      clone: () => ({
-         json: () => ({ ...returnedObject }),
-         text: () => '',
-      }),
-      json: () => ({ ...returnedObject }),
-      text: () => '',
-   })
-}) as any
 
 describe('withRetry', () => {
    const server = setupServer()

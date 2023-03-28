@@ -4,243 +4,11 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { ResponseError } from './ResponseError.js'
 
-const fakeFetch = ((...args: Parameters<typeof fetch>) => {
-   const returnedObject = {
-      url: args[0],
-      options: args[1],
-      catch: () => ({ ...returnedObject }),
-   }
-   return Promise.resolve({
-      ok: true,
-      clone: () => ({
-         json: () => ({ ...returnedObject }),
-         text: () => '',
-      }),
-      json: () => ({ ...returnedObject }),
-      text: () => '',
-   })
-}) as any
-
-describe('Options', () => {
+describe('createFetcher', () => {
    const server = setupServer()
    beforeAll(() => server.listen())
    afterEach(() => server.resetHandlers())
    afterAll(() => server.close())
-
-   describe('Automatic "content-type: application/json"', async () => {
-      test('Should be applied when no "content-type" header is present', async () => {
-         const fetchClient = createFetcher(() => {
-            return {
-               baseUrl: 'https://a.b.c',
-               method: 'POST',
-            }
-         }, fakeFetch)
-
-         const final1 = await fetchClient({
-            body: { a: 1 },
-         })
-         expect(final1.options.headers.get('content-type')).toBe('application/json')
-         expect(final1.options.body).toBe('{"a":1}')
-
-         const final2 = await fetchClient({
-            body: [1],
-         })
-         expect(final2.options.headers.get('content-type')).toBe('application/json')
-         expect(final2.options.body).toBe('[1]')
-
-         const final3 = await fetchClient({
-            body: '[1]',
-         })
-         expect(final3.options.headers.get('content-type')).toBe('application/json')
-         expect(final3.options.body).toBe('[1]')
-      })
-
-      test('Should not be applied when the "content-type" header is present', async () => {
-         const fetchClient = createFetcher(() => {
-            return {
-               baseUrl: 'https://a.b.c',
-               method: 'POST',
-               headers: {
-                  'content-type': 'text/html',
-               },
-            }
-         }, fakeFetch)
-
-         const final1 = await fetchClient({
-            body: { a: 1 },
-         })
-         expect(final1.options.headers.get('content-type')).toBe('text/html')
-         expect(final1.options.body).toBe('{"a":1}')
-
-         const final2 = await fetchClient({
-            body: [1],
-         })
-         expect(final2.options.headers.get('content-type')).toBe('text/html')
-         expect(final2.options.body).toBe('[1]')
-
-         const final3 = await fetchClient({
-            body: '[1]',
-         })
-         expect(final3.options.headers.get('content-type')).toBe('text/html')
-         expect(final3.options.body).toBe('[1]')
-      })
-   })
-
-   test('defaultOptions() should override the fallbackOptions', async () => {
-      const serializeBody = () => '123'
-      const serializeParams = () => '456'
-      const parseSuccess = (s: any) => s.json()
-
-      const fetchClient = createFetcher(
-         () => ({
-            baseUrl: 'https://a.b.c',
-            method: 'POST',
-            headers: {
-               'content-type': 'text/html',
-            },
-            cache: 'force-cache',
-            credentials: 'omit',
-            integrity: '123',
-            keepalive: false,
-            mode: 'same-origin',
-            redirect: 'follow',
-            referrer: 'me',
-            referrerPolicy: 'origin-when-cross-origin',
-            serializeBody,
-            serializeParams,
-            window: null,
-            parseSuccess,
-         }),
-         fakeFetch,
-      )
-
-      const final = await fetchClient({ params: {}, body: {} })
-      expect(final.url).toBe('https://a.b.c?456')
-      expect(final.options.body).toEqual('123')
-      expect(final.options.cache).toEqual('force-cache')
-      expect(final.options.credentials).toEqual('omit')
-      expect(final.options.integrity).toEqual('123')
-      expect(final.options.keepalive).toEqual(false)
-      expect(final.options.mode).toEqual('same-origin')
-      expect(final.options.redirect).toEqual('follow')
-      expect(final.options.referrer).toEqual('me')
-      expect(final.options.referrerPolicy).toEqual('origin-when-cross-origin')
-      expect(final.options.headers.get('content-type')).toEqual('text/html')
-      expect(final.options.method).toEqual('POST')
-      expect(final.options.window).toEqual(null)
-      expect(final.options.parseSuccess).toEqual(parseSuccess)
-   })
-
-   test('fetchOptions options should override defaultOptions()', async () => {
-      const fetchClient = createFetcher(() => {
-         return {
-            baseUrl: 'https://a.b.c',
-            method: 'POST',
-            headers: {
-               'content-type': 'text/html',
-            },
-            cache: 'force-cache',
-            credentials: 'omit',
-            integrity: '123',
-            keepalive: false,
-            mode: 'same-origin',
-            redirect: 'follow',
-            referrer: 'me',
-            referrerPolicy: 'origin-when-cross-origin',
-            serializeBody: () => '123',
-            serializeParams: () => '456',
-            window: undefined,
-            parseSuccess: () => Promise.resolve(321),
-            signal: 'default signal' as any,
-         }
-      }, fakeFetch)
-
-      const serializeBody = (x: any) => x
-      const serializeParams = (x: any) => x
-      const parseSuccess = (s: any) => s.json() as Promise<any>
-      const signal = 'upfetch signal' as any
-
-      const final = await fetchClient({
-         baseUrl: 'https://1.2.3',
-         body: { a: 1 },
-         cache: 'no-store',
-         credentials: 'include',
-         integrity: '456',
-         keepalive: true,
-         mode: 'navigate',
-         redirect: 'error',
-         referrer: 'you',
-         referrerPolicy: 'origin',
-         headers: {
-            'content-type': 'application/json',
-         },
-         method: 'DELETE',
-         params: 'a=a',
-         serializeBody,
-         serializeParams,
-         signal,
-         url: '4/5',
-         window: null,
-         parseSuccess,
-      })
-
-      expect(final.url).toBe('https://1.2.3/4/5?a=a')
-      expect(final.options.body).toEqual({ a: 1 })
-      expect(final.options.cache).toEqual('no-store')
-      expect(final.options.credentials).toEqual('include')
-      expect(final.options.integrity).toEqual('456')
-      expect(final.options.keepalive).toEqual(true)
-      expect(final.options.mode).toEqual('navigate')
-      expect(final.options.redirect).toEqual('error')
-      expect(final.options.referrer).toEqual('you')
-      expect(final.options.referrerPolicy).toEqual('origin')
-      expect(final.options.headers.get('content-type')).toEqual('application/json')
-      expect(final.options.method).toEqual('DELETE')
-      expect(final.options.signal).toEqual(signal)
-      expect(final.options.window).toEqual(null)
-      expect(final.options.parseSuccess).toEqual(parseSuccess)
-   })
-
-   test('If params is a string, serializeParams should do nothing', async () => {
-      const fetchClient = createFetcher(() => {
-         return {
-            baseUrl: 'https://a.b.c',
-            serializeParams: () => '456',
-         }
-      }, fakeFetch)
-
-      const final = await fetchClient({
-         params: 'd=e',
-      })
-      expect(final.url).toEqual('https://a.b.c?d=e')
-   })
-
-   test('If body is a string, serializeBody should do nothing', async () => {
-      const fetchClient = createFetcher(() => {
-         return {
-            baseUrl: 'https://a.b.c',
-            method: 'POST',
-            serializeBody: () => '456',
-         }
-      }, fakeFetch)
-
-      const final = await fetchClient({
-         body: 'test body',
-      })
-      expect(final.options.body).toEqual('test body')
-   })
-
-   test('An empty fetchClient baseUrl should override the fallbackOptions().baseUrl', async () => {
-      const fetchClient = createFetcher(() => {
-         return { baseUrl: 'https://a.b.c/' }
-      }, fakeFetch)
-
-      const final = await fetchClient({
-         baseUrl: '',
-         url: '/a',
-      })
-      expect(final.url).toBe('/a')
-   })
 
    test('Json responses should be parsed by default', async () => {
       server.use(
@@ -270,7 +38,7 @@ describe('Options', () => {
       expect(data).toEqual('some text')
    })
 
-   test('response.ok, onSuccess should be called after the data is parsed', async () => {
+   test('When response is `ok`,`onSuccess` should be called after the data is parsed', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.json({ hello: 'world' }), ctx.status(200))
@@ -302,7 +70,7 @@ describe('Options', () => {
       await upfetch({ url: '/id' })
    })
 
-   test('!response.ok, a ResponseError containing the parsed data (text or json) should be triggered, the Response Error should be passed to onError', async () => {
+   test('When response is NOT `ok`, a ResponseError containing the parsed data (text or json) should be triggered, the Response Error should be passed to onError', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.json({ hello: 'world' }), ctx.status(400))
@@ -429,7 +197,7 @@ describe('Options', () => {
       await upfetch({ body: { hello: 'world' }, method: 'POST' })
    })
 
-   test('`parseError` should return a ResponseError instance', async () => {
+   test('`parseError` default implementation  should return a ResponseError instance', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(400), ctx.json({ some: 'json' }))

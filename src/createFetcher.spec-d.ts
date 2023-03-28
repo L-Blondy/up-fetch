@@ -1,7 +1,7 @@
 import { expectTypeOf, test } from 'vitest'
 import { createFetcher, MergedOptions } from './createFetcher.js'
 
-const fakeFetch = () => Promise.resolve({ then: () => {} })
+const fakeFetch = (url?: any, options?: RequestInit) => Promise.resolve({ then: () => {} })
 
 test('return type', () => {
    const upfetch1 = createFetcher(
@@ -90,5 +90,12 @@ test('`onError` should receive `error` any `MergedOptions', () => {
          expectTypeOf(data).toBeAny()
          expectTypeOf(options).toEqualTypeOf<MergedOptions<any, any>>()
       },
+   }))
+})
+
+test('The DefaultOptions should not accept a `body`', () => {
+   createFetcher(() => ({
+      // @ts-expect-error should have accept body
+      body: { a: 2 },
    }))
 })
