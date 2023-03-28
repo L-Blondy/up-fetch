@@ -1,7 +1,5 @@
-import { setupServer } from 'msw/node'
-import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import { buildOptions, isJson, isJsonificable, mergeHeaders } from './buildOptions.js'
-import { rest } from 'msw'
 
 describe('isJson', () => {
    test.each`
