@@ -267,7 +267,7 @@ describe('createFetcher', () => {
       })
    })
 
-   test('mutating the mergedOptions should work properly', async () => {
+   test('mutating the requestOptions should work properly', async () => {
       server.use(
          rest.get('https://example.com/todos', (req, res, ctx) => {
             return res(ctx.status(200), ctx.text('hello world'))

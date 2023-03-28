@@ -9,22 +9,22 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    parseSuccess?: (response: Response) => Promise<D> | D
    parseError?: (response: Response) => Promise<any>
    serializeBody?: (body: PlainObject | Array<any>) => string
-   serializeParams?: (params: RequestOptions['params']) => string
+   serializeParams?: (params: FetcherOptions['params']) => string
 }
 
 export interface DefaultOptions<DD = any> extends SharedOptions<DD> {
-   onError?: (error: any, options: MergedOptions<DD, any>) => void
-   onFetchStart?: (options: MergedOptions<DD, any>) => void
-   onSuccess?: (error: any, options: MergedOptions<DD, any>) => void
+   onError?: (error: any, options: RequestOptions<DD, any>) => void
+   onFetchStart?: (options: RequestOptions<DD, any>) => void
+   onSuccess?: (error: any, options: RequestOptions<DD, any>) => void
 }
 
-export interface RequestOptions<D = any> extends SharedOptions<D> {
+export interface FetcherOptions<D = any> extends SharedOptions<D> {
    url?: string
    params?: string | Record<string, ParamValue | ParamValue[]>
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
-export type MergedOptions<DD, D> = ReturnType<typeof buildOptions<DD, D>>
+export type RequestOptions<DD, D> = ReturnType<typeof buildOptions<DD, D>>
 
 export type FetchLike<Init extends Record<string, any>> = (
    url: any,
@@ -38,11 +38,11 @@ export const createFetcher = <DD = any, Init extends Record<string, any> = {}>(
    fetchFn: FetchLike<Init> = fetch,
 ) => {
    return <D = DD>(
-      requestOptions?: RequestOptions<D> &
+      fetcherOptions?: FetcherOptions<D> &
          Omit<Init, 'body' | 'method'> &
          Omit<RequestInit, 'body' | 'method'>,
    ) => {
-      const options: MergedOptions<DD, D> = buildOptions<DD, D>(defaultOptions?.(), requestOptions)
+      const options: RequestOptions<DD, D> = buildOptions<DD, D>(defaultOptions?.(), fetcherOptions)
 
       options.onFetchStart?.(options)
 

@@ -57,16 +57,16 @@ describe('isJsonificable', () => {
 
 describe('mergeHeaders', () => {
    test.each`
-      defaultHeaders                                                               | requestHeaders                                                               | output
+      defaultHeaders                                                               | fetcherHeaders                                                               | output
       ${{ 'Cache-Control': undefined }}                                            | ${undefined}                                                                 | ${{}}
       ${{ 'Cache-Control': undefined }}                                            | ${{ 'Cache-Control': undefined }}                                            | ${{}}
       ${{}}                                                                        | ${{ 'Cache-Control': undefined }}                                            | ${{}}
       ${new Headers({ 'Cache-Control': 'no-cache' })}                              | ${new Headers({ 'cache-Control': 'no-store' })}                              | ${{ 'cache-control': 'no-store' }}
       ${new Headers({ 'Cache-Control': 'no-cache', 'content-type': 'text/html' })} | ${new Headers({ 'cache-Control': 'no-store' })}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
       ${new Headers({ 'Cache-Control': 'no-cache' })}                              | ${new Headers({ 'cache-Control': 'no-store', 'content-type': 'text/html' })} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
-   `('Input: $defaultHeaders, $requestHeaders', ({ defaultHeaders, requestHeaders, output }) => {
+   `('Input: $defaultHeaders, $fetcherHeaders', ({ defaultHeaders, fetcherHeaders, output }) => {
       const object: Record<string, string> = {}
-      mergeHeaders(requestHeaders, defaultHeaders).forEach((value, key) => (object[key] = value))
+      mergeHeaders(fetcherHeaders, defaultHeaders).forEach((value, key) => (object[key] = value))
       expect(object).toEqual(output)
    })
 })
@@ -150,7 +150,7 @@ describe('href', () => {
 })
 
 describe('options', () => {
-   test('spreading the mergedOptions should preserve the getters', async () => {
+   test('spreading the requestOptions should preserve the getters', async () => {
       const options = buildOptions(
          { baseUrl: 'http://a.b.c' },
          { headers: { Authorization: 'Bearer me' }, body: { hello: 'world' }, url: '/todos' },

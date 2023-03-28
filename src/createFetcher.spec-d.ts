@@ -1,5 +1,5 @@
 import { expectTypeOf, test } from 'vitest'
-import { createFetcher, MergedOptions } from './createFetcher.js'
+import { createFetcher, RequestOptions } from './createFetcher.js'
 
 const fakeFetch = (url?: any, options?: RequestInit) => Promise.resolve({ then: () => {} })
 
@@ -67,28 +67,28 @@ test('return type', () => {
    })
 })
 
-test('`onFetchStart` should receive `MergedOptions', () => {
+test('`onFetchStart` should receive `RequestOptions', () => {
    createFetcher(() => ({
       onFetchStart: (options) => {
-         expectTypeOf(options).toEqualTypeOf<MergedOptions<any, any>>()
+         expectTypeOf(options).toEqualTypeOf<RequestOptions<any, any>>()
       },
    }))
 })
 
-test('`onSuccess` should receive `data` any `MergedOptions', () => {
+test('`onSuccess` should receive `data` any `RequestOptions', () => {
    createFetcher(() => ({
       onSuccess: (data, options) => {
          expectTypeOf(data).toBeAny()
-         expectTypeOf(options).toEqualTypeOf<MergedOptions<any, any>>()
+         expectTypeOf(options).toEqualTypeOf<RequestOptions<any, any>>()
       },
    }))
 })
 
-test('`onError` should receive `error` any `MergedOptions', () => {
+test('`onError` should receive `error` any `RequestOptions', () => {
    createFetcher(() => ({
       onError: (data, options) => {
          expectTypeOf(data).toBeAny()
-         expectTypeOf(options).toEqualTypeOf<MergedOptions<any, any>>()
+         expectTypeOf(options).toEqualTypeOf<RequestOptions<any, any>>()
       },
    }))
 })

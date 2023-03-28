@@ -1,9 +1,9 @@
-import { DefaultOptions, RequestOptions } from './createFetcher.js'
+import { DefaultOptions, FetcherOptions } from './createFetcher.js'
 import { ResponseError } from './ResponseError.js'
 
 export const specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
 
-export const specificRequestOptionsKeys = ['body', 'url', 'params'] as const
+export const specificFetcherOptionsKeys = ['body', 'url', 'params'] as const
 
 const parseResponse = (res: Response) =>
    res
@@ -13,9 +13,9 @@ const parseResponse = (res: Response) =>
 
 export const buildOptions = <DD, D = DD>(
    defaultOptions?: DefaultOptions<DD>,
-   requestOptions?: RequestOptions<D>,
+   fetcherOptions?: FetcherOptions<D>,
 ) => {
-   const mergedOptions = {
+   const requestOptions = {
       parseSuccess: (res: Response): Promise<D> => parseResponse(res),
       parseError: async (res: Response) => {
          return new ResponseError(
@@ -25,15 +25,15 @@ export const buildOptions = <DD, D = DD>(
          )
       },
       serializeBody: JSON.stringify,
-      serializeParams(params?: RequestOptions['params']): string {
+      serializeParams(params?: FetcherOptions['params']): string {
          // recursively transforms Dates to ISO string and strips undefined
          const clean = JSON.parse(JSON.stringify(params))
          return withQuestionMark(new URLSearchParams(clean).toString())
       },
-      ...omit(defaultOptions, specificRequestOptionsKeys),
-      ...omit(requestOptions, specificDefaultOptionsKeys),
-      rawHeaders: mergeHeaders(requestOptions?.headers, defaultOptions?.headers),
-      rawBody: requestOptions?.body,
+      ...omit(defaultOptions, specificFetcherOptionsKeys),
+      ...omit(fetcherOptions, specificDefaultOptionsKeys),
+      rawHeaders: mergeHeaders(fetcherOptions?.headers, defaultOptions?.headers),
+      rawBody: fetcherOptions?.body,
       get body(): BodyInit | null | undefined {
          return isJsonificable(this.rawBody) ? this.serializeBody(this.rawBody) : this.rawBody
       },
@@ -65,7 +65,7 @@ export const buildOptions = <DD, D = DD>(
          return `${url}${serializedParams}`
       },
    }
-   return mergedOptions
+   return requestOptions
 }
 
 /**
@@ -76,7 +76,7 @@ export const buildOptions = <DD, D = DD>(
  *
  * class instances without a toJSON() method will NOT be considered jsonificable
  */
-export function isJsonificable(body: RequestOptions['body']): body is object {
+export function isJsonificable(body: FetcherOptions['body']): body is object {
    return (
       body?.constructor?.name === 'Object' ||
       Array.isArray(body) ||
@@ -93,9 +93,9 @@ export function isJson(body: any): boolean {
    }
 }
 
-export function mergeHeaders(requestHeaders?: HeadersInit, defaultHeaders?: HeadersInit): Headers {
+export function mergeHeaders(fetcherHeaders?: HeadersInit, defaultHeaders?: HeadersInit): Headers {
    const headers = new Headers()
-   new Headers(requestHeaders).forEach((value, key) => {
+   new Headers(fetcherHeaders).forEach((value, key) => {
       value !== 'undefined' && headers.set(key, value)
    })
    // add the defaults to the headers
