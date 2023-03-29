@@ -115,7 +115,7 @@ describe('serializeParams', () => {
 })
 
 describe('href', () => {
-   test.only.each`
+   test.each`
       input                                                                        | output
       ${{ baseUrl: 'https://a.b.c' }}                                              | ${'https://a.b.c'}
       ${{ baseUrl: 'https://a.b.c', url: 'd' }}                                    | ${'https://a.b.c/d'}

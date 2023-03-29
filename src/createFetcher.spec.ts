@@ -70,7 +70,7 @@ describe('createFetcher', () => {
       await upfetch({ url: '/id' })
    })
 
-   test('When response is NOT `ok`, a ResponseError containing the parsed data (text or json) should be triggered, the Response Error should be passed to onError', async () => {
+   test('When response is NOT `ok`, a ResponseError containing response and the requestOptions should be thrown. The ResponseError should be passed to onError', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.json({ hello: 'world' }), ctx.status(400))
@@ -84,19 +84,25 @@ describe('createFetcher', () => {
 
       const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
-         onError(error: ResponseError) {
+         cache: 'default',
+         credentials: 'omit',
+         onError(error) {
             expect(error instanceof ResponseError).toBeTruthy()
             if (count === 1) {
-               expect(error.status).toEqual(400)
                expect(error.message).toEqual('Request failed with status 400')
-               expect(error.data).toEqual({ hello: 'world' })
+               expect(error.options.cache).toBe('default')
+               expect(error.options.credentials).toBe('omit')
+               expect(error.response.status).toEqual(400)
+               expect(error.response.data).toEqual({ hello: 'world' })
                count++
                return
             }
             if (count === 2) {
-               expect(error.status).toEqual(401)
                expect(error.message).toEqual('Request failed with status 401')
-               expect(error.data).toEqual('hello error')
+               expect(error.options.cache).toBe('default')
+               expect(error.options.credentials).toBe('omit')
+               expect(error.response.status).toEqual(401)
+               expect(error.response.data).toEqual('hello error')
                count++
                return
             }
@@ -105,9 +111,11 @@ describe('createFetcher', () => {
 
       await upfetch().catch((error) => {
          // the same error as onError with count === 1
-         expect(error.status).toEqual(400)
          expect(error.message).toEqual('Request failed with status 400')
-         expect(error.data).toEqual({ hello: 'world' })
+         expect(error.options.cache).toBe('default')
+         expect(error.options.credentials).toBe('omit')
+         expect(error.response.status).toEqual(400)
+         expect(error.response.data).toEqual({ hello: 'world' })
          // catch the network request error & re-throw the assertion errors only
          if (error.name === 'AssertionError') {
             throw error
@@ -115,9 +123,11 @@ describe('createFetcher', () => {
       })
       await upfetch({ url: '/id' }).catch((error) => {
          // the same error as onError with count === 2
-         expect(error.status).toEqual(401)
          expect(error.message).toEqual('Request failed with status 401')
-         expect(error.data).toEqual('hello error')
+         expect(error.options.cache).toBe('default')
+         expect(error.options.credentials).toBe('omit')
+         expect(error.response.status).toEqual(401)
+         expect(error.response.data).toEqual('hello error')
          // catch the network request error & re-throw the assertion errors only
          if (error.name === 'AssertionError') {
             throw error
@@ -143,7 +153,9 @@ describe('createFetcher', () => {
          },
       }))
 
-      await upfetch().catch((error) => {
+      await upfetch({
+         cache: 'default',
+      }).catch((error) => {
          if (error.name === 'AssertionError') {
             throw error
          }
@@ -221,7 +233,7 @@ describe('createFetcher', () => {
       const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
 
       await upfetch().catch((error) => {
-         expect(error.data).toEqual({ some: 'json' })
+         expect(error.response.data).toEqual({ some: 'json' })
       })
    })
 
@@ -235,7 +247,7 @@ describe('createFetcher', () => {
       const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
 
       await upfetch().catch((error) => {
-         expect(error.data).toEqual('hello world')
+         expect(error.response.data).toEqual('hello world')
       })
    })
 

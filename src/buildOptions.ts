@@ -22,6 +22,7 @@ export const buildOptions = <AdditionalOptions extends Record<string, any>, DD, 
             res,
             // await here to avoid creating a new variable. This saves a few bytes
             await parseResponse(res),
+            buildOptions(defaultOptions, fetcherOptions),
          )
       },
       serializeBody: JSON.stringify,
@@ -30,8 +31,14 @@ export const buildOptions = <AdditionalOptions extends Record<string, any>, DD, 
          const clean = JSON.parse(JSON.stringify(params))
          return withQuestionMark(new URLSearchParams(clean).toString())
       },
-      ...omit(defaultOptions, specificFetcherOptionsKeys),
-      ...omit(fetcherOptions, specificDefaultOptionsKeys),
+      ...omit(
+         defaultOptions as Omit<DefaultOptions<AdditionalOptions, DD>, 'headers'>,
+         specificFetcherOptionsKeys,
+      ),
+      ...omit(
+         fetcherOptions as Omit<FetcherOptions<AdditionalOptions, D>, 'body' | 'headers'>,
+         specificDefaultOptionsKeys,
+      ),
       rawHeaders: mergeHeaders(fetcherOptions?.headers, defaultOptions?.headers),
       rawBody: fetcherOptions?.body,
       get body(): BodyInit | null | undefined {

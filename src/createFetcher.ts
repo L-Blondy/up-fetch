@@ -1,5 +1,4 @@
 import { buildOptions } from './buildOptions.js'
-import { withRetry } from './plugins/withRetry.js'
 
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
@@ -24,10 +23,9 @@ export type DefaultOptions<
 > = SharedOptions<DD> &
    Omit<AdditionalOptions, 'body' | 'method'> &
    Omit<RequestInit, 'body' | 'method'> & {
-      // TODO: why replacing {} by AdditionalOptions crashes
-      onError?: (error: any, options: RequestOptions<{}, DD, any>) => void
-      onFetchStart?: (options: RequestOptions<{}, DD, any>) => void
-      onSuccess?: (data: any, options: RequestOptions<{}, DD, any>) => void
+      onError?: (error: any) => void
+      onFetchStart?: (options: any) => void
+      onSuccess?: (data: any, options: any) => void
    }
 
 export type FetcherOptions<AdditionalOptions = {}, D = any> = SharedOptions<D> &
@@ -47,11 +45,7 @@ export const createFetcher = <DD = any, AdditionalOptions extends Record<string,
    fetchFn: FetchLike<AdditionalOptions> = fetch,
 ) => {
    return <D = DD>(fetcherOptions?: FetcherOptions<AdditionalOptions, D>) => {
-      const options: RequestOptions<AdditionalOptions, DD, D> = buildOptions<
-         AdditionalOptions,
-         DD,
-         D
-      >(defaultOptions?.(), fetcherOptions)
+      const options = buildOptions<AdditionalOptions, DD, D>(defaultOptions?.(), fetcherOptions)
 
       options.onFetchStart?.(options)
 
@@ -66,11 +60,13 @@ export const createFetcher = <DD = any, AdditionalOptions extends Record<string,
             }
          })
          .catch((error) => {
-            options.onError?.(error, options)
+            options.onError?.(error)
             throw error
          })
    }
 }
+
+// import { withRetry } from './plugins/withRetry.js'
 
 // createFetcher(
 //    () => ({
