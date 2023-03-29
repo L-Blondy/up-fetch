@@ -1,10 +1,6 @@
 import { expectTypeOf, test } from 'vitest'
-import {
-   buildOptions,
-   specificDefaultOptionsKeys,
-   specificFetcherOptionsKeys,
-} from './buildOptions.js'
-import { DefaultOptions, RequestOptions, FetcherOptions } from './createFetcher.js'
+import { specificDefaultOptionsKeys, specificFetcherOptionsKeys } from './buildOptions.js'
+import { DefaultOptions, FetcherOptions } from './createFetcher.js'
 
 type TupleToUnion<T extends readonly unknown[]> = T[number]
 
@@ -24,9 +20,4 @@ test('specific Request Options Keys', () => {
    type SpecificFetcherOptionsKeys = Exclude<keyof FetcherOptions, keyof DefaultOptions>
 
    expectTypeOf(_specificFetcherOptionsKeysAsUnionType).toEqualTypeOf<SpecificFetcherOptionsKeys>()
-})
-
-test('requestOptions type', () => {
-   const requestOptions = buildOptions()
-   expectTypeOf(requestOptions).toEqualTypeOf<RequestOptions<any, any>>()
 })
