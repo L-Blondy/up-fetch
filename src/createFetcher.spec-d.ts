@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { expectTypeOf, test } from 'vitest'
-import { createFetcher } from './createFetcher.js'
+import { createFetcher, RequestOptions } from './createFetcher.js'
+import { ResponseError } from './ResponseError.js'
 
 const fakeFetch = (url?: any, options?: RequestInit) => Promise.resolve({ then: () => {} })
 
@@ -71,7 +72,7 @@ test('return type', () => {
 test('`onFetchStart` should receive `options', () => {
    createFetcher(() => ({
       onFetchStart: (options) => {
-         expectTypeOf(options).toBeAny()
+         expectTypeOf(options).toEqualTypeOf<RequestOptions>()
       },
    }))
 })
@@ -80,7 +81,7 @@ test('`onSuccess` should receive `data` and `options`', () => {
    createFetcher(() => ({
       onSuccess: (data, options) => {
          expectTypeOf(data).toBeAny()
-         expectTypeOf(options).toBeAny()
+         expectTypeOf(options).toEqualTypeOf<RequestOptions>()
       },
    }))
 })
@@ -88,7 +89,7 @@ test('`onSuccess` should receive `data` and `options`', () => {
 test('`onError` should receive `error`', () => {
    createFetcher(() => ({
       onError: (error) => {
-         expectTypeOf(error).toBeAny()
+         expectTypeOf(error).toEqualTypeOf<ResponseError>()
       },
    }))
 })

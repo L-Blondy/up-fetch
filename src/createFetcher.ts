@@ -1,5 +1,8 @@
 import { buildOptions } from './buildOptions.js'
+import { ResponseError } from './ResponseError.js'
 import { withRetry } from './withRetry.js'
+
+// TODO: move retry tests to createFetcher tests
 
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
@@ -23,9 +26,9 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
 }
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {
-   onError?: (error: any) => void
-   onFetchStart?: (options: any) => void
-   onSuccess?: (data: any, options: any) => void
+   onError?: (error: ResponseError) => void
+   onFetchStart?: (options: RequestOptions<any, any>) => void
+   onSuccess?: (data: any, options: RequestOptions<any, any>) => void
 }
 
 export interface FetcherOptions<D = any> extends SharedOptions<D> {
@@ -34,7 +37,7 @@ export interface FetcherOptions<D = any> extends SharedOptions<D> {
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
-export type RequestOptions<DD, D> = ReturnType<typeof buildOptions<DD, D>>
+export type RequestOptions<DD = any, D = DD> = ReturnType<typeof buildOptions<DD, D>>
 
 export const createFetcher = <DD = any>(
    defaultOptions?: () => DefaultOptions<DD>,
@@ -45,7 +48,7 @@ export const createFetcher = <DD = any>(
 
       options.onFetchStart?.(options)
 
-      return withRetry(fetchFn)(options.href, options as any)
+      return withRetry(fetchFn)(options.href, options)
          .then(async (res) => {
             if (res.ok) {
                const data = (await options.parseSuccess(res)) as D
