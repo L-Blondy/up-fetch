@@ -167,6 +167,9 @@ describe('options', () => {
    })
 
    test('The `defaultOptions` should override the `fallbackOptions`', async () => {
+      const retryDelay = () => 54321
+      const retryWhen = () => true
+
       const options = buildOptions(
          {
             baseUrl: 'https://a.b.c',
@@ -183,6 +186,9 @@ describe('options', () => {
             redirect: 'follow',
             referrer: 'me',
             referrerPolicy: 'origin-when-cross-origin',
+            retryDelay,
+            retryTimes: 123,
+            retryWhen,
             serializeBody: () => '123',
             serializeParams: () => 'a=b',
             window: null,
@@ -199,6 +205,9 @@ describe('options', () => {
       expect(options.redirect).toEqual('follow')
       expect(options.referrer).toEqual('me')
       expect(options.referrerPolicy).toEqual('origin-when-cross-origin')
+      expect(options.retryDelay).toEqual(retryDelay)
+      expect(options.retryTimes).toEqual(123)
+      expect(options.retryWhen).toEqual(retryWhen)
       expect(options.method).toEqual('POST')
       expect(options.window).toEqual(null)
       expect(options.headers.get('content-type')).toEqual('text/html')
@@ -209,6 +218,8 @@ describe('options', () => {
       const serializeParams = (x: any) => x
       const parseSuccess = (s: any) => s as Promise<Response>
       const signal = 'upfetch signal' as any
+      const retryDelay = () => 54321
+      const retryWhen = () => true
 
       const options = buildOptions(
          {
@@ -225,6 +236,9 @@ describe('options', () => {
             redirect: 'follow',
             referrer: 'me',
             referrerPolicy: 'origin-when-cross-origin',
+            retryDelay: () => 1,
+            retryTimes: 5,
+            retryWhen: () => false,
             serializeBody: () => '123',
             serializeParams: () => '456',
             window: undefined,
@@ -247,6 +261,9 @@ describe('options', () => {
             },
             method: 'DELETE',
             params: 'a=a',
+            retryDelay,
+            retryTimes: 123,
+            retryWhen,
             serializeBody,
             serializeParams,
             signal,
@@ -266,6 +283,9 @@ describe('options', () => {
       expect(options.redirect).toEqual('error')
       expect(options.referrer).toEqual('you')
       expect(options.referrerPolicy).toEqual('origin')
+      expect(options.retryDelay).toEqual(retryDelay)
+      expect(options.retryTimes).toEqual(123)
+      expect(options.retryWhen).toEqual(retryWhen)
       expect(options.headers.get('content-type')).toEqual('application/json')
       expect(options.method).toEqual('DELETE')
       expect(options.signal).toEqual(signal)

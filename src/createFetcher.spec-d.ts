@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { expectTypeOf, test } from 'vitest'
-import { createFetcher, DefaultOptions, FetcherOptions, RequestOptions } from './createFetcher.js'
+import { createFetcher } from './createFetcher.js'
 
 const fakeFetch = (url?: any, options?: RequestInit) => Promise.resolve({ then: () => {} })
 
@@ -91,68 +91,4 @@ test('`onError` should receive `error`', () => {
          expectTypeOf(error).toBeAny()
       },
    }))
-})
-
-test('When providing a custom `fetchFn`, the options should be extended to match the `fetchFn` options', () => {
-   function fetchWithRetry(href: string, options?: RequestInit & { retries?: number }) {
-      return Promise.resolve(new Response())
-   }
-
-   createFetcher(
-      () => ({
-         retries: 1,
-         // define `onFetchStart` to check for circular reference issue if options are typed properly at some point
-         onFetchStart: (options) => {
-            options
-         },
-      }),
-      fetchWithRetry,
-   )({
-      retries: 1,
-   })
-   createFetcher(
-      // @ts-expect-error retries should be a number
-      () => ({
-         retries: '',
-         // define `onFetchStart` to check for circular reference issue if options are typed properly at some point
-         onFetchStart: (options) => {
-            options
-         },
-      }),
-      fetchWithRetry,
-   )({
-      // @ts-expect-error retries should be a number
-      retries: '',
-   })
-})
-
-test('`DefaultOptions` should extends `RequestInit` and its first argument (Record-like). It should not have a `body`', () => {
-   // @ts-expect-error DefaultOptions first args should be Record-like
-   const wrong: DefaultOptions<string> = {}
-   const right: DefaultOptions<{ a?: number }> = {}
-   expectTypeOf(right.a).toEqualTypeOf<number | undefined>()
-   expectTypeOf(right.cache).toEqualTypeOf<RequestInit['cache']>()
-   // @ts-expect-error DefaultOptions should not have a body
-   expectTypeOf(right.body).toEqualTypeOf<never>()
-})
-
-test('`FetcherOptions` should extends `RequestInit` and its first argument (Record-like)', () => {
-   // @ts-expect-error FetcherOptions first args should be Record-like
-   const wrong: FetcherOptions<string> = {}
-   const right: FetcherOptions<{ a?: number }> = {}
-   expectTypeOf(right.a).toEqualTypeOf<number | undefined>()
-   expectTypeOf(right.cache).toEqualTypeOf<RequestInit['cache']>()
-   expectTypeOf(right.body).toEqualTypeOf<
-      any[] | BodyInit | Record<string, any> | null | undefined
-   >()
-})
-
-test('`RequestOptions` should extends `RequestInit` and its first argument (Record-like)', () => {
-   // @ts-expect-error FetcherOptions first args should be Record-like
-   const wrong: RequestOptions<string> = {}
-   const right: RequestOptions<{ a?: number }, any, any> = {} as any
-   expectTypeOf(right.a).toEqualTypeOf<number | undefined>()
-   expectTypeOf(right.cache).toEqualTypeOf<RequestInit['cache']>()
-   expectTypeOf(right.body).toEqualTypeOf<RequestInit['body']>()
-   expectTypeOf(right.headers).toEqualTypeOf<Headers>()
 })

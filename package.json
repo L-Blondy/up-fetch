@@ -46,15 +46,16 @@
   "author": "Laurent Blondy",
   "license": "ISC",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.52.0",
-    "@typescript-eslint/parser": "^5.52.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
     "cross-var": "^1.1.0",
-    "eslint": "^8.34.0",
-    "jsdom": "^21.1.0",
-    "msw": "^1.1.0",
-    "typescript": "^4.9.5",
+    "eslint": "^8.37.0",
+    "happy-dom": "^8.9.0",
+    "jsdom": "^21.1.1",
+    "msw": "^1.2.1",
     "tsup": "^6.7.0",
-    "vitest": "^0.28.5"
+    "typescript": "^4.9.5",
+    "vitest": "^0.29.8"
   },
   "publishConfig": {
     "access": "public",
@@ -65,6 +66,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/L-Blondy/up-fetch"
-  },
-  "dependencies": {}
+  }
 }

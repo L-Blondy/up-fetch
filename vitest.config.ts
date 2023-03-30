@@ -1,5 +1,6 @@
 import path from 'path'
 import { defineConfig } from 'vitest/config'
+import { vi } from 'vitest'
 
 export default defineConfig({
    test: {

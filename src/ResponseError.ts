@@ -1,3 +1,5 @@
+import { RequestOptions } from './createFetcher.js'
+
 const isResponseErrorSymbol = Symbol()
 
 export class ResponseError<TErrorData = any> extends Error {
@@ -12,9 +14,9 @@ export class ResponseError<TErrorData = any> extends Error {
       status: number
       statusText: string
    }
-   options: any
+   options: RequestOptions<any, any>
 
-   constructor(res: Response, data: TErrorData, options: any) {
+   constructor(res: Response, data: TErrorData, options: RequestOptions<any, any>) {
       super(`Request failed with status ${res.status}`)
       const { headers, redirected, url, type, status, statusText } = res
       this.name = 'ResponseError'

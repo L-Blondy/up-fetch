@@ -2,6 +2,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { withRetry } from './withRetry.js'
+import { buildOptions } from './buildOptions.js'
 
 describe('withRetry', () => {
    const server = setupServer()
@@ -18,7 +19,7 @@ describe('withRetry', () => {
          }),
       )
 
-      await withRetry(fetch)('https://example.com')
+      await withRetry(fetch)('https://example.com', buildOptions({}))
       expect(count).toBe(1)
    })
 
@@ -30,7 +31,7 @@ describe('withRetry', () => {
             return res(ctx.text('hello error'), ctx.status(408))
          }),
       )
-      await withRetry(fetch)('https://example.com', { retryTimes: 1 })
+      await withRetry(fetch)('https://example.com', buildOptions({ retryTimes: 1 }))
       expect(count).toBe(2)
    })
 
@@ -52,7 +53,10 @@ describe('withRetry', () => {
             return res(ctx.text('hello error'), ctx.status(status))
          }),
       )
-      await withRetry(fetch)('https://example.com', { retryTimes: 1, retryDelay: () => 0 })
+      await withRetry(fetch)(
+         'https://example.com',
+         buildOptions({ retryTimes: 1, retryDelay: () => 0 }),
+      )
       expect(count).toBe(retryCount)
    })
 
@@ -76,11 +80,14 @@ describe('withRetry', () => {
                return res(ctx.text('hello error'), ctx.status(status))
             }),
          )
-         await withRetry(fetch)('https://example.com', {
-            retryTimes: 1,
-            retryDelay: () => 0,
-            retryWhen: (res) => res.status === 482,
-         })
+         await withRetry(fetch)(
+            'https://example.com',
+            buildOptions({
+               retryTimes: 1,
+               retryDelay: () => 0,
+               retryWhen: (res: Response) => res.status === 482,
+            }),
+         )
          expect(count).toBe(retryCount)
       },
    )
@@ -104,7 +111,7 @@ describe('withRetry', () => {
             return res(ctx.text('hello error'), ctx.status(408))
          }),
       )
-      await withRetry(fetch)('https://example.com', { retryTimes: 2 })
+      await withRetry(fetch)('https://example.com', buildOptions({ retryTimes: 2 }))
       expect(count).toBe(3)
    }, 10000)
 
@@ -114,14 +121,17 @@ describe('withRetry', () => {
             return res(ctx.text('hello error'), ctx.status(408))
          }),
       )
-      await withRetry(fetch)('https://example.com', {
-         retryTimes: 1,
-         retryDelay: (attemptNumber, response) => {
-            expect(attemptNumber).toBe(1)
-            expect(response.status).toBe(408)
-            return 0
-         },
-      })
+      await withRetry(fetch)(
+         'https://example.com',
+         buildOptions({
+            retryTimes: 1,
+            retryDelay: (attemptNumber: number, response: Response) => {
+               expect(attemptNumber).toBe(1)
+               expect(response.status).toBe(408)
+               return 0
+            },
+         }),
+      )
    }, 10000)
 
    test('the default retry delay can be customized with `retryDelay`', async () => {
@@ -148,10 +158,13 @@ describe('withRetry', () => {
             return res(ctx.text('hello error'), ctx.status(408))
          }),
       )
-      await withRetry(fetch)('https://example.com', {
-         retryTimes: 3,
-         retryDelay: (attempt) => attempt * 500,
-      })
+      await withRetry(fetch)(
+         'https://example.com',
+         buildOptions({
+            retryTimes: 3,
+            retryDelay: (attempt: number) => attempt * 500,
+         }),
+      )
       expect(count).toBe(4)
    }, 10000)
 })

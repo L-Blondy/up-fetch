@@ -11,32 +11,33 @@ const parseResponse = (res: Response) =>
       .json()
       .catch(() => res.text())
 
-export const buildOptions = <AdditionalOptions extends Record<string, any>, DD, D = DD>(
-   defaultOptions?: DefaultOptions<AdditionalOptions, DD>,
-   fetcherOptions?: FetcherOptions<AdditionalOptions, D>,
+export const buildOptions = <DD, D = DD>(
+   defaultOptions?: DefaultOptions<DD>,
+   fetcherOptions?: FetcherOptions<D>,
 ) => {
    return {
-      parseSuccess: (res: Response): Promise<D> => parseResponse(res),
-      parseError: async (res: Response) => {
+      async parseError(res: Response): Promise<ResponseError> {
          return new ResponseError(
             res,
             // await here to avoid creating a new variable. This saves a few bytes
             await parseResponse(res),
-            buildOptions(defaultOptions, fetcherOptions),
+            this,
          )
       },
+      parseSuccess: (res: Response): Promise<D> => parseResponse(res),
+      retryTimes: 0,
+      // prettier-ignore
+      retryDelay: (count: number) => 2000 * (1.5 ** (count - 1)),
+      retryWhen: (res: Response) => new Set([408, 413, 429, 500, 502, 503, 504]).has(res.status),
       serializeBody: JSON.stringify,
       serializeParams(params?: FetcherOptions['params']): string {
          // recursively transforms Dates to ISO string and strips undefined
          const clean = JSON.parse(JSON.stringify(params))
          return withQuestionMark(new URLSearchParams(clean).toString())
       },
+      ...omit(defaultOptions as Omit<DefaultOptions<DD>, 'headers'>, specificFetcherOptionsKeys),
       ...omit(
-         defaultOptions as Omit<DefaultOptions<AdditionalOptions, DD>, 'headers'>,
-         specificFetcherOptionsKeys,
-      ),
-      ...omit(
-         fetcherOptions as Omit<FetcherOptions<AdditionalOptions, D>, 'body' | 'headers'>,
+         fetcherOptions as Omit<FetcherOptions<D>, 'body' | 'headers'>,
          specificDefaultOptionsKeys,
       ),
       rawHeaders: mergeHeaders(fetcherOptions?.headers, defaultOptions?.headers),
