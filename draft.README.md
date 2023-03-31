@@ -284,10 +284,11 @@ interface FetcherOptions extends RequestInit {
 ## Node
 
 ✅ **Node >= 18** works without polyfills\
+✅ **Node >= 14.18.0** with [polyfills](#polyfills)
 
-### Polyfills (node: >= 14.18.0 < 18)
+### Polyfills
 
-install [node-fetch](https://github.com/node-fetch/node-fetch)
+Install [node-fetch](https://github.com/node-fetch/node-fetch)
 
 ```bash
 npm i node-fetch
