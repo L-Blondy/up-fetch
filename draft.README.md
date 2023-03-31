@@ -2,7 +2,7 @@
 
 Tiny Fetch API wrapper with configurable defaults
 
-## Features
+# Features
 
 * **Lightweight** - 1kB gzipped
 * **Simple** - stays close to the fetch API
@@ -12,7 +12,7 @@ Tiny Fetch API wrapper with configurable defaults
 * **throws by default**
 * --> works with Next.js 13 fetch
 
-## QuickStart
+# QuickStart
 
 ```bash
 npm i up-fetch
@@ -85,7 +85,7 @@ catch(error) {
 }
 ```
 
-## API
+# API
 
 > **upfetch(options)**
 
@@ -271,24 +271,21 @@ interface FetcherOptions extends RequestInit {
 
 ### Timeout
 
-## Compatibility 
+# Compatibility 
 
-### Browsers
+## Browsers
 
-All modern browsers (2020 +)
+✅ chrome 80\
+✅ edge 80 \
+✅ safari 13.1\
+✅ firefox 74\
+✅ opera 67
 
-  ✅ chrome 80\
-  ✅ edge 80 \
-  ✅ safari 13.1\
-  ✅ firefox 74\
-  ✅ opera 67\
-  ❌ Internet Explorer
+## Node
 
-### Node
+✅ **Node >= 18** works without polyfills\
 
-  ✅ **Node >= 18** works without polyfills\
-
-#### Polyfills (node: >= 14.18.0 < 18)
+### Polyfills (node: >= 14.18.0 < 18)
 
 install [node-fetch](https://github.com/node-fetch/node-fetch)
 
