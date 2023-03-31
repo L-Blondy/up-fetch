@@ -29,11 +29,9 @@ export const buildOptions = <DD, D = DD>(
    retryDelay: (count: number) => 2000 * (1.5 ** (count - 1)),
    retryWhen: (res: Response) => new Set([408, 413, 429, 500, 502, 503, 504]).has(res.status),
    serializeBody: JSON.stringify,
-   serializeParams(params?: FetcherOptions['params']): string {
-      // recursively transforms Dates to ISO string and strips undefined
-      let clean = JSON.parse(JSON.stringify(params))
-      return withQuestionMark(new URLSearchParams(clean).toString())
-   },
+   serializeParams: (params?: FetcherOptions['params']): string =>
+      // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO string and strips undefined
+      new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
    ...omit(defaultOptions as Omit<DefaultOptions<DD>, 'headers'>, specificFetcherOptionsKeys),
    ...omit(
       fetcherOptions as Omit<FetcherOptions<D>, 'body' | 'headers'>,
@@ -53,23 +51,11 @@ export const buildOptions = <DD, D = DD>(
    },
    get href(): string {
       let { baseUrl = '', url = '', params = '', serializeParams } = this
-      let base = typeof baseUrl === 'string' ? baseUrl : baseUrl.origin + baseUrl.pathname
       // params of type string are already considered serialized
       let serializedParams = withQuestionMark(
-         typeof params === 'string'
-            ? params
-            : typeof params === 'object' && params
-            ? serializeParams(params)
-            : '',
+         typeof params === 'object' ? serializeParams(params) : params,
       )
-      if (base && url && !isFullUrl(url)) {
-         return `${addTrailingSlash(base)}${stripLeadingSlash(url)}${serializedParams}`
-      }
-      if (base && !url) {
-         return `${base}${serializedParams}`
-      }
-
-      return `${url}${serializedParams}`
+      return `${/^https?:\/\//.test(url) ? '' : baseUrl}${url}${serializedParams}`
    },
 })
 
@@ -86,10 +72,9 @@ export let isJsonificable = (body: FetcherOptions['body']): body is object =>
    Array.isArray(body) ||
    typeof (body as any)?.toJSON === 'function'
 
-export let isJson = (body: any): boolean => {
-   if (typeof body !== 'string') return false
+export let isJson = (body: BodyInit | null | undefined): body is string => {
    try {
-      return JSON.parse(body) !== null
+      return JSON.parse(body as string) !== null
    } catch (e) {
       return false
    }
@@ -124,16 +109,4 @@ let omit = <O extends Record<string, any>, K extends string>(
 
 let withQuestionMark = (str: string) => {
    return !str ? '' : str.startsWith('?') ? str : `?${str}`
-}
-
-let addTrailingSlash = (str: string) => {
-   return !str ? '' : str.endsWith('/') ? str : `${str}/`
-}
-
-let stripLeadingSlash = (str: string) => {
-   return !str ? '' : str.startsWith('/') ? str.slice(1) : str
-}
-
-let isFullUrl = (url: string): boolean => {
-   return url.startsWith('http://') || url.startsWith('https://')
 }

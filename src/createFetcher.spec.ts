@@ -289,7 +289,7 @@ describe('createFetcher', () => {
       const upfetch = createFetcher(() => ({
          onFetchStart(options) {
             options.baseUrl = 'https://example.com'
-            options.url = 'todos'
+            options.url = '/todos'
          },
       }))
 

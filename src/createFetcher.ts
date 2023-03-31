@@ -13,7 +13,7 @@ export type FetchLike<Init extends Record<string, any> = RequestInit> = (
 ) => Promise<Response>
 
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method'> {
-   baseUrl?: string | URL
+   baseUrl?: string
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
    parseSuccess?: (response: Response) => Promise<D> | D
    parseError?: (response: Response) => Promise<any>

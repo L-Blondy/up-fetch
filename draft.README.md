@@ -147,7 +147,7 @@ createFetcher(() => ({
 
 ### <samp>\<baseUrl\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
-**Type:** `string | URL` 
+**Type:** `string` 
 
 **Default:** `''` 
 
@@ -231,7 +231,7 @@ The request config extends the [Fetch API options](https://developer.mozilla.org
 ```ts
 interface FetcherOptions extends RequestInit {
    // e.g. https://some-domain.com/api/
-   baseUrl?: string | URL
+   baseUrl?: string
    // `url` will be appended to the URL 
    // if it starts with http(s):// the baseUrl will be ignored
    url?: string
