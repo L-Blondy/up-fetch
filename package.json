@@ -13,7 +13,7 @@
   },
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "build": "tsup src/index.ts",
+    "build": "tsup lib/index.ts",
     "dev": "vitest",
     "test": "vitest run && tsc --noEmit",
     "prepublish": "pnpm build && pnpm test",
@@ -53,6 +53,7 @@
     "happy-dom": "^8.9.0",
     "jsdom": "^21.1.1",
     "msw": "^1.2.1",
+    "prettier": "^2.8.7",
     "tsup": "^6.7.0",
     "typescript": "^4.9.5",
     "vitest": "^0.29.8"
