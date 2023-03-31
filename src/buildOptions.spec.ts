@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { buildOptions, isJson, isJsonificable, mergeHeaders } from './buildOptions.js'
+import { buildOptions, isJsonificable, mergeHeaders } from './buildOptions.js'
 
 class False {
    a: number
@@ -51,33 +51,6 @@ describe('isJsonificable', () => {
       ${new True()}  | ${true}
    `('Input: $body', ({ body, output }) => {
       expect(isJsonificable(body)).toEqual(output)
-   })
-})
-
-describe('isJson', () => {
-   // at this point the body was passed to `isJsonificable` and was serialized if necessary
-   // the type of body is: BodyInit | null | undefined
-   // -> no need to test arrays and object
-   test.each`
-      body           | output
-      ${'a:1'}       | ${false}
-      ${'a,1'}       | ${false}
-      ${'{"a":1}'}   | ${true}
-      ${'{a:1}'}     | ${false}
-      ${'[1]'}       | ${true}
-      ${'null'}      | ${false}
-      ${'undefined'} | ${false}
-      ${null}        | ${false}
-      ${undefined}   | ${false}
-      ${blob}        | ${false}
-      ${buffer}      | ${false}
-      ${typedArray}  | ${false}
-      ${dataview}    | ${false}
-      ${formData}    | ${false}
-      ${params}      | ${false}
-      ${stream}      | ${false}
-   `('Input: $body', ({ body, output }) => {
-      expect(isJson(body)).toEqual(output)
    })
 })
 
@@ -134,6 +107,8 @@ describe('serializeParams', () => {
       ${{ key5: ['string', 2, new Date('2023-02-15T13:46:35.046Z')] }}     | ${'?key5=string%2C2%2C2023-02-15T13%3A46%3A35.046Z'}
       ${{ key5: [true, false, null, undefined, 7] }}                       | ${'?key5=true%2Cfalse%2C%2C%2C7'}
       ${{ key5: [1, [2, true, null]] }}                                    | ${'?key5=1%2C2%2Ctrue%2C'}
+      ${undefined}                                                         | ${''}
+      ${null}                                                              | ${''}
       ${new SomeClass()}                                                   | ${'?a=1'}
    `('fallbackOptions.serializeParams: $input', ({ params, queryString }) => {
       expect(buildOptions({}, { params }).href).toBe(queryString)
@@ -316,7 +291,6 @@ test.each`
    body
    ${{ a: 1 }}
    ${[1]}
-   ${'[1]'}
 `(
    'Header { content-type: application/json} should be applied automatically when no "content-type" header is present',
    async ({ body }) => {
@@ -329,9 +303,8 @@ test.each`
    body
    ${{ a: 1 }}
    ${[1]}
-   ${'[1]'}
 `(
-   'Header { content-type: application/json} should NOT be applied automatically when no "content-type" header is present',
+   'Header { content-type: application/json} should NOT be applied automatically when a "content-type" header is present',
    async ({ body }) => {
       const options = buildOptions({ headers: { 'content-type': 'text/html' } }, { body })
       expect(options.headers.get('content-type')).toBe('text/html')

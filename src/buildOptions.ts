@@ -11,44 +11,39 @@ let parseResponse = (res: Response) =>
       .json()
       .catch(() => res.text())
 
-export const buildOptions = <DD, D = DD>(
+export let buildOptions = <DD, D = DD>(
    defaultOptions?: DefaultOptions<DD>,
    fetcherOptions?: FetcherOptions<D>,
 ) => ({
    async parseError(res: Response): Promise<ResponseError> {
-      return new ResponseError(
-         res,
-         // await here to avoid creating a new variable. This saves a few bytes
-         await parseResponse(res),
-         this,
-      )
+      return new ResponseError(res, await parseResponse(res), this)
    },
    parseSuccess: (res: Response): Promise<D> => parseResponse(res),
    retryTimes: 0,
-   // prettier-ignore
-   retryDelay: (count: number) => 2000 * (1.5 ** (count - 1)),
+   retryDelay: (count: number) => 2000 * 1.5 ** (count - 1),
    retryWhen: (res: Response) => new Set([408, 413, 429, 500, 502, 503, 504]).has(res.status),
    serializeBody: JSON.stringify,
-   serializeParams: (params?: FetcherOptions['params']): string =>
-      // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO string and strips undefined
-      new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
+   serializeParams: (params: FetcherOptions['params']): string =>
+      // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
+      new URLSearchParams(JSON.parse(JSON.stringify(params || ''))).toString(),
    ...omit(defaultOptions as Omit<DefaultOptions<DD>, 'headers'>, specificFetcherOptionsKeys),
    ...omit(
       fetcherOptions as Omit<FetcherOptions<D>, 'body' | 'headers'>,
       specificDefaultOptionsKeys,
    ),
-   rawHeaders: mergeHeaders(fetcherOptions?.headers, defaultOptions?.headers),
    rawBody: fetcherOptions?.body,
+   // rawHeaders: mergeHeaders(fetcherOptions?.headers, defaultOptions?.headers),
    get body(): BodyInit | null | undefined {
       return isJsonificable(this.rawBody) ? this.serializeBody(this.rawBody) : this.rawBody
    },
-   get headers(): Headers {
-      let _headers = new Headers(this.rawHeaders)
-      isJson(this.body) &&
-         !this.rawHeaders.has('content-type') &&
+   // allow mutations by not using a getter
+   headers: (() => {
+      let _headers = new Headers(mergeHeaders(fetcherOptions?.headers, defaultOptions?.headers))
+      isJsonificable(fetcherOptions?.body) &&
+         !_headers.has('content-type') &&
          _headers.set('content-type', 'application/json')
       return _headers
-   },
+   })(),
    get href(): string {
       let { baseUrl = '', url = '', params = '', serializeParams } = this
       // params of type string are already considered serialized
@@ -65,45 +60,36 @@ export const buildOptions = <DD, D = DD>(
  * - arrays
  * - instances with a toJSON() method
  *
- * class instances without a toJSON() method will NOT be considered jsonificable
+ * class instances without a toJSON() method are NOT considered jsonificable
  */
 export let isJsonificable = (body: FetcherOptions['body']): body is object =>
    body?.constructor?.name === 'Object' ||
    Array.isArray(body) ||
    typeof (body as any)?.toJSON === 'function'
 
-export let isJson = (body: BodyInit | null | undefined): body is string => {
-   try {
-      return JSON.parse(body as string) !== null
-   } catch (e) {
-      return false
-   }
-}
-
 export let mergeHeaders = (fetcherHeaders?: HeadersInit, defaultHeaders?: HeadersInit): Headers => {
    let headers = new Headers()
-   new Headers(fetcherHeaders).forEach((value, key) => {
-      value !== 'undefined' && headers.set(key, value)
-   })
-   // add the defaults to the headers
-   new Headers(defaultHeaders).forEach((value, key) => {
-      !headers.has(key) && value !== 'undefined' && headers.set(key, value)
-   })
+   let mergeWith = (h?: HeadersInit) => {
+      new Headers(h).forEach((value, key) => {
+         !headers.has(key) && value !== 'undefined' && headers.set(key, value)
+      })
+   }
+   mergeWith(fetcherHeaders)
+   mergeWith(defaultHeaders)
    return headers
 }
 
-// also removes keys when the value is undefined
+// omits the specified keys and obj[key]: undefined
 let omit = <O extends Record<string, any>, K extends string>(
    obj: O | undefined,
    keys: readonly K[],
 ): Omit<O, K> => {
    let copy = { ...obj } as O
-
-   Object.entries(copy).forEach(([key, value]) => {
-      if (keys.includes(key as K) || typeof value === 'undefined') {
+   for (let key in copy) {
+      if (keys.includes(key as any) || typeof copy[key] === 'undefined') {
          delete copy[key]
       }
-   })
+   }
    return copy
 }
 

@@ -1,8 +1,9 @@
 import { RequestOptions } from './createFetcher.js'
 
-const isResponseErrorSymbol = Symbol()
+let isResponseErrorSymbol = Symbol()
 
 export class ResponseError<TErrorData = any> extends Error {
+   // @ts-ignore
    [isResponseErrorSymbol] = true
    override name: 'ResponseError'
    response: {

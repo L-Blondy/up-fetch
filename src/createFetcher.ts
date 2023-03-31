@@ -1,8 +1,5 @@
 import { buildOptions } from './buildOptions.js'
 import { ResponseError } from './ResponseError.js'
-import { withRetry } from './withRetry.js'
-
-// TODO: move retry tests to createFetcher tests
 
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
@@ -39,7 +36,7 @@ export interface FetcherOptions<D = any> extends SharedOptions<D> {
 
 export type RequestOptions<DD = any, D = DD> = ReturnType<typeof buildOptions<DD, D>>
 
-export const createFetcher = <DD = any>(
+export let createFetcher = <DD = any>(
    defaultOptions?: () => DefaultOptions<DD>,
    fetchFn: FetchLike = fetch,
 ) => {
@@ -63,4 +60,20 @@ export const createFetcher = <DD = any>(
             throw error
          })
    }
+}
+
+let waitFor = (ms = 0) => new Promise<void>((resolve) => setTimeout(() => resolve(), ms))
+
+export let withRetry = <F extends FetchLike>(fetchFn: F) => {
+   let fetcher = async (
+      url: string,
+      opts: RequestOptions<any, any>,
+      count = 0,
+   ): Promise<Response> => {
+      let res = await fetchFn(url, opts)
+      return res.ok || count === opts.retryTimes || !opts.retryWhen?.(res)
+         ? res
+         : waitFor(opts.retryDelay(++count, res)).then(() => fetcher(url, opts, count))
+   }
+   return fetcher
 }

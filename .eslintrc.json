@@ -27,7 +27,7 @@
       "no-extend-native": "error",
       "no-implied-eval": "error",
       "no-invalid-this": "error",
-      "no-mixed-operators": "warn",
+      "no-mixed-operators": 0,
       "no-multi-assign": "error",
       "no-multi-str": "error",
       "no-template-curly-in-string": "warn",
@@ -45,6 +45,7 @@
       "eqeqeq": "error",
       "@typescript-eslint/no-empty-function": 0,
       "@typescript-eslint/no-explicit-any": 0,
-      "@typescript-eslint/ban-types": 0
+      "@typescript-eslint/ban-types": 0,
+      "@typescript-eslint/ban-ts-comment": 0
    }
 }
