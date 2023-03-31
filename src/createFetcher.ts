@@ -44,14 +44,14 @@ export const createFetcher = <DD = any>(
    fetchFn: FetchLike = fetch,
 ) => {
    return <D = DD>(fetcherOptions?: FetcherOptions<D>) => {
-      const options = buildOptions<DD, D>(defaultOptions?.(), fetcherOptions)
+      let options = buildOptions<DD, D>(defaultOptions?.(), fetcherOptions)
 
       options.onFetchStart?.(options)
 
       return withRetry(fetchFn)(options.href, options)
          .then(async (res) => {
             if (res.ok) {
-               const data = (await options.parseSuccess(res)) as D
+               let data = (await options.parseSuccess(res)) as D
                options.onSuccess?.(data, options)
                return data
             } else {

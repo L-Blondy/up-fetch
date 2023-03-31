@@ -33,6 +33,7 @@
       "no-template-curly-in-string": "warn",
       "no-unused-vars": "off",
       "prefer-template": "error",
+      "prefer-const": 0,
       "spaced-comment": [
          "warn",
          "always",

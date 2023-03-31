@@ -18,13 +18,13 @@ export class ResponseError<TErrorData = any> extends Error {
 
    constructor(res: Response, data: TErrorData, options: RequestOptions<any, any>) {
       super(`Request failed with status ${res.status}`)
-      const { headers, redirected, url, type, status, statusText } = res
+      let { headers, redirected, url, type, status, statusText } = res
       this.name = 'ResponseError'
       this.response = { headers, redirected, url, type, status, statusText, data }
       this.options = options
    }
 }
 
-export const isResponseError = (error: any): error is ResponseError => {
+export let isResponseError = (error: any): error is ResponseError => {
    return !!error[isResponseErrorSymbol]
 }
