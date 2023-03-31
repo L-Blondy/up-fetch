@@ -9,7 +9,7 @@
     "dist"
   ],
   "engines": {
-    "node": ">=14.16"
+    "node": ">=14.18"
   },
   "scripts": {
     "lint": "eslint . --ext .ts",
@@ -52,6 +52,7 @@
     "eslint": "^8.37.0",
     "jsdom": "^21.1.1",
     "msw": "^1.2.1",
+    "node-fetch": "^3.3.1",
     "prettier": "^2.8.7",
     "tsup": "^6.7.0",
     "typescript": "^4.9.5",

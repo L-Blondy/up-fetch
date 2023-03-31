@@ -30,5 +30,5 @@
       "rootDir": "./lib",
       "outDir": "./dist"
    },
-   "include": ["lib"]
+   "include": ["./lib", "./app"]
 }

@@ -270,3 +270,39 @@ interface FetcherOptions extends RequestInit {
 ## Defaults Options
 
 ### Timeout
+
+## Compatibility 
+
+### Browsers
+
+All modern browsers (2020 +)
+
+  ✅ chrome 80\
+  ✅ edge 80 \
+  ✅ safari 13.1\
+  ✅ firefox 74\
+  ✅ opera 67\
+  ❌ Internet Explorer
+
+### Node
+
+  ✅ **Node >= 18** works without polyfills\
+
+#### Polyfills (node: >= 14.18.0 < 18)
+
+install [node-fetch](https://github.com/node-fetch/node-fetch)
+
+```bash
+npm i node-fetch
+```
+
+Paste the following code in you entry file 
+
+```js
+import fetch, { Headers } from 'node-fetch'
+
+if (!globalThis.fetch) {
+   globalThis.fetch = fetch
+   globalThis.Headers = Headers
+}
+```
