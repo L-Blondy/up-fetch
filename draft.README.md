@@ -288,7 +288,7 @@ interface FetcherOptions extends RequestInit {
 
 ### Polyfills
 
-Polyfills are required for *node >= 14.18.0* and *< 18*.
+Polyfills are required for node versions between *14.18.0* and *18* (excluded).
 
 Install [node-fetch](https://github.com/node-fetch/node-fetch)
 
