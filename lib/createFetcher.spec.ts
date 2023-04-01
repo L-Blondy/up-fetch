@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
 import { createFetcher } from './createFetcher.js'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { ResponseError } from './ResponseError.js'
+import { ResponseError, isResponseError } from './ResponseError.js'
 
 describe('createFetcher', () => {
    const server = setupServer()
@@ -87,7 +87,7 @@ describe('createFetcher', () => {
          cache: 'default',
          credentials: 'omit',
          onError(error) {
-            expect(error instanceof ResponseError).toBeTruthy()
+            expect(isResponseError(error)).toBeTruthy()
             if (count === 1) {
                expect(error.message).toEqual('Request failed with status 400')
                expect(error.options.cache).toBe('default')
@@ -111,6 +111,7 @@ describe('createFetcher', () => {
 
       await upfetch().catch((error) => {
          // the same error as onError with count === 1
+         expect(isResponseError(error)).toEqual(true)
          expect(error.message).toEqual('Request failed with status 400')
          expect(error.options.cache).toBe('default')
          expect(error.options.credentials).toBe('omit')
@@ -123,6 +124,7 @@ describe('createFetcher', () => {
       })
       await upfetch({ url: '/id' }).catch((error) => {
          // the same error as onError with count === 2
+         expect(isResponseError(error)).toEqual(true)
          expect(error.message).toEqual('Request failed with status 401')
          expect(error.options.cache).toBe('default')
          expect(error.options.credentials).toBe('omit')
@@ -219,7 +221,7 @@ describe('createFetcher', () => {
       const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
 
       await upfetch().catch((error) => {
-         expect(error instanceof ResponseError).toEqual(true)
+         expect(isResponseError(error)).toEqual(true)
       })
    })
 
@@ -233,6 +235,7 @@ describe('createFetcher', () => {
       const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
 
       await upfetch().catch((error) => {
+         expect(isResponseError(error)).toEqual(true)
          expect(error.response.data).toEqual({ some: 'json' })
       })
    })
@@ -247,6 +250,7 @@ describe('createFetcher', () => {
       const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
 
       await upfetch().catch((error) => {
+         expect(isResponseError(error)).toEqual(true)
          expect(error.response.data).toEqual('hello world')
       })
    })

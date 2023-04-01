@@ -32,7 +32,6 @@ export let buildOptions = <DD, D = DD>(
       specificDefaultOptionsKeys,
    ),
    rawBody: fetcherOptions?.body,
-   // rawHeaders: mergeHeaders(fetcherOptions?.headers, defaultOptions?.headers),
    get body(): BodyInit | null | undefined {
       return isJsonificable(this.rawBody) ? this.serializeBody(this.rawBody) : this.rawBody
    },
@@ -50,6 +49,7 @@ export let buildOptions = <DD, D = DD>(
       let serializedParams = withQuestionMark(
          typeof params === 'object' ? serializeParams(params) : params,
       )
+      // If `url` is a full url, override the `baseUrl`, otherwise just concat
       return `${/^https?:\/\//.test(url) ? '' : baseUrl}${url}${serializedParams}`
    },
 })
