@@ -36,11 +36,9 @@ export interface FetcherOptions<D = any> extends SharedOptions<D> {
 
 export type RequestOptions<DD = any, D = DD> = ReturnType<typeof buildOptions<DD, D>>
 
-export let createFetcher = <DD = any>(
-   defaultOptions?: () => DefaultOptions<DD>,
-   fetchFn: FetchLike = fetch,
-) => {
-   return <D = DD>(fetcherOptions?: FetcherOptions<D>) => {
+export let createFetcher =
+   <DD = any>(defaultOptions?: () => DefaultOptions<DD>, fetchFn: FetchLike = fetch) =>
+   <D = DD>(fetcherOptions?: FetcherOptions<D>) => {
       let options = buildOptions<DD, D>(defaultOptions?.(), fetcherOptions)
 
       options.onFetchStart?.(options)
@@ -60,20 +58,17 @@ export let createFetcher = <DD = any>(
             throw error
          })
    }
-}
 
 let waitFor = (ms = 0) => new Promise<void>((resolve) => setTimeout(() => resolve(), ms))
 
-export let withRetry = <F extends FetchLike>(fetchFn: F) => {
-   let fetcher = async (
+export let withRetry = <F extends FetchLike>(fetchFn: F) =>
+   async function fetcher(
       url: string,
       opts: RequestOptions<any, any>,
       count = 0,
-   ): Promise<Response> => {
+   ): Promise<Response> {
       let res = await fetchFn(url, opts)
       return res.ok || count === opts.retryTimes || !opts.retryWhen?.(res)
          ? res
          : waitFor(opts.retryDelay(++count, res)).then(() => fetcher(url, opts, count))
    }
-   return fetcher
-}

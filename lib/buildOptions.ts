@@ -93,6 +93,4 @@ let omit = <O extends Record<string, any>, K extends string>(
    return copy
 }
 
-let withQuestionMark = (str: string) => {
-   return !str ? '' : str.startsWith('?') ? str : `?${str}`
-}
+let withQuestionMark = (str: string) => (!str ? '' : str.startsWith('?') ? str : `?${str}`)
