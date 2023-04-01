@@ -255,6 +255,35 @@ describe('createFetcher', () => {
       })
    })
 
+   test('`parseError` should parse the data as null when the server response contains no data', async () => {
+      server.use(
+         rest.get('https://example.com', (req, res, ctx) => {
+            return res(ctx.status(400))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
+
+      await upfetch().catch((error) => {
+         expect(isResponseError(error)).toEqual(true)
+         expect(error.response.data).toEqual(null)
+      })
+   })
+
+   test('`parseSuccess` should parse the data as null when the server response contains no data', async () => {
+      server.use(
+         rest.get('https://example.com', (req, res, ctx) => {
+            return res(ctx.status(200))
+         }),
+      )
+
+      const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
+
+      await upfetch().then((data) => {
+         expect(data).toEqual(null)
+      })
+   })
+
    test('parseSuccess default implementation should parse JSON properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {

@@ -9,7 +9,8 @@ let parseResponse = (res: Response) =>
    res
       .clone()
       .json()
-      .catch(() => res.text())
+      .catch(() => res.clone().text())
+      .then((data) => data || null)
 
 export let buildOptions = <DD, D = DD>(
    defaultOptions?: DefaultOptions<DD>,
