@@ -7,10 +7,11 @@ export class ResponseError<TErrorData = any> extends Error {
 
    constructor(res: Response, data: TErrorData, options: RequestOptions<any, any>) {
       super(`Request failed with status ${res.status}`)
-      let resWithData: any = res.clone()
-      resWithData.data = data
+      // because ResponseError is only instantiated during the response parsing,
+      // mutating the response here is fine
+      ;(res as any).data = data
       this.name = 'ResponseError'
-      this.response = resWithData
+      this.response = res as any
       this.options = options
    }
 }
