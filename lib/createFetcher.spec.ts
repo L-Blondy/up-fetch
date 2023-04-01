@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
 import { createFetcher } from './createFetcher.js'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { ResponseError, isResponseError } from './ResponseError.js'
+import { isResponseError } from './ResponseError.js'
 
 describe('createFetcher', () => {
    const server = setupServer()
@@ -499,5 +499,18 @@ describe('withRetry', () => {
       }))().catch(() => {})
       expect(data).toBe('hello success')
       expect(count).toBe(2)
+   })
+
+   test('Retries should not be triggered by non ResponseError errors', async () => {
+      const startAtMs = Date.now()
+      const retryDelay = 1000
+
+      await createFetcher(() => ({
+         baseUrl: 'https://example.com',
+         retryTimes: 1,
+         retryDelay: () => retryDelay,
+      }))().catch(() => {
+         expect(Date.now() - startAtMs).toBeLessThan(retryDelay)
+      })
    })
 })
