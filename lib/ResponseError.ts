@@ -1,24 +1,16 @@
 import { RequestOptions } from './createFetcher.js'
 
 export class ResponseError<TErrorData = any> extends Error {
-   // @ts-ignore
    override name: 'ResponseError'
-   response: {
-      data: TErrorData
-      headers: Headers
-      redirected: boolean
-      url: string
-      type: ResponseType
-      status: number
-      statusText: string
-   }
+   response: Response & { data: TErrorData }
    options: RequestOptions<any, any>
 
    constructor(res: Response, data: TErrorData, options: RequestOptions<any, any>) {
       super(`Request failed with status ${res.status}`)
-      let { headers, redirected, url, type, status, statusText } = res
+      let resWithData: any = res.clone()
+      resWithData.data = data
       this.name = 'ResponseError'
-      this.response = { headers, redirected, url, type, status, statusText, data }
+      this.response = resWithData
       this.options = options
    }
 }
