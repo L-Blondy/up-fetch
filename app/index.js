@@ -8,9 +8,17 @@ if (!globalThis.fetch) {
 }
 
 async function main() {
-   const upfetch = createFetcher(undefined)
+   const upfetch = createFetcher(() => ({
+      retryTimes: 1,
+      retryDelay: () => 10000,
+      retryWhen: () => true,
+      signal: AbortSignal.timeout(1000),
+      onError(error) {
+         console.log('error.name', error.name)
+      },
+   }))
    try {
-      const data = await upfetch({ url: 'https://dummyjson.com/products/1' })
+      const data = await upfetch({ url: 'https://www.google.com/fail' })
       console.log(data)
    } catch (e) {
       console.log(e)

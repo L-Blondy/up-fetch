@@ -59,7 +59,14 @@ export let createFetcher =
          })
    }
 
-let waitFor = (ms = 0) => new Promise<void>((resolve) => setTimeout(() => resolve(), ms))
+let waitFor = (ms = 0, signal?: AbortSignal | null) =>
+   new Promise<void>((resolve, reject) => {
+      let id = setTimeout(resolve, ms)
+      signal?.addEventListener('abort', () => {
+         clearTimeout(id)
+         reject(new DOMException('Request cancelled.', 'AbortError'))
+      })
+   })
 
 export let withRetry = <F extends FetchLike>(fetchFn: F) =>
    async function fetcher(
@@ -70,5 +77,5 @@ export let withRetry = <F extends FetchLike>(fetchFn: F) =>
       let res = await fetchFn(url, opts)
       return res.ok || count === opts.retryTimes || !opts.retryWhen?.(res)
          ? res
-         : waitFor(opts.retryDelay(++count, res)).then(() => fetcher(url, opts, count))
+         : waitFor(opts.retryDelay(++count, res), opts.signal).then(() => fetcher(url, opts, count))
    }

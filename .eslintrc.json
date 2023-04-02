@@ -8,7 +8,7 @@
    ],
    "rules": {
       "block-scoped-var": "error",
-      "default-param-last": "error",
+      "default-param-last": 0,
       "getter-return": "error",
       "grouped-accessor-pairs": "warn",
       "max-params": ["error", 4],
