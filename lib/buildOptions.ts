@@ -27,6 +27,7 @@ export let buildOptions = <DD, D = DD>(
    serializeParams: (params: FetcherOptions['params']): string =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
       new URLSearchParams(JSON.parse(JSON.stringify(params || ''))).toString(),
+   // `headers` & `body` are always overridden, omitting them from the spread types to avoid type pollution
    ...omit(defaultOptions as Omit<DefaultOptions<DD>, 'headers'>, specificFetcherOptionsKeys),
    ...omit(
       fetcherOptions as Omit<FetcherOptions<D>, 'body' | 'headers'>,

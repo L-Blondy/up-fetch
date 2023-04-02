@@ -16,5 +16,5 @@ export class ResponseError<TErrorData = any> extends Error {
    }
 }
 
-export let isResponseError = <D>(error: any): error is ResponseError<D> =>
+export let isResponseError = <TErrorData>(error: any): error is ResponseError<TErrorData> =>
    error instanceof ResponseError
