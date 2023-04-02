@@ -1,6 +1,7 @@
 import { buildOptions } from './buildOptions.js'
 import { ResponseError } from './ResponseError.js'
 
+// Aliasing Record<string, any> to PlainObject for clearer intent
 type PlainObject = Record<string, any>
 type ParamValue = string | number | Date | boolean | null | undefined
 
@@ -12,10 +13,10 @@ export type FetchLike<Init extends Record<string, any> = RequestInit> = (
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
-   parseSuccess?: (response: Response) => Promise<D> | D
-   parseError?: (response: Response) => Promise<any>
+   parseSuccess?: (response: Response, options: RequestOptions) => Promise<D> | D
+   parseError?: (response: Response, options: RequestOptions) => Promise<any>
    retryTimes?: number
-   retryWhen?: (response: Response) => boolean
+   retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
    serializeBody?: (body: PlainObject | Array<any>) => string
    serializeParams?: (params: FetcherOptions['params']) => string
@@ -24,8 +25,8 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {
    onError?: (error: ResponseError) => void
-   onFetchStart?: (options: RequestOptions<any, any>) => void
-   onSuccess?: (data: any, options: RequestOptions<any, any>) => void
+   onFetchStart?: (options: RequestOptions) => void
+   onSuccess?: (data: any, options: RequestOptions) => void
 }
 
 export interface FetcherOptions<D = any> extends SharedOptions<D> {
@@ -34,7 +35,25 @@ export interface FetcherOptions<D = any> extends SharedOptions<D> {
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
-export type RequestOptions<DD = any, D = DD> = ReturnType<typeof buildOptions<DD, D>>
+type RequestOptionsRequiredKeys =
+   | 'parseError'
+   | 'parseSuccess'
+   | 'retryTimes'
+   | 'retryDelay'
+   | 'retryWhen'
+   | 'serializeBody'
+   | 'serializeParams'
+   | 'headers'
+
+export interface RequestOptions<DD = any, D = DD>
+   extends Omit<RequestInit, RequestOptionsRequiredKeys>,
+      Omit<DefaultOptions<DD>, RequestOptionsRequiredKeys | keyof RequestInit>,
+      Omit<FetcherOptions<D>, RequestOptionsRequiredKeys | keyof RequestInit>,
+      Pick<Required<SharedOptions>, RequestOptionsRequiredKeys> {
+   rawBody?: FetcherOptions['body']
+   headers: Headers
+   href: string
+}
 
 export let createFetcher =
    <DD = any>(defaultOptions?: () => DefaultOptions<DD>, fetchFn: FetchLike = fetch) =>
@@ -46,11 +65,11 @@ export let createFetcher =
       return withRetry(fetchFn)(options.href, options)
          .then(async (res) => {
             if (res.ok) {
-               let data = (await options.parseSuccess(res)) as D
+               let data = (await options.parseSuccess(res, options)) as D
                options.onSuccess?.(data, options)
                return data
             } else {
-               throw await options.parseError(res)
+               throw await options.parseError(res, options)
             }
          })
          .catch((error) => {
@@ -69,13 +88,9 @@ let waitFor = (ms = 0, signal?: AbortSignal | null) =>
    })
 
 export let withRetry = <F extends FetchLike>(fetchFn: F) =>
-   async function fetcher(
-      url: string,
-      opts: RequestOptions<any, any>,
-      count = 0,
-   ): Promise<Response> {
+   async function fetcher(url: string, opts: RequestOptions, count = 0): Promise<Response> {
       let res = await fetchFn(url, opts)
-      return res.ok || count === opts.retryTimes || !opts.retryWhen?.(res)
+      return res.ok || count === opts.retryTimes || !opts.retryWhen?.(res, opts)
          ? res
          : waitFor(opts.retryDelay(++count, res), opts.signal).then(() => fetcher(url, opts, count))
    }

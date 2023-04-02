@@ -1,4 +1,4 @@
-import { DefaultOptions, FetcherOptions } from './createFetcher.js'
+import { DefaultOptions, FetcherOptions, RequestOptions } from './createFetcher.js'
 import { ResponseError } from './ResponseError.js'
 
 export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
@@ -15,9 +15,9 @@ let parseResponse = (res: Response) =>
 export let buildOptions = <DD, D = DD>(
    defaultOptions?: DefaultOptions<DD>,
    fetcherOptions?: FetcherOptions<D>,
-) => ({
-   async parseError(res: Response): Promise<ResponseError> {
-      return new ResponseError(res, await parseResponse(res), this)
+): RequestOptions<DD, D> => ({
+   async parseError(res: Response, options: RequestOptions): Promise<ResponseError> {
+      return new ResponseError(res, await parseResponse(res), options)
    },
    parseSuccess: (res: Response): Promise<D> => parseResponse(res),
    retryTimes: 0,
