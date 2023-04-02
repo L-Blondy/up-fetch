@@ -61,9 +61,9 @@ export let createFetcher =
 
 let waitFor = (ms = 0, signal?: AbortSignal | null) =>
    new Promise<void>((resolve, reject) => {
-      let id = setTimeout(resolve, ms)
+      let timeoutId = setTimeout(resolve, ms)
       signal?.addEventListener('abort', () => {
-         clearTimeout(id)
+         clearTimeout(timeoutId)
          reject(new DOMException('Request cancelled.', 'AbortError'))
       })
    })
