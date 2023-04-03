@@ -74,19 +74,6 @@ let toRecord = (h1: Headers, h2?: HeadersInit | null | false) => (
    h2 && new Headers(h2).forEach((value, key) => value !== 'undefined' && h1.set(key, value)), h1
 )
 
-// export let mergeHeaders = (
-//    defaultHeaders?: HeadersInit,
-//    fetcherHeaders?: HeadersInit,
-// ): Record<string, string> => {
-//    let headers: Record<string, string> = {}
-//    let mergeWith = (h?: HeadersInit) =>
-//       new Headers(h).forEach((value, key) => value !== 'undefined' && (headers[key] = value))
-
-//    mergeWith(defaultHeaders)
-//    mergeWith(fetcherHeaders)
-//    return headers
-// }
-
 // omits the specified keys and obj[key]: undefined
 let omit = <O extends Record<string, any>, K extends string>(
    obj: O | undefined,
