@@ -14,7 +14,7 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    baseUrl?: string
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
    parseSuccess?: (response: Response, options: RequestOptions) => Promise<D> | D
-   parseError?: (response: Response, options: RequestOptions) => Promise<any>
+   parseError?: (response: Response, options: RequestOptions) => Promise<any> | any
    retryTimes?: number
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
@@ -38,7 +38,6 @@ export interface FetcherOptions<D = any> extends SharedOptions<D> {
 type RequestOptionsRequiredKeys =
    | 'parseError'
    | 'parseSuccess'
-   | 'retryTimes'
    | 'retryDelay'
    | 'retryWhen'
    | 'serializeBody'
@@ -50,7 +49,6 @@ export interface RequestOptions<DD = any, D = DD>
       Omit<DefaultOptions<DD>, RequestOptionsRequiredKeys | keyof RequestInit>,
       Omit<FetcherOptions<D>, RequestOptionsRequiredKeys | keyof RequestInit>,
       Pick<Required<SharedOptions>, RequestOptionsRequiredKeys> {
-   rawBody?: FetcherOptions['body']
    headers: Headers
    href: string
 }
@@ -90,7 +88,7 @@ let waitFor = (ms = 0, signal?: AbortSignal | null) =>
 export let withRetry = <F extends FetchLike>(fetchFn: F) =>
    async function fetcher(url: string, opts: RequestOptions, count = 0): Promise<Response> {
       let res = await fetchFn(url, opts)
-      return res.ok || count === opts.retryTimes || !opts.retryWhen?.(res, opts)
+      return res.ok || count === (opts.retryTimes || 0) || !opts.retryWhen(res, opts)
          ? res
          : waitFor(opts.retryDelay(++count, res), opts.signal).then(() => fetcher(url, opts, count))
    }

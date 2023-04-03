@@ -327,12 +327,10 @@ describe('createFetcher', () => {
          headers: { 'content-type': 'application/json' },
 
          onFetchStart(options) {
-            options.baseUrl = 'https://example.com'
-            options.url = '/todos'
+            options.href = 'https://example.com/todos'
             options.method = 'POST'
             options.headers.append('Authorization', 'Bearer token')
-            // @ts-ignore
-            options.rawBody.a = 2
+            options.body = '{"a":2}'
          },
       }))
 

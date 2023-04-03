@@ -65,7 +65,7 @@ describe('mergeHeaders', () => {
       ${new Headers({ 'Cache-Control': 'no-cache' })}                              | ${new Headers({ 'cache-Control': 'no-store', 'content-type': 'text/html' })} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
    `('Input: $defaultHeaders, $fetcherHeaders', ({ defaultHeaders, fetcherHeaders, output }) => {
       const object: Record<string, string> = {}
-      mergeHeaders(fetcherHeaders, defaultHeaders).forEach((value, key) => (object[key] = value))
+      mergeHeaders(defaultHeaders, fetcherHeaders).forEach((value, key) => (object[key] = value))
       expect(object).toEqual(output)
    })
 })
@@ -143,22 +143,6 @@ describe('href', () => {
 })
 
 describe('options', () => {
-   test('spreading the requestOptions should preserve the getters', async () => {
-      const options = buildOptions(
-         { baseUrl: 'http://a.b.c' },
-         { headers: { Authorization: 'Bearer me' }, body: { hello: 'world' }, url: '/todos' },
-      )
-      expect(options.href).toEqual('http://a.b.c/todos')
-      expect(options.body).toEqual('{"hello":"world"}')
-      expect(options.headers.get('Authorization')).toEqual('Bearer me')
-
-      const copy = { ...options }
-
-      expect(copy.href).toEqual('http://a.b.c/todos')
-      expect(copy.body).toEqual('{"hello":"world"}')
-      expect(copy.headers.get('Authorization')).toEqual('Bearer me')
-   })
-
    test('The `defaultOptions` should override the `fallbackOptions`', async () => {
       const retryDelay = () => 54321
       const retryWhen = () => true
