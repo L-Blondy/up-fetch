@@ -78,11 +78,16 @@ export let createFetcher =
 
 let waitFor = (ms = 0, signal?: AbortSignal | null) =>
    new Promise<void>((resolve, reject) => {
-      let timeoutId = setTimeout(resolve, ms)
-      signal?.addEventListener('abort', () => {
+      let timeoutId = setTimeout(timeoutCb, ms)
+      function abortCb() {
          clearTimeout(timeoutId)
          reject(new DOMException('Request cancelled.', 'AbortError'))
-      })
+      }
+      function timeoutCb() {
+         signal?.removeEventListener('abort', abortCb)
+         resolve()
+      }
+      signal?.addEventListener('abort', abortCb)
    })
 
 export let withRetry = <F extends FetchLike>(fetchFn: F) =>

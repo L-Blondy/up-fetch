@@ -13,15 +13,15 @@ async function main() {
       retryDelay: () => 10000,
       retryWhen: () => true,
       signal: AbortSignal.timeout(1000),
-      onError(error) {
-         console.log('error.name', error.name)
+      onError(e) {
+         console.log({ code: e.code, name: e.name, message: e.message })
       },
    }))
    try {
       const data = await upfetch({ url: 'https://www.google.com/fail' })
       console.log(data)
    } catch (e) {
-      console.log(e)
+      console.log({ code: e.code, name: e.name, message: e.message })
    }
 }
 
