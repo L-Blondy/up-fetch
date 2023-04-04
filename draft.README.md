@@ -228,7 +228,7 @@ upfetch({ url: 'https://another-url.com/id' })
 **Default:** `undefined`
 
 The body of the request.\
-Plain objects, arrays and classes with to `toJSON` method are passed to [`serializeBody`](#serializebody-upfetch-createfetcher) and serialized to a string by default. All other values remain untouched. \
+Only plain objects, arrays and classes with to `toJSON` method are passed to [`serializeBody`](#serializebody-upfetch-createfetcher) and serialized to a string, all other values remain untouched. \
 Use the [`serializeBody`](#serializebody-upfetch-createfetcher) option to customize the serialization. \
 This method is not available on `createFetcher`
 
@@ -251,7 +251,8 @@ upfetch({
 
 **Default:** `'GET'`
 
-The method of the request. See [MDN][MDN] for more details.
+The method of the request. \ 
+See [MDN][MDN] for more details.
 
 **Example:**
 
