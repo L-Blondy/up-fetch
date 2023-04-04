@@ -308,7 +308,7 @@ upfetch({
 **Default:** `JSON.stringify`
 
 A function used to customize the [`body`](#body-upfetch) serialization into a string. \
-The `body` is not passed to `serializeBody` if it is not a plain object, an array or a class with a `toJSON` method. 
+The [`body`](#body-upfetch) is passed to `serializeBody` only if it is: a plain object, an array or a class with a `toJSON` method. 
 
 
 **Example:**
