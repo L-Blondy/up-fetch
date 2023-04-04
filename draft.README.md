@@ -228,7 +228,7 @@ upfetch({ url: 'https://another-url.com/id' })
 **Default:** `undefined`
 
 The body of the request.\
-Objects, Arrays and classes with to `toJSON` method are serialized by default. The serialization can be customized with the [serializeBody](#serializebody-upfetch-createfetcher) function. \
+Objects, Arrays and classes with to `toJSON` method are serialized by default. The serialization can be customized with the [`serializeBody`](#serializebody-upfetch-createfetcher) function. \
 This method is not available on `createFetcher`
 
 **Example:**
