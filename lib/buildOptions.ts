@@ -67,9 +67,9 @@ export let isJsonificable = (body: FetcherOptions['body']): body is object =>
    typeof (body as any)?.toJSON === 'function'
 
 export let mergeHeaders = (...list: (HeadersInit | null | false | undefined)[]): Headers =>
-   list.reduce(toRecord, new Headers())
+   list.reduce(addHeaders, new Headers())
 
-let toRecord = (h1: Headers, h2?: HeadersInit | null | false) => (
+let addHeaders = (h1: Headers, h2?: HeadersInit | null | false) => (
    h2 && new Headers(h2).forEach((value, key) => value !== 'undefined' && h1.set(key, value)), h1
 )
 
