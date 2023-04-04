@@ -1,9 +1,6 @@
 import { buildOptions } from './buildOptions.js'
 import { ResponseError } from './ResponseError.js'
 
-// Aliasing Record<string, any> to PlainObject for clearer intent
-type PlainObject = Record<string, any>
-
 export type FetchLike<Init extends Record<string, any> = RequestInit> = (
    url: any,
    init?: Init,
@@ -17,7 +14,7 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    retryTimes?: number
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
-   serializeBody?: (body: PlainObject | Array<any>) => string
+   serializeBody?: (body: Record<string, any> | Array<any>) => string
    serializeParams?: (params: Record<string, any>) => string
 }
 
@@ -30,7 +27,7 @@ export interface DefaultOptions<D = any> extends SharedOptions<D> {
 export interface FetcherOptions<D = any> extends SharedOptions<D> {
    url?: string
    params?: string | Record<string, any>
-   body?: BodyInit | PlainObject | Array<any> | null
+   body?: BodyInit | Record<string, any> | Array<any> | null
 }
 
 type RequestOptionsRequiredKeys =

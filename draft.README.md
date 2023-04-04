@@ -228,7 +228,8 @@ upfetch({ url: 'https://another-url.com/id' })
 **Default:** `undefined`
 
 The body of the request.\
-Objects, Arrays and classes with to `toJSON` method are serialized by default. The serialization can be customized with the [`serializeBody`](#serializebody-upfetch-createfetcher) function. \
+Plain objects, arrays and classes with to `toJSON` method are serialized to a string by default, all other values will remain untouched. \
+The serialization can be customized with the [`serializeBody`](#serializebody-upfetch-createfetcher) function. \
 This method is not available on `createFetcher`
 
 **Example:**
@@ -273,9 +274,9 @@ upfetch({
 
 **Type:** `(params: Record<string, any>) => string`
 
-A function to customize the [`params`](#params-upfetch) serialization into a query string. \
+A function used to customize the [`params`](#params-upfetch) serialization into a query string. \
 By default only non-nested objects are supported, Dates are transformed to [ISO strings][toISOString]. \
-You can change this behavior by providing a custom implementation.
+You can change this behavior by providing a custom `serializeParams` implementation.
 
 
 **Example:**
@@ -286,7 +287,7 @@ import qs from 'qs'
 const options = { arrayFormat: 'indices' }
 
 const upfetch = createFetcher(() => ({
-   baseUrl: 'https://example.com/'
+   baseUrl: 'https://example.com/',
    serializeParams: (params) => {
       qs.stringify(params, options)
    }
@@ -297,11 +298,36 @@ upfetch({
    params: { a: ['b', 'c'] }
 })
 ```
+
 <!--  -->
 
 ## <samp>\<serializeBody\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
+**Type:** `(body: Record<string, any> | Array<any>) => string`
 
+**Default:** `JSON.stringify`
+
+A function used to customize the [`body`](#body-upfetch) serialization into a string. \
+The `body` is not passed to `serializeBody` if it is not a plain object, an array or a class with a `toJSON` method. \
+
+
+**Example:**
+
+```ts
+import stringify from 'json-stringify-safe'
+
+const upfetch = createFetcher(() => ({
+   baseUrl: 'https://example.com/',
+   serializeBody: (body) => {
+      // does not throw on circular references.
+      stringify(body)
+   }
+}))
+
+upfetch({ 
+   body: { some: 'circular ref' }
+})
+```
 
 
 
