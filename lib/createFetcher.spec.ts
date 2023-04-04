@@ -191,7 +191,7 @@ describe('createFetcher', () => {
       expect(count).toBe(2)
    })
 
-   test('When fetch starts, onFetchStart(options, url) should be triggered', async () => {
+   test('When fetch starts, beforeFetch(options, url) should be triggered', async () => {
       server.use(
          rest.post('https://example.com', (req, res, ctx) => {
             return res(ctx.status(200))
@@ -200,7 +200,7 @@ describe('createFetcher', () => {
 
       const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
-         onFetchStart(options) {
+         beforeFetch(options) {
             expect(options.baseUrl).toBe('https://example.com')
             expect(options.body).toBe('{"hello":"world"}')
             expect(options.method).toBe('POST')
@@ -326,7 +326,7 @@ describe('createFetcher', () => {
       const upfetch = createFetcher(() => ({
          headers: { 'content-type': 'application/json' },
 
-         onFetchStart(options) {
+         beforeFetch(options) {
             options.href = 'https://example.com/todos'
             options.method = 'POST'
             options.headers.append('Authorization', 'Bearer token')

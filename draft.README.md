@@ -87,7 +87,7 @@ catch(error) {
 
 # API
 
-> **upfetch(options)**
+### **upfetch(options)**
 
 ```ts
 upfetch({
@@ -96,6 +96,9 @@ upfetch({
    url,
    params,
    parseSuccess,
+   retryDelay,
+   retryTimes,
+   retryWhen,
    serializeBody,
    serializeParams,
    // tweaked fetch options
@@ -116,16 +119,19 @@ upfetch({
 })
 ```
 
-> **createFetcher(() => options)**
+### **createFetcher(() => options)**
 
 ```ts
 createFetcher(() => ({
    // custom options
    baseUrl,
    onError,
-   onFetchStart,
+   beforeFetch,
    onSuccess,
    parseSuccess,
+   retryDelay,
+   retryTimes,
+   retryWhen,
    serializeBody,
    serializeParams,
    // tweaked fetch options
@@ -144,6 +150,8 @@ createFetcher(() => ({
    window,
 }))
 ```
+
+## Options
 
 ### <samp>\<baseUrl\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 

@@ -25,7 +25,7 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {
    onError?: (error: ResponseError) => void
-   onFetchStart?: (options: RequestOptions) => void
+   beforeFetch?: (options: RequestOptions) => void
    onSuccess?: (data: any, options: RequestOptions) => void
 }
 
@@ -58,7 +58,7 @@ export let createFetcher =
    <D = DD>(fetcherOptions?: FetcherOptions<D>) => {
       let options = buildOptions<DD, D>(defaultOptions?.(), fetcherOptions)
 
-      options.onFetchStart?.(options)
+      options.beforeFetch?.(options)
 
       return withRetry(fetchFn)(options.href, options)
          .then(async (res) => {

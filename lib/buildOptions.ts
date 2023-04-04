@@ -1,7 +1,7 @@
 import { DefaultOptions, FetcherOptions, RequestOptions } from './createFetcher.js'
 import { ResponseError } from './ResponseError.js'
 
-export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'onFetchStart'] as const
+export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'beforeFetch'] as const
 
 export let specificFetcherOptionsKeys = ['body', 'url', 'params'] as const
 

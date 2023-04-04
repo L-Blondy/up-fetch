@@ -69,9 +69,9 @@ test('return type', () => {
    })
 })
 
-test('`onFetchStart` should receive `options', () => {
+test('`beforeFetch` should receive `options', () => {
    createFetcher(() => ({
-      onFetchStart: (options) => {
+      beforeFetch: (options) => {
          expectTypeOf(options).toEqualTypeOf<RequestOptions>()
       },
    }))
