@@ -205,7 +205,7 @@ upfetch({ url: 'https://another-url.com/id' })
 
 The url search params. Can be a string or an object. \
 The default [`serializeParams`](#serializeparams-upfetch-createfetcher) implementation being base on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
-To support nested objects, a custom [`serializeParams`](#serializeparams-upfetch-createfetcher) function is required. \
+To support nested objects, a custom [`serializeParams`](#serializeparams-upfetch-createfetcher) implementation is required. \
 This method is not available on `createFetcher`
 
 **Example:**
@@ -228,8 +228,8 @@ upfetch({ url: 'https://another-url.com/id' })
 **Default:** `undefined`
 
 The body of the request.\
-Plain objects, arrays and classes with to `toJSON` method are serialized to a string by default, all other values will remain untouched. \
-The serialization can be customized with the [`serializeBody`](#serializebody-upfetch-createfetcher) function. \
+Plain objects, arrays and classes with to `toJSON` method are passed to [`serializeBody`](#serializebody-upfetch-createfetcher) and serialized to a string by default. All other values remain untouched. \
+Use the [`serializeBody`](#serializebody-upfetch-createfetcher) option to customize the serialization. \
 This method is not available on `createFetcher`
 
 **Example:**
@@ -308,7 +308,7 @@ upfetch({
 **Default:** `JSON.stringify`
 
 A function used to customize the [`body`](#body-upfetch) serialization into a string. \
-The `body` is not passed to `serializeBody` if it is not a plain object, an array or a class with a `toJSON` method. \
+The `body` is not passed to `serializeBody` if it is not a plain object, an array or a class with a `toJSON` method. 
 
 
 **Example:**
