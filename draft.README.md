@@ -151,6 +151,7 @@ createFetcher(() => ({
 }))
 ```
 
+<!--  -->
 
 ## <samp>\<baseUrl\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
@@ -171,39 +172,46 @@ upfetch()
 upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
+<!--  -->
+
 ## <samp>\<url\></samp> <kbd>upfetch</kbd> 
 
 **Type:** `string`
 
 **Default:** `''`
 
-Path to append to the baseUrl, or an entire url.
+Path to append to the baseUrl, or an entire url. \
+This method is not available on `createFetcher`
 
 **Example:**
 
 ```ts
-const upfetch = createFetcher({ baseUrl: 'https://example.com' })
+const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
 
 upfetch({ url: '/id' })
 
 // Override the baseUrl
 upfetch({ url: 'https://another-url.com/id' })
 ```
+
+<!--  -->
 
 ## <samp>\<params\></samp> <kbd>upfetch</kbd> 
 
-**Type:** `string | Record<string, PrimitiveOrDate | PrimitiveOrDate[]>`
+<!-- **Type:** `string | Record<string, PrimitiveOrDate | PrimitiveOrDate[]>` -->
+**Type:** `string | Record<string, any>`
 
 **Default:** `''`
 
-The url search params. \
-Can be a string or an object containing primitive values, Dates, or an array of those. \
-The serialization of the params object can be customized with the `serializeParams` option.
+The url search params. Can be a string or an object. \
+The default [serializeParams](#serializeparams-upfetch-createfetcher) implementation being base on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
+To support nested objects, a custom [serializeParams](#serializeparams-upfetch-createfetcher) function is required. \
+This method is not available on `createFetcher`
 
 **Example:**
 
 ```ts
-const upfetch = createFetcher({ baseUrl: 'https://example.com' })
+const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
 
 upfetch({ url: '/id' })
 
@@ -211,6 +219,61 @@ upfetch({ url: '/id' })
 upfetch({ url: 'https://another-url.com/id' })
 ```
 
+<!--  -->
+
+## <samp>\<body\></samp> <kbd>upfetch</kbd> 
+
+**Type:** `BodyInit | PlainObject | Array<any> | null`
+
+**Default:** `undefined`
+
+The body of the request.\
+Objects, Arrays and classes with to `toJSON` method are serialized by default. The serialization can be customized with the [serializeBody](#serializebody-upfetch-createfetcher) function. \
+This method is not available on `createFetcher`
+
+**Example:**
+
+```ts
+createFetcher(() => ({ baseUrl: 'https://example.com' }))
+
+upfetch({ 
+   method: 'POST',
+   body: { hello: 'world' } 
+})
+```
+
+<!--  -->
+
+## <samp>\<method\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+
+**Type:** 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
+
+**Default:** `'GET'`
+
+The method of the request. See [MDN][MDN] for more details.
+
+**Example:**
+
+```ts
+const upfetch = createFetcher(() => ({
+   method: 'GET',
+   baseUrl: 'https://example.com'
+}))
+
+// override the method
+upfetch({ 
+   method: 'POST',
+   body: { hello: 'world' } 
+})
+```
+
+<!--  -->
+
+## <samp>\<serializeParams\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+
+<!--  -->
+
+## <samp>\<serializeBody\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
 
 
@@ -233,7 +296,7 @@ upfetch({ url: 'https://another-url.com/id' })
 
 ## Request Options
 
-The request config extends the [Fetch API options](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
+The request config extends the [Fetch API options][MDN]
 
 ```ts
 interface FetcherOptions extends RequestInit {
@@ -313,3 +376,6 @@ if (!globalThis.fetch) {
    globalThis.Headers = Headers
 }
 ```
+
+[mdn]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
+[URLSearchParams]: https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams

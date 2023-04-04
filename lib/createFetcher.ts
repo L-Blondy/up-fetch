@@ -20,7 +20,6 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    retryDelay?: (attemptNumber: number, response: Response) => number
    serializeBody?: (body: PlainObject | Array<any>) => string
    serializeParams?: (params: FetcherOptions['params']) => string
-   timeout?: number
 }
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {
@@ -97,3 +96,12 @@ export let withRetry = <F extends FetchLike>(fetchFn: F) =>
          ? res
          : waitFor(opts.retryDelay(++count, res), opts.signal).then(() => fetcher(url, opts, count))
    }
+
+createFetcher(() => ({}))({
+   baseUrl: '',
+   url: '',
+   params: '',
+   body: '',
+   method: 'GET',
+})
+// createFetcher()({ body: { hello: 'world' } })
