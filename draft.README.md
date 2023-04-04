@@ -204,8 +204,8 @@ upfetch({ url: 'https://another-url.com/id' })
 **Default:** `''`
 
 The url search params. Can be a string or an object. \
-The default [serializeParams](#serializeparams-upfetch-createfetcher) implementation being base on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
-To support nested objects, a custom [serializeParams](#serializeparams-upfetch-createfetcher) function is required. \
+The default [`serializeParams`](#serializeparams-upfetch-createfetcher) implementation being base on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
+To support nested objects, a custom [`serializeParams`](#serializeparams-upfetch-createfetcher) function is required. \
 This method is not available on `createFetcher`
 
 **Example:**
@@ -246,7 +246,7 @@ upfetch({
 
 ## <samp>\<method\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
-**Type:** 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
+**Type:** `'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'`
 
 **Default:** `'GET'`
 
@@ -271,6 +271,32 @@ upfetch({
 
 ## <samp>\<serializeParams\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
 
+**Type:** `(params: Record<string, any>) => string`
+
+A function to customize the [`params`](#params-upfetch) serialization into a query string. \
+By default only non-nested objects are supported, Dates are transformed to [ISO strings][toISOString]. \
+You can change this behavior by providing a custom implementation.
+
+
+**Example:**
+
+```ts
+import qs from 'qs'
+
+const options = { arrayFormat: 'indices' }
+
+const upfetch = createFetcher(() => ({
+   baseUrl: 'https://example.com/'
+   serializeParams: (params) => {
+      qs.stringify(params, options)
+   }
+}))
+
+// GET https://example.com/?a[0]=b&a[1]=c
+upfetch({ 
+   params: { a: ['b', 'c'] }
+})
+```
 <!--  -->
 
 ## <samp>\<serializeBody\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
@@ -377,5 +403,6 @@ if (!globalThis.fetch) {
 }
 ```
 
-[mdn]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
+[MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
 [URLSearchParams]: https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+[toISOString]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString

@@ -3,7 +3,6 @@ import { ResponseError } from './ResponseError.js'
 
 // Aliasing Record<string, any> to PlainObject for clearer intent
 type PlainObject = Record<string, any>
-type ParamValue = string | number | Date | boolean | null | undefined
 
 export type FetchLike<Init extends Record<string, any> = RequestInit> = (
    url: any,
@@ -19,7 +18,7 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
    serializeBody?: (body: PlainObject | Array<any>) => string
-   serializeParams?: (params: FetcherOptions['params']) => string
+   serializeParams?: (params: Record<string, any>) => string
 }
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {
@@ -30,7 +29,7 @@ export interface DefaultOptions<D = any> extends SharedOptions<D> {
 
 export interface FetcherOptions<D = any> extends SharedOptions<D> {
    url?: string
-   params?: string | Record<string, ParamValue | ParamValue[]>
+   params?: string | Record<string, any>
    body?: BodyInit | PlainObject | Array<any> | null
 }
 
@@ -97,11 +96,12 @@ export let withRetry = <F extends FetchLike>(fetchFn: F) =>
          : waitFor(opts.retryDelay(++count, res), opts.signal).then(() => fetcher(url, opts, count))
    }
 
-createFetcher(() => ({}))({
-   baseUrl: '',
-   url: '',
-   params: '',
-   body: '',
-   method: 'GET',
-})
-// createFetcher()({ body: { hello: 'world' } })
+// createFetcher(() => ({}))({
+//    baseUrl: '',
+//    url: '',
+//    params: '',
+//    body: '',
+//    method: 'GET',
+//    serializeParams: () => '',
+//    serializeBody: () => '',
+// })
