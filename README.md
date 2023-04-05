@@ -1,4 +1,4 @@
-# up-fetch
+# up-fetch (draft docs)
 
 Tiny Fetch API wrapper with configurable defaults
 
