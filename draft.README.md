@@ -32,7 +32,7 @@ const todo = await upfetch({
 
 /**
  * - `body` is serialized by default
- * - {'content-type': 'application/json'} is handled automatically
+ * - {'content-type': 'application/json'} header is added automatically
  */
 const todo = await upfetch({
    url: 'https://example.com/todos',
@@ -41,7 +41,7 @@ const todo = await upfetch({
 })
 ```
 
-You can create a **custom instance** in order to set a few **defaults**, like the auth headers or the base url.
+You can create a **custom instance** in order to set a few **defaults**, like the base url or headers. Since **the defaults are evaluated at request time** it is the best place to set authentication headers.
 
 ```ts
 import { createFetcher } from 'up-fetch'
@@ -63,7 +63,7 @@ const data = await upfetch({
 })
 ```
 
-Failed requests **throw by default**
+When the Fetch API [`response.ok`][responseOk] is `false`, the requests **throw by default**.
 
 ```ts
 import { upfetch, isResponseError } from 'up-fetch'
@@ -125,8 +125,8 @@ upfetch({
 createFetcher(() => ({
    // custom options
    baseUrl,
-   onError,
    beforeFetch,
+   onError,
    onSuccess,
    parseSuccess,
    retryDelay,
@@ -164,7 +164,9 @@ Sets the base url for the requests
 **Example:**
 
 ```ts
-const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com/id' }))
+const upfetch = createFetcher(() => ({ 
+   baseUrl: 'https://example.com/id' 
+}))
 
 upfetch()
 
@@ -181,12 +183,14 @@ upfetch({ baseUrl: 'https://another-url.com/id' })
 **Default:** `''`
 
 Path to append to the baseUrl, or an entire url. \
-This method is not available on `createFetcher`
+This option is not available on `createFetcher`
 
 **Example:**
 
 ```ts
-const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
+const upfetch = createFetcher(() => ({ 
+   baseUrl: 'https://example.com' 
+}))
 
 upfetch({ url: '/id' })
 
@@ -204,19 +208,18 @@ upfetch({ url: 'https://another-url.com/id' })
 **Default:** `''`
 
 The url search params. Can be a string or an object. \
-The default [`serializeParams`](#serializeparams-upfetch-createfetcher) implementation being base on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
+The default [`serializeParams`](#serializeparams-upfetch-createfetcher) implementation being based on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
 To support nested objects, a custom [`serializeParams`](#serializeparams-upfetch-createfetcher) implementation is required. \
-This method is not available on `createFetcher`
+This option is not available on `createFetcher`
 
 **Example:**
 
 ```ts
-const upfetch = createFetcher(() => ({ baseUrl: 'https://example.com' }))
-
-upfetch({ url: '/id' })
-
-// Override the baseUrl
-upfetch({ url: 'https://another-url.com/id' })
+// https://example.com/?page=2&limit=10
+upfetch({ 
+   url: 'https://example.com/',
+   params: { page: 2, limit: 10 }
+})
 ```
 
 <!--  -->
@@ -230,14 +233,13 @@ upfetch({ url: 'https://another-url.com/id' })
 The body of the request.\
 Plain objects, arrays and classes with to `toJSON` method are passed to [`serializeBody`](#serializebody-upfetch-createfetcher) and serialized to a string, all other values remain untouched. \
 Use the [`serializeBody`](#serializebody-upfetch-createfetcher) option to customize the serialization. \
-This method is not available on `createFetcher`
+This option is not available on `createFetcher`
 
 **Example:**
 
 ```ts
-createFetcher(() => ({ baseUrl: 'https://example.com' }))
-
 upfetch({ 
+   url: 'https://example.com'
    method: 'POST',
    body: { hello: 'world' } 
 })
@@ -288,14 +290,15 @@ import qs from 'qs'
 const options = { arrayFormat: 'indices' }
 
 const upfetch = createFetcher(() => ({
-   baseUrl: 'https://example.com/',
+   baseUrl: 'https://example.com',
    serializeParams: (params) => {
       qs.stringify(params, options)
    }
 }))
 
-// GET https://example.com/?a[0]=b&a[1]=c
+// https://example.com/todos?a[0]=b&a[1]=c
 upfetch({ 
+   url: '/todos'
    params: { a: ['b', 'c'] }
 })
 ```
@@ -433,3 +436,4 @@ if (!globalThis.fetch) {
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
 [URLSearchParams]: https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
 [toISOString]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+[responseOk]: https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
