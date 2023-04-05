@@ -153,7 +153,7 @@ createFetcher(() => ({
 
 <!--  -->
 
-## <samp>\<baseUrl\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+## <samp>\<baseUrl\></samp> <kbd>upfetch ✔️</kbd> <kbd>createFetcher ❌</kbd>
 
 **Type:** `string` 
 
