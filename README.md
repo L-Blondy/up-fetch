@@ -63,7 +63,7 @@ const data = await upfetch({
 })
 ```
 
-When the Fetch API [`response.ok`][responseOk] is `false`, the requests **throw by default**.
+When the Fetch API [response.ok][responseOk] is `false`, the requests **throw by default**.
 
 ```ts
 import { upfetch, isResponseError } from 'up-fetch'
@@ -153,11 +153,13 @@ createFetcher(() => ({
 
 <!--  -->
 
-## <samp>\<baseUrl\></samp> <kbd>upfetch ✔️</kbd> <kbd>createFetcher ❌</kbd>
+## <samp>\<baseUrl\></samp>
 
 **Type:** `string` 
 
 **Default:** `''` 
+
+**Available on:** `upfetch`, `createFetcher`
 
 Sets the base url for the requests
 
@@ -176,11 +178,13 @@ upfetch({ baseUrl: 'https://another-url.com/id' })
 
 <!--  -->
 
-## <samp>\<url\></samp> <kbd>upfetch</kbd> 
+## <samp>\<url\></samp>
 
 **Type:** `string`
 
 **Default:** `''`
+
+**Available on:** `upfetch ✔️`, `createFetcher ❌`
 
 Path to append to the baseUrl, or an entire url. \
 This option is not available on `createFetcher`
@@ -200,16 +204,18 @@ upfetch({ url: 'https://another-url.com/id' })
 
 <!--  -->
 
-## <samp>\<params\></samp> <kbd>upfetch</kbd> 
+## <samp>\<params\></samp>
 
 <!-- **Type:** `string | Record<string, PrimitiveOrDate | PrimitiveOrDate[]>` -->
 **Type:** `string | Record<string, any>`
 
 **Default:** `''`
 
+**Available on:** `upfetch ✔️`, `createFetcher ❌`
+
 The url search params. Can be a string or an object. \
-The default [`serializeParams`](#serializeparams-upfetch-createfetcher) implementation being based on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
-To support nested objects, a custom [`serializeParams`](#serializeparams-upfetch-createfetcher) implementation is required. \
+The default [serializeParams](#serializeparams-upfetch-createfetcher) implementation being based on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
+To support nested objects, a custom [serializeParams](#serializeparams-upfetch-createfetcher) implementation is required. \
 This option is not available on `createFetcher`
 
 **Example:**
@@ -224,15 +230,17 @@ upfetch({
 
 <!--  -->
 
-## <samp>\<body\></samp> <kbd>upfetch</kbd> 
+## <samp>\<body\></samp>
 
 **Type:** `BodyInit | PlainObject | Array<any> | null`
 
 **Default:** `undefined`
 
+**Available on:** `upfetch ✔️`, `createFetcher ❌`
+
 The body of the request.\
-Plain objects, arrays and classes with to `toJSON` method are passed to [`serializeBody`](#serializebody-upfetch-createfetcher) and serialized to a string, all other values remain untouched. \
-Use the [`serializeBody`](#serializebody-upfetch-createfetcher) option to customize the serialization. \
+Plain objects, arrays and classes with to `toJSON` method are passed to [serializeBody](#serializebody-upfetch-createfetcher) and serialized to a string, all other values remain untouched. \
+Use the [serializeBody](#serializebody-upfetch-createfetcher) option to customize the serialization. \
 This option is not available on `createFetcher`
 
 **Example:**
@@ -247,11 +255,13 @@ upfetch({
 
 <!--  -->
 
-## <samp>\<method\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+## <samp>\<method\></samp>
 
 **Type:** `'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'`
 
 **Default:** `'GET'`
+
+**Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
 The method of the request. \
 See [MDN][MDN] for more details.
@@ -273,11 +283,13 @@ upfetch({
 
 <!--  -->
 
-## <samp>\<serializeParams\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+## <samp>\<serializeParams\></samp>
 
 **Type:** `(params: Record<string, any>) => string`
 
-A function used to customize the [`params`](#params-upfetch) serialization into a query string. \
+**Available on:** `upfetch ✔️`, `createFetcher ✔️`
+
+A function used to customize the [params](#params-upfetch) serialization into a query string. \
 By default only non-nested objects are supported, Dates are transformed to [ISO strings][toISOString]. \
 You can change this behavior by providing a custom `serializeParams` implementation.
 
@@ -305,14 +317,16 @@ upfetch({
 
 <!--  -->
 
-## <samp>\<serializeBody\></samp> <kbd>upfetch</kbd> <kbd>createFetcher</kbd>
+## <samp>\<serializeBody\></samp>
 
 **Type:** `(body: Record<string, any> | Array<any>) => string`
 
 **Default:** `JSON.stringify`
 
-A function used to customize the [`body`](#body-upfetch) serialization into a string. \
-The [`body`](#body-upfetch) is passed to `serializeBody` only if it is: a plain object, an array or a class with a `toJSON` method. 
+**Available on:** `upfetch ✔️`, `createFetcher ✔️`
+
+A function used to customize the [body](#body-upfetch) serialization into a string. \
+The [body](#body-upfetch) is passed to `serializeBody` only if it is: a plain object, an array or a class with a `toJSON` method. 
 
 
 **Example:**
