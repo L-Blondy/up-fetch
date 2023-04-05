@@ -338,6 +338,54 @@ describe('createFetcher', () => {
          expect(res).toBe('hello world')
       })
    })
+
+   test('`serializeParams` should NOT be called if typeof `params` === string | undefined | null', async () => {
+      server.use(
+         rest.get('https://example.com', async (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json({ some: 'json' }))
+         }),
+      )
+
+      await createFetcher()({
+         url: 'https://example.com',
+         params: undefined,
+         serializeParams: () => {
+            throw new Error('`serializeParams` should not have been called')
+         },
+      })
+      await createFetcher()({
+         url: 'https://example.com',
+         params: null,
+         serializeParams: () => {
+            throw new Error('`serializeParams` should not have been called')
+         },
+      })
+      await createFetcher()({
+         url: 'https://example.com',
+         params: 'string',
+         serializeParams: () => {
+            throw new Error('`serializeParams` should not have been called')
+         },
+      })
+   })
+
+   test('`serializeParams` should be called if typeof `params` !== string | undefined | null', async () => {
+      server.use(
+         rest.get('https://example.com', async (req, res, ctx) => {
+            expect(req.url.searchParams.get('hello')).toBe('world')
+            return res(ctx.status(200), ctx.json({ some: 'json' }))
+         }),
+      )
+
+      await createFetcher()({
+         url: 'https://example.com',
+         params: { hello: 'world' },
+      })
+      await createFetcher()({
+         url: 'https://example.com',
+         params: [['hello', 'world']],
+      })
+   })
 })
 
 describe('withRetry', () => {

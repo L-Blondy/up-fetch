@@ -207,14 +207,15 @@ upfetch({ url: 'https://another-url.com/id' })
 ## <samp>\<params\></samp>
 
 <!-- **Type:** `string | Record<string, PrimitiveOrDate | PrimitiveOrDate[]>` -->
-**Type:** `string | Record<string, any>`
+**Type:** `string | Record<string, any> | [string | number, any][] | null`
 
 **Default:** `''`
 
 **Available on:** `upfetch ✔️`, `createFetcher ❌`
 
-The url search params. Can be a string or an object. \
-The default [serializeParams](#serializeparams-upfetch-createfetcher) implementation being based on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
+The url search params. \
+Can be a string, object or [entries][entries]. \
+The default [serializeParams](#serializeparams-upfetch-createfetcher) implementation being based on the [URLSearchParams API][URLSearchParams], only non-nested objects and primitive entries are properly serialized by default. \
 To support nested objects, a custom [serializeParams](#serializeparams-upfetch-createfetcher) implementation is required. \
 This option is not available on `createFetcher`
 
@@ -232,7 +233,7 @@ upfetch({
 
 ## <samp>\<body\></samp>
 
-**Type:** `BodyInit | PlainObject | Array<any> | null`
+**Type:** `BodyInit | Record<string, any> | Array<any> | null`
 
 **Default:** `undefined`
 
@@ -285,7 +286,7 @@ upfetch({
 
 ## <samp>\<serializeParams\></samp>
 
-**Type:** `(params: Record<string, any>) => string`
+**Type:** `(params: Record<string, any> | [string | number, any][]) => string`
 
 **Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
@@ -299,19 +300,20 @@ You can change this behavior by providing a custom `serializeParams` implementat
 ```ts
 import qs from 'qs'
 
-const options = { arrayFormat: 'indices' }
+const options = { encode: false }
 
 const upfetch = createFetcher(() => ({
    baseUrl: 'https://example.com',
+   // add support for nested objects
    serializeParams: (params) => {
       qs.stringify(params, options)
    }
 }))
 
-// https://example.com/todos?a[0]=b&a[1]=c
+// https://example.com/todos?a[b]=c
 upfetch({ 
    url: '/todos'
-   params: { a: ['b', 'c'] }
+   params: { a: { b: 'c' } }
 })
 ```
 
@@ -319,7 +321,7 @@ upfetch({
 
 ## <samp>\<serializeBody\></samp>
 
-**Type:** `(body: Record<string, any> | Array<any>) => string`
+**Type:** `(body: Record<string, any> | any[]) => string`
 
 **Default:** `JSON.stringify`
 
@@ -336,14 +338,14 @@ import stringify from 'json-stringify-safe'
 
 const upfetch = createFetcher(() => ({
    baseUrl: 'https://example.com/',
+   // Add support for circular references.
    serializeBody: (body) => {
-      // does not throw on circular references.
       stringify(body)
    }
 }))
 
 upfetch({ 
-   body: { some: 'circular ref' }
+   body: { imagine: 'a circular ref' }
 })
 ```
 
@@ -451,3 +453,4 @@ if (!globalThis.fetch) {
 [URLSearchParams]: https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
 [toISOString]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
 [responseOk]: https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
+[entries]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries

@@ -1,4 +1,4 @@
-import { DefaultOptions, FetcherOptions, RequestOptions } from './createFetcher.js'
+import { DefaultOptions, FetcherOptions, RequestOptions, SharedOptions } from './createFetcher.js'
 import { ResponseError } from './ResponseError.js'
 
 export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'beforeFetch'] as const
@@ -21,9 +21,11 @@ let fallbackOptions = {
    retryDelay: (count: number) => 2000 * 1.5 ** (count - 1),
    retryWhen: (res: Response) => retryStatuses.has(res.status),
    serializeBody: JSON.stringify,
-   serializeParams: (params: FetcherOptions['params']): string =>
+   serializeParams: (
+      params: Parameters<NonNullable<SharedOptions['serializeParams']>>[0],
+   ): string =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
-      new URLSearchParams(JSON.parse(JSON.stringify(params || ''))).toString(),
+      new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
 }
 
 export let buildOptions = <DD, D = DD>(
@@ -37,7 +39,8 @@ export let buildOptions = <DD, D = DD>(
    } as RequestOptions<DD, D>
 
    let { baseUrl = '', url = '', params = '' } = options
-   let serializedParams = typeof params === 'object' ? options.serializeParams(params) : params
+   let serializedParams =
+      typeof params === 'string' || !params ? params || '' : options.serializeParams(params)
    let isBodyJson = isJsonificable(options.body)
 
    options.body = isBodyJson ? options.serializeBody(options.body as any) : options.body

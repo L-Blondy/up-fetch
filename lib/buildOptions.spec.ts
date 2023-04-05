@@ -107,6 +107,7 @@ describe('serializeParams', () => {
       ${{ key5: ['string', 2, new Date('2023-02-15T13:46:35.046Z')] }}     | ${'?key5=string%2C2%2C2023-02-15T13%3A46%3A35.046Z'}
       ${{ key5: [true, false, null, undefined, 7] }}                       | ${'?key5=true%2Cfalse%2C%2C%2C7'}
       ${{ key5: [1, [2, true, null]] }}                                    | ${'?key5=1%2C2%2Ctrue%2C'}
+      ${[['hello', 'world'], ['a', 'b']]}                                  | ${'?hello=world&a=b'}
       ${undefined}                                                         | ${''}
       ${null}                                                              | ${''}
       ${new SomeClass()}                                                   | ${'?a=1'}

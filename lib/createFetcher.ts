@@ -14,8 +14,10 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    retryTimes?: number
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
-   serializeBody?: (body: Record<string, any> | Array<any>) => string
-   serializeParams?: (params: Record<string, any>) => string
+   serializeBody?: (body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>) => string
+   serializeParams?: (
+      params: Exclude<FetcherOptions['params'], string | null | undefined>,
+   ) => string
 }
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {
@@ -26,7 +28,7 @@ export interface DefaultOptions<D = any> extends SharedOptions<D> {
 
 export interface FetcherOptions<D = any> extends SharedOptions<D> {
    url?: string
-   params?: string | Record<string, any>
+   params?: string | Record<string, any> | [string | number, any][] | null
    body?: BodyInit | Record<string, any> | Array<any> | null
 }
 
