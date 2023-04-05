@@ -187,7 +187,6 @@ upfetch({ baseUrl: 'https://another-url.com/id' })
 **Available on:** `upfetch ✔️`, `createFetcher ❌`
 
 Path to append to the baseUrl, or an entire url. \
-This option is not available on `createFetcher`
 
 **Example:**
 
@@ -215,9 +214,8 @@ upfetch({ url: 'https://another-url.com/id' })
 
 The url search params. \
 Can be a string, object or [entries][entries]. \
-The default [serializeParams](#serializeparams-upfetch-createfetcher) implementation being based on the [URLSearchParams API][URLSearchParams], only non-nested objects and primitive entries are properly serialized by default. \
-To support nested objects, a custom [serializeParams](#serializeparams-upfetch-createfetcher) implementation is required. \
-This option is not available on `createFetcher`
+Params of type string remain *as is*, meaning that the user is responsible for encoding/serialization.
+Non-nested objects and primitive entries are properly serialized by default. To add support for nested objects, a custom [serializeParams](#serializeparams-upfetch-createfetcher) implementation is required. \
 
 **Example:**
 
@@ -242,7 +240,6 @@ upfetch({
 The body of the request.\
 Plain objects, arrays and classes with to `toJSON` method are passed to [serializeBody](#serializebody-upfetch-createfetcher) and serialized to a string, all other values remain untouched. \
 Use the [serializeBody](#serializebody-upfetch-createfetcher) option to customize the serialization. \
-This option is not available on `createFetcher`
 
 **Example:**
 
@@ -292,7 +289,9 @@ upfetch({
 
 A function used to customize the [params](#params-upfetch) serialization into a query string. \
 By default only non-nested objects are supported, Dates are transformed to [ISO strings][toISOString]. \
-You can change this behavior by providing a custom `serializeParams` implementation.
+You can change this behavior by providing a custom `serializeParams` implementation. 
+
+NOTE: `string | null | undefined` params are never passed to `serializeParams`: strings are assumed to be serialized, null and undefined are ignored. 
 
 
 **Example:**
