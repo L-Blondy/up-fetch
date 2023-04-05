@@ -159,7 +159,7 @@ createFetcher(() => ({
 
 **Default:** `''` 
 
-**Available on:** `upfetch`, `createFetcher`
+**Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
 Sets the base url for the requests
 
@@ -211,7 +211,7 @@ upfetch({ url: 'https://another-url.com/id' })
 
 **Default:** `''`
 
-**Available on:** `✔️ upfetch`, `❌ createFetcher`
+**Available on:** `upfetch ✔️`, `createFetcher ❌`
 
 The url search params. Can be a string or an object. \
 The default [serializeParams](#serializeparams-upfetch-createfetcher) implementation being based on the [URLSearchParams API][URLSearchParams], only non-nested objects are serialized by default. \
