@@ -240,7 +240,7 @@ upfetch({
 **Available on:** `upfetch ✔️`, `createFetcher ❌`
 
 The body of the request.\
-Can be pretty much anything.
+Can be pretty much anything. \
 See the [serializeBody](#serializebody-upfetch-createfetcher) for more details.
 
 **Example:**
