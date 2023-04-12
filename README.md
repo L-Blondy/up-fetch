@@ -215,9 +215,9 @@ upfetch({ url: 'https://another-url.com/id' })
 
 **Available on:** `upfetch ✔️`, `createFetcher ❌`
 
-The url search params. Can be a string, object or [entries][entries]. \
-Params of type string remain *as is*, meaning that the user is responsible for encoding/serialization. \
-Non-nested objects and primitive entries are properly serialized by default. To add support for nested objects, use the [serializeParams](#serializeparams-upfetch-createfetcher) option. 
+The url search params. \
+Supports strings, non-nested objects and primitive [entries][entries] by default. \
+See the [serializeParams](#serializeparams-upfetch-createfetcher) option for more complex use cases.
 
 **Example:**
 
@@ -240,8 +240,8 @@ upfetch({
 **Available on:** `upfetch ✔️`, `createFetcher ❌`
 
 The body of the request.\
-Plain objects, arrays and classes with to `toJSON` method are passed to [serializeBody](#serializebody-upfetch-createfetcher) and serialized to a string, all other values remain untouched. \
-To customize the serialization, use the [serializeBody](#serializebody-upfetch-createfetcher) option
+Can be pretty much anything.
+See the [serializeBody](#serializebody-upfetch-createfetcher) for more details.
 
 **Example:**
 
@@ -289,25 +289,20 @@ upfetch({
 
 **Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
-A function used to customize the [params](#params-upfetch) serialization into a query string. \
-By default only non-nested objects are supported, Dates are transformed to [ISO strings][toISOString]. \
-You can change this behavior by providing a custom `serializeParams` implementation. 
-
-Note: the [params](#params-upfetch) are not passed to `serializeParams` if they are of type `string | null | undefined`: strings are assumed to already be serialized, null and undefined are ignored. 
-
+This option is used to customize the [params](#params-upfetch) serialization into a query string. \
+The [params](#params-upfetch) are passed to this function except if they are of type `string | null | undefined`. \
+The default implementation supports non-nested objects and primitive [entries][entries] only.
 
 **Example:**
 
 ```ts
 import qs from 'qs'
 
-const options = { encode: false }
-
+// add support for nested objects
 const upfetch = createFetcher(() => ({
    baseUrl: 'https://example.com',
-   // add support for nested objects
    serializeParams: (params) => {
-      qs.stringify(params, options)
+      qs.stringify(params)
    }
 }))
 
@@ -328,7 +323,7 @@ upfetch({
 
 **Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
-A function used to customize the [body](#body-upfetch) serialization into a string. \
+This option is used to customize the [body](#body-upfetch) serialization into a string. \
 The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. 
 
 **Example:**
@@ -336,9 +331,9 @@ The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object
 ```ts
 import stringify from 'json-stringify-safe'
 
+// Add support for circular references.
 const upfetch = createFetcher(() => ({
    baseUrl: 'https://example.com/',
-   // Add support for circular references.
    serializeBody: (body) => {
       stringify(body)
    }
