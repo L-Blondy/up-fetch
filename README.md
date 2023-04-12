@@ -41,7 +41,8 @@ const todo = await upfetch({
 })
 ```
 
-You can create a **custom instance** in order to set a few **defaults**, like the base url or headers. Since **the defaults are evaluated at request time** it is the best place to set authentication headers.
+You can create a **custom instance** in order to set a few **defaults**, like the base url or headers. \
+Since the **defaults are evaluated at request time** it is the best place to set authentication headers.
 
 ```ts
 import { createFetcher } from 'up-fetch'
@@ -170,9 +171,10 @@ const upfetch = createFetcher(() => ({
    baseUrl: 'https://example.com/id' 
 }))
 
+// make a GET request at 'https://example.com/id'
 upfetch()
 
-// Override the default baseUrl
+// change the baseUrl for a single request
 upfetch({ baseUrl: 'https://another-url.com/id' })
 ```
 
@@ -195,9 +197,10 @@ const upfetch = createFetcher(() => ({
    baseUrl: 'https://example.com' 
 }))
 
+// make a GET request at 'https://example.com/id' 
 upfetch({ url: '/id' })
 
-// Override the baseUrl
+// In case the `url` starts with http:// or https:// the `baseUrl` is ignored
 upfetch({ url: 'https://another-url.com/id' })
 ```
 
@@ -212,10 +215,9 @@ upfetch({ url: 'https://another-url.com/id' })
 
 **Available on:** `upfetch ✔️`, `createFetcher ❌`
 
-The url search params. \
-Can be a string, object or [entries][entries]. \
-Params of type string remain *as is*, meaning that the user is responsible for encoding/serialization.
-Non-nested objects and primitive entries are properly serialized by default. To add support for nested objects, a custom [serializeParams](#serializeparams-upfetch-createfetcher) implementation is required. \
+The url search params. Can be a string, object or [entries][entries]. \
+Params of type string remain *as is*, meaning that the user is responsible for encoding/serialization. \
+Non-nested objects and primitive entries are properly serialized by default. To add support for nested objects, use the [serializeParams](#serializeparams-upfetch-createfetcher) option. 
 
 **Example:**
 
@@ -239,7 +241,7 @@ upfetch({
 
 The body of the request.\
 Plain objects, arrays and classes with to `toJSON` method are passed to [serializeBody](#serializebody-upfetch-createfetcher) and serialized to a string, all other values remain untouched. \
-Use the [serializeBody](#serializebody-upfetch-createfetcher) option to customize the serialization. \
+To customize the serialization, use the [serializeBody](#serializebody-upfetch-createfetcher) option
 
 **Example:**
 
@@ -291,7 +293,7 @@ A function used to customize the [params](#params-upfetch) serialization into a 
 By default only non-nested objects are supported, Dates are transformed to [ISO strings][toISOString]. \
 You can change this behavior by providing a custom `serializeParams` implementation. 
 
-NOTE: `string | null | undefined` params are never passed to `serializeParams`: strings are assumed to be serialized, null and undefined are ignored. 
+Note: the [params](#params-upfetch) are not passed to `serializeParams` if they are of type `string | null | undefined`: strings are assumed to already be serialized, null and undefined are ignored. 
 
 
 **Example:**
@@ -327,8 +329,7 @@ upfetch({
 **Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
 A function used to customize the [body](#body-upfetch) serialization into a string. \
-The [body](#body-upfetch) is passed to `serializeBody` only if it is: a plain object, an array or a class with a `toJSON` method. 
-
+The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. 
 
 **Example:**
 
@@ -431,13 +432,13 @@ interface FetcherOptions extends RequestInit {
 
 Polyfills are required for node versions between *14.18.0* and *18* (excluded).
 
-Install [node-fetch](https://github.com/node-fetch/node-fetch)
+First install [node-fetch](https://github.com/node-fetch/node-fetch)
 
 ```bash
 npm i node-fetch
 ```
 
-Paste the following code in you entry file 
+Then paste the following code into your entry file 
 
 ```js
 import fetch, { Headers } from 'node-fetch'
