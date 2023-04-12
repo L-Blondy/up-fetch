@@ -188,7 +188,7 @@ upfetch({ baseUrl: 'https://another-url.com/id' })
 
 **Available on:** `upfetch ✔️`, `createFetcher ❌`
 
-Path to append to the baseUrl, or an entire url. \
+Path to append to the baseUrl, or an entire url. 
 
 **Example:**
 
