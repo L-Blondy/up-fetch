@@ -107,9 +107,7 @@ describe('serializeParams', () => {
       ${{ key5: ['string', 2, new Date('2023-02-15T13:46:35.046Z')] }}     | ${'?key5=string%2C2%2C2023-02-15T13%3A46%3A35.046Z'}
       ${{ key5: [true, false, null, undefined, 7] }}                       | ${'?key5=true%2Cfalse%2C%2C%2C7'}
       ${{ key5: [1, [2, true, null]] }}                                    | ${'?key5=1%2C2%2Ctrue%2C'}
-      ${[['hello', 'world'], ['a', 'b']]}                                  | ${'?hello=world&a=b'}
       ${undefined}                                                         | ${''}
-      ${null}                                                              | ${''}
       ${new SomeClass()}                                                   | ${'?a=1'}
    `('fallbackOptions.serializeParams: $input', ({ params, queryString }) => {
       expect(buildOptions({}, { params }).href).toBe(queryString)
@@ -118,21 +116,21 @@ describe('serializeParams', () => {
 
 describe('href', () => {
    test.each`
-      input                                                                  | output
-      ${{ baseUrl: 'https://a.b.c' }}                                        | ${'https://a.b.c'}
-      ${{ baseUrl: 'https://a.b.c', url: '/d' }}                             | ${'https://a.b.c/d'}
-      ${{ baseUrl: 'https://a.b.c', url: '/d', params: 'q=q' }}              | ${'https://a.b.c/d?q=q'}
-      ${{ baseUrl: 'https://a.b.c/', url: 'd', params: 'q=q' }}              | ${'https://a.b.c/d?q=q'}
-      ${{ baseUrl: 'https://a.b.c/', url: 'd/', params: 'q=q' }}             | ${'https://a.b.c/d/?q=q'}
-      ${{ baseUrl: 'https://a.b.c/e', url: '/d', params: 'q=q' }}            | ${'https://a.b.c/e/d?q=q'}
-      ${{ baseUrl: 'https://a.b.c/e/', url: 'd', params: 'q=q' }}            | ${'https://a.b.c/e/d?q=q'}
-      ${{ baseUrl: 'https://a.b.c/e/', url: 'd/', params: 'q=q' }}           | ${'https://a.b.c/e/d/?q=q'}
-      ${{ baseUrl: 'https://a.b.c/e', url: '/d/', params: 'q=q' }}           | ${'https://a.b.c/e/d/?q=q'}
-      ${{ url: '/a/b/c', params: { q: 'q' }, serializeParams: () => '1=2' }} | ${'/a/b/c?1=2'}
-      ${{ url: 'a/b/c', params: { q: 'q' }, serializeParams: () => '1=2' }}  | ${'a/b/c?1=2'}
-      ${{ url: 'a/b/c', params: 'q=q', serializeParams: () => '1=2' }}       | ${'a/b/c?q=q'}
-      ${{ baseUrl: 'https://a.b.c', url: 'https://1.2.3', params: 'q=q' }}   | ${'https://1.2.3?q=q'}
-      ${{ baseUrl: 'https://a.b.c', url: 'http:/https:', params: 'q=q' }}    | ${'https://a.b.chttp:/https:?q=q'}
+      input                                                                     | output
+      ${{ baseUrl: 'https://a.b.c' }}                                           | ${'https://a.b.c'}
+      ${{ baseUrl: 'https://a.b.c', url: '/d' }}                                | ${'https://a.b.c/d'}
+      ${{ baseUrl: 'https://a.b.c', url: '/d', params: { q: 'q' } }}            | ${'https://a.b.c/d?q=q'}
+      ${{ baseUrl: 'https://a.b.c/', url: 'd', params: { q: 'q' } }}            | ${'https://a.b.c/d?q=q'}
+      ${{ baseUrl: 'https://a.b.c/', url: 'd/', params: { q: 'q' } }}           | ${'https://a.b.c/d/?q=q'}
+      ${{ baseUrl: 'https://a.b.c/e', url: '/d', params: { q: 'q' } }}          | ${'https://a.b.c/e/d?q=q'}
+      ${{ baseUrl: 'https://a.b.c/e/', url: 'd', params: { q: 'q' } }}          | ${'https://a.b.c/e/d?q=q'}
+      ${{ baseUrl: 'https://a.b.c/e/', url: 'd/', params: { q: 'q' } }}         | ${'https://a.b.c/e/d/?q=q'}
+      ${{ baseUrl: 'https://a.b.c/e', url: '/d/', params: { q: 'q' } }}         | ${'https://a.b.c/e/d/?q=q'}
+      ${{ url: '/a/b/c', params: { q: 'q' }, serializeParams: () => '1=2' }}    | ${'/a/b/c?1=2'}
+      ${{ url: 'a/b/c', params: { q: 'q' }, serializeParams: () => '1=2' }}     | ${'a/b/c?1=2'}
+      ${{ url: 'a/b/c', params: { q: 'q' } }}                                   | ${'a/b/c?q=q'}
+      ${{ baseUrl: 'https://a.b.c', url: 'https://1.2.3', params: { q: 'q' } }} | ${'https://1.2.3?q=q'}
+      ${{ baseUrl: 'https://a.b.c', url: 'http:/https:', params: { q: 'q' } }}  | ${'https://a.b.chttp:/https:?q=q'}
    `('Input: $input', ({ input, output }) => {
       expect(buildOptions({}, input).href).toBe(output)
    })
@@ -193,7 +191,7 @@ describe('options', () => {
 
    test('the `fetchOptions` options should override `defaultOptions`', async () => {
       const serializeBody = (x: any) => x
-      const serializeParams = (x: any) => x
+      const serializeParams = (x: any) => `p=${JSON.stringify(x)}`
       const parseResponse = (s: any) => s as Promise<Response>
       const signal = 'upfetch signal' as any
       const retryDelay = () => 54321
@@ -238,7 +236,7 @@ describe('options', () => {
                'content-type': 'application/json',
             },
             method: 'DELETE',
-            params: 'a=a',
+            params: { a: 'a' },
             retryDelay,
             retryTimes: 123,
             retryWhen,
@@ -251,7 +249,7 @@ describe('options', () => {
          },
       )
 
-      expect(options.href).toBe('https://1.2.3/4/5?a=a')
+      expect(options.href).toBe('https://1.2.3/4/5?p={"a":"a"}')
       expect(options.body).toEqual({ a: 1 })
       expect(options.cache).toEqual('no-store')
       expect(options.credentials).toEqual('include')
@@ -295,17 +293,6 @@ test.each`
       expect(options.headers.get('content-type')).toBe('text/html')
    },
 )
-
-test('If params is a string, serializeParams should not be called', async () => {
-   const options = buildOptions(
-      {},
-      {
-         params: 'a=1',
-         serializeParams: () => 'a=b',
-      },
-   )
-   expect(options.href).toBe('?a=1')
-})
 
 test('If body is a string, serializeBody should do nothing', async () => {
    const options = buildOptions(

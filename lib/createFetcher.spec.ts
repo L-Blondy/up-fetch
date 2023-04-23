@@ -316,6 +316,7 @@ describe('createFetcher', () => {
       server.use(
          rest.post('https://example.com/todos', async (req, res, ctx) => {
             const body = await req.json()
+            expect(req.url.searchParams.get('a')).toBe('1')
             expect(req.headers.get('content-type')).toBe('application/json')
             expect(req.headers.get('Authorization')).toBe('Bearer token')
             expect(body).toEqual({ a: 2 })
@@ -327,7 +328,9 @@ describe('createFetcher', () => {
          headers: { 'content-type': 'application/json' },
 
          beforeFetch(options) {
-            options.href = 'https://example.com/todos'
+            options.baseUrl = 'https://example.com'
+            options.url = '/todos'
+            options.params = { a: 1 }
             options.method = 'POST'
             options.headers.append('Authorization', 'Bearer token')
             options.body = '{"a":2}'
@@ -336,36 +339,6 @@ describe('createFetcher', () => {
 
       await upfetch({ body: { a: 1 } }).then((res) => {
          expect(res).toBe('hello world')
-      })
-   })
-
-   test('`serializeParams` should NOT be called if typeof `params` === string | undefined | null', async () => {
-      server.use(
-         rest.get('https://example.com', async (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json({ some: 'json' }))
-         }),
-      )
-
-      await createFetcher()({
-         url: 'https://example.com',
-         params: undefined,
-         serializeParams: () => {
-            throw new Error('`serializeParams` should not have been called')
-         },
-      })
-      await createFetcher()({
-         url: 'https://example.com',
-         params: null,
-         serializeParams: () => {
-            throw new Error('`serializeParams` should not have been called')
-         },
-      })
-      await createFetcher()({
-         url: 'https://example.com',
-         params: 'string',
-         serializeParams: () => {
-            throw new Error('`serializeParams` should not have been called')
-         },
       })
    })
 
@@ -397,7 +370,7 @@ describe('createFetcher', () => {
       }))()
    })
 
-   test.only('The default params and the request params should be shallowly merged', async () => {
+   test('The default params and the request params should be shallowly merged', async () => {
       server.use(
          rest.get('https://example.com', async (req, res, ctx) => {
             expect(req.url.searchParams.get('a')).toBe('1')

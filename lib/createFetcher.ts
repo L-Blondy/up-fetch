@@ -12,16 +12,14 @@ export type FetchLike<Init extends Record<string, any> = RequestInit> = (
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
-   params?: string | Record<string, any> | null
+   params?: Record<string, any>
    parseResponse?: (response: Response, options: RequestOptions) => Promise<D> | D
    parseThrownResponse?: (response: Response, options: RequestOptions) => Promise<any> | any
    retryTimes?: number
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
    serializeBody?: (body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>) => string
-   serializeParams?: (
-      params: Exclude<FetcherOptions['params'], string | null | undefined>,
-   ) => string
+   serializeParams?: (params: Exclude<FetcherOptions['params'], null | undefined>) => string
 }
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {
@@ -97,13 +95,3 @@ export let withRetry = <F extends FetchLike>(fetchFn: F) =>
          ? res
          : waitFor(opts.retryDelay(++count, res), opts.signal).then(() => fetcher(url, opts, count))
    }
-
-// createFetcher(() => ({}))({
-//    baseUrl: '',
-//    url: '',
-//    params: '',
-//    body: '',
-//    method: 'GET',
-//    serializeParams: () => '',
-//    serializeBody: () => '',
-// })

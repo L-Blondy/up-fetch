@@ -34,24 +34,29 @@ export let buildOptions = <DD, D = DD>(
 ): RequestOptions<DD, D> => {
    let options = {
       ...fallbackOptions,
-      ...omit(defaultOptions, specificFetcherOptionsKeys),
-      ...omit(fetcherOptions, specificDefaultOptionsKeys),
+      ...strip(defaultOptions, specificFetcherOptionsKeys),
+      ...strip(fetcherOptions, specificDefaultOptionsKeys),
+      get href() {
+         let { baseUrl = '', url = '', params = {} } = options
+         let serializedParams = options.serializeParams(params ?? {})
+         return `${/^https?:\/\//.test(url) ? '' : baseUrl}${url}${withQuestionMark(
+            serializedParams,
+         )}`
+      },
    } as RequestOptions<DD, D>
 
-   let { baseUrl = '', url = '', params = '' } = options
-   let serializedParams =
-      typeof params === 'string' || !params ? params || '' : options.serializeParams(params)
    let isBodyJson = isJsonificable(options.body)
 
    options.body = isBodyJson ? options.serializeBody(options.body as any) : options.body
-   options.href = `${/^https?:\/\//.test(url) ? '' : baseUrl}${url}${withQuestionMark(
-      serializedParams,
-   )}`
    options.headers = mergeHeaders(
       isBodyJson && { 'content-type': 'application/json' },
       defaultOptions?.headers,
       fetcherOptions?.headers,
    )
+   options.params = {
+      ...strip(defaultOptions?.params),
+      ...strip(fetcherOptions?.params),
+   }
 
    return options
 }
@@ -77,9 +82,9 @@ let addHeaders = (h1: Headers, h2?: HeadersInit | null | false) => (
 )
 
 // omits the specified keys and obj[key]: undefined
-let omit = <O extends Record<string, any>, K extends string>(
-   obj: O | undefined,
-   keys: readonly K[],
+let strip = <O extends Record<string, any>, K extends string>(
+   obj?: O,
+   keys: readonly K[] = [],
 ): Omit<O, K> => {
    let copy = { ...obj } as O
    for (let key in copy) {

@@ -208,7 +208,7 @@ upfetch({ url: 'https://another-url.com/id' })
 
 ## <samp>\<params\></samp>
 
-**Type:** `string | Record<string, any> | null`
+**Type:** `Record<string, any> `
 
 **Default:** `''`
 
@@ -216,7 +216,7 @@ upfetch({ url: 'https://another-url.com/id' })
 
 The url search params. \
 The default params defined in `createFetcher` and the request params are merged shallowly. \
-Strings and non-nested objects are supported by default. See the [serializeParams](#serializeparams-upfetch-createfetcher) option for nested objects.
+Only non-nested objects are supported by default. See the [serializeParams](#serializeparams-upfetch-createfetcher) option for nested objects.
 
 **Example:**
 
@@ -297,13 +297,12 @@ upfetch({
 
 ## <samp>\<serializeParams\></samp>
 
-**Type:** `(params: Record<string, any> | [string | number, any][]) => string`
+**Type:** `(params: Record<string, any> ) => string`
 
 **Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
 This option is used to customize the [params](#params-upfetch) serialization into a query string. \
-The [params](#params-upfetch) are passed to this function except if they are of type `string | null | undefined`. \
-The default implementation supports non-nested objects and primitive [entries][entries] only.
+The default implementation supports non-nested objects only.
 
 **Example:**
 
