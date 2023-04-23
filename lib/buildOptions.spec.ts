@@ -160,7 +160,7 @@ describe('options', () => {
             integrity: '123',
             keepalive: false,
             mode: 'same-origin',
-            parseSuccess: (res) => res,
+            parseResponse: (res) => res,
             redirect: 'follow',
             referrer: 'me',
             referrerPolicy: 'origin-when-cross-origin',
@@ -194,7 +194,7 @@ describe('options', () => {
    test('the `fetchOptions` options should override `defaultOptions`', async () => {
       const serializeBody = (x: any) => x
       const serializeParams = (x: any) => x
-      const parseSuccess = (s: any) => s as Promise<Response>
+      const parseResponse = (s: any) => s as Promise<Response>
       const signal = 'upfetch signal' as any
       const retryDelay = () => 54321
       const retryWhen = () => true
@@ -220,7 +220,7 @@ describe('options', () => {
             serializeBody: () => '123',
             serializeParams: () => '456',
             window: undefined,
-            parseSuccess: () => Promise.resolve(321),
+            parseResponse: () => Promise.resolve(321),
             signal: 'default signal' as any,
          },
          {
@@ -247,7 +247,7 @@ describe('options', () => {
             signal,
             url: '/4/5',
             window: null,
-            parseSuccess,
+            parseResponse,
          },
       )
 
@@ -268,7 +268,7 @@ describe('options', () => {
       expect(options.method).toEqual('DELETE')
       expect(options.signal).toEqual(signal)
       expect(options.window).toEqual(null)
-      expect(options.parseSuccess).toEqual(parseSuccess)
+      expect(options.parseResponse).toEqual(parseResponse)
    })
 })
 

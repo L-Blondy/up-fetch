@@ -148,7 +148,7 @@ describe('createFetcher', () => {
 
       const upfetch = createFetcher(() => ({
          baseUrl: 'https://example.com',
-         parseSuccess: (res) => res.json(),
+         parseResponse: (res) => res.json(),
          onError(error) {
             expect(error.name).toBe('SyntaxError')
             count++
@@ -211,7 +211,7 @@ describe('createFetcher', () => {
       await upfetch({ body: { hello: 'world' }, method: 'POST' })
    })
 
-   test('`parseError` default implementation  should return a ResponseError instance', async () => {
+   test('`parseThrownResponse` default implementation  should return a ResponseError instance', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(400), ctx.json({ some: 'json' }))
@@ -225,7 +225,7 @@ describe('createFetcher', () => {
       })
    })
 
-   test('`parseError` default implementation should parse JSON properly', async () => {
+   test('`parseThrownResponse` default implementation should parse JSON properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(400), ctx.json({ some: 'json' }))
@@ -240,7 +240,7 @@ describe('createFetcher', () => {
       })
    })
 
-   test('`parseError` default implementation should parse TEXT properly', async () => {
+   test('`parseThrownResponse` default implementation should parse TEXT properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(400), ctx.text('hello world'))
@@ -255,7 +255,7 @@ describe('createFetcher', () => {
       })
    })
 
-   test('`parseError` should parse the data as null when the server response contains no data', async () => {
+   test('`parseThrownResponse` should parse the data as null when the server response contains no data', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(400))
@@ -270,7 +270,7 @@ describe('createFetcher', () => {
       })
    })
 
-   test('`parseSuccess` should parse the data as null when the server response contains no data', async () => {
+   test('`parseResponse` should parse the data as null when the server response contains no data', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(200))
@@ -284,7 +284,7 @@ describe('createFetcher', () => {
       })
    })
 
-   test('parseSuccess default implementation should parse JSON properly', async () => {
+   test('parseResponse default implementation should parse JSON properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(200), ctx.json({ some: 'json' }))
@@ -298,7 +298,7 @@ describe('createFetcher', () => {
       })
    })
 
-   test('parseSuccess default implementation should parse TEXT properly', async () => {
+   test('parseResponse default implementation should parse TEXT properly', async () => {
       server.use(
          rest.get('https://example.com', (req, res, ctx) => {
             return res(ctx.status(200), ctx.text('hello world'))
@@ -369,7 +369,7 @@ describe('createFetcher', () => {
       })
    })
 
-   test('`serializeParams` should be called if typeof `params` !== string | undefined | null', async () => {
+   test('`serializeParams` should be called if typeof `params` === Record<string, any>', async () => {
       server.use(
          rest.get('https://example.com', async (req, res, ctx) => {
             expect(req.url.searchParams.get('hello')).toBe('world')
@@ -381,9 +381,37 @@ describe('createFetcher', () => {
          url: 'https://example.com',
          params: { hello: 'world' },
       })
-      await createFetcher()({
-         url: 'https://example.com',
-         params: [['hello', 'world']],
+   })
+
+   test('Default params can be set in createFetcher', async () => {
+      server.use(
+         rest.get('https://example.com', async (req, res, ctx) => {
+            expect(req.url.searchParams.get('hello')).toBe('world')
+            return res(ctx.status(200), ctx.json({ some: 'json' }))
+         }),
+      )
+
+      await createFetcher(() => ({
+         baseUrl: 'https://example.com',
+         params: { hello: 'world' },
+      }))()
+   })
+
+   test.only('The default params and the request params should be shallowly merged', async () => {
+      server.use(
+         rest.get('https://example.com', async (req, res, ctx) => {
+            expect(req.url.searchParams.get('a')).toBe('1')
+            expect(req.url.searchParams.get('b')).toBe('10')
+            expect(req.url.searchParams.get('c')).toBe('11')
+            return res(ctx.status(200), ctx.json({ some: 'json' }))
+         }),
+      )
+
+      await createFetcher(() => ({
+         baseUrl: 'https://example.com',
+         params: { a: 1, b: 2, c: 3 },
+      }))({
+         params: { b: 10, c: 11 },
       })
    })
 })

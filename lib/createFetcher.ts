@@ -1,6 +1,9 @@
 import { buildOptions } from './buildOptions.js'
 import { ResponseError } from './ResponseError.js'
 
+// TODO: add logic to merge params
+// TODO: add tests for params (string & object)
+
 export type FetchLike<Init extends Record<string, any> = RequestInit> = (
    url: any,
    init?: Init,
@@ -9,8 +12,9 @@ export type FetchLike<Init extends Record<string, any> = RequestInit> = (
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method'> {
    baseUrl?: string
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
-   parseSuccess?: (response: Response, options: RequestOptions) => Promise<D> | D
-   parseError?: (response: Response, options: RequestOptions) => Promise<any> | any
+   params?: string | Record<string, any> | null
+   parseResponse?: (response: Response, options: RequestOptions) => Promise<D> | D
+   parseThrownResponse?: (response: Response, options: RequestOptions) => Promise<any> | any
    retryTimes?: number
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
@@ -28,13 +32,12 @@ export interface DefaultOptions<D = any> extends SharedOptions<D> {
 
 export interface FetcherOptions<D = any> extends SharedOptions<D> {
    url?: string
-   params?: string | Record<string, any> | [string | number, any][] | null
    body?: BodyInit | Record<string, any> | Array<any> | null
 }
 
 type RequestOptionsRequiredKeys =
-   | 'parseError'
-   | 'parseSuccess'
+   | 'parseThrownResponse'
+   | 'parseResponse'
    | 'retryDelay'
    | 'retryWhen'
    | 'serializeBody'
@@ -60,11 +63,11 @@ export let createFetcher =
       return withRetry(fetchFn)(options.href, options)
          .then(async (res) => {
             if (res.ok) {
-               let data = (await options.parseSuccess(res, options)) as D
+               let data = (await options.parseResponse(res, options)) as D
                options.onSuccess?.(data, options)
                return data
             } else {
-               throw await options.parseError(res, options)
+               throw await options.parseThrownResponse(res, options)
             }
          })
          .catch((error) => {

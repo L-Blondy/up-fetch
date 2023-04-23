@@ -96,7 +96,7 @@ upfetch({
    baseUrl,
    url,
    params,
-   parseSuccess,
+   parseResponse,
    retryDelay,
    retryTimes,
    retryWhen,
@@ -129,7 +129,7 @@ createFetcher(() => ({
    beforeFetch,
    onError,
    onSuccess,
-   parseSuccess,
+   parseResponse,
    retryDelay,
    retryTimes,
    retryWhen,
@@ -208,24 +208,36 @@ upfetch({ url: 'https://another-url.com/id' })
 
 ## <samp>\<params\></samp>
 
-<!-- **Type:** `string | Record<string, PrimitiveOrDate | PrimitiveOrDate[]>` -->
-**Type:** `string | Record<string, any> | [string | number, any][] | null`
+**Type:** `string | Record<string, any> | null`
 
 **Default:** `''`
 
-**Available on:** `upfetch ✔️`, `createFetcher ❌`
+**Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
 The url search params. \
-Supports strings, non-nested objects and primitive [entries][entries] by default. \
-See the [serializeParams](#serializeparams-upfetch-createfetcher) option for more complex use cases.
+The default params defined in `createFetcher` and the request params are merged shallowly. \
+Strings and non-nested objects are supported by default. See the [serializeParams](#serializeparams-upfetch-createfetcher) option for nested objects.
 
 **Example:**
 
 ```ts
-// https://example.com/?page=2&limit=10
+const upfetch = createFetcher(() => ({ 
+   baseUrl: 'https://example.com' ,
+   params : { count: true  }
+}))
+
+// use the default `count` param
+// https://example.com/?count=true&page=2&limit=10
 upfetch({ 
    url: 'https://example.com/',
    params: { page: 2, limit: 10 }
+})
+
+// override the default `count`
+// https://example.com/?count=false&page=2&limit=10
+upfetch({ 
+   url: 'https://example.com/',
+   params: { page: 2, limit: 10, count: false }
 })
 ```
 
@@ -388,11 +400,11 @@ interface FetcherOptions extends RequestInit {
    // takes the `body` (plain object or array only) as an argument and returns a string
    // defaults to (body) => JSON.stringify(body)
    serializeBody?: (body: PlainObject | Array<any>) => string
-   // override the default `parseSuccess` function
-   // `parseSuccess` is called when `response.ok` is true
+   // override the default `parseResponse` function
+   // `parseResponse` is called when `response.ok` is true
    // e.g. (response) => response.blob()
    // parses `text` and `json` responses by default
-   parseSuccess?: (response: Response) => Promise<D>
+   parseResponse?: (response: Response) => Promise<D>
 
    // TODO: RequestInit methods
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'

@@ -3,7 +3,7 @@ import { ResponseError } from './ResponseError.js'
 
 export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'beforeFetch'] as const
 
-export let specificFetcherOptionsKeys = ['body', 'url', 'params'] as const
+export let specificFetcherOptionsKeys = ['body', 'url'] as const
 
 let parseResponse = (res: Response) =>
    res
@@ -15,9 +15,9 @@ let parseResponse = (res: Response) =>
 let retryStatuses = new Set([408, 413, 429, 500, 502, 503, 504])
 
 let fallbackOptions = {
-   parseError: async (res: Response, options: RequestOptions): Promise<ResponseError> =>
+   parseThrownResponse: async (res: Response, options: RequestOptions): Promise<ResponseError> =>
       new ResponseError(res, await parseResponse(res), options),
-   parseSuccess: parseResponse,
+   parseResponse: parseResponse,
    retryDelay: (count: number) => 2000 * 1.5 ** (count - 1),
    retryWhen: (res: Response) => retryStatuses.has(res.status),
    serializeBody: JSON.stringify,
