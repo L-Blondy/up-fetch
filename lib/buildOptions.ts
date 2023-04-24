@@ -26,6 +26,7 @@ let fallbackOptions = {
    ): string =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
+   throwWhen: (res: Response) => !res.ok,
 }
 
 export let buildOptions = <DD, D = DD>(
@@ -37,8 +38,8 @@ export let buildOptions = <DD, D = DD>(
       ...strip(defaultOptions, specificFetcherOptionsKeys),
       ...strip(fetcherOptions, specificDefaultOptionsKeys),
       get href() {
-         let { baseUrl = '', url = '', params = {} } = options
-         let serializedParams = options.serializeParams(params ?? {})
+         let { baseUrl = '', url = '', params } = options
+         let serializedParams = options.serializeParams(params)
          return `${/^https?:\/\//.test(url) ? '' : baseUrl}${url}${withQuestionMark(
             serializedParams,
          )}`
@@ -86,11 +87,11 @@ let strip = <O extends Record<string, any>, K extends string>(
    obj?: O,
    keys: readonly K[] = [],
 ): Omit<O, K> => {
-   let copy = { ...obj } as O
+   let copy = { ...(obj || {}) } as O
    for (let key in copy) {
       if (keys.includes(key as any) || copy[key] === undefined) delete copy[key]
    }
    return copy
 }
 
-let withQuestionMark = (str: string) => (!str ? '' : str.startsWith('?') ? str : `?${str}`)
+let withQuestionMark = (str?: string) => (!str ? '' : str.startsWith('?') ? str : `?${str}`)

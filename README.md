@@ -210,7 +210,7 @@ upfetch({ url: 'https://another-url.com/id' })
 
 **Type:** `Record<string, any> `
 
-**Default:** `''`
+**Default:** `{}`
 
 **Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
@@ -335,7 +335,7 @@ upfetch({
 **Available on:** `upfetch ✔️`, `createFetcher ✔️`
 
 This option is used to customize the [body](#body-upfetch) serialization into a string. \
-The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. 
+The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
 
 **Example:**
 

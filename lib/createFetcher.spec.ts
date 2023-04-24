@@ -387,6 +387,44 @@ describe('createFetcher', () => {
          params: { b: 10, c: 11 },
       })
    })
+
+   const asyncThrowWhen = async (res: Response) => {
+      const data = await res.json()
+      return data.code === 1
+   }
+
+   test.only.each`
+      throwWhen         | status | json           | shouldThrow
+      ${undefined}      | ${200} | ${{}}          | ${false}
+      ${undefined}      | ${400} | ${{}}          | ${true}
+      ${asyncThrowWhen} | ${400} | ${{ code: 2 }} | ${false}
+      ${asyncThrowWhen} | ${200} | ${{ code: 1 }} | ${true}
+      ${() => false}    | ${200} | ${{ code: 1 }} | ${false}
+   `(
+      'should throw when `throwWhen` is truthy or return a truthy promise',
+      async ({ throwWhen, status, json, shouldThrow }) => {
+         server.use(
+            rest.get('https://example.com', async (req, res, ctx) => {
+               return res(ctx.status(status), ctx.json(json))
+            }),
+         )
+
+         await createFetcher()({ url: 'https://example.com', throwWhen })
+            .then(() => {
+               if (shouldThrow) {
+                  throw new Error('should have thrown')
+               }
+            })
+            .catch((error) => {
+               if (!isResponseError(error)) {
+                  throw error
+               }
+               if (!shouldThrow) {
+                  throw new Error('should not have thrown')
+               }
+            })
+      },
+   )
 })
 
 describe('withRetry', () => {

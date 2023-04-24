@@ -20,6 +20,7 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    retryDelay?: (attemptNumber: number, response: Response) => number
    serializeBody?: (body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>) => string
    serializeParams?: (params: Exclude<FetcherOptions['params'], null | undefined>) => string
+   throwWhen?: (response: Response, options: RequestOptions) => boolean | Promise<boolean>
 }
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {
@@ -41,6 +42,8 @@ type RequestOptionsRequiredKeys =
    | 'serializeBody'
    | 'serializeParams'
    | 'headers'
+   | 'params'
+   | 'throwWhen'
 
 export interface RequestOptions<DD = any, D = DD>
    extends Omit<RequestInit, RequestOptionsRequiredKeys>,
@@ -60,7 +63,8 @@ export let createFetcher =
 
       return withRetry(fetchFn)(options.href, options)
          .then(async (res) => {
-            if (res.ok) {
+            let shouldThrow = await options.throwWhen(res.clone(), options)
+            if (!shouldThrow) {
                let data = (await options.parseResponse(res, options)) as D
                options.onSuccess?.(data, options)
                return data
@@ -91,7 +95,8 @@ let waitFor = (ms = 0, signal?: AbortSignal | null) =>
 export let withRetry = <F extends FetchLike>(fetchFn: F) =>
    async function fetcher(url: string, opts: RequestOptions, count = 0): Promise<Response> {
       let res = await fetchFn(url, opts)
-      return res.ok || count === (opts.retryTimes || 0) || !opts.retryWhen(res, opts)
+      let shouldThrow = await opts.throwWhen(res.clone(), opts)
+      return !shouldThrow || count === (opts.retryTimes || 0) || !opts.retryWhen(res, opts)
          ? res
          : waitFor(opts.retryDelay(++count, res), opts.signal).then(() => fetcher(url, opts, count))
    }
