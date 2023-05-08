@@ -1,4 +1,4 @@
-import { DefaultOptions, FetcherOptions, RequestOptions, SharedOptions } from './createFetcher.js'
+import { DefaultOptions, FetcherOptions, RequestOptions } from './createFetcher.js'
 import { ResponseError } from './ResponseError.js'
 
 export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'beforeFetch'] as const
@@ -14,16 +14,14 @@ let parseResponse = (res: Response) =>
 
 let retryStatuses = new Set([408, 413, 429, 500, 502, 503, 504])
 
-let fallbackOptions = {
+export let fallbackOptions = {
    parseThrownResponse: async (res: Response, options: RequestOptions): Promise<ResponseError> =>
       new ResponseError(res, await parseResponse(res), options),
    parseResponse: parseResponse,
    retryDelay: (count: number) => 2000 * 1.5 ** (count - 1),
    retryWhen: (res: Response) => retryStatuses.has(res.status),
    serializeBody: JSON.stringify,
-   serializeParams: (
-      params: Parameters<NonNullable<SharedOptions['serializeParams']>>[0],
-   ): string =>
+   serializeParams: (params: Record<string, any>): string =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
    throwWhen: (res: Response) => !res.ok,
@@ -39,7 +37,11 @@ export let buildOptions = <DD, D = DD>(
       ...strip(fetcherOptions, specificDefaultOptionsKeys),
       get href() {
          let { baseUrl = '', url = '', params } = options
-         let serializedParams = options.serializeParams(params)
+         let serializedParams = options.serializeParams(
+            params,
+            options,
+            fallbackOptions.serializeParams,
+         )
          return `${/^https?:\/\//.test(url) ? '' : baseUrl}${url}${withQuestionMark(
             serializedParams,
          )}`
@@ -48,7 +50,9 @@ export let buildOptions = <DD, D = DD>(
 
    let isBodyJson = isJsonificable(options.body)
 
-   options.body = isBodyJson ? options.serializeBody(options.body as any) : options.body
+   options.body = isBodyJson
+      ? options.serializeBody(options.body as any, options, fallbackOptions.serializeBody)
+      : options.body
    options.headers = mergeHeaders(
       isBodyJson && { 'content-type': 'application/json' },
       defaultOptions?.headers,

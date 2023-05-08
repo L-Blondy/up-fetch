@@ -1,4 +1,4 @@
-import { buildOptions } from './buildOptions.js'
+import { buildOptions, fallbackOptions } from './buildOptions.js'
 import { ResponseError } from './ResponseError.js'
 
 // TODO: add logic to merge params
@@ -13,13 +13,29 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    baseUrl?: string
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
    params?: Record<string, any>
-   parseResponse?: (response: Response, options: RequestOptions) => Promise<D> | D
-   parseThrownResponse?: (response: Response, options: RequestOptions) => Promise<any> | any
+   parseResponse?: (
+      response: Response,
+      options: RequestOptions,
+      defaultParser: (typeof fallbackOptions)['parseResponse'],
+   ) => Promise<D> | D
+   parseThrownResponse?: (
+      response: Response,
+      options: RequestOptions,
+      defaultParser: (typeof fallbackOptions)['parseThrownResponse'],
+   ) => Promise<any> | any
    retryTimes?: number
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
-   serializeBody?: (body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>) => string
-   serializeParams?: (params: Exclude<FetcherOptions['params'], null | undefined>) => string
+   serializeBody?: (
+      body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
+      options: RequestOptions,
+      defaultSerializer: (typeof fallbackOptions)['serializeBody'],
+   ) => string
+   serializeParams?: (
+      params: Exclude<FetcherOptions['params'], null | undefined>,
+      options: RequestOptions,
+      defaultSerializer: (typeof fallbackOptions)['serializeParams'],
+   ) => string
    throwWhen?: (response: Response, options: RequestOptions) => boolean | Promise<boolean>
 }
 
@@ -65,11 +81,19 @@ export let createFetcher =
          .then(async (res) => {
             let shouldThrow = await options.throwWhen(res.clone(), options)
             if (!shouldThrow) {
-               let data = (await options.parseResponse(res, options)) as D
+               let data = (await options.parseResponse(
+                  res,
+                  options,
+                  fallbackOptions.parseResponse,
+               )) as D
                options.onSuccess?.(data, options)
                return data
             } else {
-               throw await options.parseThrownResponse(res, options)
+               throw await options.parseThrownResponse(
+                  res,
+                  options,
+                  fallbackOptions.parseThrownResponse,
+               )
             }
          })
          .catch((error) => {

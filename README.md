@@ -293,7 +293,7 @@ upfetch({
 })
 ```
 
-<!--  -->
+<!-- TODO: add correct parameters to the type  -->
 
 ## <samp>\<serializeParams\></samp>
 
@@ -324,7 +324,7 @@ upfetch({
 })
 ```
 
-<!--  -->
+<!-- TODO: add correct parameters to the type  -->
 
 ## <samp>\<serializeBody\></samp>
 

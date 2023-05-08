@@ -1,6 +1,6 @@
 {
   "name": "up-fetch",
-  "version": "0.0.1-beta.18",
+  "version": "0.0.1-beta.19",
   "description": "Slim and flexible HTTP client based on the Fetch API.",
   "type": "module",
   "main": "dist/index.js",
@@ -17,7 +17,7 @@
     "dev": "vitest",
     "test": "vitest run && tsc --noEmit",
     "prepublish": "pnpm build && pnpm test",
-    "postpublish": "git add . && git commit -a && cross-var git tag v$npm_package_version && git push --tags && git push"
+    "postpublish": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"
   },
   "keywords": [
     "fetch",
@@ -53,7 +53,6 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
-    "cross-var": "^1.1.0",
     "eslint": "^8.37.0",
     "jsdom": "^21.1.1",
     "msw": "^1.2.1",

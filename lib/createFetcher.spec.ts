@@ -87,6 +87,7 @@ describe('createFetcher', () => {
          cache: 'default',
          credentials: 'omit',
          onError(error) {
+            console.log(error)
             expect(isResponseError(error)).toBeTruthy()
             if (count === 1) {
                expect(error.message).toEqual('Request failed with status 400')
@@ -393,7 +394,7 @@ describe('createFetcher', () => {
       return data.code === 1
    }
 
-   test.only.each`
+   test.each`
       throwWhen         | status | json           | shouldThrow
       ${undefined}      | ${200} | ${{}}          | ${false}
       ${undefined}      | ${400} | ${{}}          | ${true}
