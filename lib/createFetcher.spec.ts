@@ -87,7 +87,6 @@ describe('createFetcher', () => {
          cache: 'default',
          credentials: 'omit',
          onError(error) {
-            console.log(error)
             expect(isResponseError(error)).toBeTruthy()
             if (count === 1) {
                expect(error.message).toEqual('Request failed with status 400')

@@ -1,4 +1,4 @@
-import { DefaultOptions, FetcherOptions, RequestOptions } from './createFetcher.js'
+import { DefaultOptions, FetcherOptions, RequestOptions, SharedOptions } from './createFetcher.js'
 import { ResponseError } from './ResponseError.js'
 
 export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'beforeFetch'] as const
@@ -79,12 +79,20 @@ export let isJsonificable = (body: FetcherOptions['body']): body is object =>
    Array.isArray(body) ||
    typeof (body as any)?.toJSON === 'function'
 
-export let mergeHeaders = (...list: (HeadersInit | null | false | undefined)[]): Headers =>
-   list.reduce(addHeaders, new Headers())
+export let mergeHeaders = (
+   ...list: (SharedOptions['headers'] | null | false | undefined)[]
+): Headers => list.reduce(addHeaders, new Headers())
 
-let addHeaders = (h1: Headers, h2?: HeadersInit | null | false) => (
-   h2 && new Headers(h2).forEach((value, key) => value !== 'undefined' && h1.set(key, value)), h1
+let addHeaders = (h1: Headers, h2?: SharedOptions['headers'] | null | false) => (
+   h2 &&
+      // null and undefined are automatically stringified to 'undefined' and 'null' by `new Headers()
+      new Headers(h2 as Record<string, string>).forEach(
+         (value, key) => !invalidHeaders.has(value) && h1.set(key, value),
+      ),
+   h1
 )
+
+let invalidHeaders = new Set(['undefined', 'null', ''])
 
 // omits the specified keys and obj[key]: undefined
 let strip = <O extends Record<string, any>, K extends string>(

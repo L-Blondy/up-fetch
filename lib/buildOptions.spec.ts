@@ -60,6 +60,12 @@ describe('mergeHeaders', () => {
       ${{ 'Cache-Control': undefined }}                                            | ${undefined}                                                                 | ${{}}
       ${{ 'Cache-Control': undefined }}                                            | ${{ 'Cache-Control': undefined }}                                            | ${{}}
       ${{}}                                                                        | ${{ 'Cache-Control': undefined }}                                            | ${{}}
+      ${{ 'Cache-Control': null }}                                                 | ${null}                                                                      | ${{}}
+      ${{ 'Cache-Control': null }}                                                 | ${{ 'Cache-Control': null }}                                                 | ${{}}
+      ${{}}                                                                        | ${{ 'Cache-Control': null }}                                                 | ${{}}
+      ${{ 'Cache-Control': '' }}                                                   | ${''}                                                                        | ${{}}
+      ${{ 'Cache-Control': '' }}                                                   | ${{ 'Cache-Control': '' }}                                                   | ${{}}
+      ${{}}                                                                        | ${{ 'Cache-Control': '' }}                                                   | ${{}}
       ${new Headers({ 'Cache-Control': 'no-cache' })}                              | ${new Headers({ 'cache-Control': 'no-store' })}                              | ${{ 'cache-control': 'no-store' }}
       ${new Headers({ 'Cache-Control': 'no-cache', 'content-type': 'text/html' })} | ${new Headers({ 'cache-Control': 'no-store' })}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
       ${new Headers({ 'Cache-Control': 'no-cache' })}                              | ${new Headers({ 'cache-Control': 'no-store', 'content-type': 'text/html' })} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
