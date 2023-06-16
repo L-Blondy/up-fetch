@@ -79,21 +79,6 @@ export let isJsonificable = (body: FetcherOptions['body']): body is object =>
    Array.isArray(body) ||
    typeof (body as any)?.toJSON === 'function'
 
-// export let mergeHeaders = (
-//    ...list: (SharedOptions['headers'] | null | false | undefined)[]
-// ): Headers => list.reduce(addHeaders, new Headers())
-
-// let addHeaders = (h1: Headers, h2?: SharedOptions['headers'] | null | false) => (
-//    h2 &&
-//       // null and undefined are automatically stringified to 'undefined' and 'null' by `new Headers()
-//       new Headers(h2 as Record<string, string>).forEach(
-//          (value, key) => !invalidHeaders.has(value) && h1.set(key, value),
-//       ),
-//    h1
-// )
-
-// let invalidHeaders = new Set(['undefined', 'null', ''])
-
 export let mergeHeaders = (...headerObjects: (Record<string, any> | undefined)[]) => {
    let res: Record<string, any> = {}
    headerObjects.forEach((object) => {
