@@ -12,7 +12,7 @@ export type FetchLike<Init extends Record<string, any> = RequestInit> = (
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method' | 'headers'> {
    baseUrl?: string
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
-   headers?: RequestInit['headers'] | Record<string, string | null | undefined>
+   headers?: Record<string, string | null | undefined>
    params?: Record<string, any>
    parseResponse?: (
       response: Response,
@@ -58,7 +58,7 @@ type RequestOptionsRequiredKeys =
    | 'retryWhen'
    | 'serializeBody'
    | 'serializeParams'
-   | 'headers'
+   // | 'headers'
    | 'params'
    | 'throwWhen'
 

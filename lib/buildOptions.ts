@@ -1,4 +1,4 @@
-import { DefaultOptions, FetcherOptions, RequestOptions, SharedOptions } from './createFetcher.js'
+import { DefaultOptions, FetcherOptions, RequestOptions } from './createFetcher.js'
 import { ResponseError } from './ResponseError.js'
 
 export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'beforeFetch'] as const
@@ -31,7 +31,7 @@ export let buildOptions = <DD, D = DD>(
    defaultOptions?: DefaultOptions<DD>,
    fetcherOptions?: FetcherOptions<D>,
 ): RequestOptions<DD, D> => {
-   let options = {
+   let options: RequestOptions<DD, D> = {
       ...fallbackOptions,
       ...strip(defaultOptions, specificFetcherOptionsKeys),
       ...strip(fetcherOptions, specificDefaultOptionsKeys),
@@ -46,7 +46,7 @@ export let buildOptions = <DD, D = DD>(
             serializedParams,
          )}`
       },
-   } as RequestOptions<DD, D>
+   } as any
 
    let isBodyJson = isJsonificable(options.body)
 
@@ -54,7 +54,7 @@ export let buildOptions = <DD, D = DD>(
       ? options.serializeBody(options.body as any, options, fallbackOptions.serializeBody)
       : options.body
    options.headers = mergeHeaders(
-      isBodyJson && { 'content-type': 'application/json' },
+      isBodyJson ? { 'content-type': 'application/json' } : {},
       defaultOptions?.headers,
       fetcherOptions?.headers,
    )
@@ -79,20 +79,30 @@ export let isJsonificable = (body: FetcherOptions['body']): body is object =>
    Array.isArray(body) ||
    typeof (body as any)?.toJSON === 'function'
 
-export let mergeHeaders = (
-   ...list: (SharedOptions['headers'] | null | false | undefined)[]
-): Headers => list.reduce(addHeaders, new Headers())
+// export let mergeHeaders = (
+//    ...list: (SharedOptions['headers'] | null | false | undefined)[]
+// ): Headers => list.reduce(addHeaders, new Headers())
 
-let addHeaders = (h1: Headers, h2?: SharedOptions['headers'] | null | false) => (
-   h2 &&
-      // null and undefined are automatically stringified to 'undefined' and 'null' by `new Headers()
-      new Headers(h2 as Record<string, string>).forEach(
-         (value, key) => !invalidHeaders.has(value) && h1.set(key, value),
-      ),
-   h1
-)
+// let addHeaders = (h1: Headers, h2?: SharedOptions['headers'] | null | false) => (
+//    h2 &&
+//       // null and undefined are automatically stringified to 'undefined' and 'null' by `new Headers()
+//       new Headers(h2 as Record<string, string>).forEach(
+//          (value, key) => !invalidHeaders.has(value) && h1.set(key, value),
+//       ),
+//    h1
+// )
 
-let invalidHeaders = new Set(['undefined', 'null', ''])
+// let invalidHeaders = new Set(['undefined', 'null', ''])
+
+export let mergeHeaders = (...headerObjects: (Record<string, any> | undefined)[]) => {
+   let res: Record<string, any> = {}
+   headerObjects.forEach((object) => {
+      Object.entries(strip(object)).forEach(([key, value]) => {
+         res[key.toLowerCase()] = value
+      })
+   })
+   return new Headers(res)
+}
 
 // omits the specified keys and obj[key]: undefined
 let strip = <O extends Record<string, any>, K extends string>(
