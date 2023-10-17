@@ -66,6 +66,8 @@ export let buildOptions = <DD, D = DD>(
    return options
 }
 
+const opts = buildOptions({ parseResponse: (res) => res.text() })
+
 /**
  * Are considered Jsonificable:
  * - plain objects
@@ -74,10 +76,14 @@ export let buildOptions = <DD, D = DD>(
  *
  * class instances without a toJSON() method are NOT considered jsonificable
  */
-export let isJsonificable = (body: FetcherOptions['body']): body is object =>
-   body?.constructor?.name === 'Object' ||
-   Array.isArray(body) ||
-   typeof (body as any)?.toJSON === 'function'
+export let isJsonificable = (body: FetcherOptions['body']): body is object => {
+   if (!body || (body as any).buffer || typeof body !== 'object') return false
+   return (
+      body?.constructor?.name === 'Object' ||
+      Array.isArray(body) ||
+      typeof (body as any)?.toJSON === 'function'
+   )
+}
 
 export let mergeHeaders = (...headerObjects: (Record<string, any> | undefined)[]) => {
    let res: Record<string, any> = {}
