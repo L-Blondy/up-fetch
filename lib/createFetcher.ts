@@ -10,34 +10,34 @@ export type FetchLike<Init extends Record<string, any> = RequestInit> = (
 ) => Promise<Response>
 
 export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method' | 'headers'> {
-   baseUrl?: string
-   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
-   headers?: Record<string, string | null | undefined>
-   params?: Record<string, any>
-   parseResponse?: (
-      response: Response,
-      options: RequestOptions,
-      defaultParser: (typeof fallbackOptions)['parseResponse'],
-   ) => Promise<D> | D
-   parseThrownResponse?: (
-      response: Response,
-      options: RequestOptions,
-      defaultParser: (typeof fallbackOptions)['parseThrownResponse'],
-   ) => Promise<any> | any
+   // baseUrl?: string
+   // method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
+   // headers?: Record<string, string | null | undefined>
+   // params?: Record<string, any>
+   // parseResponse?: (
+   //    response: Response,
+   //    options: RequestOptions,
+   //    defaultParser: (typeof fallbackOptions)['parseResponse'],
+   // ) => Promise<D> | D
+   // parseThrownResponse?: (
+   //    response: Response,
+   //    options: RequestOptions,
+   //    defaultParser: (typeof fallbackOptions)['parseThrownResponse'],
+   // ) => Promise<any> | any
    retryTimes?: number
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
-   serializeBody?: (
-      body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
-      options: RequestOptions,
-      defaultSerializer: (typeof fallbackOptions)['serializeBody'],
-   ) => string
-   serializeParams?: (
-      params: Exclude<FetcherOptions['params'], null | undefined>,
-      options: RequestOptions,
-      defaultSerializer: (typeof fallbackOptions)['serializeParams'],
-   ) => string
-   throwWhen?: (response: Response, options: RequestOptions) => boolean | Promise<boolean>
+   // serializeBody?: (
+   //    body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
+   //    options: RequestOptions,
+   //    defaultSerializer: (typeof fallbackOptions)['serializeBody'],
+   // ) => string
+   // serializeParams?: (
+   //    params: Exclude<FetcherOptions['params'], null | undefined>,
+   //    options: RequestOptions,
+   //    defaultSerializer: (typeof fallbackOptions)['serializeParams'],
+   // ) => string
+   // throwWhen?: (response: Response, options: RequestOptions) => boolean | Promise<boolean>
 }
 
 export interface DefaultOptions<D = any> extends SharedOptions<D> {

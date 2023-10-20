@@ -85,7 +85,7 @@ export let isJsonificable = (body: FetcherOptions['body']): body is object => {
    )
 }
 
-export let mergeHeaders = (...headerObjects: (Record<string, any> | undefined)[]) => {
+export let mergeHeaders = (...headerObjects: FetcherOptions['headers'][]) => {
    let res: Record<string, any> = {}
    headerObjects.forEach((object) => {
       Object.entries(strip(object)).forEach(([key, value]) => {
