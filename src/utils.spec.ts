@@ -63,16 +63,21 @@ describe('isJsonificable', () => {
 
 describe('mergeHeaders', () => {
    test.each`
-      defaultHeaders                                                  | fetcherHeaders                                                  | output
-      ${{ 'Cache-Control': undefined }}                               | ${undefined}                                                    | ${{}}
-      ${{ 'Cache-Control': undefined }}                               | ${{ 'Cache-Control': undefined }}                               | ${{}}
-      ${{}}                                                           | ${{ 'Cache-Control': undefined }}                               | ${{}}
-      ${{ 'Cache-Control': '' }}                                      | ${{}}                                                           | ${{ 'cache-control': '' }}
-      ${{ 'Cache-Control': '' }}                                      | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
-      ${{}}                                                           | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
-      ${{ 'Cache-Control': 'no-cache' }}                              | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store' }}
-      ${{ 'Cache-Control': 'no-cache', 'content-type': 'text/html' }} | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
-      ${{ 'Cache-Control': 'no-cache' }}                              | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      defaultHeaders                                                                 | fetcherHeaders                                                  | output
+      ${{ 'Cache-Control': undefined }}                                              | ${undefined}                                                    | ${{}}
+      ${{ 'Cache-Control': undefined }}                                              | ${{ 'Cache-Control': undefined }}                               | ${{}}
+      ${{}}                                                                          | ${{ 'Cache-Control': undefined }}                               | ${{}}
+      ${{ 'Cache-Control': '' }}                                                     | ${{}}                                                           | ${{ 'cache-control': '' }}
+      ${{ 'Cache-Control': '' }}                                                     | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
+      ${{}}                                                                          | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
+      ${{ 'Cache-Control': 'no-cache' }}                                             | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store' }}
+      ${{ 'Cache-Control': 'no-cache', 'content-type': 'text/html' }}                | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${{ 'Cache-Control': 'no-cache' }}                                             | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${[['Cache-Control', 'no-cache'], ['content-type', 'text/html']]}              | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${[['Cache-Control', 'no-cache']]}                                             | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${new Headers([['Cache-Control', 'no-cache'], ['content-type', 'text/html']])} | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${new Headers([['Cache-Control', 'no-cache']])}                                | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${undefined}                                                                   | ${undefined}                                                    | ${{}}
    `(
       'Input: $defaultHeaders, $fetcherHeaders',
       ({ defaultHeaders, fetcherHeaders, output }) => {
