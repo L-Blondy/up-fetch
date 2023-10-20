@@ -1,4 +1,4 @@
-import { FetcherOptions } from './types'
+import { FetcherOptions } from './types.js'
 
 export let mergeHeaders = (...headerInits: FetcherOptions['headers'][]) => {
    let res: Record<string, string> = {}

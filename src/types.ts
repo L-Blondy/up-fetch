@@ -1,4 +1,4 @@
-import { defaultOptions } from './buildOptions'
+import { defaultOptions } from './default-options.js'
 
 export type ParseResponse<TData> = (
    response: Response,
@@ -17,7 +17,7 @@ export type BuiltOptions<TData = any, TError = any> = Init & {
    parseResponseError: ParseResponseError<TError>
    href: string
    baseUrl?: string
-   params?: Record<string, any>
+   params: Record<string, any>
    serializeParams: (
       params: BuiltOptions['params'],
       options: BuiltOptions,

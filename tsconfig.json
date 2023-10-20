@@ -23,12 +23,12 @@
       "forceConsistentCasingInFileNames": true,
       "skipLibCheck": true,
       "paths": {
-         "lib/*": ["./lib/*"]
+         "src/*": ["./src/*"]
       },
       "sourceMap": true,
       "inlineSources": true,
-      "rootDir": "./lib",
+      "rootDir": "./src",
       "outDir": "./dist"
    },
-   "include": ["./lib", "./app"]
+   "include": ["./src", "./app"]
 }
