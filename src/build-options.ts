@@ -22,6 +22,7 @@ export function buildOptions<
 ): BuiltOptions<TFetcherData, TFetcherError> {
    const isBodyJson = isJsonificable(fetcherOpts?.body)
 
+   // TODO: strip some keys
    const options: BuiltOptions = {
       ...defaultOptions,
       ...strip(upOpts),
