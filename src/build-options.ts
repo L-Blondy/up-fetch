@@ -2,15 +2,14 @@ import { ResponseError } from './response-error.js'
 import { BuiltOptions, FetcherOptions, UpOptions } from './types.js'
 import { defaultOptions } from './default-options.js'
 import {
-   getUrlFromInput,
+   isInputRequest,
    isJsonificable,
    mergeHeaders,
-   searchToObject,
    strip,
-   withQuestionMark,
+   withPrefix,
 } from './utils.js'
 
-export function buildOptions<
+export let buildOptions = <
    TUpData = any,
    TFetcherData = TUpData,
    TUpError = ResponseError,
@@ -19,51 +18,55 @@ export function buildOptions<
    input: RequestInfo | URL, // fetch 1st arg
    upOpts?: UpOptions<TUpData, TUpError>,
    fetcherOpts?: FetcherOptions<TFetcherData, TFetcherError>,
-): BuiltOptions<TFetcherData, TFetcherError> {
-   const isBodyJson = isJsonificable(fetcherOpts?.body)
-
-   // TODO: strip some keys
-   const options: BuiltOptions = {
+): BuiltOptions<TFetcherData, TFetcherError> =>
+   ({
       ...defaultOptions,
+      // TODO: strip some keys
       ...strip(upOpts),
+      // TODO: strip some keys
       ...strip(fetcherOpts),
-   } as any
-
-   options.headers = mergeHeaders(
-      isBodyJson ? { 'content-type': 'application/json' } : {},
-      upOpts?.headers,
-      fetcherOpts?.headers,
-   )
-
-   options.body = !isBodyJson
-      ? options.body
-      : options.serializeBody(
-           fetcherOpts?.body as any,
-           options,
-           defaultOptions.serializeBody,
-        )
-
-   let url = getUrlFromInput(input, options.baseUrl)
-   let search = url.search
-   url.search = ''
-   let href = url.href
-
-   options.params = strip({
-      ...upOpts?.params,
-      ...searchToObject(search),
-      ...fetcherOpts?.params,
-   })
-
-   let serializedParams = options.serializeParams(
-      options.params,
-      options,
-      defaultOptions.serializeParams,
-   )
-
-   options.href = `${href}${withQuestionMark(serializedParams)}`
-
-   return options
-}
+      get headers() {
+         return mergeHeaders(
+            isJsonificable(fetcherOpts?.body)
+               ? { 'content-type': 'application/json' }
+               : {},
+            upOpts?.headers,
+            fetcherOpts?.headers,
+         )
+      },
+      get params() {
+         if (isInputRequest(input)) return {} // a Request url cannot be changed, therefore the options.params cannot be used
+         return strip({
+            // the url.search should override the defaultParams
+            ...strip(upOpts?.params, [
+               ...new URL(input, options.baseUrl).searchParams.keys(),
+            ]),
+            ...fetcherOpts?.params,
+         })
+      },
+      get body() {
+         return !isJsonificable(fetcherOpts?.body)
+            ? options.body
+            : options.serializeBody(
+                 fetcherOpts?.body as any,
+                 options,
+                 defaultOptions.serializeBody,
+              )
+      },
+      get input() {
+         if (isInputRequest(input)) return input
+         let url = new URL(input, options.baseUrl)
+         let serializedParams = options.serializeParams(
+            options.params,
+            options,
+            defaultOptions.serializeParams,
+         )
+         return `${url.href}${withPrefix(
+            url.search ? '&' : '?',
+            serializedParams,
+         )}`
+      },
+   } satisfies BuiltOptions)
 
 const options = buildOptions(
    '',

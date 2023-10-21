@@ -1,11 +1,10 @@
 import { describe, expect, test } from 'vitest'
 import {
-   getUrlFromInput,
    isJsonificable,
    mergeHeaders,
-   searchToObject,
+   isInputRequest,
    strip,
-   withQuestionMark,
+   withPrefix,
 } from './utils.js'
 
 class False {
@@ -86,19 +85,7 @@ describe('mergeHeaders', () => {
    )
 })
 
-describe('searchToObject', () => {
-   test.each`
-      search             | output
-      ${'a=b'}           | ${{ a: 'b' }}
-      ${'?a=b'}          | ${{ a: 'b' }}
-      ${'?a=b&c=1&d&e='} | ${{ a: 'b', c: '1', d: '', e: '' }}
-      ${'a[i]=b[2]'}     | ${{ 'a[i]': 'b[2]' }}
-   `('Input: $search', ({ search, output }) => {
-      expect(searchToObject(search)).toEqual(output)
-   })
-})
-
-describe('withQuestionMark', () => {
+describe('withPrefix', () => {
    test.each`
       str          | output
       ${'a=b'}     | ${'?a=b'}
@@ -106,7 +93,7 @@ describe('withQuestionMark', () => {
       ${''}        | ${''}
       ${undefined} | ${''}
    `('Input: $str', ({ str, output }) => {
-      expect(withQuestionMark(str)).toEqual(output)
+      expect(withPrefix('?', str)).toEqual(output)
    })
 })
 
@@ -124,27 +111,13 @@ describe('strip', () => {
    })
 })
 
-describe('getUrlFromInput', () => {
+describe('isInputRequest', () => {
    test.each`
-      input                              | baseUrl            | output
-      ${'d/'}                            | ${'https://a.b.c'} | ${new URL('https://a.b.c/d/')}
-      ${'d'}                             | ${'https://a.b.c'} | ${new URL('https://a.b.c/d')}
-      ${''}                              | ${'https://a.b.c'} | ${new URL('https://a.b.c/')}
-      ${new URL('d/', 'https://a.b.c')}  | ${undefined}       | ${new URL('https://a.b.c/d/')}
-      ${new URL('d', 'https://a.b.c')}   | ${undefined}       | ${new URL('https://a.b.c/d')}
-      ${new URL('', 'https://a.b.c')}    | ${undefined}       | ${new URL('https://a.b.c/')}
-      ${new Request('https://a.b.c/d/')} | ${undefined}       | ${new URL('https://a.b.c/d/')}
-      ${new Request('https://a.b.c/d')}  | ${undefined}       | ${new URL('https://a.b.c/d')}
-      ${new Request('https://a.b.c')}    | ${undefined}       | ${new URL('https://a.b.c/')}
+      input                          | output
+      ${new Request('http://a.b.c')} | ${true}
+      ${new URL('http://a.b.c')}     | ${false}
+      ${'http://a.b.c'}              | ${false}
    `('Input: $object', ({ input, baseUrl, output }) => {
-      const url = getUrlFromInput(input, baseUrl)
-      expect(url.host).toEqual(output.host)
-      expect(url.hostname).toEqual(output.hostname)
-      expect(url.href).toEqual(output.href)
-      expect(url.origin).toEqual(output.origin)
-      expect(url.pathname).toEqual(output.pathname)
-      expect(url.port).toEqual(output.port)
-      expect(url.search).toEqual(output.search)
-      expect(url).toEqual(output)
+      expect(isInputRequest(input)).toEqual(output)
    })
 })

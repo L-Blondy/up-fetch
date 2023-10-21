@@ -10,12 +10,18 @@ export type ParseResponseError<TError = any> = (
    options: BuiltOptions,
 ) => Promise<TError>
 
+export type SerializeBody = (
+   body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
+   options: BuiltOptions,
+   defaultSerializer: (typeof defaultOptions)['serializeBody'],
+) => string
+
 type Init = Omit<RequestInit, 'body' | 'headers' | 'method'>
 
 export type BuiltOptions<TData = any, TError = any> = Init & {
    parseResponse: ParseResponse<TData>
    parseResponseError: ParseResponseError<TError>
-   href: string
+   input: Request | string
    baseUrl?: string
    params: Record<string, any>
    serializeParams: (
@@ -35,11 +41,7 @@ export type BuiltOptions<TData = any, TError = any> = Init & {
       | 'HEAD'
    headers?: Record<string, string>
    body?: BodyInit
-   serializeBody: (
-      body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
-      options: BuiltOptions,
-      defaultSerializer: (typeof defaultOptions)['serializeBody'],
-   ) => string
+   serializeBody: SerializeBody
 }
 
 export type UpOptions<TUpData = any, TUpError = any> = Init & {

@@ -34,27 +34,9 @@ export let isJsonificable = (body: FetcherOptions['body']): body is object => {
    )
 }
 
-export let withQuestionMark = (str?: string) =>
-   !str ? '' : str.startsWith('?') ? str : `?${str}`
+export let withPrefix = (prefix: string, str?: string) =>
+   !str ? '' : str.startsWith(prefix) ? str : `${prefix}${str}`
 
-export let searchToObject = (search: string): Record<string, string> => {
-   let params = new URLSearchParams(search)
-   let obj: Record<string, string> = {}
-   for (let [key, val] of params.entries()) {
-      obj[key] = val
-   }
-   return obj
-}
-
-export let getUrlFromInput = (
-   input: RequestInfo | URL,
-   baseUrl?: string,
-): URL => {
-   if (typeof input === 'string') {
-      return new URL(input, baseUrl)
-   }
-   if (input instanceof Request) {
-      return new URL(input.url)
-   }
-   return input
+export let isInputRequest = (input: any): input is Request => {
+   return !!input.url
 }
