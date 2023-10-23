@@ -1,5 +1,21 @@
 import { defaultOptions } from './default-options.js'
 
+export type JsonifiableObject =
+   | {
+        [Key in string]?: JsonPrimitive | JsonifiableObject | JsonifiableArray
+     }
+   | {
+        toJSON: () => JsonPrimitive | JsonifiableObject | JsonifiableArray
+     }
+export type JsonifiableArray = readonly (
+   | JsonPrimitive
+   | JsonifiableObject
+   | JsonifiableArray
+)[]
+type JsonPrimitive = string | number | boolean | null
+
+type Init = Omit<RequestInit, 'body' | 'headers' | 'method'>
+
 export type ParseResponse<TData> = (
    response: Response,
    options: BuiltOptions,
@@ -9,10 +25,6 @@ export type ParseResponseError<TError = any> = (
    res: Response,
    options: BuiltOptions,
 ) => Promise<TError>
-
-export type Jsonificable = Array<any> | Record<string, any>
-
-type Init = Omit<RequestInit, 'body' | 'headers' | 'method'>
 
 export type BuiltOptions<TData = any, TError = any> = Init & {
    parseResponse: ParseResponse<TData>
@@ -39,7 +51,7 @@ export type BuiltOptions<TData = any, TError = any> = Init & {
    rawBody?: FetcherOptions['body']
    readonly body?: BodyInit | null
    serializeBody: (
-      body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
+      body: JsonifiableObject | JsonifiableArray,
       options: BuiltOptions,
       defaultSerializer: (typeof defaultOptions)['serializeBody'],
    ) => string
@@ -64,6 +76,6 @@ export type FetcherOptions<TFetcherData = any, TFetcherError = any> = Init & {
    serializeParams?: BuiltOptions['serializeParams']
    method?: BuiltOptions['method']
    headers?: HeadersInit & Record<string, string | number | null | undefined>
-   body?: BodyInit | Jsonificable | null
+   body?: BodyInit | JsonifiableObject | JsonifiableArray | null
    serializeBody?: BuiltOptions['serializeBody']
 }

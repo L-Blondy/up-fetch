@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
-   isJsonificable,
+   isJsonifiableObjectOrArray,
    mergeHeaders,
    isInputRequest,
    strip,
@@ -37,7 +37,7 @@ const stream = new ReadableStream({
    cancel() {},
 })
 
-describe('isJsonificable', () => {
+describe('isJsonifiableObjectOrArray', () => {
    test.each`
       body           | output
       ${buffer}      | ${false}
@@ -56,7 +56,7 @@ describe('isJsonificable', () => {
       ${new False()} | ${false}
       ${new True()}  | ${true}
    `('Input: $body', ({ body, output }) => {
-      expect(isJsonificable(body)).toEqual(output)
+      expect(isJsonifiableObjectOrArray(body)).toEqual(output)
    })
 })
 

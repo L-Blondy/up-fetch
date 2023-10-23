@@ -3,7 +3,7 @@ import { BuiltOptions, FetcherOptions, UpOptions } from './types.js'
 import { defaultOptions } from './default-options.js'
 import {
    isInputRequest,
-   isJsonificable,
+   isJsonifiableObjectOrArray,
    mergeHeaders,
    strip,
    withPrefix,
@@ -31,7 +31,7 @@ export let buildOptions = <
       // TODO: strip some keys
       ...strip(fetcherOpts),
       headers: mergeHeaders(
-         isJsonificable(fetcherOpts.body)
+         isJsonifiableObjectOrArray(fetcherOpts.body)
             ? { 'content-type': 'application/json' }
             : {},
          upOpts.headers,
@@ -50,7 +50,7 @@ export let buildOptions = <
            }),
       rawBody: fetcherOpts.body,
       get body() {
-         return isJsonificable(options.rawBody)
+         return isJsonifiableObjectOrArray(options.rawBody)
             ? options.serializeBody(
                  options.rawBody,
                  options,

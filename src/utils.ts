@@ -1,4 +1,4 @@
-import { FetcherOptions, Jsonificable } from './types.js'
+import { FetcherOptions, JsonifiableObject, JsonifiableArray } from './types.js'
 
 export let mergeHeaders = (...headerInits: FetcherOptions['headers'][]) => {
    let res: Record<string, string> = {}
@@ -25,11 +25,10 @@ export let strip = <O extends Record<string, any>, K extends string>(
    return copy
 }
 
-// This type guard does not work properly but serves its purpose well enough
-export let isJsonificable = (
-   body: FetcherOptions['body'],
-): body is Jsonificable => {
-   if (!body || (body as any).buffer || typeof body !== 'object') return false
+export let isJsonifiableObjectOrArray = (
+   body: any,
+): body is JsonifiableObject | JsonifiableArray => {
+   if (!body || typeof body !== 'object') return false
    return (
       body?.constructor?.name === 'Object' ||
       Array.isArray(body) ||
