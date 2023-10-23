@@ -9,7 +9,7 @@ import {
    withPrefix,
 } from './utils.js'
 
-type DefaultOptionsOverride = Pick<
+type DefaultOptionsTypeOverride = Pick<
    Required<UpOptions>,
    'parseResponse' | 'parseResponseError' | 'serializeParams' | 'serializeBody'
 >
@@ -25,7 +25,7 @@ export let buildOptions = <
    fetcherOpts: FetcherOptions<TFetcherData, TFetcherError> = {},
 ): BuiltOptions<TFetcherData, TFetcherError> =>
    ({
-      ...(defaultOptions as any as DefaultOptionsOverride),
+      ...(defaultOptions as any as DefaultOptionsTypeOverride),
       // TODO: strip some keys
       ...strip(upOpts),
       // TODO: strip some keys
