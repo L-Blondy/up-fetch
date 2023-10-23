@@ -2,6 +2,7 @@ import { ResponseError } from './response-error.js'
 import { BuiltOptions, FetcherOptions, UpOptions } from './types.js'
 import { defaultOptions } from './default-options.js'
 import {
+   buildParams,
    isInputRequest,
    isJsonifiableObjectOrArray,
    mergeHeaders,
@@ -37,17 +38,7 @@ export let buildOptions = <
          upOpts.headers,
          fetcherOpts.headers,
       ),
-      params: isInputRequest(input)
-         ? // since the params cannot be used if the input is the Request,
-           // they are set to an empty object for clarity
-           {}
-         : strip({
-              // the url.search should override the defaultParams
-              ...strip(upOpts.params, [
-                 ...new URL(input, 'http://a').searchParams.keys(),
-              ]),
-              ...fetcherOpts.params,
-           }),
+      params: buildParams(upOpts.params, input, fetcherOpts.params),
       rawBody: fetcherOpts.body,
       get body() {
          return isJsonifiableObjectOrArray(options.rawBody)

@@ -1,4 +1,9 @@
-import { FetcherOptions, JsonifiableObject, JsonifiableArray } from './types.js'
+import {
+   FetcherOptions,
+   JsonifiableObject,
+   JsonifiableArray,
+   UpOptions,
+} from './types.js'
 
 export let mergeHeaders = (...headerInits: FetcherOptions['headers'][]) => {
    let res: Record<string, string> = {}
@@ -13,6 +18,25 @@ export let mergeHeaders = (...headerInits: FetcherOptions['headers'][]) => {
    })
    return res
 }
+
+export let buildParams = (
+   upParams: UpOptions['params'],
+   input: URL | Request | string,
+   fetcherParams: FetcherOptions['params'],
+) =>
+   isInputRequest(input)
+      ? {} // an input of type Request cannot use the "params" option
+      : strip({
+           // The 'url.search' should take precedence over 'defaultParams'.
+           // It will be retained in the 'input' as it should not undergo unserialization and reserialization.
+           // Therefore, I remove the 'url.searchParams.keys()' from the 'up' params.
+           // However I don't remove it from the 'fetcherParams'. The user should be careful not to
+           // specify the params in both the "input" and the fetcher "params" option.
+           ...strip(upParams, [
+              ...new URL(input, 'http://a').searchParams.keys(),
+           ]),
+           ...fetcherParams,
+        })
 
 export let strip = <O extends Record<string, any>, K extends string>(
    obj?: O,

@@ -5,6 +5,7 @@ import {
    isInputRequest,
    strip,
    withPrefix,
+   buildParams,
 } from './utils.js'
 
 class False {
@@ -81,6 +82,21 @@ describe('mergeHeaders', () => {
       'Input: $defaultHeaders, $fetcherHeaders',
       ({ defaultHeaders, fetcherHeaders, output }) => {
          expect(mergeHeaders(defaultHeaders, fetcherHeaders)).toEqual(output)
+      },
+   )
+})
+
+describe('buildParams', () => {
+   test.each`
+      upParams    | input        | fetcherParams | output
+      ${{ a: 1 }} | ${''}        | ${{ a: 2 }}   | ${{ a: 2 }}
+      ${{ a: 1 }} | ${'url?a=2'} | ${{}}         | ${{}}
+      ${{ a: 1 }} | ${'url?a=2'} | ${{ a: 2 }}   | ${{}}
+      ${{ a: 1 }} | ${'url?b=2'} | ${{}}         | ${{ a: 1 }}
+   `(
+      'Input: $defaultHeaders, $fetcherHeaders',
+      ({ upParams, input, fetcherParams, output }) => {
+         expect(buildParams(upParams, input, fetcherParams)).toEqual(output)
       },
    )
 })
