@@ -10,18 +10,14 @@ export type ParseResponseError<TError = any> = (
    options: BuiltOptions,
 ) => Promise<TError>
 
-export type SerializeBody = (
-   body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
-   options: BuiltOptions,
-   defaultSerializer: (typeof defaultOptions)['serializeBody'],
-) => string
+export type Jsonificable = Array<any> | Record<string, any>
 
 type Init = Omit<RequestInit, 'body' | 'headers' | 'method'>
 
 export type BuiltOptions<TData = any, TError = any> = Init & {
    parseResponse: ParseResponse<TData>
    parseResponseError: ParseResponseError<TError>
-   input: Request | string
+   readonly input: Request | string
    baseUrl?: string
    params: Record<string, any>
    serializeParams: (
@@ -40,8 +36,13 @@ export type BuiltOptions<TData = any, TError = any> = Init & {
       | 'TRACE'
       | 'HEAD'
    headers?: Record<string, string>
-   body?: BodyInit
-   serializeBody: SerializeBody
+   rawBody?: FetcherOptions['body']
+   readonly body?: BodyInit | null
+   serializeBody: (
+      body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
+      options: BuiltOptions,
+      defaultSerializer: (typeof defaultOptions)['serializeBody'],
+   ) => string
 }
 
 export type UpOptions<TUpData = any, TUpError = any> = Init & {
@@ -63,6 +64,6 @@ export type FetcherOptions<TFetcherData = any, TFetcherError = any> = Init & {
    serializeParams?: BuiltOptions['serializeParams']
    method?: BuiltOptions['method']
    headers?: HeadersInit & Record<string, string | number | null | undefined>
-   body?: BodyInit | Record<string, any> | Array<any> | null
+   body?: BodyInit | Jsonificable | null
    serializeBody?: BuiltOptions['serializeBody']
 }

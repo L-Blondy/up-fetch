@@ -9,6 +9,11 @@ import {
    withPrefix,
 } from './utils.js'
 
+type DefaultOptionsOverride = Pick<
+   Required<UpOptions>,
+   'parseResponse' | 'parseResponseError' | 'serializeParams' | 'serializeBody'
+>
+
 export let buildOptions = <
    TUpData = any,
    TFetcherData = TUpData,
@@ -16,42 +21,42 @@ export let buildOptions = <
    TFetcherError = TUpError,
 >(
    input: RequestInfo | URL, // fetch 1st arg
-   upOpts?: UpOptions<TUpData, TUpError>,
-   fetcherOpts?: FetcherOptions<TFetcherData, TFetcherError>,
+   upOpts: UpOptions<TUpData, TUpError> = {},
+   fetcherOpts: FetcherOptions<TFetcherData, TFetcherError> = {},
 ): BuiltOptions<TFetcherData, TFetcherError> =>
    ({
-      ...defaultOptions,
+      ...(defaultOptions as any as DefaultOptionsOverride),
       // TODO: strip some keys
       ...strip(upOpts),
       // TODO: strip some keys
       ...strip(fetcherOpts),
-      get headers() {
-         return mergeHeaders(
-            isJsonificable(fetcherOpts?.body)
-               ? { 'content-type': 'application/json' }
-               : {},
-            upOpts?.headers,
-            fetcherOpts?.headers,
-         )
-      },
-      get params() {
-         if (isInputRequest(input)) return {} // a Request url cannot be changed, therefore the options.params cannot be used
-         return strip({
-            // the url.search should override the defaultParams
-            ...strip(upOpts?.params, [
-               ...new URL(input, options.baseUrl).searchParams.keys(),
-            ]),
-            ...fetcherOpts?.params,
-         })
-      },
+      headers: mergeHeaders(
+         isJsonificable(fetcherOpts.body)
+            ? { 'content-type': 'application/json' }
+            : {},
+         upOpts.headers,
+         fetcherOpts.headers,
+      ),
+      params: isInputRequest(input)
+         ? // since the params cannot be used if the input is the Request,
+           // they are set to an empty object for clarity
+           {}
+         : strip({
+              // the url.search should override the defaultParams
+              ...strip(upOpts.params, [
+                 ...new URL(input, 'http://a').searchParams.keys(),
+              ]),
+              ...fetcherOpts.params,
+           }),
+      rawBody: fetcherOpts.body,
       get body() {
-         return !isJsonificable(fetcherOpts?.body)
-            ? options.body
-            : options.serializeBody(
-                 fetcherOpts?.body as any,
+         return isJsonificable(options.rawBody)
+            ? options.serializeBody(
+                 options.rawBody,
                  options,
                  defaultOptions.serializeBody,
               )
+            : options.rawBody
       },
       get input() {
          if (isInputRequest(input)) return input

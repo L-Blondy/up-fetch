@@ -1,10 +1,5 @@
 import { ResponseError } from './response-error.js'
-import {
-   BuiltOptions,
-   ParseResponse,
-   ParseResponseError,
-   SerializeBody,
-} from './types.js'
+import { BuiltOptions, ParseResponse } from './types.js'
 
 export const defaultOptions = {
    parseResponse: ((res: Response) =>
@@ -14,19 +9,15 @@ export const defaultOptions = {
          .catch(() => res.text())
          .then((data) => data)) satisfies ParseResponse<any>,
 
-   parseResponseError: (async (
+   parseResponseError: async (
       res: Response,
       options: BuiltOptions,
    ): Promise<ResponseError> =>
-      new ResponseError(
-         res,
-         await defaultOptions.parseResponse(res),
-         options,
-      )) satisfies ParseResponseError as ParseResponseError,
+      new ResponseError(res, await defaultOptions.parseResponse(res), options),
 
    serializeParams: (params: BuiltOptions['params']) =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
 
-   serializeBody: JSON.stringify as any as SerializeBody,
+   serializeBody: JSON.stringify,
 }
