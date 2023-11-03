@@ -1,4 +1,4 @@
-import { defaultOptions } from './default-options.js'
+import { ResponseError } from './response-error.js'
 
 export type JsonifiableObject =
    | {
@@ -35,7 +35,7 @@ export type BuiltOptions<TData = any, TError = any> = Init & {
    serializeParams: (
       params: BuiltOptions['params'],
       options: BuiltOptions,
-      defaultSerializer: (typeof defaultOptions)['serializeParams'],
+      defaultSerializer: DefaultOptions['serializeParams'],
    ) => string
    method?:
       | 'GET'
@@ -53,8 +53,15 @@ export type BuiltOptions<TData = any, TError = any> = Init & {
    serializeBody: (
       body: JsonifiableObject | JsonifiableArray,
       options: BuiltOptions,
-      defaultSerializer: (typeof defaultOptions)['serializeBody'],
+      defaultSerializer: DefaultOptions['serializeBody'],
    ) => string
+}
+
+export type DefaultOptions = {
+   parseResponse: ParseResponse<any>
+   parseResponseError: ParseResponseError<any>
+   serializeParams: BuiltOptions['serializeParams']
+   serializeBody: BuiltOptions['serializeBody']
 }
 
 export type UpOptions<TUpData = any, TUpError = any> = Init & {

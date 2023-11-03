@@ -1,5 +1,10 @@
 import { ResponseError } from './response-error.js'
-import { BuiltOptions, FetcherOptions, UpOptions } from './types.js'
+import {
+   BuiltOptions,
+   DefaultOptions,
+   FetcherOptions,
+   UpOptions,
+} from './types.js'
 import { defaultOptions } from './default-options.js'
 import {
    buildParams,
@@ -9,11 +14,6 @@ import {
    strip,
    withPrefix,
 } from './utils.js'
-
-type DefaultOptionsTypeOverride = Pick<
-   Required<UpOptions>,
-   'parseResponse' | 'parseResponseError' | 'serializeParams' | 'serializeBody'
->
 
 export let buildOptions = <
    TUpData = any,
@@ -26,7 +26,7 @@ export let buildOptions = <
    fetcherOpts: FetcherOptions<TFetcherData, TFetcherError> = {},
 ): BuiltOptions<TFetcherData, TFetcherError> =>
    ({
-      ...(defaultOptions as any as DefaultOptionsTypeOverride),
+      ...(defaultOptions as DefaultOptions),
       // TODO: strip some keys
       ...strip(upOpts),
       // TODO: strip some keys
@@ -62,7 +62,7 @@ export let buildOptions = <
             serializedParams,
          )}`
       },
-   } satisfies BuiltOptions)
+   } satisfies BuiltOptions<TFetcherData, TFetcherError>)
 
 const options = buildOptions(
    '',
