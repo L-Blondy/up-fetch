@@ -38,7 +38,7 @@ export let buildParams = (
            ...fetcherParams,
         })
 
-export let strip = <O extends Record<string, any>, K extends string>(
+export let strip = <O extends Record<string, any>, K extends keyof O = never>(
    obj?: O,
    keys: readonly K[] = [],
 ): Omit<O, K> => {
