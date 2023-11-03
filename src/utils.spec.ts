@@ -17,7 +17,7 @@ class False {
 
 class True {
    toJSON() {
-      return '{"z": 26}'
+      return { z: 26 }
    }
 }
 

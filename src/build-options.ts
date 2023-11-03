@@ -41,20 +41,20 @@ export let buildOptions = <
       params: buildParams(upOpts.params, input, fetcherOpts.params),
       rawBody: fetcherOpts.body,
       get body() {
-         return isJsonifiableObjectOrArray(options.rawBody)
-            ? options.serializeBody(
-                 options.rawBody,
-                 options,
+         return isJsonifiableObjectOrArray(this.rawBody)
+            ? this.serializeBody(
+                 this.rawBody,
+                 this,
                  defaultOptions.serializeBody,
               )
-            : options.rawBody
+            : this.rawBody
       },
       get input() {
          if (isInputRequest(input)) return input
-         let url = new URL(input, options.baseUrl)
-         let serializedParams = options.serializeParams(
-            options.params,
-            options,
+         let url = new URL(input, this.baseUrl)
+         let serializedParams = this.serializeParams(
+            this.params,
+            this,
             defaultOptions.serializeParams,
          )
          return `${url.href}${withPrefix(
