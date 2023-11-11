@@ -45,6 +45,7 @@ export type BuiltOptions<TData = any, TError = any> = Init & {
       | 'OPTIONS'
       | 'TRACE'
       | 'HEAD'
+      | (string & {})
    headers?: Record<string, string>
    rawBody?: FetcherOptions['body']
    readonly body?: BodyInit | null
@@ -86,7 +87,7 @@ export type FetcherOptions<TFetcherData = any, TFetcherError = any> = Init & {
    params?: BuiltOptions['params']
    serializeParams?: BuiltOptions['serializeParams']
    method?: BuiltOptions['method']
-   headers?: HeadersInit & Record<string, string | number | null | undefined>
+   headers?: HeadersInit | Record<string, string | number | null | undefined>
    body?: BodyInit | JsonifiableObject | JsonifiableArray | null
    serializeBody?: BuiltOptions['serializeBody']
 }

@@ -16,7 +16,7 @@
     "build": "tsup lib/index.ts",
     "dev": "vitest",
     "test": "vitest run && tsc --noEmit",
-    "prepublish": "pnpm build && pnpm test",
+    "prepublish": "npm run build && npm run test",
     "postpublish": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"
   },
   "keywords": [
