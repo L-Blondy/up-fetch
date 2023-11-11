@@ -1,5 +1,3 @@
-import { ResponseError } from './response-error.js'
-
 export type JsonifiableObject =
    | {
         [Key in string]?: JsonPrimitive | JsonifiableObject | JsonifiableArray
@@ -27,9 +25,9 @@ export type ParseResponseError<TError = any> = (
 ) => Promise<TError>
 
 export type BuiltOptions<TData = any, TError = any> = Init & {
+   readonly input: Request | string
    parseResponse: ParseResponse<TData>
    parseResponseError: ParseResponseError<TError>
-   readonly input: Request | string
    baseUrl?: string
    params: Record<string, any>
    serializeParams: (
@@ -55,6 +53,9 @@ export type BuiltOptions<TData = any, TError = any> = Init & {
       options: BuiltOptions,
       defaultSerializer: DefaultOptions['serializeBody'],
    ) => string
+   onError?: UpOptions['onError']
+   onSuccess?: UpOptions['onSuccess']
+   beforeFetch?: UpOptions['beforeFetch']
 }
 
 export type DefaultOptions = {
@@ -73,6 +74,9 @@ export type UpOptions<TUpData = any, TUpError = any> = Init & {
    method?: BuiltOptions['method']
    headers?: FetcherOptions['headers']
    serializeBody?: BuiltOptions['serializeBody']
+   onError?: (error: any, options: BuiltOptions) => void
+   onSuccess?: (data: any, options: BuiltOptions) => void
+   beforeFetch?: (options: BuiltOptions) => void
 }
 
 export type FetcherOptions<TFetcherData = any, TFetcherError = any> = Init & {

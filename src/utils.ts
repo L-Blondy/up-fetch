@@ -38,7 +38,8 @@ export let buildParams = (
            ...fetcherParams,
         })
 
-export let strip = <O extends Record<string, any>, K extends keyof O = never>(
+// "K extends string" and not "keyof O" to allow runtime strip of keys of "O" not allowed by typescript
+export let strip = <O extends Record<string, any>, K extends string = never>(
    obj?: O,
    keys: readonly K[] = [],
 ): Omit<O, K> => {

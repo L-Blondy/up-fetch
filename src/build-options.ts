@@ -15,6 +15,12 @@ import {
    withPrefix,
 } from './utils.js'
 
+export let forbiddenFetcherOptions = [
+   'onError',
+   'onSuccess',
+   'beforeFetch',
+] as const
+
 export let buildOptions = <
    TUpData = any,
    TFetcherData = TUpData,
@@ -27,10 +33,8 @@ export let buildOptions = <
 ): BuiltOptions<TFetcherData, TFetcherError> =>
    ({
       ...(defaultOptions as DefaultOptions),
-      // TODO: strip some keys
       ...strip(upOpts),
-      // TODO: strip some keys
-      ...strip(fetcherOpts),
+      ...strip(fetcherOpts, forbiddenFetcherOptions),
       headers: mergeHeaders(
          isJsonifiableObjectOrArray(fetcherOpts.body)
             ? { 'content-type': 'application/json' }
