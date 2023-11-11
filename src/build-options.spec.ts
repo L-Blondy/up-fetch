@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'vitest'
 import { buildOptions } from './build-options.js'
-import { isJsonifiableObjectOrArray } from './utils.js'
 
 describe('buildOptions input', () => {
    test.each`
