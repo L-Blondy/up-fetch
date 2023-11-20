@@ -1,11 +1,11 @@
 import {
-   FetcherOptions,
+   FetchOptions,
    JsonifiableObject,
    JsonifiableArray,
    UpOptions,
 } from './types.js'
 
-export let mergeHeaders = (...headerInits: FetcherOptions['headers'][]) => {
+export let mergeHeaders = (...headerInits: FetchOptions['headers'][]) => {
    let res: Record<string, string> = {}
    headerInits.forEach((init) => {
       new Headers(init).forEach((value, key) => {
@@ -22,7 +22,7 @@ export let mergeHeaders = (...headerInits: FetcherOptions['headers'][]) => {
 export let buildParams = (
    upParams: UpOptions['params'],
    input: URL | Request | string,
-   fetcherParams: FetcherOptions['params'],
+   fetcherParams: FetchOptions['params'],
 ) =>
    isInputRequest(input)
       ? {} // an input of type Request cannot use the "params" option

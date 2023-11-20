@@ -9,7 +9,8 @@ export type FetchLike<Init extends Record<string, any> = RequestInit> = (
    init?: Init,
 ) => Promise<Response>
 
-export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'method' | 'headers'> {
+export interface SharedOptions<D = any>
+   extends Omit<RequestInit, 'body' | 'method' | 'headers'> {
    // baseUrl?: string
    // method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'HEAD'
    // headers?: Record<string, string | null | undefined>
@@ -28,12 +29,12 @@ export interface SharedOptions<D = any> extends Omit<RequestInit, 'body' | 'meth
    retryWhen?: (response: Response, options: RequestOptions) => boolean
    retryDelay?: (attemptNumber: number, response: Response) => number
    // serializeBody?: (
-   //    body: Exclude<FetcherOptions['body'], BodyInit | null | undefined>,
+   //    body: Exclude<FetchOptions['body'], BodyInit | null | undefined>,
    //    options: RequestOptions,
    //    defaultSerializer: (typeof fallbackOptions)['serializeBody'],
    // ) => string
    // serializeParams?: (
-   //    params: Exclude<FetcherOptions['params'], null | undefined>,
+   //    params: Exclude<FetchOptions['params'], null | undefined>,
    //    options: RequestOptions,
    //    defaultSerializer: (typeof fallbackOptions)['serializeParams'],
    // ) => string
@@ -46,7 +47,7 @@ export interface DefaultOptions<D = any> extends SharedOptions<D> {
    onSuccess?: (data: any, options: RequestOptions) => void
 }
 
-export interface FetcherOptions<D = any> extends SharedOptions<D> {
+export interface FetchOptions<D = any> extends SharedOptions<D> {
    url?: string
    body?: BodyInit | Record<string, any> | Array<any> | null
 }
@@ -65,15 +66,18 @@ type RequestOptionsRequiredKeys =
 export interface RequestOptions<DD = any, D = DD>
    extends Omit<RequestInit, RequestOptionsRequiredKeys>,
       Omit<DefaultOptions<DD>, RequestOptionsRequiredKeys | keyof RequestInit>,
-      Omit<FetcherOptions<D>, RequestOptionsRequiredKeys | keyof RequestInit>,
+      Omit<FetchOptions<D>, RequestOptionsRequiredKeys | keyof RequestInit>,
       Pick<Required<SharedOptions>, RequestOptionsRequiredKeys> {
    headers: Headers
    href: string
 }
 
 export let createFetcher =
-   <DD = any>(defaultOptions?: () => DefaultOptions<DD>, fetchFn: FetchLike = fetch) =>
-   <D = DD>(fetcherOptions?: FetcherOptions<D>) => {
+   <DD = any>(
+      defaultOptions?: () => DefaultOptions<DD>,
+      fetchFn: FetchLike = fetch,
+   ) =>
+   <D = DD>(fetcherOptions?: FetchOptions<D>) => {
       let options = buildOptions<DD, D>(defaultOptions?.(), fetcherOptions)
 
       options.beforeFetch?.(options)
@@ -118,10 +122,18 @@ let waitFor = (ms = 0, signal?: AbortSignal | null) =>
    })
 
 export let withRetry = <F extends FetchLike>(fetchFn: F) =>
-   async function fetcher(url: string, opts: RequestOptions, count = 0): Promise<Response> {
+   async function fetcher(
+      url: string,
+      opts: RequestOptions,
+      count = 0,
+   ): Promise<Response> {
       let res = await fetchFn(url, opts)
       let shouldThrow = await opts.throwWhen(res.clone(), opts)
-      return !shouldThrow || count === (opts.retryTimes || 0) || !opts.retryWhen(res, opts)
+      return !shouldThrow ||
+         count === (opts.retryTimes || 0) ||
+         !opts.retryWhen(res, opts)
          ? res
-         : waitFor(opts.retryDelay(++count, res), opts.signal).then(() => fetcher(url, opts, count))
+         : waitFor(opts.retryDelay(++count, res), opts.signal).then(() =>
+              fetcher(url, opts, count),
+           )
    }

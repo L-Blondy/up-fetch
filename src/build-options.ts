@@ -1,8 +1,8 @@
 import { ResponseError } from './response-error.js'
 import {
-   BuiltOptions,
+   UpFetchOptions,
    DefaultOptions,
-   FetcherOptions,
+   FetchOptions,
    UpOptions,
 } from './types.js'
 import { defaultOptions } from './default-options.js'
@@ -15,26 +15,34 @@ import {
    withPrefix,
 } from './utils.js'
 
-export let forbiddenFetcherOptions = [
+export let eventListeners = [
    'onError',
    'onSuccess',
    'beforeFetch',
+   'onResponseError',
+   'onUnknownError',
 ] as const
 
 export let buildOptions = <
    TUpData = any,
-   TFetcherData = TUpData,
-   TUpError = ResponseError,
-   TFetcherError = TUpError,
+   TFetchData = TUpData,
+   TUpResponseError = ResponseError,
+   TUpUnknownError = any,
+   TFetchResponseError = TUpResponseError,
+   TFetchUnknownError = TUpUnknownError,
 >(
    input: RequestInfo | URL, // fetch 1st arg
-   upOpts: UpOptions<TUpData, TUpError> = {},
-   fetcherOpts: FetcherOptions<TFetcherData, TFetcherError> = {},
-): BuiltOptions<TFetcherData, TFetcherError> =>
+   upOpts: UpOptions<TUpData, TUpResponseError, TUpUnknownError> = {},
+   fetcherOpts: FetchOptions<
+      TFetchData,
+      TFetchResponseError,
+      TFetchUnknownError
+   > = {},
+): UpFetchOptions<TFetchData, TFetchResponseError, TFetchUnknownError> =>
    ({
       ...(defaultOptions as DefaultOptions),
-      ...strip(upOpts),
-      ...strip(fetcherOpts, forbiddenFetcherOptions),
+      ...strip(upOpts, eventListeners),
+      ...strip(fetcherOpts, eventListeners),
       headers: mergeHeaders(
          isJsonifiableObjectOrArray(fetcherOpts.body)
             ? { 'content-type': 'application/json' }
@@ -66,7 +74,11 @@ export let buildOptions = <
             serializedParams,
          )}`
       },
-   } satisfies BuiltOptions<TFetcherData, TFetcherError>)
+   } satisfies UpFetchOptions<
+      TFetchData,
+      TFetchResponseError,
+      TFetchUnknownError
+   >)
 
 const options = buildOptions(
    '',

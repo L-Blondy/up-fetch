@@ -1,9 +1,17 @@
-import { DefaultOptions, FetcherOptions, RequestOptions } from './createFetcher.js'
+import {
+   DefaultOptions,
+   FetchOptions,
+   RequestOptions,
+} from './createFetcher.js'
 import { ResponseError } from './ResponseError.js'
 
-export let specificDefaultOptionsKeys = ['onError', 'onSuccess', 'beforeFetch'] as const
+export let specificDefaultOptionsKeys = [
+   'onError',
+   'onSuccess',
+   'beforeFetch',
+] as const
 
-export let specificFetcherOptionsKeys = ['body', 'url'] as const
+export let specificFetchOptionsKeys = ['body', 'url'] as const
 
 let parseResponse = (res: Response) =>
    res
@@ -15,7 +23,10 @@ let parseResponse = (res: Response) =>
 let retryStatuses = new Set([408, 413, 429, 500, 502, 503, 504])
 
 export let fallbackOptions = {
-   parseThrownResponse: async (res: Response, options: RequestOptions): Promise<ResponseError> =>
+   parseThrownResponse: async (
+      res: Response,
+      options: RequestOptions,
+   ): Promise<ResponseError> =>
       new ResponseError(res, await parseResponse(res), options),
    parseResponse: parseResponse,
    retryDelay: (count: number) => 2000 * 1.5 ** (count - 1),
@@ -29,11 +40,11 @@ export let fallbackOptions = {
 
 export let buildOptions = <DD, D = DD>(
    defaultOptions?: DefaultOptions<DD>,
-   fetcherOptions?: FetcherOptions<D>,
+   fetcherOptions?: FetchOptions<D>,
 ): RequestOptions<DD, D> => {
    let options: RequestOptions<DD, D> = {
       ...fallbackOptions,
-      ...strip(defaultOptions, specificFetcherOptionsKeys),
+      ...strip(defaultOptions, specificFetchOptionsKeys),
       ...strip(fetcherOptions, specificDefaultOptionsKeys),
       get href() {
          let { baseUrl = '', url = '', params } = options
@@ -42,16 +53,20 @@ export let buildOptions = <DD, D = DD>(
             options,
             fallbackOptions.serializeParams,
          )
-         return `${/^https?:\/\//.test(url) ? '' : baseUrl}${url}${withQuestionMark(
-            serializedParams,
-         )}`
+         return `${
+            /^https?:\/\//.test(url) ? '' : baseUrl
+         }${url}${withQuestionMark(serializedParams)}`
       },
    } as any
 
    let isBodyJson = isJsonificable(options.body)
 
    options.body = isBodyJson
-      ? options.serializeBody(options.body as any, options, fallbackOptions.serializeBody)
+      ? options.serializeBody(
+           options.body as any,
+           options,
+           fallbackOptions.serializeBody,
+        )
       : options.body
    options.headers = mergeHeaders(
       isBodyJson ? { 'content-type': 'application/json' } : {},
@@ -76,7 +91,7 @@ const opts = buildOptions({ parseResponse: (res) => res.text() })
  *
  * class instances without a toJSON() method are NOT considered jsonificable
  */
-export let isJsonificable = (body: FetcherOptions['body']): body is object => {
+export let isJsonificable = (body: FetchOptions['body']): body is object => {
    if (!body || (body as any).buffer || typeof body !== 'object') return false
    return (
       body?.constructor?.name === 'Object' ||
@@ -85,7 +100,7 @@ export let isJsonificable = (body: FetcherOptions['body']): body is object => {
    )
 }
 
-export let mergeHeaders = (...headerObjects: FetcherOptions['headers'][]) => {
+export let mergeHeaders = (...headerObjects: FetchOptions['headers'][]) => {
    let res: Record<string, any> = {}
    headerObjects.forEach((object) => {
       Object.entries(strip(object)).forEach(([key, value]) => {
@@ -107,4 +122,5 @@ let strip = <O extends Record<string, any>, K extends string>(
    return copy
 }
 
-let withQuestionMark = (str?: string) => (!str ? '' : str.startsWith('?') ? str : `?${str}`)
+let withQuestionMark = (str?: string) =>
+   !str ? '' : str.startsWith('?') ? str : `?${str}`

@@ -54,37 +54,6 @@ describe('buildOptions body', () => {
    })
 })
 
-describe('buildOptions merge options', () => {
-   test('fetcherOpts.onError has no effect', () => {
-      const upOpts = { onError: () => {} }
-      const fetcherOpts = { onError: () => {} }
-      // @ts-expect-error onError is not allowed on fetcherOpts
-      const options = buildOptions('http://a', upOpts, fetcherOpts)
-      expect(options.onError).toBe(upOpts.onError)
-   })
-   test('fetcherOpts.onSuccess has no effect', () => {
-      const upOpts = { onSuccess: () => {} }
-      const fetcherOpts = { onSuccess: () => {} }
-      // @ts-expect-error onSuccess is not allowed on fetcherOpts
-      const options = buildOptions('http://a', upOpts, fetcherOpts)
-      expect(options.onSuccess).toBe(upOpts.onSuccess)
-   })
-   test('fetcherOpts.beforeFetch has no effect', () => {
-      const upOpts = { beforeFetch: () => {} }
-      const fetcherOpts = { beforeFetch: () => {} }
-      // @ts-expect-error beforeFetch is not allowed on fetcherOpts
-      const options = buildOptions('http://a', upOpts, fetcherOpts)
-      expect(options.beforeFetch).toBe(upOpts.beforeFetch)
-   })
-   test('upOpts.body has no effect', () => {
-      const upOpts = { body: { a: 1 } }
-      const fetcherOpts = {}
-      // @ts-expect-error body is not allowed on upOpts
-      const options = buildOptions('http://a', upOpts, fetcherOpts)
-      expect(options.body).toBeUndefined()
-   })
-})
-
 class WillNotSerialize {
    a: number
    constructor() {
