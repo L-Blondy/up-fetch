@@ -79,32 +79,3 @@ export let buildOptions = <
       TFetchResponseError,
       TFetchUnknownError
    >)
-
-const options = buildOptions(
-   '',
-   {
-      parseResponse: (res, opts) => res.text(),
-      parseResponseError: (res, opts) => res.text(),
-      serializeParams(params, options, defaultSerializer) {
-         return ''
-      },
-      serializeBody(body, options, defaultSerializer) {
-         return ''
-      },
-   },
-   {
-      parseResponse: (res, opts) => Promise.resolve(1),
-      parseResponseError: (res, opts) => Promise.resolve(1),
-      serializeParams(params, options, defaultSerializer) {
-         return ''
-      },
-      serializeBody(body, options, defaultSerializer) {
-         return ''
-      },
-   },
-)
-type w = (typeof options)['parseResponse']
-//   ^?
-type x = (typeof options)['parseResponseError']
-//   ^?
-type h = (typeof options)['headers']
