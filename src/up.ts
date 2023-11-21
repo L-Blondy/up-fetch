@@ -14,7 +14,7 @@ export function up<
       TUpUnknownError
    > = () => ({}),
 ) {
-   const fetcher = <
+   let fetcher = <
       TFetchData = TUpData,
       TFetchResponseError = TUpResponseError,
       TFetchUnknownError = TUpUnknownError,
@@ -26,7 +26,7 @@ export function up<
          TFetchUnknownError
       > = {},
    ) => {
-      const upOptions = getUpOptions()
+      let upOptions = getUpOptions()
       let options = buildOptions(input, upOptions, fetcherOptions)
 
       fetcherOptions.beforeFetch?.(options)
@@ -34,7 +34,7 @@ export function up<
 
       return fetchFn(options.input, options)
          .catch((error) => {
-            const unknownError = options.parseUnknownError(error, options)
+            let unknownError = options.parseUnknownError(error, options)
             fetcherOptions.onUnknownError?.(unknownError, options)
             upOptions.onUnknownError?.(unknownError, options)
             fetcherOptions.onError?.(unknownError, options)
@@ -48,7 +48,7 @@ export function up<
                upOptions.onSuccess?.(data, options)
                return data
             }
-            const responseError = await options.parseResponseError(res, options)
+            let responseError = await options.parseResponseError(res, options)
             fetcherOptions.onResponseError?.(responseError, options)
             upOptions.onResponseError?.(responseError, options)
             fetcherOptions.onError?.(responseError, options)

@@ -8,7 +8,9 @@ import {
 export let mergeHeaders = (...headerInits: FetchOptions['headers'][]) => {
    let res: Record<string, string> = {}
    headerInits.forEach((init) => {
-      new Headers(init).forEach((value, key) => {
+      // casting `init as HeadersInit` because `Record<string any>` is
+      // properly transformed to `Record<string,string>` by `new Headers(init)`
+      new Headers(init as HeadersInit).forEach((value, key) => {
          if (value === 'null' || value === 'undefined') {
             delete res[key]
          } else {

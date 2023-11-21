@@ -1,7 +1,7 @@
 import { ResponseError } from './response-error.js'
 import { UpFetchOptions, DefaultOptions } from './types.js'
 
-export const defaultOptions = {
+export let defaultOptions = {
    parseResponse: (res: Response) =>
       res
          .clone()
