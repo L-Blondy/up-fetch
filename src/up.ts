@@ -1,8 +1,7 @@
 import { buildOptions } from './build-options.js'
 import { defaultOptions } from './default-options.js'
 import { UpFetchOptions, UpOptions } from './types.js'
-
-let noOptions = () => ({})
+import { emptyOptions } from './utils.js'
 
 export function up<
    TUpData = any,
@@ -16,9 +15,9 @@ export function up<
       TUpResponseError,
       TUpUnknownError,
       TFetchFn
-   > = noOptions as any,
+   > = () => emptyOptions,
 ) {
-   let fetcher = <
+   return <
       TFetchData = TUpData,
       TFetchResponseError = TUpResponseError,
       TFetchUnknownError = TUpUnknownError,
@@ -29,7 +28,7 @@ export function up<
          TFetchResponseError,
          TFetchUnknownError,
          TFetchFn
-      > = {} as any,
+      > = emptyOptions,
    ) => {
       let upOptions = getUpOptions()
       let options = buildOptions(input, upOptions, fetcherOptions)
@@ -73,6 +72,4 @@ export function up<
             throw responseError
          })
    }
-
-   return fetcher
 }

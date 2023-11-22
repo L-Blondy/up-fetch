@@ -13,6 +13,7 @@ import {
    mergeHeaders,
    strip,
    withPrefix,
+   emptyOptions,
 } from './utils.js'
 
 export let eventListeners = [
@@ -22,8 +23,6 @@ export let eventListeners = [
    'onResponseError',
    'onUnknownError',
 ] as const
-
-let emptyOpts: any = {}
 
 export let buildOptions = <
    TFetchFn extends typeof fetch = typeof fetch,
@@ -40,13 +39,13 @@ export let buildOptions = <
       TUpResponseError,
       TUpUnknownError,
       TFetchFn
-   > = emptyOpts,
+   > = emptyOptions,
    fetcherOpts: UpFetchOptions<
       TFetchData,
       TFetchResponseError,
       TFetchUnknownError,
       TFetchFn
-   > = emptyOpts,
+   > = emptyOptions,
 ): ComputedOptions<
    TFetchData,
    TFetchResponseError,

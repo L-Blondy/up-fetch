@@ -69,3 +69,5 @@ export let withPrefix = (prefix: string, str?: string) =>
 export let isRequest = (input: any): input is Request => {
    return !!input.url
 }
+
+export let emptyOptions: any = {}
