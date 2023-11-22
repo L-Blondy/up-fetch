@@ -49,8 +49,7 @@ export type UpFetchOptions<
    params: Record<string, any>
    serializeParams: (
       params: UpFetchOptions['params'],
-      options: UpFetchOptions,
-      defaultSerializer: DefaultOptions['serializeParams'],
+      defaultSerializer: (params: UpFetchOptions['params']) => string,
    ) => string
    method?:
       | 'GET'
@@ -68,8 +67,7 @@ export type UpFetchOptions<
    readonly body?: BodyInit | null
    serializeBody: (
       body: JsonifiableObject | JsonifiableArray,
-      options: UpFetchOptions,
-      defaultSerializer: DefaultOptions['serializeBody'],
+      defaultSerializer: (body: JsonifiableObject | JsonifiableArray) => string,
    ) => string
 }
 

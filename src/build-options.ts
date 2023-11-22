@@ -8,7 +8,7 @@ import {
 import { defaultOptions } from './default-options.js'
 import {
    buildParams,
-   isInputRequest,
+   isRequest,
    isJsonifiableObjectOrArray,
    mergeHeaders,
    strip,
@@ -54,19 +54,14 @@ export let buildOptions = <
       rawBody: fetcherOpts.body,
       get body() {
          return isJsonifiableObjectOrArray(this.rawBody)
-            ? this.serializeBody(
-                 this.rawBody,
-                 this,
-                 defaultOptions.serializeBody,
-              )
+            ? this.serializeBody(this.rawBody, defaultOptions.serializeBody)
             : this.rawBody
       },
       get input() {
-         if (isInputRequest(input)) return input
+         if (isRequest(input)) return input
          let url = new URL(input, this.baseUrl)
          let serializedParams = this.serializeParams(
             this.params,
-            this,
             defaultOptions.serializeParams,
          )
          return `${url.href}${withPrefix(

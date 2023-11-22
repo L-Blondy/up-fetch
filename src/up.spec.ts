@@ -3,12 +3,152 @@ import { up } from './up.js'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { isResponseError } from './response-error.js'
+import { bodyMock } from './_mocks.js'
 
 describe('up', () => {
    const server = setupServer()
    beforeAll(() => server.listen())
    afterEach(() => server.resetHandlers())
    afterAll(() => server.close())
+
+   describe('serializeParams', () => {
+      test('Should receive the params and the default serializer', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            serializeParams(params, defaultSerializer) {
+               expect(params).toEqual({ a: 1 })
+               expect(typeof defaultSerializer).toEqual('function')
+               return ''
+            },
+         }))
+         await upfetch('', { params: { a: 1 } })
+      })
+
+      test('Should not receive the params defined in the url itself', async () => {
+         server.use(
+            rest.get('https://example.com/path', (req, res, ctx) => {
+               expect(req.url.search).toEqual('?b=2&a=1')
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            serializeParams(params, defaultSerializer) {
+               expect(params).toEqual({ a: 1 })
+               return defaultSerializer(params)
+            },
+         }))
+         await upfetch('path?b=2', { params: { a: 1 } })
+      })
+
+      test('The params defined in the url should override up params', async () => {
+         server.use(
+            rest.get('https://example.com/path', (req, res, ctx) => {
+               expect(req.url.search).toEqual('?b=2&a=1')
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            params: { b: 3 },
+            serializeParams(params, defaultSerializer) {
+               expect(params).toEqual({ a: 1 })
+               return defaultSerializer(params)
+            },
+         }))
+         await upfetch('path?b=2', { params: { a: 1 } })
+      })
+
+      test('Should be called even if no params are defined', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            serializeParams() {
+               count++
+               return ''
+            },
+         }))
+         await upfetch('')
+         expect(count).toEqual(2)
+      })
+   })
+
+   describe('serializeBody', () => {
+      test('Should receive the body and the default serializer', async () => {
+         server.use(
+            rest.post('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            serializeBody(body, defaultSerializer) {
+               expect(body).toEqual({ a: 1 })
+               expect(typeof defaultSerializer).toEqual('function')
+               return ''
+            },
+         }))
+         await upfetch('', { body: { a: 1 }, method: 'POST' })
+      })
+
+      test.each`
+         body                            | isSerialized
+         ${{}}                           | ${true}
+         ${{ a: 1 }}                     | ${true}
+         ${[1, 2]}                       | ${true}
+         ${bodyMock.classJsonifiable}    | ${true}
+         ${bodyMock.classNonJsonifiable} | ${false}
+         ${bodyMock.buffer}              | ${false}
+         ${bodyMock.dataview}            | ${false}
+         ${bodyMock.blob}                | ${false}
+         ${bodyMock.typedArray}          | ${false}
+         ${bodyMock.formData}            | ${false}
+         ${bodyMock.urlSearchParams}     | ${false}
+         ${bodyMock.stream}              | ${false}
+         ${''}                           | ${false}
+         ${0}                            | ${false}
+         ${undefined}                    | ${false}
+         ${null}                         | ${false}
+      `(
+         'Should be called when body is an Array, a plain Object or a class with a JSON method',
+         async ({ body, isSerialized }) => {
+            server.use(
+               rest.post('https://example.com', async (req, res, ctx) => {
+                  const actualBody = await req.text()
+                  expect(actualBody === 'serialized').toBe(isSerialized)
+                  return res(ctx.json({ hello: 'world' }), ctx.status(200))
+               }),
+            )
+
+            const upfetch = up(fetch, () => ({
+               baseUrl: 'https://example.com',
+               method: 'POST',
+            }))
+            await upfetch('', {
+               body,
+               serializeBody: () => 'serialized',
+               // @ts-ignore the global fetch type does not include "duplex"
+               duplex: body === bodyMock.stream ? 'half' : undefined,
+            })
+         },
+      )
+   })
 
    describe('parseResponse', () => {
       test('Should parse JSON by default', async () => {
@@ -81,6 +221,28 @@ describe('up', () => {
          }))
          await upfetch('')
          expect(count).toEqual(3)
+      })
+
+      test('Should be called even if the response has no body', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.status(200))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            parseResponse(res) {
+               expect(res.body).toEqual(null)
+               expect(count).toEqual(1)
+               count++
+               return res.text()
+            },
+         }))
+         await upfetch('')
+         expect(count).toEqual(2)
       })
    })
 
@@ -164,6 +326,28 @@ describe('up', () => {
          await upfetch('').catch(() => {
             expect(count).toEqual(4)
          })
+      })
+
+      test('Should be called even if the response has no body', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.status(300))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            parseResponseError(res) {
+               expect(res.body).toEqual(null)
+               expect(count).toEqual(1)
+               count++
+               return Promise.resolve('some error')
+            },
+         }))
+         await upfetch('').catch((error) => expect(error).toEqual('some error'))
+         expect(count).toEqual(2)
       })
    })
 
@@ -591,298 +775,6 @@ describe('up', () => {
          })
       })
    })
-
-   // test('When response is NOT `ok`, a ResponseError containing response and the requestOptions should be thrown. The ResponseError should be passed to onError & onResponseError', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.json({ hello: 'world' }), ctx.status(400))
-   //       }),
-   //       rest.get('https://example.com/id', (req, res, ctx) => {
-   //          return res(ctx.text('hello error'), ctx.status(401))
-   //       }),
-   //    )
-
-   //    let count = 1
-
-   //    const upfetch = up(fetch, () => ({
-   //       baseUrl: 'https://example.com',
-   //       cache: 'default',
-   //       credentials: 'omit',
-   //       onError(error) {
-   //          expect(isResponseError(error)).toBeTruthy()
-   //          if (count === 1) {
-   //             expect(error.message).toEqual('Request failed with status 400')
-   //             expect(error.options.cache).toBe('default')
-   //             expect(error.options.credentials).toBe('omit')
-   //             expect(error.response.status).toEqual(400)
-   //             expect(error.data).toEqual({ hello: 'world' })
-   //             return
-   //          }
-   //          if (count === 2) {
-   //             expect(error.message).toEqual('Request failed with status 401')
-   //             expect(error.options.cache).toBe('default')
-   //             expect(error.options.credentials).toBe('omit')
-   //             expect(error.response.status).toEqual(401)
-   //             expect(error.data).toEqual('hello error')
-   //             return
-   //          }
-   //       },
-   //       onResponseError(error) {
-   //          expect(isResponseError(error)).toBeTruthy()
-   //          if (count === 1) {
-   //             expect(error.message).toEqual('Request failed with status 400')
-   //             expect(error.options.cache).toBe('default')
-   //             expect(error.options.credentials).toBe('omit')
-   //             expect(error.response.status).toEqual(400)
-   //             expect(error.data).toEqual({ hello: 'world' })
-   //             return
-   //          }
-   //          if (count === 2) {
-   //             expect(error.message).toEqual('Request failed with status 401')
-   //             expect(error.options.cache).toBe('default')
-   //             expect(error.options.credentials).toBe('omit')
-   //             expect(error.response.status).toEqual(401)
-   //             expect(error.data).toEqual('hello error')
-   //             return
-   //          }
-   //       },
-   //    }))
-
-   //    await upfetch('', {
-   //       onError(error) {
-   //          expect(isResponseError(error)).toEqual(true)
-   //          expect(error.message).toEqual('Request failed with status 400')
-   //          expect(error.options.cache).toBe('default')
-   //          expect(error.options.credentials).toBe('omit')
-   //          expect(error.response.status).toEqual(400)
-   //          expect(error.data).toEqual({ hello: 'world' })
-   //          // catch the network request error & re-throw the assertion errors only
-   //          if (error.name === 'AssertionError') {
-   //             throw error
-   //          }
-   //       },
-   //    })
-   //    count++
-   //    await upfetch('/id', {
-   //       onError(error) {
-   //          // the same error as onError with count === 2
-   //          expect(isResponseError(error)).toEqual(true)
-   //          expect(error.message).toEqual('Request failed with status 401')
-   //          expect(error.options.cache).toBe('default')
-   //          expect(error.options.credentials).toBe('omit')
-   //          expect(error.response.status).toEqual(401)
-   //          expect(error.data).toEqual('hello error')
-   //          // catch the network request error & re-throw the assertion errors only
-   //          if (error.name === 'AssertionError') {
-   //             throw error
-   //          }
-   //       },
-   //    })
-   // })
-
-   // test('Response Parsing errors should also be passed to onError', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.text('hello error'), ctx.status(200))
-   //       }),
-   //    )
-
-   //    let count = 1
-
-   //    const upfetch = up(fetch, () => ({
-   //       baseUrl: 'https://example.com',
-   //       parseResponse: (res) => res.json(),
-   //       onError(error) {
-   //          expect(error.name).toBe('SyntaxError')
-   //          count++
-   //       },
-   //    }))
-
-   //    await upfetch('', {
-   //       cache: 'default',
-   //    }).catch((error) => {
-   //       if (error.name === 'AssertionError') {
-   //          throw error
-   //       }
-   //    })
-   //    // verifies that onError was called
-   //    expect(count).toBe(2)
-   // })
-
-   // test('Other types of errors (e.g. invalid url) should also be passed to onError', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(400))
-   //       }),
-   //    )
-
-   //    let count = 1
-
-   //    const upfetch = up(fetch, () => ({
-   //       onError(error) {
-   //          expect(error.name).toBe('TypeError')
-   //          count++
-   //       },
-   //    }))
-
-   //    await upfetch('').catch((error) => {
-   //       if (error.name === 'AssertionError') {
-   //          throw error
-   //       }
-   //    })
-   //    // verifies that onError was called
-   //    expect(count).toBe(2)
-   // })
-
-   // test('When fetch starts, beforeFetch(options, url) should be triggered', async () => {
-   //    server.use(
-   //       rest.post('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(200))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({
-   //       baseUrl: 'https://example.com',
-   //       beforeFetch(options) {
-   //          expect(options.baseUrl).toBe('https://example.com')
-   //          expect(options.body).toBe('{"hello":"world"}')
-   //          expect(options.method).toBe('POST')
-   //          expect(options.input).toBe('https://example.com')
-   //       },
-   //    }))
-
-   //    await upfetch('', { body: { hello: 'world' }, method: 'POST' })
-   // })
-
-   // test('`parseThrownResponse` default implementation  should return a ResponseError instance', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(400), ctx.json({ some: 'json' }))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
-
-   //    await upfetch('').catch((error) => {
-   //       expect(isResponseError(error)).toEqual(true)
-   //    })
-   // })
-
-   // test('`parseThrownResponse` default implementation should parse JSON properly', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(400), ctx.json({ some: 'json' }))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
-
-   //    await upfetch('').catch((error) => {
-   //       expect(isResponseError(error)).toEqual(true)
-   //       expect(error.response.data).toEqual({ some: 'json' })
-   //    })
-   // })
-
-   // test('`parseThrownResponse` default implementation should parse TEXT properly', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(400), ctx.text('hello world'))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
-
-   //    await upfetch('').catch((error) => {
-   //       expect(isResponseError(error)).toEqual(true)
-   //       expect(error.response.data).toEqual('hello world')
-   //    })
-   // })
-
-   // test('`parseThrownResponse` should parse the data as null when the server response contains no data', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(400))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
-
-   //    await upfetch('').catch((error) => {
-   //       expect(isResponseError(error)).toEqual(true)
-   //       expect(error.response.data).toEqual(null)
-   //    })
-   // })
-
-   // test('`parseResponse` should parse the data as null when the server response contains no data', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(200))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
-
-   //    await upfetch('').then((data) => {
-   //       expect(data).toEqual(null)
-   //    })
-   // })
-
-   // test('parseResponse default implementation should parse JSON properly', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(200), ctx.json({ some: 'json' }))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
-
-   //    await upfetch('').then((data) => {
-   //       expect(data).toEqual({ some: 'json' })
-   //    })
-   // })
-
-   // test('parseResponse default implementation should parse TEXT properly', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.status(200), ctx.text('hello world'))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
-
-   //    await upfetch('').then((data) => {
-   //       expect(data).toEqual('hello world')
-   //    })
-   // })
-
-   // test('mutating the requestOptions should work properly', async () => {
-   //    server.use(
-   //       rest.post('https://example.com/todos', async (req, res, ctx) => {
-   //          const body = await req.json()
-   //          expect(req.url.searchParams.get('a')).toBe('1')
-   //          expect(req.headers.get('content-type')).toBe('application/json')
-   //          expect(req.headers.get('Authorization')).toBe('Bearer token')
-   //          expect(body).toEqual({ a: 2 })
-   //          return res(ctx.status(200), ctx.text('hello world'))
-   //       }),
-   //    )
-
-   //    const upfetch = up(fetch, () => ({
-   //       headers: { 'content-type': 'application/json' },
-
-   //       beforeFetch(options) {
-   //          options.baseUrl = 'https://example.com'
-   //          options.params = { a: 1 }
-   //          options.method = 'POST'
-   //          options.headers.Authorization = 'Bearer token'
-   //          options.rawBody = '{"a":2}'
-   //       },
-   //    }))
-
-   //    await upfetch('', { body: { a: 1 } }).then((res) => {
-   //       expect(res).toBe('hello world')
-   //    })
-   // })
 
    // test('`serializeParams` should be called if typeof `params` === Record<string, any>', async () => {
    //    server.use(

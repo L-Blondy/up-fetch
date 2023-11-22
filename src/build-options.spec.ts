@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { buildOptions } from './build-options.js'
+import { bodyMock } from './_mocks.js'
 
 describe('buildOptions input', () => {
    test.each`
@@ -30,56 +31,26 @@ describe('buildOptions input', () => {
 
 describe('buildOptions body', () => {
    test.each`
-      upOpts                | fetcherOpts                         | output
-      ${{ body: { a: 1 } }} | ${{}}                               | ${undefined}
-      ${{}}                 | ${{ body: { a: 1 } }}               | ${'{"a":1}'}
-      ${{}}                 | ${{ body: buffer }}                 | ${buffer}
-      ${{}}                 | ${{ body: dataview }}               | ${dataview}
-      ${{}}                 | ${{ body: blob }}                   | ${blob}
-      ${{}}                 | ${{ body: typedArray }}             | ${typedArray}
-      ${{}}                 | ${{ body: formData }}               | ${formData}
-      ${{}}                 | ${{ body: params }}                 | ${params}
-      ${{}}                 | ${{ body: stream }}                 | ${stream}
-      ${{}}                 | ${{ body: [1, 2] }}                 | ${'[1,2]'}
-      ${{}}                 | ${{ body: '' }}                     | ${''}
-      ${{}}                 | ${{ body: 0 }}                      | ${0}
-      ${{}}                 | ${{ body: undefined }}              | ${undefined}
-      ${{}}                 | ${{ body: null }}                   | ${null}
-      ${{}}                 | ${{ body: new WillNotSerialize() }} | ${new WillNotSerialize()}
-      ${{}}                 | ${{ body: new WillSerialize() }}    | ${'{"z":26}'}
+      upOpts                | fetcherOpts                               | output
+      ${{ body: { a: 1 } }} | ${{}}                                     | ${undefined}
+      ${{}}                 | ${{ body: { a: 1 } }}                     | ${'{"a":1}'}
+      ${{}}                 | ${{ body: bodyMock.buffer }}              | ${bodyMock.buffer}
+      ${{}}                 | ${{ body: bodyMock.dataview }}            | ${bodyMock.dataview}
+      ${{}}                 | ${{ body: bodyMock.blob }}                | ${bodyMock.blob}
+      ${{}}                 | ${{ body: bodyMock.typedArray }}          | ${bodyMock.typedArray}
+      ${{}}                 | ${{ body: bodyMock.formData }}            | ${bodyMock.formData}
+      ${{}}                 | ${{ body: bodyMock.urlSearchParams }}     | ${bodyMock.urlSearchParams}
+      ${{}}                 | ${{ body: bodyMock.stream }}              | ${bodyMock.stream}
+      ${{}}                 | ${{ body: bodyMock.classNonJsonifiable }} | ${bodyMock.classNonJsonifiable}
+      ${{}}                 | ${{ body: bodyMock.classJsonifiable }}    | ${'{"z":26}'}
+      ${{}}                 | ${{ body: [1, 2] }}                       | ${'[1,2]'}
+      ${{}}                 | ${{ body: '' }}                           | ${''}
+      ${{}}                 | ${{ body: 0 }}                            | ${0}
+      ${{}}                 | ${{ body: undefined }}                    | ${undefined}
+      ${{}}                 | ${{ body: null }}                         | ${null}
    `('Input: $body', ({ upOpts, fetcherOpts, output }) => {
       const input = 'http://a'
 
       expect(buildOptions(input, upOpts, fetcherOpts).body).toEqual(output)
    })
-})
-
-class WillNotSerialize {
-   a: number
-   constructor() {
-      this.a = 1
-   }
-}
-
-class WillSerialize {
-   toJSON() {
-      return { z: 26 }
-   }
-}
-
-const blob = new Blob([JSON.stringify({ hello: 'world' }, null, 2)], {
-   type: 'application/json',
-})
-const buffer = new ArrayBuffer(8)
-const typedArray = new Int32Array(buffer)
-const dataview = new DataView(buffer).setInt16(0, 256, true /* littleEndian */)
-const formData = new FormData()
-formData.append('username', 'me')
-const params = new URLSearchParams('foo=1&bar=2')
-const stream = new ReadableStream({
-   start(controller) {
-      controller.enqueue('hello world')
-   },
-   pull() {},
-   cancel() {},
 })

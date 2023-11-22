@@ -1,39 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { expectTypeOf, test } from 'vitest'
 import { up } from './up.js'
-
-//  upfetch1().then((data) => {
-//     expectTypeOf(data).toEqualTypeOf<{ a: number; b: number }>()
-//  })
-
-// const options = buildOptions(
-// 	'',
-// 	{
-// 		 parseResponse: (res, opts) => res.text(),
-// 		 parseResponseError: (res, opts) => res.text(),
-// 		 serializeParams(params, options, defaultSerializer) {
-// 				return ''
-// 		 },
-// 		 serializeBody(body, options, defaultSerializer) {
-// 				return ''
-// 		 },
-// 	},
-// 	{
-// 		 parseResponse: (res, opts) => Promise.resolve(1),
-// 		 parseResponseError: (res, opts) => Promise.resolve(1),
-// 		 serializeParams(params, options, defaultSerializer) {
-// 				return ''
-// 		 },
-// 		 serializeBody(body, options, defaultSerializer) {
-// 				return ''
-// 		 },
-// 	},
-// )
-// type w = (typeof options)['parseResponse']
-// //   ^?
-// type x = (typeof options)['parseResponseError']
-// //   ^?
-// type h = (typeof options)['headers']
+import { JsonifiableArray, JsonifiableObject } from './types.js'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
@@ -106,6 +74,48 @@ test('infer TError', async () => {
       parseUnknownError: (res, options) => ({} as object),
       onError(error, options) {
          expectTypeOf(error).toEqualTypeOf<boolean | object>()
+      },
+   })
+})
+
+test('The default serializeParams should expect the params only', async () => {
+   const upfetch = up(fetch, () => ({
+      serializeParams(params, defaultSerializer) {
+         expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
+         // @ts-expect-error
+         defaultSerializer(params, defaultSerializer)
+         return defaultSerializer(params)
+      },
+   }))
+
+   await upfetch('', {
+      serializeParams(params, defaultSerializer) {
+         expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
+         // @ts-expect-error
+         defaultSerializer(params, defaultSerializer)
+         return defaultSerializer(params)
+      },
+   })
+})
+
+test('The default serializeParams should expect the params only', async () => {
+   const upfetch = up(fetch, () => ({
+      serializeBody(body, defaultSerializer) {
+         expectTypeOf(body).toEqualTypeOf<
+            JsonifiableObject | JsonifiableArray
+         >()
+         // @ts-expect-error
+         defaultSerializer(body, defaultSerializer)
+         return defaultSerializer(body)
+      },
+   }))
+
+   await upfetch('', {
+      serializeParams(params, defaultSerializer) {
+         expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
+         // @ts-expect-error
+         defaultSerializer(params, defaultSerializer)
+         return defaultSerializer(params)
       },
    })
 })

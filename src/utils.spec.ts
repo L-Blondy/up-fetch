@@ -2,60 +2,31 @@ import { describe, expect, test } from 'vitest'
 import {
    isJsonifiableObjectOrArray,
    mergeHeaders,
-   isInputRequest,
+   isRequest,
    strip,
    withPrefix,
    buildParams,
 } from './utils.js'
-
-class False {
-   a: number
-   constructor() {
-      this.a = 1
-   }
-}
-
-class True {
-   toJSON() {
-      return { z: 26 }
-   }
-}
-
-const blob = new Blob([JSON.stringify({ hello: 'world' }, null, 2)], {
-   type: 'application/json',
-})
-const buffer = new ArrayBuffer(8)
-const typedArray = new Int32Array(buffer)
-const dataview = new DataView(buffer).setInt16(0, 256, true /* littleEndian */)
-const formData = new FormData()
-formData.append('username', 'me')
-const params = new URLSearchParams('foo=1&bar=2')
-const stream = new ReadableStream({
-   start(controller) {
-      controller.enqueue('hello world')
-   },
-   pull() {},
-   cancel() {},
-})
+import { bodyMock } from './_mocks.js'
 
 describe('isJsonifiableObjectOrArray', () => {
    test.each`
-      body           | output
-      ${buffer}      | ${false}
-      ${dataview}    | ${false}
-      ${blob}        | ${false}
-      ${typedArray}  | ${false}
-      ${formData}    | ${false}
-      ${params}      | ${false}
-      ${stream}      | ${false}
-      ${{ q: 'q' }}  | ${true}
-      ${[1, 2]}      | ${true}
-      ${''}          | ${false}
-      ${0}           | ${false}
-      ${undefined}   | ${false}
-      ${null}        | ${false}
-      ${new False()} | ${false}
-      ${new True()}  | ${true}
+      body                            | output
+      ${bodyMock.buffer}              | ${false}
+      ${bodyMock.dataview}            | ${false}
+      ${bodyMock.blob}                | ${false}
+      ${bodyMock.typedArray}          | ${false}
+      ${bodyMock.formData}            | ${false}
+      ${bodyMock.urlSearchParams}     | ${false}
+      ${bodyMock.stream}              | ${false}
+      ${bodyMock.classNonJsonifiable} | ${false}
+      ${bodyMock.classJsonifiable}    | ${true}
+      ${{ q: 'q' }}                   | ${true}
+      ${[1, 2]}                       | ${true}
+      ${''}                           | ${false}
+      ${0}                            | ${false}
+      ${undefined}                    | ${false}
+      ${null}                         | ${false}
    `('Input: $body', ({ body, output }) => {
       expect(isJsonifiableObjectOrArray(body)).toEqual(output)
    })
@@ -135,6 +106,6 @@ describe('isInputRequest', () => {
       ${new URL('http://a.b.c')}     | ${false}
       ${'http://a.b.c'}              | ${false}
    `('Input: $object', ({ input, baseUrl, output }) => {
-      expect(isInputRequest(input)).toEqual(output)
+      expect(isRequest(input)).toEqual(output)
    })
 })

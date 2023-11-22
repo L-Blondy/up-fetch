@@ -26,7 +26,7 @@ export let buildParams = (
    input: URL | Request | string,
    fetcherParams: FetchOptions['params'],
 ) =>
-   isInputRequest(input)
+   isRequest(input)
       ? {} // an input of type Request cannot use the "params" option
       : strip({
            // The 'url.search' should take precedence over 'defaultParams'.
@@ -66,6 +66,6 @@ export let isJsonifiableObjectOrArray = (
 export let withPrefix = (prefix: string, str?: string) =>
    !str ? '' : str.startsWith(prefix) ? str : `${prefix}${str}`
 
-export let isInputRequest = (input: any): input is Request => {
+export let isRequest = (input: any): input is Request => {
    return !!input.url
 }
