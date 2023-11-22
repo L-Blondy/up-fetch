@@ -18,25 +18,25 @@ type Init = Omit<RequestInit, 'body' | 'headers' | 'method'>
 
 export type ParseResponse<TData> = (
    response: Response,
-   options: UpFetchOptions,
+   options: ComputedOptions,
    defaultParser: (res: Response) => Promise<any>,
 ) => Promise<TData>
 
 export type ParseResponseError<TError = any> = (
    res: Response,
-   options: UpFetchOptions,
+   options: ComputedOptions,
    defaultParser: (
       res: Response,
-      options: UpFetchOptions,
+      options: ComputedOptions,
    ) => Promise<ResponseError>,
 ) => Promise<TError>
 
 export type ParseUnknownError<TError = any> = (
    error: any,
-   options: UpFetchOptions,
+   options: ComputedOptions,
 ) => TError
 
-export type UpFetchOptions<
+export type ComputedOptions<
    TData = any,
    TRespError = any,
    TUnkError = any,
@@ -48,8 +48,8 @@ export type UpFetchOptions<
    baseUrl?: string
    params: Record<string, any>
    serializeParams: (
-      params: UpFetchOptions['params'],
-      defaultSerializer: (params: UpFetchOptions['params']) => string,
+      params: ComputedOptions['params'],
+      defaultSerializer: (params: ComputedOptions['params']) => string,
    ) => string
    method?:
       | 'GET'
@@ -63,7 +63,7 @@ export type UpFetchOptions<
       | 'HEAD'
       | (string & {})
    headers: Record<string, string>
-   rawBody?: FetchOptions['body']
+   rawBody?: UpFetchOptions['body']
    readonly body?: BodyInit | null
    serializeBody: (
       body: JsonifiableObject | JsonifiableArray,
@@ -75,8 +75,8 @@ export type DefaultOptions = {
    parseResponse: ParseResponse<any>
    parseResponseError: ParseResponseError<any>
    parseUnknownError: ParseUnknownError<any>
-   serializeParams: UpFetchOptions['serializeParams']
-   serializeBody: UpFetchOptions['serializeBody']
+   serializeParams: ComputedOptions['serializeParams']
+   serializeBody: ComputedOptions['serializeBody']
 }
 
 export type UpOptions<
@@ -84,30 +84,30 @@ export type UpOptions<
    TUpResponseError = any,
    TUpUnknownError = any,
 > = Init & {
-   baseUrl?: UpFetchOptions['baseUrl']
-   onBeforeFetch?: (options: UpFetchOptions) => void
-   headers?: FetchOptions['headers']
-   method?: UpFetchOptions['method']
-   onError?: (error: any, options: UpFetchOptions) => void
-   onResponseError?: (error: any, options: UpFetchOptions) => void
-   onSuccess?: (data: any, options: UpFetchOptions) => void
-   onUnknownError?: (error: any, options: UpFetchOptions) => void
-   params?: UpFetchOptions['params']
+   baseUrl?: ComputedOptions['baseUrl']
+   onBeforeFetch?: (options: ComputedOptions) => void
+   headers?: UpFetchOptions['headers']
+   method?: ComputedOptions['method']
+   onError?: (error: any, options: ComputedOptions) => void
+   onResponseError?: (error: any, options: ComputedOptions) => void
+   onSuccess?: (data: any, options: ComputedOptions) => void
+   onUnknownError?: (error: any, options: ComputedOptions) => void
+   params?: ComputedOptions['params']
    parseResponse?: ParseResponse<TUpData>
    parseResponseError?: ParseResponseError<TUpResponseError>
    parseUnknownError?: ParseUnknownError<TUpUnknownError>
-   serializeBody?: UpFetchOptions['serializeBody']
-   serializeParams?: UpFetchOptions['serializeParams']
+   serializeBody?: ComputedOptions['serializeBody']
+   serializeParams?: ComputedOptions['serializeParams']
 }
 
-export type FetchOptions<
+export type UpFetchOptions<
    TFetchData = any,
    TFetchResponseError = any,
    TFetchUnknownError = any,
 > = Init & {
-   baseUrl?: UpFetchOptions['baseUrl']
+   baseUrl?: ComputedOptions['baseUrl']
    onBeforeFetch?: (
-      options: UpFetchOptions<
+      options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
          TFetchUnknownError
@@ -115,14 +115,14 @@ export type FetchOptions<
    ) => void
    body?: BodyInit | JsonifiableObject | JsonifiableArray | null
    headers?: HeadersInit | Record<string, string | number | null | undefined>
-   method?: UpFetchOptions<
+   method?: ComputedOptions<
       TFetchData,
       TFetchResponseError,
       TFetchUnknownError
    >['method']
    onError?: (
       error: TFetchResponseError | TFetchUnknownError,
-      options: UpFetchOptions<
+      options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
          TFetchUnknownError
@@ -130,7 +130,7 @@ export type FetchOptions<
    ) => void
    onResponseError?: (
       error: TFetchResponseError,
-      options: UpFetchOptions<
+      options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
          TFetchUnknownError
@@ -138,7 +138,7 @@ export type FetchOptions<
    ) => void
    onSuccess?: (
       data: TFetchData,
-      options: UpFetchOptions<
+      options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
          TFetchUnknownError
@@ -146,13 +146,13 @@ export type FetchOptions<
    ) => void
    onUnknownError?: (
       error: TFetchUnknownError,
-      options: UpFetchOptions<
+      options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
          TFetchUnknownError
       >,
    ) => void
-   params?: UpFetchOptions<
+   params?: ComputedOptions<
       TFetchData,
       TFetchResponseError,
       TFetchUnknownError
@@ -160,12 +160,12 @@ export type FetchOptions<
    parseResponse?: ParseResponse<TFetchData>
    parseResponseError?: ParseResponseError<TFetchResponseError>
    parseUnknownError?: ParseUnknownError<TFetchUnknownError>
-   serializeBody?: UpFetchOptions<
+   serializeBody?: ComputedOptions<
       TFetchData,
       TFetchResponseError,
       TFetchUnknownError
    >['serializeBody']
-   serializeParams?: UpFetchOptions<
+   serializeParams?: ComputedOptions<
       TFetchData,
       TFetchResponseError,
       TFetchUnknownError

@@ -1,6 +1,6 @@
 import { buildOptions } from './build-options.js'
 import { defaultOptions } from './default-options.js'
-import { FetchOptions, UpOptions } from './types.js'
+import { UpFetchOptions, UpOptions } from './types.js'
 
 let noOptions = () => ({})
 
@@ -23,7 +23,7 @@ export function up<
       TFetchUnknownError = TUpUnknownError,
    >(
       input: RequestInfo | URL,
-      fetcherOptions: FetchOptions<
+      fetcherOptions: UpFetchOptions<
          TFetchData,
          TFetchResponseError,
          TFetchUnknownError

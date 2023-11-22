@@ -1,5 +1,5 @@
 import { ResponseError } from './response-error.js'
-import { UpFetchOptions, DefaultOptions } from './types.js'
+import { ComputedOptions, DefaultOptions } from './types.js'
 
 export let defaultOptions = {
    parseResponse: (res: Response) =>
@@ -11,13 +11,13 @@ export let defaultOptions = {
 
    parseResponseError: async (
       res: Response,
-      options: UpFetchOptions,
+      options: ComputedOptions,
    ): Promise<ResponseError> =>
       new ResponseError(res, await defaultOptions.parseResponse(res), options),
 
    parseUnknownError: (error: any) => error,
 
-   serializeParams: (params: UpFetchOptions['params']) =>
+   serializeParams: (params: ComputedOptions['params']) =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
 

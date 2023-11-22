@@ -4,6 +4,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { isResponseError } from './response-error.js'
 import { bodyMock } from './_mocks.js'
+import { UpFetchOptions, UpOptions } from './types.js'
 
 describe('up', () => {
    const server = setupServer()
@@ -144,12 +145,6 @@ describe('up', () => {
       })
    })
 
-   describe('merge options', () => {
-      test('upfetch options should override up options (except for listeners)', async () => {
-         // TODO
-      })
-   })
-
    describe('serializeParams', () => {
       test('Should receive the params and the default serializer', async () => {
          server.use(
@@ -225,6 +220,21 @@ describe('up', () => {
          await upfetch('')
          expect(count).toEqual(2)
       })
+
+      test('serializeParams in upfetch should override serializeParams in up', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               expect(req.url.search).toEqual('?from=upfetch')
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            serializeParams: () => 'from=up',
+         }))
+         await upfetch('', { serializeParams: () => 'from=upfetch' })
+      })
    })
 
    describe('serializeBody', () => {
@@ -287,6 +297,25 @@ describe('up', () => {
             })
          },
       )
+
+      test('serializeBody in upfetch should override serializeBody in up', async () => {
+         server.use(
+            rest.post('https://example.com', async (req, res, ctx) => {
+               expect(await req.text()).toEqual('from=upfetch')
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            serializeBody: () => 'from=up',
+         }))
+         await upfetch('', {
+            body: { a: 1 },
+            method: 'POST',
+            serializeBody: () => 'from=upfetch',
+         })
+      })
    })
 
    describe('parseResponse', () => {
@@ -382,6 +411,26 @@ describe('up', () => {
          }))
          await upfetch('')
          expect(count).toEqual(2)
+      })
+
+      test('parseResponse in upfetch should override parseResponse in up', async () => {
+         server.use(
+            rest.post('https://example.com', async (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            parseResponse: () => Promise.resolve('from=up'),
+         }))
+         const data = await upfetch('', {
+            body: { a: 1 },
+            method: 'POST',
+            parseResponse: () => Promise.resolve('from=upfetch'),
+         })
+
+         expect(data).toEqual('from=upfetch')
       })
    })
 
@@ -488,6 +537,26 @@ describe('up', () => {
          await upfetch('').catch((error) => expect(error).toEqual('some error'))
          expect(count).toEqual(2)
       })
+
+      test('parseResponseError in upfetch should override parseResponseError in up', async () => {
+         server.use(
+            rest.post('https://example.com', async (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            parseResponseError: () => Promise.resolve('from=up'),
+         }))
+         await upfetch('', {
+            body: { a: 1 },
+            method: 'POST',
+            parseResponseError: () => Promise.resolve('from=upfetch'),
+         }).catch((error) => {
+            expect(error).toEqual('from=upfetch')
+         })
+      })
    })
 
    describe('parseUnknownError', () => {
@@ -584,6 +653,26 @@ describe('up', () => {
          await upfetch('').catch((error) => {
             expect(error.message).toEqual('THROW')
             expect(count).toEqual(3)
+         })
+      })
+
+      test('parseUnknownError in upfetch should override parseUnknownError in up', async () => {
+         server.use(
+            rest.post('https://example.com', async (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.coms',
+            parseUnknownError: () => 'from=up',
+         }))
+         await upfetch('', {
+            body: { a: 1 },
+            method: 'POST',
+            parseUnknownError: () => 'from=upfetch',
+         }).catch((error) => {
+            expect(error).toEqual('from=upfetch')
          })
       })
    })

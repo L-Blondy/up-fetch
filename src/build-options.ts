@@ -1,8 +1,8 @@
 import { ResponseError } from './response-error.js'
 import {
-   UpFetchOptions,
+   ComputedOptions,
    DefaultOptions,
-   FetchOptions,
+   UpFetchOptions,
    UpOptions,
 } from './types.js'
 import { defaultOptions } from './default-options.js'
@@ -33,12 +33,12 @@ export let buildOptions = <
 >(
    input: RequestInfo | URL, // fetch 1st arg
    upOpts: UpOptions<TUpData, TUpResponseError, TUpUnknownError> = {},
-   fetcherOpts: FetchOptions<
+   fetcherOpts: UpFetchOptions<
       TFetchData,
       TFetchResponseError,
       TFetchUnknownError
    > = {},
-): UpFetchOptions<TFetchData, TFetchResponseError, TFetchUnknownError> =>
+): ComputedOptions<TFetchData, TFetchResponseError, TFetchUnknownError> =>
    ({
       ...(defaultOptions as DefaultOptions),
       ...strip(upOpts, eventListeners),
@@ -69,7 +69,7 @@ export let buildOptions = <
             serializedParams,
          )}`
       },
-   } satisfies UpFetchOptions<
+   } satisfies ComputedOptions<
       TFetchData,
       TFetchResponseError,
       TFetchUnknownError

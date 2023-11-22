@@ -1,15 +1,15 @@
-import { UpFetchOptions } from './types.js'
+import { ComputedOptions } from './types.js'
 
 export class ResponseError<TErrorData = any> extends Error {
    override name: 'ResponseError'
    response: Response & { data: TErrorData }
-   options: UpFetchOptions<TErrorData>
+   options: ComputedOptions<TErrorData>
    data: TErrorData
 
    constructor(
       res: Response,
       data: TErrorData,
-      options: UpFetchOptions<TErrorData>,
+      options: ComputedOptions<TErrorData>,
    ) {
       super(`Request failed with status ${res.status}`)
       // because ResponseError is only instantiated during the response parsing,
