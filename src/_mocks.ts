@@ -16,16 +16,17 @@ const typedArray = new Int32Array(buffer)
 const formData = new FormData()
 const dataview = new DataView(buffer).setInt16(0, 256, true /* littleEndian */)
 formData.append('username', 'me')
-const stream = new ReadableStream({
-   async start(controller) {
-      controller.enqueue('This ')
-      controller.enqueue('is ')
-      controller.enqueue('a ')
-      controller.enqueue('slow ')
-      controller.enqueue('request.')
-      controller.close()
-   },
-}).pipeThrough(new TextEncoderStream())
+const getStream = () =>
+   new ReadableStream({
+      async start(controller) {
+         controller.enqueue('This ')
+         controller.enqueue('is ')
+         controller.enqueue('a ')
+         controller.enqueue('slow ')
+         controller.enqueue('request.')
+         controller.close()
+      },
+   }).pipeThrough(new TextEncoderStream())
 const blob = new Blob([JSON.stringify({ hello: 'world' }, null, 2)], {
    type: 'application/json',
 })
@@ -41,6 +42,7 @@ export const bodyMock = {
    formData,
    typedArray,
    dataview,
-   stream,
+   stream: getStream(),
+   getStream,
    urlSearchParams,
 }

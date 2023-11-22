@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { expectTypeOf, test } from 'vitest'
 import { up } from './up.js'
-import { JsonifiableArray, JsonifiableObject } from './types.js'
+import { JsonifiableArray, JsonifiableObject, UpFetchOptions } from './types.js'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
@@ -116,6 +116,124 @@ test('The default serializeParams should expect the params only', async () => {
          // @ts-expect-error
          defaultSerializer(params, defaultSerializer)
          return defaultSerializer(params)
+      },
+   })
+})
+
+test('callback types', async () => {
+   const upfetch = up(fetch, () => ({
+      onBeforeFetch(options) {
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+      },
+      onError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+      },
+      onResponseError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+      },
+      onUnknownError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+      },
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+      },
+      parseResponse(res, options) {
+         expectTypeOf(res).toEqualTypeOf<Response>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+         return Promise.resolve(1)
+      },
+      parseResponseError(res, options) {
+         expectTypeOf(res).toEqualTypeOf<Response>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+         return Promise.resolve(true)
+      },
+      parseUnknownError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+         return ''
+      },
+      serializeParams(params, defaultSerializer) {
+         expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
+         expectTypeOf(defaultSerializer).toEqualTypeOf<
+            (params: Record<string, any>) => string
+         >()
+         return ''
+      },
+      serializeBody(body, defaultSerializer) {
+         expectTypeOf(body).toEqualTypeOf<
+            JsonifiableObject | JsonifiableArray
+         >()
+         expectTypeOf(defaultSerializer).toEqualTypeOf<
+            (body: JsonifiableObject | JsonifiableArray) => string
+         >()
+         return ''
+      },
+   }))
+
+   await upfetch('', {
+      onBeforeFetch(options) {
+         expectTypeOf(options).toEqualTypeOf<
+            UpFetchOptions<number, boolean, string>
+         >()
+      },
+      onError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<string | boolean>()
+         expectTypeOf(options).toEqualTypeOf<
+            UpFetchOptions<number, boolean, string>
+         >()
+      },
+      onResponseError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<boolean>()
+         expectTypeOf(options).toEqualTypeOf<
+            UpFetchOptions<number, boolean, string>
+         >()
+      },
+      onUnknownError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<string>()
+         expectTypeOf(options).toEqualTypeOf<
+            UpFetchOptions<number, boolean, string>
+         >()
+      },
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<number>()
+         expectTypeOf(options).toEqualTypeOf<
+            UpFetchOptions<number, boolean, string>
+         >()
+      },
+      parseResponse(res, options) {
+         expectTypeOf(res).toEqualTypeOf<Response>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+         return Promise.resolve(1)
+      },
+      parseResponseError(res, options) {
+         expectTypeOf(res).toEqualTypeOf<Response>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+         return Promise.resolve(true)
+      },
+      parseUnknownError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<UpFetchOptions<any, any, any>>()
+         return ''
+      },
+      serializeParams(params, defaultSerializer) {
+         expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
+         expectTypeOf(defaultSerializer).toEqualTypeOf<
+            (params: Record<string, any>) => string
+         >()
+         return ''
+      },
+      serializeBody(body, defaultSerializer) {
+         expectTypeOf(body).toEqualTypeOf<
+            JsonifiableObject | JsonifiableArray
+         >()
+         expectTypeOf(defaultSerializer).toEqualTypeOf<
+            (body: JsonifiableObject | JsonifiableArray) => string
+         >()
+         return ''
       },
    })
 })

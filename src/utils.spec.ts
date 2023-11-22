@@ -38,6 +38,7 @@ describe('mergeHeaders', () => {
       ${{ 'Cache-Control': undefined }}                                              | ${undefined}                                                    | ${{}}
       ${{ 'Cache-Control': undefined }}                                              | ${{ 'Cache-Control': undefined }}                               | ${{}}
       ${{}}                                                                          | ${{ 'Cache-Control': undefined }}                               | ${{}}
+      ${{ 'Cache-Control': 'no-cache' }}                                             | ${{ 'Cache-Control': undefined }}                               | ${{}}
       ${{ 'Cache-Control': '' }}                                                     | ${{}}                                                           | ${{ 'cache-control': '' }}
       ${{ 'Cache-Control': '' }}                                                     | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
       ${{}}                                                                          | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}

@@ -11,6 +11,145 @@ describe('up', () => {
    afterEach(() => server.resetHandlers())
    afterAll(() => server.close())
 
+   test('Should throw if !res.ok', async () => {
+      server.use(
+         rest.get('https://example.com', async (req, res, ctx) => {
+            return res(ctx.json({ hello: 'world' }), ctx.status(400))
+         }),
+      )
+
+      let catchCount = 0
+
+      const upfetch = up(fetch, () => ({
+         baseUrl: 'https://example.com',
+      }))
+
+      await upfetch('').catch((error) => {
+         expect(isResponseError(error)).toEqual(true)
+         catchCount++
+      })
+      expect(catchCount).toEqual(1)
+   })
+
+   describe('body', () => {
+      test('Should be ignore in up options', async () => {
+         server.use(
+            rest.post('https://example.com', async (req, res, ctx) => {
+               const body = await req.text()
+               if (count === 1) {
+                  expect(body).toBe('')
+               }
+               if (count === 2) {
+                  expect(body).toBe('my body')
+               }
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            method: 'POST',
+            body: 'my body',
+         }))
+         await upfetch('')
+         count++
+         await upfetch('', { body: 'my body' })
+      })
+   })
+
+   describe('headers', async () => {
+      test.each`
+         body                            | expected
+         ${{}}                           | ${true}
+         ${{ a: 1 }}                     | ${true}
+         ${[1, 2]}                       | ${true}
+         ${bodyMock.classJsonifiable}    | ${true}
+         ${bodyMock.classNonJsonifiable} | ${false}
+         ${bodyMock.buffer}              | ${false}
+         ${bodyMock.dataview}            | ${false}
+         ${bodyMock.blob}                | ${false}
+         ${bodyMock.typedArray}          | ${false}
+         ${bodyMock.formData}            | ${false}
+         ${bodyMock.urlSearchParams}     | ${false}
+         ${bodyMock.getStream()}         | ${false}
+         ${''}                           | ${false}
+         ${0}                            | ${false}
+         ${undefined}                    | ${false}
+         ${null}                         | ${false}
+      `(
+         'Should automatically have "content-type: application/json" if the body is serializable',
+         async ({ body, expected }) => {
+            server.use(
+               rest.post('https://example.com', async (req, res, ctx) => {
+                  const hasApplicationJsonHeader =
+                     req.headers.get('content-type') === 'application/json'
+                  expect(hasApplicationJsonHeader).toEqual(expected)
+                  return res(ctx.json({ hello: 'world' }), ctx.status(200))
+               }),
+            )
+
+            const upfetch = up(fetch, () => ({
+               baseUrl: 'https://example.com',
+               method: 'POST',
+            }))
+            await upfetch('', {
+               body,
+               // @ts-ignore the global fetch type does not include "duplex"
+               duplex: (body as any)?.getReader ? 'half' : undefined,
+            })
+         },
+      )
+
+      test.each`
+         body
+         ${{}}
+         ${{ a: 1 }}
+         ${[1, 2]}
+         ${bodyMock.classJsonifiable}
+      `(
+         'If the "content-type" header is declared, "application/json" should not be added',
+         async ({ body }) => {
+            server.use(
+               rest.post('https://example.com', async (req, res, ctx) => {
+                  expect(req.headers.get('content-type')).toEqual('html/text')
+                  return res(ctx.json({ hello: 'world' }), ctx.status(200))
+               }),
+            )
+
+            const upfetch = up(fetch, () => ({
+               baseUrl: 'https://example.com',
+               headers: { 'content-type': 'html/text' },
+               method: 'POST',
+            }))
+            await upfetch('', { body })
+         },
+      )
+
+      test('upfetch headers should override up headers', async () => {
+         server.use(
+            rest.post('https://example.com', async (req, res, ctx) => {
+               expect(req.headers.get('content-type')).toEqual('from upfetch')
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            headers: { 'content-type': 'from up' },
+            method: 'POST',
+         }))
+         await upfetch('', { headers: { 'content-type': 'from upfetch' } })
+      })
+   })
+
+   describe('merge options', () => {
+      test('upfetch options should override up options (except for listeners)', async () => {
+         // TODO
+      })
+   })
+
    describe('serializeParams', () => {
       test('Should receive the params and the default serializer', async () => {
          server.use(
