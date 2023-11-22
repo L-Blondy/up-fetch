@@ -127,37 +127,53 @@ test('The default serializeParams should expect the params only', async () => {
 test('callback types', async () => {
    const upfetch = up(fetch, () => ({
       onBeforeFetch(options) {
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
       },
       onError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
       },
       onResponseError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
       },
       onUnknownError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
       },
       onSuccess(data, options) {
          expectTypeOf(data).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
       },
       parseResponse(res, options) {
          expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
          return Promise.resolve(1)
       },
       parseResponseError(res, options) {
          expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
          return Promise.resolve(true)
       },
       parseUnknownError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
          return ''
       },
       serializeParams(params, defaultSerializer) {
@@ -181,46 +197,52 @@ test('callback types', async () => {
    await upfetch('', {
       onBeforeFetch(options) {
          expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<number, boolean, string>
+            ComputedOptions<number, boolean, string, typeof fetch>
          >()
       },
       onError(error, options) {
          expectTypeOf(error).toEqualTypeOf<string | boolean>()
          expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<number, boolean, string>
+            ComputedOptions<number, boolean, string, typeof fetch>
          >()
       },
       onResponseError(error, options) {
          expectTypeOf(error).toEqualTypeOf<boolean>()
          expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<number, boolean, string>
+            ComputedOptions<number, boolean, string, typeof fetch>
          >()
       },
       onUnknownError(error, options) {
          expectTypeOf(error).toEqualTypeOf<string>()
          expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<number, boolean, string>
+            ComputedOptions<number, boolean, string, typeof fetch>
          >()
       },
       onSuccess(data, options) {
          expectTypeOf(data).toEqualTypeOf<number>()
          expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<number, boolean, string>
+            ComputedOptions<number, boolean, string, typeof fetch>
          >()
       },
       parseResponse(res, options) {
          expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
          return Promise.resolve(1)
       },
       parseResponseError(res, options) {
          expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
          return Promise.resolve(true)
       },
       parseUnknownError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<any, any, any>>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
          return ''
       },
       serializeParams(params, defaultSerializer) {
@@ -252,5 +274,8 @@ test('base fetch type should be extended', async () => {
 
    upfetch('', {
       additionalOption: '',
+      onBeforeFetch(options) {
+         options.additionalOption
+      },
    })
 })

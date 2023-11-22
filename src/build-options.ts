@@ -1,7 +1,7 @@
 import { ResponseError } from './response-error.js'
 import {
+   BaseOptions,
    ComputedOptions,
-   DefaultOptions,
    UpFetchOptions,
    UpOptions,
 } from './types.js'
@@ -23,7 +23,10 @@ export let eventListeners = [
    'onUnknownError',
 ] as const
 
+let emptyOpts: any = {}
+
 export let buildOptions = <
+   TFetchFn extends typeof fetch = typeof fetch,
    TUpData = any,
    TFetchData = TUpData,
    TUpResponseError = ResponseError,
@@ -32,45 +35,75 @@ export let buildOptions = <
    TFetchUnknownError = TUpUnknownError,
 >(
    input: RequestInfo | URL, // fetch 1st arg
-   upOpts: UpOptions<TUpData, TUpResponseError, TUpUnknownError> = {},
+   upOpts: UpOptions<
+      TUpData,
+      TUpResponseError,
+      TUpUnknownError,
+      TFetchFn
+   > = emptyOpts,
    fetcherOpts: UpFetchOptions<
       TFetchData,
       TFetchResponseError,
-      TFetchUnknownError
-   > = {},
-): ComputedOptions<TFetchData, TFetchResponseError, TFetchUnknownError> =>
-   ({
-      ...(defaultOptions as DefaultOptions),
-      ...strip(upOpts, eventListeners),
-      ...strip(fetcherOpts, eventListeners),
-      headers: mergeHeaders(
-         isJsonifiableObjectOrArray(fetcherOpts.body)
-            ? { 'content-type': 'application/json' }
-            : {},
-         upOpts.headers,
-         fetcherOpts.headers,
-      ),
-      params: buildParams(upOpts.params, input, fetcherOpts.params),
-      rawBody: fetcherOpts.body,
-      get body() {
-         return isJsonifiableObjectOrArray(this.rawBody)
-            ? this.serializeBody(this.rawBody, defaultOptions.serializeBody)
-            : this.rawBody
-      },
-      get input() {
-         if (isRequest(input)) return input
-         let url = new URL(input, this.baseUrl)
-         let serializedParams = this.serializeParams(
-            this.params,
-            defaultOptions.serializeParams,
-         )
-         return `${url.href}${withPrefix(
-            url.search ? '&' : '?',
-            serializedParams,
-         )}`
-      },
-   } satisfies ComputedOptions<
+      TFetchUnknownError,
+      TFetchFn
+   > = emptyOpts,
+): ComputedOptions<
+   TFetchData,
+   TFetchResponseError,
+   TFetchUnknownError,
+   TFetchFn
+> => ({
+   ...(defaultOptions as CastDefaultOptions<
       TFetchData,
       TFetchResponseError,
-      TFetchUnknownError
-   >)
+      TFetchUnknownError,
+      TFetchFn
+   >),
+   ...strip(upOpts, eventListeners),
+   ...strip(fetcherOpts, eventListeners),
+   headers: mergeHeaders(
+      isJsonifiableObjectOrArray(fetcherOpts.body)
+         ? { 'content-type': 'application/json' }
+         : {},
+      upOpts.headers,
+      fetcherOpts.headers,
+   ),
+   params: buildParams(upOpts.params, input, fetcherOpts.params),
+   rawBody: fetcherOpts.body,
+   get body() {
+      return isJsonifiableObjectOrArray(this.rawBody)
+         ? this.serializeBody(this.rawBody, defaultOptions.serializeBody)
+         : this.rawBody
+   },
+   get input() {
+      if (isRequest(input)) return input
+      let url = new URL(input, this.baseUrl)
+      let serializedParams = this.serializeParams(
+         this.params,
+         defaultOptions.serializeParams,
+      )
+      return `${url.href}${withPrefix(
+         url.search ? '&' : '?',
+         serializedParams,
+      )}`
+   },
+})
+
+type CastDefaultOptions<
+   TFetchData = any,
+   TFetchResponseError = any,
+   TFetchUnknownError = any,
+   TFetchFn extends typeof fetch = typeof fetch,
+> = BaseOptions<TFetchFn> & { baseUrl?: string; method?: string } & Pick<
+      ComputedOptions<
+         TFetchData,
+         TFetchResponseError,
+         TFetchUnknownError,
+         TFetchFn
+      >,
+      | 'parseResponse'
+      | 'parseResponseError'
+      | 'parseUnknownError'
+      | 'serializeBody'
+      | 'serializeParams'
+   >

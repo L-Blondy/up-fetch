@@ -7,14 +7,19 @@ export type JsonifiableObject =
    | {
         toJSON: () => JsonPrimitive | JsonifiableObject | JsonifiableArray
      }
+
 export type JsonifiableArray = readonly (
    | JsonPrimitive
    | JsonifiableObject
    | JsonifiableArray
 )[]
+
 type JsonPrimitive = string | number | boolean | null
 
-type Init = Omit<RequestInit, 'body' | 'headers' | 'method'>
+export type BaseOptions<TFetch extends typeof fetch> = Omit<
+   NonNullable<Parameters<TFetch>[1]>,
+   'body' | 'headers' | 'method'
+>
 
 export type ParseResponse<TData> = (
    response: Response,
@@ -40,7 +45,8 @@ export type ComputedOptions<
    TData = any,
    TRespError = any,
    TUnkError = any,
-> = Init & {
+   TFetchFn extends typeof fetch = typeof fetch,
+> = BaseOptions<TFetchFn> & {
    readonly input: Request | string
    parseResponse: ParseResponse<TData>
    parseResponseError: ParseResponseError<TRespError>
@@ -71,19 +77,12 @@ export type ComputedOptions<
    ) => string
 }
 
-export type DefaultOptions = {
-   parseResponse: ParseResponse<any>
-   parseResponseError: ParseResponseError<any>
-   parseUnknownError: ParseUnknownError<any>
-   serializeParams: ComputedOptions['serializeParams']
-   serializeBody: ComputedOptions['serializeBody']
-}
-
 export type UpOptions<
    TUpData = any,
    TUpResponseError = any,
    TUpUnknownError = any,
-> = Init & {
+   TFetchFn extends typeof fetch = typeof fetch,
+> = BaseOptions<TFetchFn> & {
    baseUrl?: ComputedOptions['baseUrl']
    onBeforeFetch?: (options: ComputedOptions) => void
    headers?: UpFetchOptions['headers']
@@ -104,13 +103,15 @@ export type UpFetchOptions<
    TFetchData = any,
    TFetchResponseError = any,
    TFetchUnknownError = any,
-> = Init & {
+   TFetchFn extends typeof fetch = typeof fetch,
+> = BaseOptions<TFetchFn> & {
    baseUrl?: ComputedOptions['baseUrl']
    onBeforeFetch?: (
       options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
-         TFetchUnknownError
+         TFetchUnknownError,
+         TFetchFn
       >,
    ) => void
    body?: BodyInit | JsonifiableObject | JsonifiableArray | null
@@ -118,14 +119,16 @@ export type UpFetchOptions<
    method?: ComputedOptions<
       TFetchData,
       TFetchResponseError,
-      TFetchUnknownError
+      TFetchUnknownError,
+      TFetchFn
    >['method']
    onError?: (
       error: TFetchResponseError | TFetchUnknownError,
       options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
-         TFetchUnknownError
+         TFetchUnknownError,
+         TFetchFn
       >,
    ) => void
    onResponseError?: (
@@ -133,7 +136,8 @@ export type UpFetchOptions<
       options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
-         TFetchUnknownError
+         TFetchUnknownError,
+         TFetchFn
       >,
    ) => void
    onSuccess?: (
@@ -141,7 +145,8 @@ export type UpFetchOptions<
       options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
-         TFetchUnknownError
+         TFetchUnknownError,
+         TFetchFn
       >,
    ) => void
    onUnknownError?: (
@@ -149,13 +154,15 @@ export type UpFetchOptions<
       options: ComputedOptions<
          TFetchData,
          TFetchResponseError,
-         TFetchUnknownError
+         TFetchUnknownError,
+         TFetchFn
       >,
    ) => void
    params?: ComputedOptions<
       TFetchData,
       TFetchResponseError,
-      TFetchUnknownError
+      TFetchUnknownError,
+      TFetchFn
    >['params']
    parseResponse?: ParseResponse<TFetchData>
    parseResponseError?: ParseResponseError<TFetchResponseError>
@@ -163,11 +170,13 @@ export type UpFetchOptions<
    serializeBody?: ComputedOptions<
       TFetchData,
       TFetchResponseError,
-      TFetchUnknownError
+      TFetchUnknownError,
+      TFetchFn
    >['serializeBody']
    serializeParams?: ComputedOptions<
       TFetchData,
       TFetchResponseError,
-      TFetchUnknownError
+      TFetchUnknownError,
+      TFetchFn
    >['serializeParams']
 }

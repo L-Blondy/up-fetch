@@ -1,5 +1,5 @@
 import { ResponseError } from './response-error.js'
-import { ComputedOptions, DefaultOptions } from './types.js'
+import { ComputedOptions } from './types.js'
 
 export let defaultOptions = {
    parseResponse: (res: Response) =>
@@ -22,4 +22,4 @@ export let defaultOptions = {
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
 
    serializeBody: (val: any) => JSON.stringify(val),
-} satisfies DefaultOptions
+}

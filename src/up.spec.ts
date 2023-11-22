@@ -4,7 +4,6 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { isResponseError } from './response-error.js'
 import { bodyMock } from './_mocks.js'
-import { UpFetchOptions, UpOptions } from './types.js'
 
 describe('up', () => {
    const server = setupServer()

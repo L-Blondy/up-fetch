@@ -5,17 +5,18 @@ import { UpFetchOptions, UpOptions } from './types.js'
 let noOptions = () => ({})
 
 export function up<
-   TFetchFn extends typeof fetch,
    TUpData = any,
    TUpResponseError = any,
    TUpUnknownError = any,
+   TFetchFn extends typeof fetch = typeof fetch,
 >(
    fetchFn: TFetchFn,
    getUpOptions: () => UpOptions<
       TUpData,
       TUpResponseError,
-      TUpUnknownError
-   > = noOptions,
+      TUpUnknownError,
+      TFetchFn
+   > = noOptions as any,
 ) {
    let fetcher = <
       TFetchData = TUpData,
@@ -26,8 +27,9 @@ export function up<
       fetcherOptions: UpFetchOptions<
          TFetchData,
          TFetchResponseError,
-         TFetchUnknownError
-      > = {},
+         TFetchUnknownError,
+         TFetchFn
+      > = {} as any,
    ) => {
       let upOptions = getUpOptions()
       let options = buildOptions(input, upOptions, fetcherOptions)
