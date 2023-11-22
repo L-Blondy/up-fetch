@@ -7,7 +7,7 @@ export let defaultOptions = {
          .clone()
          .json()
          .catch(() => res.text())
-         .then((data) => data),
+         .then((data) => data || null),
 
    parseResponseError: async (
       res: Response,

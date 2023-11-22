@@ -1,3 +1,5 @@
+import { ResponseError } from './response-error.js'
+
 export type JsonifiableObject =
    | {
         [Key in string]?: JsonPrimitive | JsonifiableObject | JsonifiableArray
@@ -17,15 +19,20 @@ type Init = Omit<RequestInit, 'body' | 'headers' | 'method'>
 export type ParseResponse<TData> = (
    response: Response,
    options: UpFetchOptions,
+   defaultParser: (res: Response) => Promise<any>,
 ) => Promise<TData>
 
 export type ParseResponseError<TError = any> = (
    res: Response,
    options: UpFetchOptions,
+   defaultParser: (
+      res: Response,
+      options: UpFetchOptions,
+   ) => Promise<ResponseError>,
 ) => Promise<TError>
 
 export type ParseUnknownError<TError = any> = (
-   res: Response,
+   error: any,
    options: UpFetchOptions,
 ) => TError
 
@@ -56,7 +63,7 @@ export type UpFetchOptions<
       | 'TRACE'
       | 'HEAD'
       | (string & {})
-   headers?: Record<string, string>
+   headers: Record<string, string>
    rawBody?: FetchOptions['body']
    readonly body?: BodyInit | null
    serializeBody: (
@@ -80,7 +87,7 @@ export type UpOptions<
    TUpUnknownError = any,
 > = Init & {
    baseUrl?: UpFetchOptions['baseUrl']
-   beforeFetch?: (options: UpFetchOptions) => void
+   onBeforeFetch?: (options: UpFetchOptions) => void
    headers?: FetchOptions['headers']
    method?: UpFetchOptions['method']
    onError?: (error: any, options: UpFetchOptions) => void
@@ -101,7 +108,7 @@ export type FetchOptions<
    TFetchUnknownError = any,
 > = Init & {
    baseUrl?: UpFetchOptions['baseUrl']
-   beforeFetch?: (
+   onBeforeFetch?: (
       options: UpFetchOptions<
          TFetchData,
          TFetchResponseError,

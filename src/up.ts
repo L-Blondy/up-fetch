@@ -1,5 +1,8 @@
 import { buildOptions } from './build-options.js'
+import { defaultOptions } from './default-options.js'
 import { FetchOptions, UpOptions } from './types.js'
+
+let noOptions = () => ({})
 
 export function up<
    TFetchFn extends typeof fetch,
@@ -12,7 +15,7 @@ export function up<
       TUpData,
       TUpResponseError,
       TUpUnknownError
-   > = () => ({}),
+   > = noOptions,
 ) {
    let fetcher = <
       TFetchData = TUpData,
@@ -28,13 +31,17 @@ export function up<
    ) => {
       let upOptions = getUpOptions()
       let options = buildOptions(input, upOptions, fetcherOptions)
-
-      fetcherOptions.beforeFetch?.(options)
-      upOptions.beforeFetch?.(options)
+      fetcherOptions.onBeforeFetch?.(options)
+      upOptions.onBeforeFetch?.(options)
 
       return fetchFn(options.input, options)
          .catch((error) => {
-            let unknownError = options.parseUnknownError(error, options)
+            let unknownError: TFetchUnknownError
+            try {
+               unknownError = options.parseUnknownError(error, options)
+            } catch (e: any) {
+               unknownError = e
+            }
             fetcherOptions.onUnknownError?.(unknownError, options)
             upOptions.onUnknownError?.(unknownError, options)
             fetcherOptions.onError?.(unknownError, options)
@@ -43,12 +50,20 @@ export function up<
          })
          .then(async (res) => {
             if (res.ok) {
-               let data = await options.parseResponse(res, options)
+               let data = await options.parseResponse(
+                  res,
+                  options,
+                  defaultOptions.parseResponse,
+               )
                fetcherOptions.onSuccess?.(data, options)
                upOptions.onSuccess?.(data, options)
                return data
             }
-            let responseError = await options.parseResponseError(res, options)
+            let responseError = await options.parseResponseError(
+               res,
+               options,
+               defaultOptions.parseResponseError,
+            )
             fetcherOptions.onResponseError?.(responseError, options)
             upOptions.onResponseError?.(responseError, options)
             fetcherOptions.onError?.(responseError, options)

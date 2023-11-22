@@ -26,9 +26,9 @@ describe('parseResponse', () => {
    test.each`
       response                                                       | output
       ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }')} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
-      ${new Response(null)}                                          | ${''}
-      ${new Response()}                                              | ${''}
-      ${new Response('')}                                            | ${''}
+      ${new Response(null)}                                          | ${null}
+      ${new Response()}                                              | ${null}
+      ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseResponse: $response', async ({ response, output }) => {
       expect(await defaultOptions.parseResponse(response)).toStrictEqual(output)
@@ -39,9 +39,9 @@ describe('parseResponseError', () => {
    test.each`
       response                                                       | output
       ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }')} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
-      ${new Response(null)}                                          | ${''}
-      ${new Response()}                                              | ${''}
-      ${new Response('')}                                            | ${''}
+      ${new Response(null)}                                          | ${null}
+      ${new Response()}                                              | ${null}
+      ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseResponseError: $response', async ({ response, output }) => {
       const responseError = await defaultOptions.parseResponseError(response, {
