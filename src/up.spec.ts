@@ -233,7 +233,7 @@ describe('up', () => {
          })
       })
 
-      test.only('If parseUnknownError throws, onUnknownError & onError should still be called', async () => {
+      test('If parseUnknownError throws, onUnknownError & onError should still be called', async () => {
          server.use(
             rest.get('https://example.com', (req, res, ctx) => {
                return res(ctx.text('some text'), ctx.status(400))
@@ -431,6 +431,118 @@ describe('up', () => {
       })
    })
 
+   describe('onError', () => {
+      test('Should be called after onResponseError', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onResponseError() {
+               expect(count).toBe(1)
+               count++
+            },
+            onError() {
+               expect(count).toBe(2)
+               count++
+            },
+         }))
+
+         await upfetch('').catch((error) => {
+            expect(error.data).toEqual({ hello: 'world' })
+         })
+
+         expect(count).toBe(3)
+      })
+
+      test('Should be called after onUnknownError', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.coms',
+            parseUnknownError: () => 'Unknown Error',
+            onUnknownError() {
+               expect(count).toBe(1)
+               count++
+            },
+            onError() {
+               expect(count).toBe(2)
+               count++
+            },
+         }))
+
+         await upfetch('').catch((error) => {
+            expect(error).toEqual('Unknown Error')
+         })
+      })
+
+      test('Should be called on upfetch, then on up', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.coms',
+            parseUnknownError: () => 'Unknown Error',
+            onError() {
+               expect(count).toBe(2)
+               count++
+            },
+         }))
+
+         await upfetch('', {
+            onError() {
+               expect(count).toEqual(1)
+               count++
+            },
+         }).catch((error) => {
+            expect(error).toBe('Unknown Error')
+         })
+
+         expect(count).toBe(3)
+      })
+
+      test('Should receive the error and the options', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onError(error, options) {
+               expect(error.data).toEqual({ hello: 'world' })
+               expect(options.input).toEqual('https://example.com/')
+            },
+         }))
+
+         await upfetch('', {
+            onError(error, options) {
+               expect(error.data).toEqual({ hello: 'world' })
+               expect(options.input).toEqual('https://example.com/')
+            },
+         }).catch((error) => {
+            expect(isResponseError(error)).toBe(true)
+         })
+      })
+   })
+
    describe('onBeforeFetch', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(
@@ -479,51 +591,6 @@ describe('up', () => {
          })
       })
    })
-
-   // test('When response is `ok`,`parseResponse`, then `onSuccess` should be called', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', (req, res, ctx) => {
-   //          return res(ctx.json({ hello: 'world' }), ctx.status(200))
-   //       }),
-   //       rest.get('https://example.com/id', (req, res, ctx) => {
-   //          return res(ctx.json({ id: 10 }), ctx.status(200))
-   //       }),
-   //    )
-
-   //    let count = 1
-
-   //    const upfetch = up(fetch, () => ({
-   //       baseUrl: 'https://example.com',
-   //       parseResponse(res) {
-   //          expect([1, 3]).toContain(count)
-   //          count++
-   //          return res.json()
-   //       },
-   //       onSuccess(data) {
-   //          expect([2, 4]).toContain(count)
-   //          if (count === 2) {
-   //             expect(data).toEqual({ hello: 'world' })
-   //             return
-   //          }
-   //          if (count === 4) {
-   //             expect(data).toEqual({ id: 10 })
-   //             return
-   //          }
-   //       },
-   //    }))
-
-   //    await upfetch('', {
-   //       onSuccess(data) {
-   //          expect(data).toEqual({ hello: 'world' })
-   //       },
-   //    })
-   //    count++
-   //    await upfetch('/id', {
-   //       onSuccess(data) {
-   //          expect(data).toEqual({ id: 10 })
-   //       },
-   //    })
-   // })
 
    // test('When response is NOT `ok`, a ResponseError containing response and the requestOptions should be thrown. The ResponseError should be passed to onError & onResponseError', async () => {
    //    server.use(
