@@ -40,8 +40,8 @@ export function up<
             let unknownError: TFetchUnknownError
             try {
                unknownError = options.parseUnknownError(error, options)
-            } catch (e: any) {
-               unknownError = e
+            } catch (parsingError: any) {
+               unknownError = parsingError
             }
             fetcherOptions.onUnknownError?.(unknownError, options)
             upOptions.onUnknownError?.(unknownError, options)
@@ -60,11 +60,26 @@ export function up<
                upOptions.onSuccess?.(data, options)
                return data
             }
-            let responseError = await options.parseResponseError(
-               res,
-               options,
-               defaultOptions.parseResponseError,
-            )
+            let responseError: TFetchResponseError
+            try {
+               responseError = await options.parseResponseError(
+                  res,
+                  options,
+                  defaultOptions.parseResponseError,
+               )
+            } catch (error: any) {
+               let unknownError: TFetchUnknownError
+               try {
+                  unknownError = options.parseUnknownError(error, options)
+               } catch (parsingError: any) {
+                  unknownError = parsingError
+               }
+               fetcherOptions.onUnknownError?.(unknownError, options)
+               upOptions.onUnknownError?.(unknownError, options)
+               fetcherOptions.onError?.(unknownError, options)
+               upOptions.onError?.(unknownError, options)
+               throw unknownError
+            }
             fetcherOptions.onResponseError?.(responseError, options)
             upOptions.onResponseError?.(responseError, options)
             fetcherOptions.onError?.(responseError, options)
