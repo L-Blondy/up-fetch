@@ -1,6 +1,6 @@
 import { buildOptions } from './build-options.js'
 import { defaultOptions } from './default-options.js'
-import { UpFetchOptions, UpOptions } from './types.js'
+import { ComputedOptions, UpFetchOptions, UpOptions } from './types.js'
 import { emptyOptions } from './utils.js'
 
 export function up<
@@ -23,7 +23,7 @@ export function up<
       TFetchUnknownError = TUpUnknownError,
    >(
       input: RequestInfo | URL,
-      fetcherOptions: UpFetchOptions<
+      upfetchOptions: UpFetchOptions<
          TFetchData,
          TFetchResponseError,
          TFetchUnknownError,
@@ -31,34 +31,38 @@ export function up<
       > = emptyOptions,
    ) => {
       let upOptions = getUpOptions()
-      let options = buildOptions(input, upOptions, fetcherOptions)
-      fetcherOptions.onBeforeFetch?.(options)
+      let options = buildOptions(input, upOptions, upfetchOptions)
+      upfetchOptions.onBeforeFetch?.(options)
       upOptions.onBeforeFetch?.(options)
 
       return fetchFn(options.input, options)
          .catch((error) => {
-            let unknownError: TFetchUnknownError
-            try {
-               unknownError = options.parseUnknownError(error, options)
-            } catch (parsingError: any) {
-               unknownError = parsingError
-            }
-            fetcherOptions.onUnknownError?.(unknownError, options)
-            upOptions.onUnknownError?.(unknownError, options)
-            fetcherOptions.onError?.(unknownError, options)
-            upOptions.onError?.(unknownError, options)
-            throw unknownError
+            handleUnknownError<TFetchUnknownError>(
+               error,
+               options,
+               upOptions,
+               upfetchOptions,
+            )
          })
          .then(async (res) => {
             if (res.ok) {
-               let data = await options.parseResponse(
-                  res,
-                  options,
-                  defaultOptions.parseResponse,
-               )
-               fetcherOptions.onSuccess?.(data, options)
-               upOptions.onSuccess?.(data, options)
-               return data
+               try {
+                  let data = await options.parseResponse(
+                     res,
+                     options,
+                     defaultOptions.parseResponse,
+                  )
+                  upfetchOptions.onSuccess?.(data, options)
+                  upOptions.onSuccess?.(data, options)
+                  return data
+               } catch (error) {
+                  handleUnknownError<TFetchUnknownError>(
+                     error,
+                     options,
+                     upOptions,
+                     upfetchOptions,
+                  )
+               }
             }
             let responseError: TFetchResponseError
             try {
@@ -67,24 +71,38 @@ export function up<
                   options,
                   defaultOptions.parseResponseError,
                )
-            } catch (error: any) {
-               let unknownError: TFetchUnknownError
-               try {
-                  unknownError = options.parseUnknownError(error, options)
-               } catch (parsingError: any) {
-                  unknownError = parsingError
-               }
-               fetcherOptions.onUnknownError?.(unknownError, options)
-               upOptions.onUnknownError?.(unknownError, options)
-               fetcherOptions.onError?.(unknownError, options)
-               upOptions.onError?.(unknownError, options)
-               throw unknownError
+            } catch (error) {
+               handleUnknownError<TFetchUnknownError>(
+                  error,
+                  options,
+                  upOptions,
+                  upfetchOptions,
+               )
             }
-            fetcherOptions.onResponseError?.(responseError, options)
+            upfetchOptions.onResponseError?.(responseError, options)
             upOptions.onResponseError?.(responseError, options)
-            fetcherOptions.onError?.(responseError, options)
+            upfetchOptions.onError?.(responseError, options)
             upOptions.onError?.(responseError, options)
             throw responseError
          })
    }
+}
+
+function handleUnknownError<TFetchUnknownError>(
+   error: any,
+   options: ComputedOptions,
+   upOptions: UpOptions,
+   upfetchOptions: UpFetchOptions,
+): never {
+   let unknownError: TFetchUnknownError
+   try {
+      unknownError = options.parseUnknownError(error, options)
+   } catch (parsingError: any) {
+      unknownError = parsingError
+   }
+   upfetchOptions.onUnknownError?.(unknownError, options)
+   upOptions.onUnknownError?.(unknownError, options)
+   upfetchOptions.onError?.(unknownError, options)
+   upOptions.onError?.(unknownError, options)
+   throw unknownError
 }

@@ -903,6 +903,35 @@ describe('up', () => {
          })
       })
 
+      test('Should be called once when parseResponse throws', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onUnknownError() {
+               count++
+            },
+            parseResponse: () => {
+               throw new Error('Some error')
+            },
+         }))
+
+         await upfetch('', {
+            onUnknownError() {
+               count++
+            },
+         }).catch((error) => {
+            expect(error.message).toEqual('Some error')
+         })
+         expect(count).toBe(3)
+      })
+
       test('Should be called once when parseResponseError throws', async () => {
          server.use(
             rest.get('https://example.com', (req, res, ctx) => {
@@ -916,7 +945,6 @@ describe('up', () => {
             baseUrl: 'https://example.com',
             onUnknownError() {
                count++
-               throw new Error('onSuccess should not be called')
             },
             parseResponseError: () => {
                throw new Error('Some error')
@@ -926,7 +954,35 @@ describe('up', () => {
          await upfetch('', {
             onUnknownError() {
                count++
-               throw new Error('onSuccess should not be called')
+            },
+         }).catch((error) => {
+            expect(error.message).toEqual('Some error')
+         })
+         expect(count).toBe(3)
+      })
+
+      test('Should be called once when parseUnknownError throws', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.coms',
+            onUnknownError() {
+               count++
+            },
+            parseUnknownError: () => {
+               throw new Error('Some error')
+            },
+         }))
+
+         await upfetch('', {
+            onUnknownError() {
+               count++
             },
          }).catch((error) => {
             expect(error.message).toEqual('Some error')
@@ -1044,6 +1100,93 @@ describe('up', () => {
          }).catch((error) => {
             expect(isResponseError(error)).toBe(true)
          })
+      })
+
+      test('Should be called once when parseResponse throws', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onError() {
+               count++
+            },
+            parseResponse: () => {
+               throw new Error('Some error')
+            },
+         }))
+
+         await upfetch('', {
+            onError() {
+               count++
+            },
+         }).catch((error) => {
+            expect(error.message).toEqual('Some error')
+         })
+         expect(count).toBe(3)
+      })
+
+      test('Should be called once when parseResponseError throws', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onError() {
+               count++
+            },
+            parseResponseError: () => {
+               throw new Error('Some error')
+            },
+         }))
+
+         await upfetch('', {
+            onError() {
+               count++
+            },
+         }).catch((error) => {
+            expect(error.message).toEqual('Some error')
+         })
+         expect(count).toBe(3)
+      })
+
+      test('Should be called once when parseUnknownError throws', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.coms',
+            onError() {
+               count++
+            },
+            parseUnknownError: () => {
+               throw new Error('Some error')
+            },
+         }))
+
+         await upfetch('', {
+            onError() {
+               count++
+            },
+         }).catch((error) => {
+            expect(error.message).toEqual('Some error')
+         })
+         expect(count).toBe(3)
       })
    })
 
