@@ -1238,49 +1238,4 @@ describe('up', () => {
          })
       })
    })
-
-   // test('`serializeParams` should be called if typeof `params` === Record<string, any>', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', async (req, res, ctx) => {
-   //          expect(req.url.searchParams.get('hello')).toBe('world')
-   //          return res(ctx.status(200), ctx.json({ some: 'json' }))
-   //       }),
-   //    )
-
-   //    await up(fetch)('https://example.com', {
-   //       params: { hello: 'world' },
-   //    })
-   // })
-
-   // test('Default params can be set in up', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', async (req, res, ctx) => {
-   //          expect(req.url.searchParams.get('hello')).toBe('world')
-   //          return res(ctx.status(200), ctx.json({ some: 'json' }))
-   //       }),
-   //    )
-
-   //    await up(fetch, () => ({
-   //       baseUrl: 'https://example.com',
-   //       params: { hello: 'world' },
-   //    }))('')
-   // })
-
-   // test('The default params and the request params should be shallowly merged', async () => {
-   //    server.use(
-   //       rest.get('https://example.com', async (req, res, ctx) => {
-   //          expect(req.url.searchParams.get('a')).toBe('1')
-   //          expect(req.url.searchParams.get('b')).toBe('10')
-   //          expect(req.url.searchParams.get('c')).toBe('11')
-   //          return res(ctx.status(200), ctx.json({ some: 'json' }))
-   //       }),
-   //    )
-
-   //    await up(fetch, () => ({
-   //       baseUrl: 'https://example.com',
-   //       params: { a: 1, b: 2, c: 3 },
-   //    }))('', {
-   //       params: { b: 10, c: 11 },
-   //    })
-   // })
 })
