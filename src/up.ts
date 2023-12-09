@@ -3,6 +3,9 @@ import { defaultOptions } from './default-options.js'
 import { ComputedOptions, UpFetchOptions, UpOptions } from './types.js'
 import { emptyOptions } from './utils.js'
 
+// TODO: test function upfetch options
+// TODO: validationStrategy
+
 export function up<
    TUpData = any,
    TUpResponseError = any,
@@ -23,16 +26,34 @@ export function up<
       TFetchUnknownError = TUpUnknownError,
    >(
       input: RequestInfo | URL,
-      upfetchOptions: UpFetchOptions<
-         TFetchData,
-         TFetchResponseError,
-         TFetchUnknownError,
-         TFetchFn
-      > = emptyOptions,
+      upfetchOptions:
+         | UpFetchOptions<
+              TFetchData,
+              TFetchResponseError,
+              TFetchUnknownError,
+              TFetchFn
+           >
+         | ((
+              upOptions: UpOptions<
+                 TUpData,
+                 TUpResponseError,
+                 TUpUnknownError,
+                 TFetchFn
+              >,
+           ) => UpFetchOptions<
+              TFetchData,
+              TFetchResponseError,
+              TFetchUnknownError,
+              TFetchFn
+           >) = emptyOptions,
    ) => {
       let upOptions = getUpOptions()
-      let options = buildOptions(input, upOptions, upfetchOptions)
-      upfetchOptions.onBeforeFetch?.(options)
+      let upFetchOpts =
+         typeof upfetchOptions === 'function'
+            ? upfetchOptions(upOptions)
+            : upfetchOptions
+      let options = buildOptions(input, upOptions, upFetchOpts)
+      upFetchOpts.onBeforeFetch?.(options)
       upOptions.onBeforeFetch?.(options)
 
       return fetchFn(options.input, options)
@@ -41,7 +62,7 @@ export function up<
                error,
                options,
                upOptions,
-               upfetchOptions,
+               upFetchOpts,
             )
          })
          .then(async (res) => {
@@ -52,7 +73,7 @@ export function up<
                      options,
                      defaultOptions.parseResponse,
                   )
-                  upfetchOptions.onSuccess?.(data, options)
+                  upFetchOpts.onSuccess?.(data, options)
                   upOptions.onSuccess?.(data, options)
                   return data
                } catch (error) {
@@ -60,7 +81,7 @@ export function up<
                      error,
                      options,
                      upOptions,
-                     upfetchOptions,
+                     upFetchOpts,
                   )
                }
             }
@@ -76,12 +97,12 @@ export function up<
                   error,
                   options,
                   upOptions,
-                  upfetchOptions,
+                  upFetchOpts,
                )
             }
-            upfetchOptions.onResponseError?.(responseError, options)
+            upFetchOpts.onResponseError?.(responseError, options)
             upOptions.onResponseError?.(responseError, options)
-            upfetchOptions.onError?.(responseError, options)
+            upFetchOpts.onError?.(responseError, options)
             upOptions.onError?.(responseError, options)
             throw responseError
          })

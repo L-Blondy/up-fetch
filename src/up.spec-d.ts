@@ -5,6 +5,7 @@ import {
    JsonifiableArray,
    JsonifiableObject,
    ComputedOptions,
+   UpOptions,
 } from './types.js'
 
 test('infer TData', async () => {
@@ -277,5 +278,25 @@ test('base fetch type should be extended', async () => {
       onBeforeFetch(options) {
          options.additionalOption
       },
+   })
+})
+
+test('The fetcher options can be functional, receiving up options as argument', async () => {
+   type CustomFetchType = (
+      input: RequestInfo | URL,
+      init?: RequestInit & { additionalOption?: string },
+   ) => Promise<Response>
+
+   const upfetch = up(fetch as CustomFetchType, () => ({
+      parseResponse: () => Promise.resolve(1),
+      parseResponseError: () => Promise.resolve(''),
+      parseUnknownError: () => true,
+   }))
+
+   upfetch('', (upOptions) => {
+      expectTypeOf(upOptions).toEqualTypeOf<
+         UpOptions<number, string, boolean, CustomFetchType>
+      >()
+      return {}
    })
 })
