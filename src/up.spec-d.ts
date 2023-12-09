@@ -293,10 +293,12 @@ test('The fetcher options can be functional, receiving up options as argument', 
       parseUnknownError: () => true,
    }))
 
+   // @ts-expect-error type check dhould still work on the return type
    upfetch('', (upOptions) => {
       expectTypeOf(upOptions).toEqualTypeOf<
          UpOptions<number, string, boolean, CustomFetchType>
       >()
-      return {}
+
+      return { headers: '' } // This incorrect return type produces the error
    })
 })
