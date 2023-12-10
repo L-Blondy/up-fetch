@@ -39,6 +39,17 @@ test('infer TResponseError', async () => {
          expectTypeOf(error).toEqualTypeOf<string>()
       },
    })
+   await upfetch('', (upOpts) => ({
+      onResponseError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<number>()
+      },
+   }))
+   await upfetch('', (upOpts) => ({
+      parseResponseError: (res, options) => Promise.resolve(''),
+      onResponseError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<string>()
+      },
+   }))
 })
 
 test('infer TUnknownError', async () => {
@@ -59,6 +70,17 @@ test('infer TUnknownError', async () => {
          expectTypeOf(error).toEqualTypeOf<string>()
       },
    })
+   await upfetch('', (upOpts) => ({
+      onUnknownError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<number>()
+      },
+   }))
+   await upfetch('', (upOpts) => ({
+      parseUnknownError: (res, options) => '',
+      onUnknownError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<string>()
+      },
+   }))
 })
 
 test('infer TError', async () => {
@@ -81,6 +103,18 @@ test('infer TError', async () => {
          expectTypeOf(error).toEqualTypeOf<boolean | object>()
       },
    })
+   await upfetch('', (upOpts) => ({
+      onError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<number | string>()
+      },
+   }))
+   await upfetch('', (upOpts) => ({
+      parseResponseError: (res, options) => Promise.resolve(true),
+      parseUnknownError: (res, options) => ({} as object),
+      onError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<boolean | object>()
+      },
+   }))
 })
 
 test('The default serializeParams should expect the params only', async () => {
@@ -101,6 +135,14 @@ test('The default serializeParams should expect the params only', async () => {
          return defaultSerializer(params)
       },
    })
+   await upfetch('', (upOpts) => ({
+      serializeParams(params, defaultSerializer) {
+         expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
+         // @ts-expect-error
+         defaultSerializer(params, defaultSerializer)
+         return defaultSerializer(params)
+      },
+   }))
 })
 
 test('The default serializeParams should expect the params only', async () => {
@@ -123,6 +165,14 @@ test('The default serializeParams should expect the params only', async () => {
          return defaultSerializer(params)
       },
    })
+   await upfetch('', (upOpts) => ({
+      serializeParams(params, defaultSerializer) {
+         expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
+         // @ts-expect-error
+         defaultSerializer(params, defaultSerializer)
+         return defaultSerializer(params)
+      },
+   }))
 })
 
 test('callback types', async () => {
@@ -263,6 +313,75 @@ test('callback types', async () => {
          return ''
       },
    })
+
+   await upfetch('', (upOpts) => ({
+      onBeforeFetch(options) {
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<number, boolean, string, typeof fetch>
+         >()
+      },
+      onError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<string | boolean>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<number, boolean, string, typeof fetch>
+         >()
+      },
+      onResponseError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<boolean>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<number, boolean, string, typeof fetch>
+         >()
+      },
+      onUnknownError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<string>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<number, boolean, string, typeof fetch>
+         >()
+      },
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<number>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<number, boolean, string, typeof fetch>
+         >()
+      },
+      parseResponse(res, options) {
+         expectTypeOf(res).toEqualTypeOf<Response>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
+         return Promise.resolve(1)
+      },
+      parseResponseError(res, options) {
+         expectTypeOf(res).toEqualTypeOf<Response>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
+         return Promise.resolve(true)
+      },
+      parseUnknownError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, any, typeof fetch>
+         >()
+         return ''
+      },
+      serializeParams(params, defaultSerializer) {
+         expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
+         expectTypeOf(defaultSerializer).toEqualTypeOf<
+            (params: Record<string, any>) => string
+         >()
+         return ''
+      },
+      serializeBody(body, defaultSerializer) {
+         expectTypeOf(body).toEqualTypeOf<
+            JsonifiableObject | JsonifiableArray
+         >()
+         expectTypeOf(defaultSerializer).toEqualTypeOf<
+            (body: JsonifiableObject | JsonifiableArray) => string
+         >()
+         return ''
+      },
+   }))
 })
 
 test('base fetch type should be extended', async () => {
@@ -279,6 +398,13 @@ test('base fetch type should be extended', async () => {
          options.additionalOption
       },
    })
+
+   upfetch('', (upOpts) => ({
+      additionalOption: '',
+      onBeforeFetch(options) {
+         options.additionalOption
+      },
+   }))
 })
 
 test('The fetcher options can be functional, receiving up options as argument', async () => {
