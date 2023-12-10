@@ -59,7 +59,7 @@ describe('up', () => {
       })
    })
 
-   describe('headers', async () => {
+   describe('headers', () => {
       test.each`
          body                            | expected
          ${{}}                           | ${true}
@@ -142,6 +142,79 @@ describe('up', () => {
          }))
          await upfetch('', { headers: { 'content-type': 'from upfetch' } })
       })
+
+      test('`undefined` can be used on upfetch headers to remove upOption headers', async () => {
+         server.use(
+            rest.post('https://example.com', async (req, res, ctx) => {
+               expect(req.headers.get('content-type')).toEqual(null)
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            headers: { 'content-type': 'text/html' },
+            method: 'POST',
+         }))
+         await upfetch('', { headers: { 'content-type': undefined } })
+      })
+   })
+
+   describe('params', () => {
+      test('input params should override upOptions params', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               expect(req.url.search).toEqual('?hello=people')
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            params: { hello: 'world' },
+         }))
+
+         await upfetch('/?hello=people')
+      })
+
+      test('upfetch params and input params should both live in the url search (the user is responsible for not duplicating)', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               expect(req.url.search).toEqual(
+                  '?input=param&hello=people&input=test',
+               )
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
+
+         await upfetch('/?input=param', {
+            params: { hello: 'people', input: 'test' },
+         })
+      })
+
+      test('`undefined` can be used on upfetch params to remove upOption params', async () => {
+         server.use(
+            rest.get('https://example.com', (req, res, ctx) => {
+               expect(req.url.search).toEqual('?hello=world')
+               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            params: { hello: 'world', input: 'test' },
+         }))
+
+         await upfetch('/', {
+            params: { input: undefined },
+         })
+
+         await upfetch('/', (upOptions) => ({
+            params: { hello: upOptions.params?.hello, input: undefined },
+         }))
+      })
    })
 
    describe('serializeParams', () => {
@@ -173,25 +246,6 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            serializeParams(params, defaultSerializer) {
-               expect(params).toEqual({ a: 1 })
-               return defaultSerializer(params)
-            },
-         }))
-         await upfetch('path?b=2', { params: { a: 1 } })
-      })
-
-      test('The params defined in the url should override up params', async () => {
-         server.use(
-            rest.get('https://example.com/path', (req, res, ctx) => {
-               expect(req.url.search).toEqual('?b=2&a=1')
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
-            }),
-         )
-
-         const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
-            params: { b: 3 },
             serializeParams(params, defaultSerializer) {
                expect(params).toEqual({ a: 1 })
                return defaultSerializer(params)
