@@ -5,7 +5,6 @@ import {
    JsonifiableArray,
    JsonifiableObject,
    ComputedOptions,
-   UpOptions,
 } from './types.js'
 
 test('infer TData', async () => {
@@ -407,23 +406,20 @@ test('base fetch type should be extended', async () => {
    }))
 })
 
-test('The fetcher options can be functional, receiving up options as argument', async () => {
-   type CustomFetchType = (
-      input: RequestInfo | URL,
-      init?: RequestInit & { additionalOption?: string },
-   ) => Promise<Response>
-
-   const upfetch = up(fetch as CustomFetchType, () => ({
+test('When the fetcher options are functional, They should receive the fully infered upOptions as argument', async () => {
+   const upOpts = {
       parseResponse: () => Promise.resolve(1),
       parseResponseError: () => Promise.resolve(''),
       parseUnknownError: () => true,
-   }))
+      params: { a: 1, b: true },
+      headers: { c: 2, d: 'false' },
+   } as const
+
+   const upfetch = up(fetch, () => upOpts)
 
    // @ts-expect-error type check dhould still work on the return type
    upfetch('', (upOptions) => {
-      expectTypeOf(upOptions).toEqualTypeOf<
-         UpOptions<number, string, boolean, CustomFetchType>
-      >()
+      expectTypeOf(upOptions).toEqualTypeOf<typeof upOpts>()
 
       return { headers: '' } // This incorrect return type produces the error
    })

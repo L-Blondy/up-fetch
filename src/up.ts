@@ -6,24 +6,20 @@ import { emptyOptions } from './utils.js'
 // TODO: test function upfetch options
 // TODO: validationStrategy
 
-export function up<
-   TUpData = any,
-   TUpResponseError = any,
-   TUpUnknownError = any,
-   TFetchFn extends typeof fetch = typeof fetch,
->(
+export function up<TFetchFn extends typeof fetch, TUpOptions extends UpOptions>(
    fetchFn: TFetchFn,
-   getUpOptions: () => UpOptions<
-      TUpData,
-      TUpResponseError,
-      TUpUnknownError,
-      TFetchFn
-   > = () => emptyOptions,
+   getUpOptions: () => TUpOptions = () => emptyOptions,
 ) {
    return <
-      TFetchData = TUpData,
-      TFetchResponseError = TUpResponseError,
-      TFetchUnknownError = TUpUnknownError,
+      TFetchData = Awaited<
+         ReturnType<NonNullable<TUpOptions['parseResponse']>>
+      >,
+      TFetchResponseError = Awaited<
+         ReturnType<NonNullable<TUpOptions['parseResponseError']>>
+      >,
+      TFetchUnknownError = ReturnType<
+         NonNullable<TUpOptions['parseUnknownError']>
+      >,
    >(
       input: RequestInfo | URL,
       upfetchOptions:
@@ -34,12 +30,7 @@ export function up<
               TFetchFn
            >
          | ((
-              upOptions: UpOptions<
-                 TUpData,
-                 TUpResponseError,
-                 TUpUnknownError,
-                 TFetchFn
-              >,
+              upOptions: TUpOptions,
            ) => UpFetchOptions<
               TFetchData,
               TFetchResponseError,
