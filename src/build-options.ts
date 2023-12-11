@@ -1,4 +1,3 @@
-import { ResponseError } from './response-error.js'
 import {
    BaseOptions,
    ComputedOptions,
@@ -25,21 +24,18 @@ export let eventListeners = [
 ] as const
 
 export let buildOptions = <
-   TFetchFn extends typeof fetch = typeof fetch,
-   TUpData = any,
-   TFetchData = TUpData,
-   TUpResponseError = ResponseError,
-   TUpUnknownError = any,
-   TFetchResponseError = TUpResponseError,
-   TFetchUnknownError = TUpUnknownError,
+   TFetchFn extends typeof fetch,
+   TUpOptions extends UpOptions,
+   TFetchData = Awaited<ReturnType<NonNullable<TUpOptions['parseResponse']>>>,
+   TFetchResponseError = Awaited<
+      ReturnType<NonNullable<TUpOptions['parseResponseError']>>
+   >,
+   TFetchUnknownError = ReturnType<
+      NonNullable<TUpOptions['parseUnknownError']>
+   >,
 >(
    input: RequestInfo | URL, // fetch 1st arg
-   upOpts: UpOptions<
-      TUpData,
-      TUpResponseError,
-      TUpUnknownError,
-      TFetchFn
-   > = emptyOptions,
+   upOpts: TUpOptions = emptyOptions,
    fetcherOpts: UpFetchOptions<
       TFetchData,
       TFetchResponseError,
