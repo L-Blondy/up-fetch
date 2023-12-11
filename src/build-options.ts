@@ -26,32 +26,25 @@ export let eventListeners = [
 export let buildOptions = <
    TFetchFn extends typeof fetch,
    TUpOptions extends UpOptions<TFetchFn>,
-   TFetchData = Awaited<ReturnType<NonNullable<TUpOptions['parseResponse']>>>,
-   TFetchResponseError = Awaited<
+   TData = Awaited<ReturnType<NonNullable<TUpOptions['parseResponse']>>>,
+   TResponseError = Awaited<
       ReturnType<NonNullable<TUpOptions['parseResponseError']>>
    >,
-   TFetchUnknownError = ReturnType<
-      NonNullable<TUpOptions['parseUnknownError']>
-   >,
+   TUnknownError = ReturnType<NonNullable<TUpOptions['parseUnknownError']>>,
 >(
    input: RequestInfo | URL, // fetch 1st arg
    upOpts: TUpOptions = emptyOptions,
    fetcherOpts: UpFetchOptions<
-      TFetchData,
-      TFetchResponseError,
-      TFetchUnknownError,
+      TData,
+      TResponseError,
+      TUnknownError,
       TFetchFn
    > = emptyOptions,
-): ComputedOptions<
-   TFetchData,
-   TFetchResponseError,
-   TFetchUnknownError,
-   TFetchFn
-> => ({
+): ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn> => ({
    ...(defaultOptions as CastDefaultOptions<
-      TFetchData,
-      TFetchResponseError,
-      TFetchUnknownError,
+      TData,
+      TResponseError,
+      TUnknownError,
       TFetchFn
    >),
    ...strip(upOpts, eventListeners),
@@ -85,17 +78,12 @@ export let buildOptions = <
 })
 
 type CastDefaultOptions<
-   TFetchData = any,
-   TFetchResponseError = any,
-   TFetchUnknownError = any,
+   TData = any,
+   TResponseError = any,
+   TUnknownError = any,
    TFetchFn extends typeof fetch = typeof fetch,
 > = BaseOptions<TFetchFn> & { baseUrl?: string; method?: string } & Pick<
-      ComputedOptions<
-         TFetchData,
-         TFetchResponseError,
-         TFetchUnknownError,
-         TFetchFn
-      >,
+      ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
       | 'parseResponse'
       | 'parseResponseError'
       | 'parseUnknownError'

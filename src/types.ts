@@ -16,6 +16,18 @@ export type JsonifiableArray = readonly (
 
 type JsonPrimitive = string | number | boolean | null
 
+type Method =
+   | 'GET'
+   | 'POST'
+   | 'PUT'
+   | 'DELETE'
+   | 'PATCH'
+   | 'CONNECT'
+   | 'OPTIONS'
+   | 'TRACE'
+   | 'HEAD'
+   | (string & {})
+
 export type BaseOptions<TFetch extends typeof fetch> = Omit<
    NonNullable<Parameters<TFetch>[1]>,
    'body' | 'headers' | 'method'
@@ -57,17 +69,7 @@ export type ComputedOptions<
       params: ComputedOptions['params'],
       defaultSerializer: (params: ComputedOptions['params']) => string,
    ) => string
-   method?:
-      | 'GET'
-      | 'POST'
-      | 'PUT'
-      | 'DELETE'
-      | 'PATCH'
-      | 'CONNECT'
-      | 'OPTIONS'
-      | 'TRACE'
-      | 'HEAD'
-      | (string & {})
+   method?: Method
    headers: Record<string, string>
    rawBody?: UpFetchOptions['body']
    readonly body?: BodyInit | null
@@ -79,10 +81,10 @@ export type ComputedOptions<
 
 export type UpOptions<TFetchFn extends typeof fetch = typeof fetch> =
    BaseOptions<TFetchFn> & {
-      baseUrl?: ComputedOptions['baseUrl']
+      baseUrl?: string
       onBeforeFetch?: (options: ComputedOptions) => void
       headers?: UpFetchOptions['headers']
-      method?: ComputedOptions['method']
+      method?: Method
       onError?: (error: any, options: ComputedOptions) => void
       onResponseError?: (error: any, options: ComputedOptions) => void
       onSuccess?: (data: any, options: ComputedOptions) => void
@@ -96,83 +98,53 @@ export type UpOptions<TFetchFn extends typeof fetch = typeof fetch> =
    }
 
 export type UpFetchOptions<
-   TFetchData = any,
-   TFetchResponseError = any,
-   TFetchUnknownError = any,
+   TData = any,
+   TResponseError = any,
+   TUnknownError = any,
    TFetchFn extends typeof fetch = typeof fetch,
 > = BaseOptions<TFetchFn> & {
-   baseUrl?: ComputedOptions['baseUrl']
+   baseUrl?: string
    onBeforeFetch?: (
-      options: ComputedOptions<
-         TFetchData,
-         TFetchResponseError,
-         TFetchUnknownError,
-         TFetchFn
-      >,
+      options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
    body?: BodyInit | JsonifiableObject | JsonifiableArray | null
    headers?: HeadersInit | Record<string, string | number | null | undefined>
-   method?: ComputedOptions<
-      TFetchData,
-      TFetchResponseError,
-      TFetchUnknownError,
-      TFetchFn
-   >['method']
+   method?: Method
    onError?: (
-      error: TFetchResponseError | TFetchUnknownError,
-      options: ComputedOptions<
-         TFetchData,
-         TFetchResponseError,
-         TFetchUnknownError,
-         TFetchFn
-      >,
+      error: TResponseError | TUnknownError,
+      options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
    onResponseError?: (
-      error: TFetchResponseError,
-      options: ComputedOptions<
-         TFetchData,
-         TFetchResponseError,
-         TFetchUnknownError,
-         TFetchFn
-      >,
+      error: TResponseError,
+      options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
    onSuccess?: (
-      data: TFetchData,
-      options: ComputedOptions<
-         TFetchData,
-         TFetchResponseError,
-         TFetchUnknownError,
-         TFetchFn
-      >,
+      data: TData,
+      options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
    onUnknownError?: (
-      error: TFetchUnknownError,
-      options: ComputedOptions<
-         TFetchData,
-         TFetchResponseError,
-         TFetchUnknownError,
-         TFetchFn
-      >,
+      error: TUnknownError,
+      options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
    params?: ComputedOptions<
-      TFetchData,
-      TFetchResponseError,
-      TFetchUnknownError,
+      TData,
+      TResponseError,
+      TUnknownError,
       TFetchFn
    >['params']
-   parseResponse?: ParseResponse<TFetchData>
-   parseResponseError?: ParseResponseError<TFetchResponseError>
-   parseUnknownError?: ParseUnknownError<TFetchUnknownError>
+   parseResponse?: ParseResponse<TData>
+   parseResponseError?: ParseResponseError<TResponseError>
+   parseUnknownError?: ParseUnknownError<TUnknownError>
    serializeBody?: ComputedOptions<
-      TFetchData,
-      TFetchResponseError,
-      TFetchUnknownError,
+      TData,
+      TResponseError,
+      TUnknownError,
       TFetchFn
    >['serializeBody']
    serializeParams?: ComputedOptions<
-      TFetchData,
-      TFetchResponseError,
-      TFetchUnknownError,
+      TData,
+      TResponseError,
+      TUnknownError,
       TFetchFn
    >['serializeParams']
 }

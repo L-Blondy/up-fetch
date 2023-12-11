@@ -1,16 +1,12 @@
 import { ComputedOptions } from './types.js'
 
-export class ResponseError<TErrorData = any> extends Error {
+export class ResponseError<TData = any> extends Error {
    override name: 'ResponseError'
-   response: Response & { data: TErrorData }
-   options: ComputedOptions<TErrorData>
-   data: TErrorData
+   response: Response & { data: TData }
+   options: ComputedOptions<TData>
+   data: TData
 
-   constructor(
-      res: Response,
-      data: TErrorData,
-      options: ComputedOptions<TErrorData>,
-   ) {
+   constructor(res: Response, data: TData, options: ComputedOptions<TData>) {
       super(`Request failed with status ${res.status}`)
       // because ResponseError is only instantiated during the response parsing,
       // mutating the response here is fine
@@ -21,6 +17,6 @@ export class ResponseError<TErrorData = any> extends Error {
    }
 }
 
-export let isResponseError = <TErrorData>(
+export let isResponseError = <TData>(
    error: any,
-): error is ResponseError<TErrorData> => error instanceof ResponseError
+): error is ResponseError<TData> => error instanceof ResponseError
