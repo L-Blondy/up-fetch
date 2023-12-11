@@ -77,6 +77,7 @@ export let buildOptions = <
    },
 })
 
+// Need help on this, why are BaseOptions<TFetchFn> & { baseUrl?: string; method?: string } required
 type CastDefaultOptions<
    TData = any,
    TResponseError = any,
