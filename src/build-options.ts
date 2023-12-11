@@ -25,7 +25,7 @@ export let eventListeners = [
 
 export let buildOptions = <
    TFetchFn extends typeof fetch,
-   TUpOptions extends UpOptions,
+   TUpOptions extends UpOptions<TFetchFn>,
    TFetchData = Awaited<ReturnType<NonNullable<TUpOptions['parseResponse']>>>,
    TFetchResponseError = Awaited<
       ReturnType<NonNullable<TUpOptions['parseResponseError']>>

@@ -6,10 +6,10 @@ import { emptyOptions } from './utils.js'
 // TODO: test function upfetch options
 // TODO: validationStrategy
 
-export function up<TFetchFn extends typeof fetch, TUpOptions extends UpOptions>(
-   fetchFn: TFetchFn,
-   getUpOptions: () => TUpOptions = () => emptyOptions,
-) {
+export function up<
+   TFetchFn extends typeof fetch,
+   TUpOptions extends UpOptions<TFetchFn>,
+>(fetchFn: TFetchFn, getUpOptions: () => TUpOptions = () => emptyOptions) {
    return <
       TFetchData = Awaited<
          ReturnType<NonNullable<TUpOptions['parseResponse']>>
