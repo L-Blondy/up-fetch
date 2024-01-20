@@ -3,7 +3,6 @@ import { defaultOptions } from './default-options.js'
 import { ComputedOptions, UpFetchOptions, UpOptions } from './types.js'
 import { emptyOptions } from './utils.js'
 
-// TODO: test function upfetch options
 // TODO: validationStrategy
 
 export function up<
