@@ -377,7 +377,7 @@ upfetch({
 The request config extends the [Fetch API options][MDN]
 
 ```ts
-interface FetcherOptions extends RequestInit {
+interface FetchOptions extends RequestInit {
    // e.g. https://some-domain.com/api/
    baseUrl?: string
    // `url` will be appended to the URL 
@@ -394,7 +394,7 @@ interface FetcherOptions extends RequestInit {
    // takes the `params` object as an argument and returns the query string
    // that will be appended to the url
    // You may omit the question mark
-   serializeParams?: (params: FetcherOptions['params']) => string
+   serializeParams?: (params: FetchOptions['params']) => string
    // override the default `body` serialization function
    // takes the `body` (plain object or array only) as an argument and returns a string
    // defaults to (body) => JSON.stringify(body)

@@ -1,75 +1,76 @@
 {
-  "name": "up-fetch",
-  "version": "0.0.1-beta.25",
-  "description": "Slim and flexible HTTP client based on the Fetch API.",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "engines": {
-    "node": ">=14.18"
-  },
-  "scripts": {
-    "lint": "eslint . --ext .ts",
-    "build": "tsup lib/index.ts",
-    "dev": "vitest",
-    "test": "vitest run && tsc --noEmit",
-    "prepublish": "pnpm build && pnpm test",
-    "postpublish": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"
-  },
-  "keywords": [
-    "fetch",
-    "fetch wrapper",
-    "request",
-    "http",
-    "xhr",
-    "ajax",
-    "defaults",
-    "wrapper",
-    "config",
-    "fetching",
-    "fetcher",
-    "api",
-    "rest",
-    "get",
-    "url",
-    "curl",
-    "wget",
-    "net",
-    "network",
-    "browser",
-    "node-fetch",
-    "axios",
-    "wretch",
-    "requests",
-    "https",
-    "got",
-    "ky"
-  ],
-  "author": "Laurent Blondy",
-  "license": "ISC",
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
-    "eslint": "^8.37.0",
-    "jsdom": "^21.1.1",
-    "msw": "^1.2.1",
-    "node-fetch": "^3.3.1",
-    "prettier": "^2.8.7",
-    "tsup": "^6.7.0",
-    "typescript": "^4.9.5",
-    "vitest": "^0.29.8"
-  },
-  "publishConfig": {
-    "access": "public",
-    "branches": [
-      "master"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/L-Blondy/up-fetch"
-  }
+   "name": "up-fetch",
+   "version": "0.0.1-beta.25",
+   "description": "Slim and flexible HTTP client based on the Fetch API.",
+   "type": "module",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+   "files": [
+      "dist"
+   ],
+   "engines": {
+      "node": ">=14.18"
+   },
+   "scripts": {
+      "lint": "eslint . --ext .ts",
+      "build": "tsup src/up.ts",
+      "dev": "vitest",
+      "test": "vitest run && tsc --noEmit",
+      "prepublish": "npm run test && npm run build",
+      "postpublish": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"
+   },
+   "keywords": [
+      "fetch",
+      "fetch wrapper",
+      "request",
+      "http",
+      "xhr",
+      "ajax",
+      "defaults",
+      "wrapper",
+      "config",
+      "fetching",
+      "fetcher",
+      "api",
+      "rest",
+      "get",
+      "url",
+      "curl",
+      "wget",
+      "net",
+      "network",
+      "browser",
+      "node-fetch",
+      "axios",
+      "wretch",
+      "requests",
+      "https",
+      "got",
+      "ky"
+   ],
+   "author": "Laurent Blondy",
+   "license": "ISC",
+   "devDependencies": {
+      "@typescript-eslint/eslint-plugin": "^5.57.0",
+      "@typescript-eslint/parser": "^5.57.0",
+      "eslint": "^8.37.0",
+      "jsdom": "^21.1.1",
+      "msw": "^1.2.1",
+      "node-fetch": "^3.3.1",
+      "prettier": "^2.8.7",
+      "tsup": "^6.7.0",
+      "typescript": "^5.3.3",
+      "vitest": "^0.29.8",
+      "zod": "^3.22.4"
+   },
+   "publishConfig": {
+      "access": "public",
+      "branches": [
+         "master"
+      ]
+   },
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/L-Blondy/up-fetch"
+   }
 }
