@@ -16,7 +16,7 @@
       "build": "tsup src/up.ts",
       "dev": "vitest",
       "test": "vitest run && tsc --noEmit",
-      "prepublish": "npm run build && npm run test",
+      "prepublish": "npm run test && npm run build",
       "postpublish": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"
    },
    "keywords": [
