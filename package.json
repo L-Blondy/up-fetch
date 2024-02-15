@@ -3,8 +3,8 @@
    "version": "0.1.0",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
-   "main": "dist/index.js",
-   "types": "dist/index.d.ts",
+   "main": "dist/up.js",
+   "types": "dist/up.d.ts",
    "files": [
       "dist"
    ],
