@@ -1,13 +1,10 @@
 {
    "name": "up-fetch",
-   "version": "0.1.2",
+   "version": "0.1.3",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
    "main": "dist/up.js",
    "types": "dist/up.d.ts",
-   "files": [
-      "dist"
-   ],
    "engines": {
       "node": ">=14.18"
    },
