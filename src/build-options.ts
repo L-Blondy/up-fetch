@@ -65,7 +65,13 @@ export let buildOptions = <
    },
    get input() {
       if (isRequest(input)) return input
-      let url = new URL(input, this.baseUrl)
+      if (input instanceof URL) return input.toString()
+      const base = this.baseUrl ? new URL(this.baseUrl) : undefined
+      const path = [base?.pathname, input.toString()]
+         .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
+         .filter(Boolean)
+         .join('/')
+      let url = new URL(path, base?.origin)
       let serializedParams = this.serializeParams(
          this.params,
          defaultOptions.serializeParams,

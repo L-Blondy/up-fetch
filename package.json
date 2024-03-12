@@ -55,10 +55,10 @@
       "@typescript-eslint/parser": "^5.57.0",
       "eslint": "^8.37.0",
       "jsdom": "^21.1.1",
-      "msw": "^1.2.1",
+      "msw": "^2.2.3",
       "node-fetch": "^3.3.1",
       "prettier": "^2.8.7",
-      "tsup": "^6.7.0",
+      "tsup": "^8.0.2",
       "typescript": "^5.3.3",
       "vitest": "^0.29.8",
       "zod": "^3.22.4"

@@ -6,10 +6,12 @@ describe('buildOptions input', () => {
    test.each`
       input                                 | upOpts                            | fetcherOpts                   | output
       ${'b'}                                | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a/b'}
+      ${'c'}                                | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://a/b/c'}
       ${''}                                 | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a/'}
       ${'http://b'}                         | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://b/'}
       ${'http://b'}                         | ${{ baseUrl: 'http://a' }}        | ${{ baseUrl: 'http://c' }}    | ${'http://b/'}
       ${new URL('http://c/d')}              | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://c/d'}
+      ${new URL('http://c/d')}              | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://c/d'}
       ${new Request('http://c/d')}          | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${undefined}
       ${new Request('http://c/d?q=search')} | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${undefined}
       ${new URL('http://c/d?q=search')}     | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://c/d?q=search'}

@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
 import { up } from './up.js'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { isResponseError } from './response-error.js'
 import { bodyMock } from './_mocks.js'
@@ -13,8 +13,8 @@ describe('up', () => {
 
    test('Should throw if !res.ok', async () => {
       server.use(
-         rest.get('https://example.com', async (req, res, ctx) => {
-            return res(ctx.json({ hello: 'world' }), ctx.status(400))
+         http.get('https://example.com', async () => {
+            return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
 
@@ -34,15 +34,15 @@ describe('up', () => {
    describe('body', () => {
       test('Should be ignore in up options', async () => {
          server.use(
-            rest.post('https://example.com', async (req, res, ctx) => {
-               const body = await req.text()
+            http.post('https://example.com', async ({ request }) => {
+               const body = await request.text()
                if (count === 1) {
                   expect(body).toBe('')
                }
                if (count === 2) {
                   expect(body).toBe('my body')
                }
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -82,11 +82,11 @@ describe('up', () => {
          'Should automatically have "content-type: application/json" if the body is serializable',
          async ({ body, expected }) => {
             server.use(
-               rest.post('https://example.com', async (req, res, ctx) => {
+               http.post('https://example.com', async ({ request }) => {
                   const hasApplicationJsonHeader =
-                     req.headers.get('content-type') === 'application/json'
+                     request.headers.get('content-type') === 'application/json'
                   expect(hasApplicationJsonHeader).toEqual(expected)
-                  return res(ctx.json({ hello: 'world' }), ctx.status(200))
+                  return HttpResponse.json({ hello: 'world' }, { status: 200 })
                }),
             )
 
@@ -112,9 +112,11 @@ describe('up', () => {
          'If the "content-type" header is declared, "application/json" should not be added',
          async ({ body }) => {
             server.use(
-               rest.post('https://example.com', async (req, res, ctx) => {
-                  expect(req.headers.get('content-type')).toEqual('html/text')
-                  return res(ctx.json({ hello: 'world' }), ctx.status(200))
+               http.post('https://example.com', async ({ request }) => {
+                  expect(request.headers.get('content-type')).toEqual(
+                     'html/text',
+                  )
+                  return HttpResponse.json({ hello: 'world' }, { status: 200 })
                }),
             )
 
@@ -129,9 +131,11 @@ describe('up', () => {
 
       test('upfetch headers should override up headers', async () => {
          server.use(
-            rest.post('https://example.com', async (req, res, ctx) => {
-               expect(req.headers.get('content-type')).toEqual('from upfetch')
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.post('https://example.com', async ({ request }) => {
+               expect(request.headers.get('content-type')).toEqual(
+                  'from upfetch',
+               )
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -145,9 +149,9 @@ describe('up', () => {
 
       test('`undefined` can be used on upfetch headers to remove upOption headers', async () => {
          server.use(
-            rest.post('https://example.com', async (req, res, ctx) => {
-               expect(req.headers.get('content-type')).toEqual(null)
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.post('https://example.com', async ({ request }) => {
+               expect(request.headers.get('content-type')).toEqual(null)
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -163,9 +167,9 @@ describe('up', () => {
    describe('params', () => {
       test('input params should override upOptions params', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               expect(req.url.search).toEqual('?hello=people')
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               expect(new URL(request.url).search).toEqual('?hello=people')
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -179,11 +183,11 @@ describe('up', () => {
 
       test('upfetch params and input params should both live in the url search (the user is responsible for not duplicating)', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               expect(req.url.search).toEqual(
+            http.get('https://example.com', ({ request }) => {
+               expect(new URL(request.url).search).toEqual(
                   '?input=param&hello=people&input=test',
                )
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -196,9 +200,9 @@ describe('up', () => {
 
       test('`undefined` can be used on upfetch params to remove upOption params', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               expect(req.url.search).toEqual('?hello=world')
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               expect(new URL(request.url).search).toEqual('?hello=world')
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -220,8 +224,8 @@ describe('up', () => {
    describe('serializeParams', () => {
       test('Should receive the params and the default serializer', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -238,9 +242,10 @@ describe('up', () => {
 
       test('Should not receive the params defined in the url itself', async () => {
          server.use(
-            rest.get('https://example.com/path', (req, res, ctx) => {
-               expect(req.url.search).toEqual('?b=2&a=1')
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com/path', ({ request }) => {
+               expect(new URL(request.url).search).toEqual('?b=2&a=1')
+
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -256,8 +261,8 @@ describe('up', () => {
 
       test('Should be called even if no params are defined', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -276,9 +281,10 @@ describe('up', () => {
 
       test('serializeParams in upfetch should override serializeParams in up', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               expect(req.url.search).toEqual('?from=upfetch')
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               expect(new URL(request.url).search).toEqual('?from=upfetch')
+
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -293,8 +299,8 @@ describe('up', () => {
    describe('serializeBody', () => {
       test('Should receive the body and the default serializer', async () => {
          server.use(
-            rest.post('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.post('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -331,10 +337,11 @@ describe('up', () => {
          'Should be called when body is an Array, a plain Object or a class with a JSON method',
          async ({ body, isSerialized }) => {
             server.use(
-               rest.post('https://example.com', async (req, res, ctx) => {
-                  const actualBody = await req.text()
+               http.post('https://example.com', async ({ request }) => {
+                  const actualBody = await request.text()
                   expect(actualBody === 'serialized').toBe(isSerialized)
-                  return res(ctx.json({ hello: 'world' }), ctx.status(200))
+
+                  return HttpResponse.json({ hello: 'world' }, { status: 200 })
                }),
             )
 
@@ -353,9 +360,10 @@ describe('up', () => {
 
       test('serializeBody in upfetch should override serializeBody in up', async () => {
          server.use(
-            rest.post('https://example.com', async (req, res, ctx) => {
-               expect(await req.text()).toEqual('from=upfetch')
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.post('https://example.com', async ({ request }) => {
+               expect(await request.text()).toEqual('from=upfetch')
+
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -374,8 +382,8 @@ describe('up', () => {
    describe('parseResponse', () => {
       test('Should parse JSON by default', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -388,8 +396,8 @@ describe('up', () => {
 
       test('Should parse TEXT by default', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.text('some text', { status: 200 })
             }),
          )
 
@@ -402,8 +410,8 @@ describe('up', () => {
 
       test('Should receive res, options, defaultParser as parameters', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.text('some text', { status: 200 })
             }),
          )
 
@@ -421,8 +429,8 @@ describe('up', () => {
 
       test('Should be called before onSuccess', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.text('some text', { status: 200 })
             }),
          )
 
@@ -446,8 +454,8 @@ describe('up', () => {
 
       test('Should be called even if the response has no body', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return new Response(null, { status: 200 })
             }),
          )
 
@@ -468,8 +476,8 @@ describe('up', () => {
 
       test('parseResponse in upfetch should override parseResponse in up', async () => {
          server.use(
-            rest.post('https://example.com', async (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.post('https://example.com', async ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -490,8 +498,8 @@ describe('up', () => {
    describe('parseResponseError', () => {
       test('Should parse JSON by default', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -505,8 +513,8 @@ describe('up', () => {
 
       test('Should parse TEXT by default', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.text('some text', { status: 400 })
             }),
          )
 
@@ -520,8 +528,8 @@ describe('up', () => {
 
       test('Should receive res, options, defaultParser as parameters', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.text('some text', { status: 400 })
             }),
          )
 
@@ -541,8 +549,8 @@ describe('up', () => {
 
       test('Should be called before onResponseError and onError', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.text('some text', { status: 400 })
             }),
          )
 
@@ -571,8 +579,8 @@ describe('up', () => {
 
       test('Should be called even if the response has no body', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.status(300))
+            http.get('https://example.com', ({ request }) => {
+               return new Response(null, { status: 300 })
             }),
          )
 
@@ -593,8 +601,8 @@ describe('up', () => {
 
       test('parseResponseError in upfetch should override parseResponseError in up', async () => {
          server.use(
-            rest.post('https://example.com', async (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.post('https://example.com', async ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -615,8 +623,8 @@ describe('up', () => {
    describe('parseUnknownError', () => {
       test('Should not transform the error by default', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -630,8 +638,8 @@ describe('up', () => {
 
       test('Should receive res, options as parameters', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.text('some text', { status: 400 })
             }),
          )
 
@@ -650,8 +658,8 @@ describe('up', () => {
 
       test('Should be called before onUnknownError and onError', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -680,8 +688,8 @@ describe('up', () => {
 
       test('If parseUnknownError throws, onUnknownError & onError should still be called', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.text('some text'), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -711,8 +719,8 @@ describe('up', () => {
 
       test('parseUnknownError in upfetch should override parseUnknownError in up', async () => {
          server.use(
-            rest.post('https://example.com', async (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.post('https://example.com', async ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -733,8 +741,8 @@ describe('up', () => {
    describe('onSuccess', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -759,8 +767,8 @@ describe('up', () => {
 
       test('Should receive the parsedResponse and the options', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -782,8 +790,8 @@ describe('up', () => {
 
       test('Should not be called when parseResponse throws', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -815,8 +823,8 @@ describe('up', () => {
    describe('onResponseError', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -844,8 +852,8 @@ describe('up', () => {
 
       test('Should receive the parsedResponseError and the options', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -869,8 +877,8 @@ describe('up', () => {
 
       test('Should not be called when parseResponseError throws', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -902,8 +910,8 @@ describe('up', () => {
    describe('onUnknownError', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -931,8 +939,8 @@ describe('up', () => {
 
       test('Should receive the parsed unknown error and the options', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -959,8 +967,8 @@ describe('up', () => {
 
       test('Should be called once when parseResponse throws', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -988,8 +996,8 @@ describe('up', () => {
 
       test('Should be called once when parseResponseError throws', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -1017,8 +1025,8 @@ describe('up', () => {
 
       test('Should be called once when parseUnknownError throws', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -1048,8 +1056,8 @@ describe('up', () => {
    describe('onError', () => {
       test('Should be called after onResponseError', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -1076,8 +1084,8 @@ describe('up', () => {
 
       test('Should be called after onUnknownError', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -1103,8 +1111,8 @@ describe('up', () => {
 
       test('Should be called on upfetch, then on up', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -1133,8 +1141,8 @@ describe('up', () => {
 
       test('Should receive the error and the options', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -1158,8 +1166,8 @@ describe('up', () => {
 
       test('Should be called once when parseResponse throws', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -1187,8 +1195,8 @@ describe('up', () => {
 
       test('Should be called once when parseResponseError throws', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -1216,8 +1224,8 @@ describe('up', () => {
 
       test('Should be called once when parseUnknownError throws', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(400))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
             }),
          )
 
@@ -1247,8 +1255,8 @@ describe('up', () => {
    describe('onBeforeFetch', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
@@ -1273,8 +1281,8 @@ describe('up', () => {
 
       test('Should receive the options', async () => {
          server.use(
-            rest.get('https://example.com', (req, res, ctx) => {
-               return res(ctx.json({ hello: 'world' }), ctx.status(200))
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
