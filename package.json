@@ -1,16 +1,16 @@
 {
    "name": "up-fetch",
-   "version": "0.1.3",
+   "version": "0.1.4",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
-   "main": "dist/up.js",
-   "types": "dist/up.d.ts",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
    "engines": {
       "node": ">=14.18"
    },
    "scripts": {
       "lint": "eslint . --ext .ts",
-      "build": "tsup src/up.ts",
+      "build": "tsup src/index.ts",
       "dev": "vitest",
       "test": "vitest run && tsc --noEmit",
       "prepublish": "npm run test && npm run build",
