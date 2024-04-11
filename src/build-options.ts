@@ -4,7 +4,7 @@ import {
    UpFetchOptions,
    UpOptions,
 } from './types.js'
-import { DefaultOptions, defaultOptions } from './default-options.js'
+import { defaultOptions } from './default-options.js'
 import {
    buildParams,
    isRequest,
@@ -44,8 +44,9 @@ export let buildOptions = <
       TFetchFn
    > = emptyOptions,
 ): ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn> => ({
-   // For some strange reason, at some point in the return object I have the BaseOptions<TFetchFn>
-   ...(defaultOptions as DefaultOptions & BaseOptions<TFetchFn>),
+   // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
+   ...({} satisfies BaseOptions<typeof fetch> as BaseOptions<TFetchFn>),
+   ...defaultOptions,
    ...strip(upOpts, eventListeners),
    ...strip(fetcherOpts, eventListeners),
    headers: mergeHeaders(
