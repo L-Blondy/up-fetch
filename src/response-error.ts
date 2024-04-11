@@ -2,7 +2,7 @@ import { ComputedOptions } from './types.js'
 
 export class ResponseError<TData = any> extends Error {
    override name: 'ResponseError'
-   response: Response & { data: TData }
+   response: Response
    options: ComputedOptions<TData>
    data: TData
 
@@ -12,7 +12,7 @@ export class ResponseError<TData = any> extends Error {
       // mutating the response here is fine
       this.data = data
       this.name = 'ResponseError'
-      this.response = res as any
+      this.response = res
       this.options = options
    }
 }
