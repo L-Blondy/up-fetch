@@ -1,7 +1,22 @@
 import { ResponseError } from './response-error.js'
-import { ComputedOptions } from './types.js'
+import {
+   ComputedOptions,
+   ParseResponse,
+   ParseResponseError,
+   ParseUnknownError,
+   SerializeBody,
+   SerializeParams,
+} from './types.js'
 
-export let defaultOptions = {
+export type DefaultOptions = {
+   parseResponse: ParseResponse<any>
+   parseResponseError: ParseResponseError<any>
+   parseUnknownError: ParseUnknownError<any>
+   serializeParams: SerializeParams
+   serializeBody: SerializeBody
+}
+
+export let defaultOptions: DefaultOptions = {
    parseResponse: (res: Response) =>
       res
          .clone()
@@ -13,7 +28,11 @@ export let defaultOptions = {
       res: Response,
       options: ComputedOptions,
    ): Promise<ResponseError> =>
-      new ResponseError(res, await defaultOptions.parseResponse(res), options),
+      new ResponseError(
+         res,
+         await defaultOptions.parseResponse(res, {} as any), // the second arg is not used but required in the type
+         options,
+      ),
 
    parseUnknownError: (error: any) => error,
 

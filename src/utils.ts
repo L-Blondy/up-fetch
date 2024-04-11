@@ -40,12 +40,17 @@ export let buildParams = (
            ...fetcherParams,
         })
 
+export type DistributiveOmit<
+   TObject extends object,
+   TKey extends string,
+> = TObject extends unknown ? Omit<TObject, TKey> : never
+
 // "K extends string" and not "keyof O" to allow runtime strip of keys of "O" not allowed by typescript
 export let strip = <O extends Record<string, any>, K extends string = never>(
    obj?: O,
    keys: readonly K[] = [],
-): Omit<O, K> => {
-   let copy = { ...obj } as O
+): DistributiveOmit<O, K> => {
+   let copy = { ...obj } as DistributiveOmit<O, K>
    for (let key in copy) {
       if (keys.includes(key as any) || copy[key] === undefined) delete copy[key]
    }

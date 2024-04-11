@@ -4,7 +4,7 @@ import {
    UpFetchOptions,
    UpOptions,
 } from './types.js'
-import { defaultOptions } from './default-options.js'
+import { DefaultOptions, defaultOptions } from './default-options.js'
 import {
    buildParams,
    isRequest,
@@ -25,75 +25,58 @@ export let eventListeners = [
 
 export let buildOptions = <
    TFetchFn extends typeof fetch,
-   TUpOptions extends UpOptions<TFetchFn>,
-   TData = Awaited<ReturnType<NonNullable<TUpOptions['parseResponse']>>>,
-   TResponseError = Awaited<
-      ReturnType<NonNullable<TUpOptions['parseResponseError']>>
+   TData = Awaited<
+      ReturnType<NonNullable<UpOptions<TFetchFn>['parseResponse']>>
    >,
-   TUnknownError = ReturnType<NonNullable<TUpOptions['parseUnknownError']>>,
+   TResponseError = Awaited<
+      ReturnType<NonNullable<UpOptions<TFetchFn>['parseResponseError']>>
+   >,
+   TUnknownError = ReturnType<
+      NonNullable<UpOptions<TFetchFn>['parseUnknownError']>
+   >,
 >(
    input: RequestInfo | URL, // fetch 1st arg
-   upOpts: TUpOptions = emptyOptions,
+   upOpts: UpOptions<TFetchFn> = emptyOptions,
    fetcherOpts: UpFetchOptions<
       TData,
       TResponseError,
       TUnknownError,
       TFetchFn
    > = emptyOptions,
-): ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn> => ({
-   ...(defaultOptions as CastDefaultOptions<
-      TData,
-      TResponseError,
-      TUnknownError,
-      TFetchFn
-   >),
-   ...strip(upOpts, eventListeners),
-   ...strip(fetcherOpts, eventListeners),
-   headers: mergeHeaders(
-      isJsonifiableObjectOrArray(fetcherOpts.body)
-         ? { 'content-type': 'application/json' }
-         : {},
-      upOpts.headers,
-      fetcherOpts.headers,
-   ),
-   params: buildParams(upOpts.params, input, fetcherOpts.params),
-   rawBody: fetcherOpts.body,
-   get body() {
-      return isJsonifiableObjectOrArray(this.rawBody)
-         ? this.serializeBody(this.rawBody, defaultOptions.serializeBody)
-         : this.rawBody
-   },
-   get input() {
-      if (isRequest(input)) return input
-      if (input instanceof URL) return input.toString()
-      const base = this.baseUrl ? new URL(this.baseUrl) : undefined
-      const path = [base?.pathname, input.toString()]
-         .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
-         .filter(Boolean)
-         .join('/')
-      let url = new URL(path, base?.origin)
-      let serializedParams = this.serializeParams(
-         this.params,
-         defaultOptions.serializeParams,
-      )
-      return `${url.href}${withPrefix(
-         url.search ? '&' : '?',
-         serializedParams,
-      )}`
-   },
-})
-
-// Need help on this, why are BaseOptions<TFetchFn> & { baseUrl?: string; method?: string } required
-type CastDefaultOptions<
-   TData = any,
-   TResponseError = any,
-   TUnknownError = any,
-   TFetchFn extends typeof fetch = typeof fetch,
-> = BaseOptions<TFetchFn> & { baseUrl?: string; method?: string } & Pick<
-      ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
-      | 'parseResponse'
-      | 'parseResponseError'
-      | 'parseUnknownError'
-      | 'serializeBody'
-      | 'serializeParams'
-   >
+): ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn> => {
+   return {
+      // For some strange reason, at some point in the return object I have the BaseOptions<TFetchFn>
+      ...(defaultOptions as DefaultOptions & BaseOptions<TFetchFn>),
+      ...strip(upOpts, eventListeners),
+      ...strip(fetcherOpts, eventListeners),
+      headers: mergeHeaders(
+         isJsonifiableObjectOrArray(fetcherOpts.body)
+            ? { 'content-type': 'application/json' }
+            : {},
+         upOpts.headers,
+         fetcherOpts.headers,
+      ),
+      params: buildParams(upOpts.params, input, fetcherOpts.params),
+      rawBody: fetcherOpts.body,
+      get body() {
+         return isJsonifiableObjectOrArray(this.rawBody)
+            ? this.serializeBody(this.rawBody)
+            : this.rawBody
+      },
+      get input() {
+         if (isRequest(input)) return input
+         if (input instanceof URL) return input.toString()
+         const base = this.baseUrl ? new URL(this.baseUrl) : undefined
+         const path = [base?.pathname, input.toString()]
+            .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
+            .filter(Boolean)
+            .join('/')
+         let url = new URL(path, base?.origin)
+         let serializedParams = this.serializeParams(this.params)
+         return `${url.href}${withPrefix(
+            url.search ? '&' : '?',
+            serializedParams,
+         )}`
+      },
+   }
+}

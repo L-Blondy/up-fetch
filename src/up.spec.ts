@@ -4,6 +4,7 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { isResponseError } from './response-error.js'
 import { bodyMock } from './_mocks.js'
+import { defaultOptions } from './default-options.js'
 
 describe('up', () => {
    const server = setupServer()
@@ -222,7 +223,7 @@ describe('up', () => {
    })
 
    describe('serializeParams', () => {
-      test('Should receive the params and the default serializer', async () => {
+      test('Should receive the params', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -231,9 +232,8 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            serializeParams(params, defaultSerializer) {
+            serializeParams(params) {
                expect(params).toEqual({ a: 1 })
-               expect(typeof defaultSerializer).toEqual('function')
                return ''
             },
          }))
@@ -251,9 +251,9 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            serializeParams(params, defaultSerializer) {
+            serializeParams(params) {
                expect(params).toEqual({ a: 1 })
-               return defaultSerializer(params)
+               return defaultOptions.serializeParams(params)
             },
          }))
          await upfetch('path?b=2', { params: { a: 1 } })
@@ -297,7 +297,7 @@ describe('up', () => {
    })
 
    describe('serializeBody', () => {
-      test('Should receive the body and the default serializer', async () => {
+      test('Should receive the body', async () => {
          server.use(
             http.post('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -306,9 +306,8 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            serializeBody(body, defaultSerializer) {
+            serializeBody(body) {
                expect(body).toEqual({ a: 1 })
-               expect(typeof defaultSerializer).toEqual('function')
                return ''
             },
          }))
@@ -408,7 +407,7 @@ describe('up', () => {
          expect(data).toEqual('some text')
       })
 
-      test('Should receive res, options, defaultParser as parameters', async () => {
+      test('Should receive res, options as parameters', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.text('some text', { status: 200 })
@@ -417,10 +416,9 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            parseResponse(res, options, defaultParser) {
+            parseResponse(res, options) {
                expect(res instanceof Response).toEqual(true)
                expect(options.input).toEqual('https://example.com/')
-               expect(typeof defaultParser).toEqual('function')
                return res.text()
             },
          }))
@@ -535,10 +533,9 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            parseResponseError(res, options, defaultParser) {
+            parseResponseError(res, options) {
                expect(res instanceof Response).toEqual(true)
                expect(options.input).toEqual('https://example.com/')
-               expect(typeof defaultParser).toEqual('function')
                return res.text()
             },
          }))

@@ -31,7 +31,9 @@ describe('parseResponse', () => {
       ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseResponse: $response', async ({ response, output }) => {
-      expect(await defaultOptions.parseResponse(response)).toStrictEqual(output)
+      expect(
+         await defaultOptions.parseResponse(response, {} as any),
+      ).toStrictEqual(output)
    })
 })
 

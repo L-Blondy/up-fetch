@@ -1,4 +1,4 @@
-import { ResponseError } from './response-error.js'
+import { DistributiveOmit } from './utils.js'
 
 export type JsonifiableObject =
    | {
@@ -28,7 +28,7 @@ type Method =
    | 'HEAD'
    | (string & {})
 
-export type BaseOptions<TFetch extends typeof fetch> = Omit<
+export type BaseOptions<TFetch extends typeof fetch> = DistributiveOmit<
    NonNullable<Parameters<TFetch>[1]>,
    'body' | 'headers' | 'method'
 >
@@ -36,22 +36,29 @@ export type BaseOptions<TFetch extends typeof fetch> = Omit<
 export type ParseResponse<TData> = (
    response: Response,
    options: ComputedOptions,
-   defaultParser: (res: Response) => Promise<any>,
 ) => Promise<TData>
 
 export type ParseResponseError<TError = any> = (
    res: Response,
    options: ComputedOptions,
-   defaultParser: (
-      res: Response,
-      options: ComputedOptions,
-   ) => Promise<ResponseError>,
 ) => Promise<TError>
 
 export type ParseUnknownError<TError = any> = (
    error: any,
    options: ComputedOptions,
 ) => TError
+
+export type SerializeBody = (body: Exclude<RawBody, BodyInit | null>) => string
+
+export type SerializeParams = (params: Params) => string
+
+type Params = Record<string, any>
+
+type RawBody = BodyInit | JsonifiableObject | JsonifiableArray | null
+
+type RawHeaders =
+   | HeadersInit
+   | Record<string, string | number | null | undefined>
 
 export type ComputedOptions<
    TData = any,
@@ -64,37 +71,31 @@ export type ComputedOptions<
    parseResponseError: ParseResponseError<TRespError>
    parseUnknownError: ParseUnknownError<TUnkError>
    baseUrl?: string
-   params: Record<string, any>
-   serializeParams: (
-      params: ComputedOptions['params'],
-      defaultSerializer: (params: ComputedOptions['params']) => string,
-   ) => string
+   params: Params
+   serializeParams: SerializeParams
    method?: Method
    headers: Record<string, string>
-   rawBody?: UpFetchOptions['body']
+   rawBody?: RawBody
    readonly body?: BodyInit | null
-   serializeBody: (
-      body: JsonifiableObject | JsonifiableArray,
-      defaultSerializer: (body: JsonifiableObject | JsonifiableArray) => string,
-   ) => string
+   serializeBody: SerializeBody
 }
 
 export type UpOptions<TFetchFn extends typeof fetch = typeof fetch> =
    BaseOptions<TFetchFn> & {
       baseUrl?: string
       onBeforeFetch?: (options: ComputedOptions) => void
-      headers?: UpFetchOptions['headers']
+      headers?: RawHeaders
       method?: Method
       onError?: (error: any, options: ComputedOptions) => void
       onResponseError?: (error: any, options: ComputedOptions) => void
       onSuccess?: (data: any, options: ComputedOptions) => void
       onUnknownError?: (error: any, options: ComputedOptions) => void
-      params?: ComputedOptions['params']
+      params?: Params
       parseResponse?: ParseResponse<any>
       parseResponseError?: ParseResponseError<any>
       parseUnknownError?: ParseUnknownError<any>
-      serializeBody?: ComputedOptions['serializeBody']
-      serializeParams?: ComputedOptions['serializeParams']
+      serializeBody?: SerializeBody
+      serializeParams?: SerializeParams
    }
 
 export type UpFetchOptions<
@@ -107,8 +108,8 @@ export type UpFetchOptions<
    onBeforeFetch?: (
       options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
-   body?: BodyInit | JsonifiableObject | JsonifiableArray | null
-   headers?: HeadersInit | Record<string, string | number | null | undefined>
+   body?: RawBody
+   headers?: RawHeaders
    method?: Method
    onError?: (
       error: TResponseError | TUnknownError,
@@ -126,25 +127,10 @@ export type UpFetchOptions<
       error: TUnknownError,
       options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
-   params?: ComputedOptions<
-      TData,
-      TResponseError,
-      TUnknownError,
-      TFetchFn
-   >['params']
+   params?: Params
    parseResponse?: ParseResponse<TData>
    parseResponseError?: ParseResponseError<TResponseError>
    parseUnknownError?: ParseUnknownError<TUnknownError>
-   serializeBody?: ComputedOptions<
-      TData,
-      TResponseError,
-      TUnknownError,
-      TFetchFn
-   >['serializeBody']
-   serializeParams?: ComputedOptions<
-      TData,
-      TResponseError,
-      TUnknownError,
-      TFetchFn
-   >['serializeParams']
+   serializeBody?: SerializeBody
+   serializeParams?: SerializeParams
 }

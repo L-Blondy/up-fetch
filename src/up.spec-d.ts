@@ -6,6 +6,7 @@ import {
    JsonifiableObject,
    ComputedOptions,
 } from './types.js'
+import { defaultOptions } from './default-options.js'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
@@ -147,66 +148,50 @@ test('infer TError', async () => {
 
 test('The defaultSerializer of params should expect 1 arg only (the params)', async () => {
    const upfetch = up(fetch, () => ({
-      serializeParams(params, defaultSerializer) {
+      serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         defaultSerializer(params)
-         // @ts-expect-error
-         defaultSerializer(params, defaultSerializer)
-         return defaultSerializer(params)
+         return defaultOptions.serializeParams(params)
       },
    }))
 
    await upfetch('', {
-      serializeParams(params, defaultSerializer) {
+      serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         defaultSerializer(params)
-         // @ts-expect-error
-         defaultSerializer(params, defaultSerializer)
-         return defaultSerializer(params)
+         return defaultOptions.serializeParams(params)
       },
    })
    await upfetch('', (upOpts) => ({
-      serializeParams(params, defaultSerializer) {
+      serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         defaultSerializer(params)
-         // @ts-expect-error
-         defaultSerializer(params, defaultSerializer)
-         return defaultSerializer(params)
+         return defaultOptions.serializeParams(params)
       },
    }))
 })
 
 test('The defaultSerializer of body should expect 1 arg only (the body)', async () => {
    const upfetch = up(fetch, () => ({
-      serializeBody(body, defaultSerializer) {
+      serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
          >()
-         defaultSerializer(body)
-         // @ts-expect-error
-         defaultSerializer(body, defaultSerializer)
-         return defaultSerializer(body)
+         return defaultOptions.serializeBody(body)
       },
    }))
 
    await upfetch('', {
-      serializeBody(body, defaultSerializer) {
+      serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
          >()
-         // @ts-expect-error
-         defaultSerializer(body, defaultSerializer)
-         return defaultSerializer(body)
+         return defaultOptions.serializeBody(body)
       },
    })
    await upfetch('', (upOpts) => ({
-      serializeBody(body, defaultSerializer) {
+      serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
          >()
-         // @ts-expect-error
-         defaultSerializer(body, defaultSerializer)
-         return defaultSerializer(body)
+         return defaultOptions.serializeBody(body)
       },
    }))
 })
@@ -263,19 +248,13 @@ test('callback types', async () => {
          >()
          return ''
       },
-      serializeParams(params, defaultSerializer) {
+      serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         expectTypeOf(defaultSerializer).toEqualTypeOf<
-            (params: Record<string, any>) => string
-         >()
          return ''
       },
-      serializeBody(body, defaultSerializer) {
+      serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
-         >()
-         expectTypeOf(defaultSerializer).toEqualTypeOf<
-            (body: JsonifiableObject | JsonifiableArray) => string
          >()
          return ''
       },
@@ -332,19 +311,13 @@ test('callback types', async () => {
          >()
          return ''
       },
-      serializeParams(params, defaultSerializer) {
+      serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         expectTypeOf(defaultSerializer).toEqualTypeOf<
-            (params: Record<string, any>) => string
-         >()
          return ''
       },
-      serializeBody(body, defaultSerializer) {
+      serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
-         >()
-         expectTypeOf(defaultSerializer).toEqualTypeOf<
-            (body: JsonifiableObject | JsonifiableArray) => string
          >()
          return ''
       },
@@ -401,19 +374,13 @@ test('callback types', async () => {
          >()
          return ''
       },
-      serializeParams(params, defaultSerializer) {
+      serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         expectTypeOf(defaultSerializer).toEqualTypeOf<
-            (params: Record<string, any>) => string
-         >()
          return ''
       },
-      serializeBody(body, defaultSerializer) {
+      serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
-         >()
-         expectTypeOf(defaultSerializer).toEqualTypeOf<
-            (body: JsonifiableObject | JsonifiableArray) => string
          >()
          return ''
       },
