@@ -16,22 +16,23 @@ export type JsonifiableArray = readonly (
 
 type JsonPrimitive = string | number | boolean | null
 
-type Method =
-   | 'GET'
-   | 'POST'
-   | 'PUT'
-   | 'DELETE'
-   | 'PATCH'
-   | 'CONNECT'
-   | 'OPTIONS'
-   | 'TRACE'
-   | 'HEAD'
-   | (string & {})
-
 export type BaseOptions<TFetch extends typeof fetch> = DistributiveOmit<
    NonNullable<Parameters<TFetch>[1]>,
    'body' | 'headers' | 'method'
->
+> & {
+   baseUrl?: string
+   method?:
+      | 'GET'
+      | 'POST'
+      | 'PUT'
+      | 'DELETE'
+      | 'PATCH'
+      | 'CONNECT'
+      | 'OPTIONS'
+      | 'TRACE'
+      | 'HEAD'
+      | (string & {})
+}
 
 export type ParseResponse<TData> = (
    response: Response,
@@ -66,26 +67,22 @@ export type ComputedOptions<
    TUnkError = any,
    TFetchFn extends typeof fetch = typeof fetch,
 > = BaseOptions<TFetchFn> & {
+   readonly body?: BodyInit | null
+   headers: Record<string, string>
    readonly input: Request | string
+   params: Params
    parseResponse: ParseResponse<TData>
    parseResponseError: ParseResponseError<TRespError>
    parseUnknownError: ParseUnknownError<TUnkError>
-   baseUrl?: string
-   params: Params
-   serializeParams: SerializeParams
-   method?: Method
-   headers: Record<string, string>
    rawBody?: RawBody
-   readonly body?: BodyInit | null
    serializeBody: SerializeBody
+   serializeParams: SerializeParams
 }
 
 export type UpOptions<TFetchFn extends typeof fetch = typeof fetch> =
    BaseOptions<TFetchFn> & {
-      baseUrl?: string
-      onBeforeFetch?: (options: ComputedOptions) => void
       headers?: RawHeaders
-      method?: Method
+      onBeforeFetch?: (options: ComputedOptions) => void
       onError?: (error: any, options: ComputedOptions) => void
       onResponseError?: (error: any, options: ComputedOptions) => void
       onSuccess?: (data: any, options: ComputedOptions) => void
@@ -104,13 +101,11 @@ export type UpFetchOptions<
    TUnknownError = any,
    TFetchFn extends typeof fetch = typeof fetch,
 > = BaseOptions<TFetchFn> & {
-   baseUrl?: string
+   body?: RawBody
+   headers?: RawHeaders
    onBeforeFetch?: (
       options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
-   body?: RawBody
-   headers?: RawHeaders
-   method?: Method
    onError?: (
       error: TResponseError | TUnknownError,
       options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
