@@ -40,9 +40,13 @@ export let buildParams = (
            ...fetcherParams,
         })
 
+type KeysOfUnion<ObjectType> = ObjectType extends unknown
+   ? keyof ObjectType
+   : never
+
 export type DistributiveOmit<
    TObject extends object,
-   TKey extends string,
+   TKey extends KeysOfUnion<TObject> | (string & {}),
 > = TObject extends unknown ? Omit<TObject, TKey> : never
 
 // "K extends string" and not "keyof O" to allow runtime strip of keys of "O" not allowed by typescript
