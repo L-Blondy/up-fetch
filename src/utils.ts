@@ -49,10 +49,9 @@ export type DistributiveOmit<
    TKey extends KeysOfUnion<TObject> | (string & {}),
 > = TObject extends unknown ? Omit<TObject, TKey> : never
 
-// "K extends string" and not "keyof O" to allow runtime strip of keys of "O" not allowed by typescript
-export let strip = <O extends Record<string, any>, K extends string = never>(
+export let strip = <O extends object, K extends KeysOfUnion<O> | (string & {})>(
    obj?: O,
-   keys: readonly K[] = [],
+   keys: K[] | readonly K[] = [],
 ): DistributiveOmit<O, K> => {
    let copy = { ...obj } as DistributiveOmit<O, K>
    for (let key in copy) {
