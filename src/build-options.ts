@@ -18,10 +18,10 @@ import {
 export let eventListeners = [
    'onError',
    'onSuccess',
-   'beforeFetch',
+   'onBeforeFetch',
    'onResponseError',
    'onUnknownError',
-] as const
+] as const satisfies (keyof UpOptions & keyof UpFetchOptions)[]
 
 export let buildOptions = <
    TFetchFn extends typeof fetch,
