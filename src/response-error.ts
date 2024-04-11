@@ -8,8 +8,6 @@ export class ResponseError<TData = any> extends Error {
 
    constructor(res: Response, data: TData, options: ComputedOptions<TData>) {
       super(`Request failed with status ${res.status}`)
-      // because ResponseError is only instantiated during the response parsing,
-      // mutating the response here is fine
       this.data = data
       this.name = 'ResponseError'
       this.response = res
