@@ -218,9 +218,28 @@ upfetch('/fail-to-fetch')
 ```
 </details>
 
-<details><summary><b>Conditionally override the defaults</b></summary>
+<details><summary><b>Delete an `up` option</b></summary>
 
-You may sometimes need to conditionally override the defaults. Javascript makes it a bit tricky:
+Simply pass undefined
+
+```ts
+const upfetch = up(fetch, () => ({
+   cache: 'no-store',
+   params: { expand: true, count: 1 },
+   headers: { Authorization: `Bearer ${token}` }
+}))
+
+upfetch('https://a.b.c', {
+   cache: undefined, // remove cache
+   params: { expand: undefined }, // only remove `expand` from the params
+   headers: undefined // remove all headers
+})
+```
+</details>
+
+<details><summary><b>Override `up` options conditionally</b></summary>
+
+You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -243,7 +262,6 @@ upfetch('https://a.b.c', (upOptions) => ({
    headers: { 'X-Header': condition ? 'newValue' : upOptions.headers['X-Header'] }
 }))
 ```
-
 </details>
 
 <!-- TODO: FormData -->
