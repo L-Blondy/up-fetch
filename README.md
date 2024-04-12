@@ -39,7 +39,25 @@ Note that upfetch options extend fetch options. Anything that can be done with f
 
 ### throws by default
 
-Throws when `response.ok` is `false`
+<!-- TODO: link -->
+Throws a `ResponseError` when `response.ok` is `false`
+
+The `ResponseError` contains the parsed response data, the response and the options used make the api call.
+
+```ts
+import { isResponseError } from 'up-fetch'
+
+try {
+   await upfetch('https://my.url/todos')
+} 
+catch(error){
+   if(isResponseError(error)){
+      console.log(error.data)
+   } else {
+      console.log('unknown error')
+   }
+}
+```
 
 ### The response is parsed automatically
 
@@ -507,6 +525,14 @@ upfetch('https://example.com/', {
    onError: (error, options) => console.log('fourth')
 })
 ```
+
+# API
+
+### ResponseError
+
+By default, when `response.ok` is `false`, a `ResponseError` instance is thrown
+
+
 
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
