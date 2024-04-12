@@ -275,8 +275,8 @@ See the `type definitions` for more details
 
 **Default:** `JSON.stringify`
 
-Customize the [body](#body-upfetch) serialization into a string. \
-The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
+Customize the [body](#body) serialization into a string. \
+The body is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
 
 **Example:**
 
