@@ -218,7 +218,7 @@ upfetch('/fail-to-fetch')
 ```
 </details>
 
-<details><summary><b>Delete an `up` option</b></summary>
+<details><summary><b>Delete a default option</b></summary>
 
 Simply pass undefined
 
@@ -237,7 +237,7 @@ upfetch('https://a.b.c', {
 ```
 </details>
 
-<details><summary><b>Override `up` options conditionally</b></summary>
+<details><summary><b>Override a default option conditionally</b></summary>
 
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
@@ -272,7 +272,7 @@ See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/
 
 # Options
 
-All options can be set either on **up** or on an **upfetch** instance except for the `body`
+All options can be set either on **up** or on an **upfetch** instance except for the [body](#body)
 
 ```ts
 // set defaults for the instance
