@@ -182,28 +182,24 @@ Only non-nested objects are supported by default. See the [serializeParams](#ser
 
 ```ts
 const upfetch = up(fetch, () => ({ 
-   baseUrl: 'https://example.com' ,
    params : { expand: true  }
 }))
 
 // `expand` can be omitted
 // the request is sent to: https://example.com/?expand=true&page=2&limit=10
-upfetch({ 
-   url: 'https://example.com/',
+upfetch('https://example.com', { 
    params: { page: 2, limit: 10 }
 })
 
 // override the `expand` value
 // https://example.com/?expand=false&page=2&limit=10
-upfetch({ 
-   url: 'https://example.com/',
+upfetch('https://example.com', { 
    params: { page: 2, limit: 10, expand: false }
 })
 
 // remove `expand` from the params
 // https://example.com/?expand=false&page=2&limit=10
-upfetch({ 
-   url: 'https://example.com/',
+upfetch('https://example.com', { 
    params: { page: 2, limit: 10, expand: undefined }
 })
 ```
@@ -237,7 +233,7 @@ upfetch('/todos', {
 
 **Type:** `(params: { [key: string]: any } ) => string`
 
-This option is used to customize the [params](#params-upfetch) serialization into a query string. \
+Customize the [params](#params-upfetch) serialization into a query string. \
 The default implementation only supports **non-nested objects**.
 
 **Example:**
@@ -247,13 +243,11 @@ import qs from 'qs'
 
 // add support for nested objects using the 'qs' library
 const upfetch = up(fetch, () => ({
-   baseUrl: 'https://example.com',
    serializeParams: (params) => qs.stringify(params)
 }))
 
 // https://example.com/todos?a[b]=c
-upfetch({ 
-   url: '/todos'
+upfetch('https://example.com/todos', { 
    params: { a: { b: 'c' } }
 })
 ```
@@ -269,7 +263,7 @@ See the `type definitions` for more details
 
 **Default:** `JSON.stringify`
 
-This option is used to customize the [body](#body-upfetch) serialization into a string. \
+Customize the [body](#body-upfetch) serialization into a string. \
 The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
 
 **Example:**
@@ -279,11 +273,10 @@ import stringify from 'json-stringify-safe'
 
 // Add support for circular references.
 const upfetch = up(fetch, () => ({
-   baseUrl: 'https://example.com/',
    serializeBody: (body) => stringify(body)
 }))
 
-upfetch({ 
+upfetch('https://example.com/', { 
    body: { now: 'imagine a circular ref' }
 })
 ```
@@ -292,31 +285,73 @@ upfetch({
 
 ## <samp>\<parseResponse\></samp>
 
-**Type:** `(body: JsonifiableObject | JsonifiableArray) => string`
+**Type:** `ParseResponse<TData> = (response: Response, options: ComputedOptions) => Promise<TData>`
 
-**Default:** `JSON.stringify`
+See the `type definitions` for more details
 
-This option is used to customize the [body](#body-upfetch) serialization into a string. \
-The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
+Customize the fetch response parsing. \
+By default `json` and `text` responses are parsed
 
 **Example:**
 
 ```ts
-import stringify from 'json-stringify-safe'
-
-// Add support for circular references.
-const upfetch = up(fetch, () => ({
-   baseUrl: 'https://example.com/',
-   serializeBody: (body) => stringify(body)
+// parse a blob
+const fetchBlob = up(fetch, () => ({
+   parseResponse: (res) => res.blob()
 }))
 
-upfetch({ 
-   body: { now: 'imagine a circular ref' }
+fetchBlob('https://example.com/')
+
+// disable the default parsing
+const upfetch = up(fetch, () => ({
+   parseResponse: (res) => res
+}))
+
+const response = await upfetch('https://example.com/')
+const data = await response.json()
+```
+
+<!-- TODO: check the links  -->
+
+## <samp>\<parseResponseError\></samp>
+
+**Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
+
+See the `type definitions` for more details
+
+Customize the fetch response error parsing (when response.ok is false) \
+<!-- TODO: link -->
+By default a `ResponseError` is created
+
+**Example:**
+
+```ts
+const upfetch = up(fetch, () => ({
+   parseResponseError: (res) => new CustomResponseError(res)
+}))
+
+// using try/catch
+try {
+   await upfetch('https://example.com/')
+}
+catch(error){
+   if(error instanceof CustomResponseError){
+      // handle the error
+   }
+   else {
+      // unknown error (no response from the server)
+   }
+}
+
+// using the onResponseError callback
+upfetch('https://example.com/', {
+   onResponseError(error){
+      // the error is already typed
+   }
 })
 ```
 
 <!-- 
-parseResponse
 parseResponseError
 parseUnknownError
 onBeforeFetch
