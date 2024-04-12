@@ -241,13 +241,11 @@ upfetch('/todos', {
 
 <!--  -->
 
-<!-- TODO: check the link  -->
-
 ## <samp>\<serializeParams\></samp>
 
 **Type:** `(params: { [key: string]: any } ) => string`
 
-Customize the [params](#params-upfetch) serialization into a query string. \
+Customize the [params](#params) serialization into a query string. \
 The default implementation only supports **non-nested objects**.
 
 **Example:**
