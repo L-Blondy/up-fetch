@@ -37,32 +37,10 @@ Note that upfetch options extend fetch options. Anything that can be done with f
 
 # Features
 
-### throws by default
-
-<!-- TODO: link -->
-Throws a `ResponseError` when `response.ok` is `false`
-
-The `ResponseError` contains the parsed response data, the response and the options used make the api call.
-
-```ts
-import { isResponseError } from 'up-fetch'
-
-try {
-   await upfetch('https://my.url/todos')
-} 
-catch(error){
-   if(isResponseError(error)){
-      console.log(error.data)
-   } else {
-      console.log('unknown error')
-   }
-}
-```
-
 ### The response is parsed automatically
 
 <!-- TODO: link to parseResponse -->
-The parsing method is customizable via the `parseResponse` option
+The parsing method is customizable via the [parseResponse](#parseresponse) option
 
 ```ts
 // before
@@ -73,7 +51,7 @@ const todos = await response.json()
 const todos = await upfetch('https://my.url/todos')
 ```
 
-### The `'Content-Type': 'application/json'` header is added when necessary
+### The `'application/json'` content-type header is added when necessary
 
 ```ts
 // before
@@ -129,6 +107,29 @@ You can then omit it on all requests
 
 ```ts
 const todos = await upfetch('/todos')
+```
+
+
+### throws by default
+
+<!-- TODO: link -->
+Throws a `ResponseError` when `response.ok` is `false`
+
+The `ResponseError` contains the parsed response data, the response and the options used make the api call.
+
+```ts
+import { isResponseError } from 'up-fetch'
+
+try {
+   await upfetch('https://my.url/todos')
+} 
+catch(error){
+   if(isResponseError(error)){
+      console.log(error.data)
+   } else {
+      console.log('unknown error')
+   }
+}
 ```
 
 # Examples
@@ -526,17 +527,11 @@ upfetch('https://example.com/', {
 })
 ```
 
-# API
-
-### ResponseError
-
-By default, when `response.ok` is `false`, a `ResponseError` instance is thrown
 
 
 
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
-[URLSearchParams]: https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
-[toISOString]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
-[responseOk]: https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
-[entries]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
+
+[parseResponse]: https://github.com/L-Blondy/up-fetch?tab=readme-ov-file#parseresponse
+[parseResponse2]: #parseresponse
