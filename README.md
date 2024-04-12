@@ -118,13 +118,13 @@ const todos = await upfetch('/todos')
 Authentication
 Error handling (server response vs unknown response)
 Form data
+Conditionally override the defaults
 
 DONT extend upfetch instance
 
 # API
 
 <!-- TODO: link to the fetch API -->
-**upfetch** adds the following options to the `fetch API`. 
 
 All options can be set either on **up** or on an **upfetch** instance except for the `body`
 
@@ -142,6 +142,8 @@ upfetch('todos', {
    cache: 'force-cache'
 })
 ```
+
+**upfetch** adds the following options to the `fetch API`. 
 
 <!--  -->
 
@@ -259,6 +261,36 @@ upfetch({
 <!-- TODO: check the links  -->
 
 ## <samp>\<serializeBody\></samp>
+
+**Type:** `(body: JsonifiableObject | JsonifiableArray) => string`
+
+<!-- TODO: link  -->
+See the `type definitions` for more details
+
+**Default:** `JSON.stringify`
+
+This option is used to customize the [body](#body-upfetch) serialization into a string. \
+The [body](#body-upfetch) is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
+
+**Example:**
+
+```ts
+import stringify from 'json-stringify-safe'
+
+// Add support for circular references.
+const upfetch = up(fetch, () => ({
+   baseUrl: 'https://example.com/',
+   serializeBody: (body) => stringify(body)
+}))
+
+upfetch({ 
+   body: { now: 'imagine a circular ref' }
+})
+```
+
+<!-- TODO: check the links  -->
+
+## <samp>\<parseResponse\></samp>
 
 **Type:** `(body: JsonifiableObject | JsonifiableArray) => string`
 
