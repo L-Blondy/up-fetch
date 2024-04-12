@@ -65,7 +65,7 @@ You can then omit it on all requests
 const todos = await upfetch('/todos')
 ```
 
-### response parsed automatically
+### Automatic `Response` parsing
 
 The parsing method is customizable via the [parseResponse](#parseresponse) option
 
