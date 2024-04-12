@@ -264,13 +264,11 @@ upfetch('https://example.com/todos', {
 })
 ```
 
-<!-- TODO: check the links  -->
 
 ## <samp>\<serializeBody\></samp>
 
 **Type:** `(body: JsonifiableObject | JsonifiableArray) => string`
 
-<!-- TODO: link  -->
 See the `type definitions` for more details
 
 **Default:** `JSON.stringify`
@@ -293,7 +291,6 @@ upfetch('https://example.com/', {
 })
 ```
 
-<!-- TODO: check the links  -->
 
 ## <samp>\<parseResponse\></samp>
 
@@ -323,8 +320,6 @@ const response = await upfetch('https://example.com/')
 const data = await response.json()
 ```
 
-<!-- TODO: check the links  -->
-
 ## <samp>\<parseResponseError\></samp>
 
 **Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
@@ -332,8 +327,7 @@ const data = await response.json()
 See the `type definitions` for more details
 
 Customize the parsing of a fetch response error (when response.ok is false) \
-<!-- TODO: link -->
-By default a `ResponseError` is created
+By default a [ResponseError](#throws-by-default) is created
 
 **Example:**
 
