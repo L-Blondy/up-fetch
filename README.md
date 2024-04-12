@@ -33,7 +33,7 @@ const todos = await upfetch('https://my.url/todos', {
 })
 ```
 
-Note that upfetch options extend fetch options. Anything that can be done with fetch can be done the same way with upfetch.
+Since the upfetch options extend the fetch api options, anything that can be done with fetch can also be done with upfetch.
 
 # Features
 
