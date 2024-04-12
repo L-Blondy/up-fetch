@@ -500,7 +500,7 @@ catch(error){
 
 **Type:** `ParseUnknownError<TError> = (error: any, options: ComputedOptions) => TError`
 
-Customize the parsing of an unknown fetch error (eg. when the server did not respond) \
+Customize the parsing of an unknown fetch error (eg. when the server did not respond) 
 
 **Example:**
 
@@ -536,7 +536,7 @@ catch(error){
 
 **Type:** `(options: ComputedOptions) => void`
 
-Called just before the [fetch][MDN] call is made
+Called before the [fetch][MDN] call is made. 
 
 **Example:**
 
@@ -572,7 +572,7 @@ upfetch('https://example.com/', {
 
 **Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
 
-Called when a response error was generated (response.ok is false), before [onError](#onerror)
+Called when a response error was thrown (response.ok is false), before [onError](#onerror)
 
 **Example:**
 
@@ -590,7 +590,7 @@ upfetch('https://example.com/', {
 
 **Type:** `<TUnknownError>(error: TUnknownError, options: ComputedOptions) => void`
 
-Called when an unknown error was generated (an error that is not a response error), before [onError](#onerror)
+Called when an unknown error was thrown (an error that is not a response error), before [onError](#onerror)
 
 **Example:**
 
@@ -608,7 +608,7 @@ upfetch('https://example.com/', {
 
 **Type:** `<TError>(error: TError, options: ComputedOptions) => void`
 
-Called when an error was generated (either a response or an unknown error), after [onResponseError](#onresponseerror) and [onUnknownError](#onunknownerror)
+Called when an error was thrown (either a response or an unknown error), after [onResponseError](#onresponseerror) and [onUnknownError](#onunknownerror)
 
 **Example:**
 
