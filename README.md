@@ -188,7 +188,6 @@ upfetch('/id', { baseUrl: 'https://another-url.com' })
 
 **Type:** `{ [key: string]: any }`
 
-<!-- TODO: check the link -->
 The url search params. \
 The default params defined in `up` and the `upfetch` instance params are **shallowly merged**. \
 Only non-nested objects are supported by default. See the [serializeParams](#serializeparams) option for nested objects.
@@ -229,7 +228,7 @@ Note that this option is not available on **up**
 
 The body of the request.\
 Can be pretty much anything. \
-See the [serializeBody](#serializebody-upfetch-createfetcher) for more details.
+See the [serializeBody](#serializebody) for more details.
 
 **Example:**
 
