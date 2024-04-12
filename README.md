@@ -37,6 +37,18 @@ Since the upfetch options extend the fetch api options, anything that can be don
 
 # Features
 
+### Set defaults for your fetcher instance
+
+**up-fetch** default behaviour can be entirely customized
+
+```ts
+const upfetch = up(fetch, () => ({
+	baseUrl: 'https://a.b.c',
+	parseResponse: res => res.blob(),
+	headers: { 'X-Header': 'hello world' }
+}))
+```
+
 ### Set the url `params` as object
 
 ```ts
