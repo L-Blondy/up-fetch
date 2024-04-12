@@ -134,9 +134,27 @@ catch(error){
 
 <details><summary>Authentication</summary>
 
+Since the options are evaluated at request time, the Authentication header can be defined when creating the instance
+
 ```ts
-yes
+const upfetch = up(fetch, () => {
+   const token = localStorage.getItem('token')
+   return {
+      headers: { Authentication: token ? `Bearer ${token}` : undefined }
+   }
+})
+
+localStorage.setItem('token', 'abcdef123456')
+// Authenticated request
+upfetch('/profile')
+
+localStorage.removeItem('token')
+// Non authenticated request
+upfetch('/profile')
 ```
+
+The same approach can be used with `cookies` instead of `localStorage`
+
 </details>
 
 Error handling (server response vs unknown response)
