@@ -169,14 +169,14 @@ The same approach can be used with `cookies` instead of `localStorage`
 
 <details><summary><b>Error handling</b></summary>
 
-Two types of errors can occur:
-1. When the server responds with an error code (`response.ok` is `false`)
-2. When the server did not respond (failed to fetch, runtime error, etc)
+Two types of error can occur:
+1. a response error when the server responds with an error code (`response.ok` is `false`)
+2. an unknown error when the server did not respond (failed to fetch, runtime error, etc)
 
-By default response errors generate throw a [ResponseError](#throws-by-default) 
+By default response errors throw a [ResponseError](#throws-by-default) 
 Otherwise, the errors are thrown "as is"
 
-**up-fetch** provides a [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) to check if the error is a  `ResponseError`
+**up-fetch** provides a [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) to check if the error is a `ResponseError`
 
 ```ts
 import { isResponseError } from 'up-fetch'
@@ -208,7 +208,7 @@ upfetch('https://a.b.c')
    })
 ```
 
-**up-fetch** also export some listeners, usefull for logging
+**up-fetch** also exports some listeners, useful for logging
 
 ```ts
 import { log } from './my-logging-service'
@@ -233,7 +233,7 @@ upfetch('/fail-to-fetch')
 
 <details><summary><b>Delete a default option</b></summary>
 
-Simply pass undefined
+Simply pass `undefined`
 
 ```ts
 const upfetch = up(fetch, () => ({
