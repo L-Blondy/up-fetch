@@ -442,8 +442,7 @@ upfetch('https://example.com/', {
 
 See the `type definitions` for more details
 
-<!-- TODO: link -->
-Called when a response error was generated (response.ok is false), before `onError`
+Called when a response error was generated (response.ok is false), before [onError](#onerror)
 
 **Example:**
 
@@ -463,8 +462,7 @@ upfetch('https://example.com/', {
 
 See the `type definitions` for more details
 
-<!-- TODO: link -->
-Called when an unknown error was generated (an error that is not a response error), before `onError` 
+Called when an unknown error was generated (an error that is not a response error), before [onError](#onerror)
 
 **Example:**
 
@@ -484,8 +482,7 @@ upfetch('https://example.com/', {
 
 See the `type definitions` for more details
 
-<!-- TODO: link -->
-Called when an error was generated (either a response or an unknown error), after onResponseError and onUnknownError
+Called when an error was generated (either a response or an unknown error), after [onResponseError](#onresponseerror) and [onUnknownError](#onunknownerror)
 
 **Example:**
 
