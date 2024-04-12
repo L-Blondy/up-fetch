@@ -139,6 +139,10 @@ Conditionally override the defaults
 
 DONT extend upfetch instance
 
+# types
+
+See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/types.ts) file for more details
+
 # Options
 
 All options can be set either on **up** or on an **upfetch** instance except for the `body`
@@ -269,8 +273,6 @@ upfetch('https://example.com/todos', {
 
 **Type:** `(body: JsonifiableObject | JsonifiableArray) => string`
 
-See the `type definitions` for more details
-
 **Default:** `JSON.stringify`
 
 Customize the [body](#body) serialization into a string. \
@@ -295,8 +297,6 @@ upfetch('https://example.com/', {
 ## <samp>\<parseResponse\></samp>
 
 **Type:** `ParseResponse<TData> = (response: Response, options: ComputedOptions) => Promise<TData>`
-
-See the `type definitions` for more details
 
 Customize the fetch response parsing. \
 By default `json` and `text` responses are parsed
@@ -323,8 +323,6 @@ const data = await response.json()
 ## <samp>\<parseResponseError\></samp>
 
 **Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
-
-See the `type definitions` for more details
 
 Customize the parsing of a fetch response error (when response.ok is false) \
 By default a [ResponseError](#throws-by-default) is created
@@ -362,8 +360,6 @@ catch(error){
 
 **Type:** `ParseUnknownError<TError> = (error: any, options: ComputedOptions) => TError`
 
-See the `type definitions` for more details
-
 Customize the parsing of an unknown fetch error (eg. when the server did not respond) \
 
 **Example:**
@@ -400,8 +396,6 @@ catch(error){
 
 **Type:** `(options: ComputedOptions) => void`
 
-See the `type definitions` for more details
-
 Called just before the [fetch][MDN] call is made
 
 **Example:**
@@ -419,8 +413,6 @@ upfetch('https://example.com/', {
 ## <samp>\<onSuccess\></samp>
 
 **Type:** `<TData>(data: TData, options: ComputedOptions) => void`
-
-See the `type definitions` for more details
 
 Called when everything went fine
 
@@ -440,8 +432,6 @@ upfetch('https://example.com/', {
 
 **Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
 
-See the `type definitions` for more details
-
 Called when a response error was generated (response.ok is false), before [onError](#onerror)
 
 **Example:**
@@ -460,8 +450,6 @@ upfetch('https://example.com/', {
 
 **Type:** `<TUnknownError>(error: TUnknownError, options: ComputedOptions) => void`
 
-See the `type definitions` for more details
-
 Called when an unknown error was generated (an error that is not a response error), before [onError](#onerror)
 
 **Example:**
@@ -479,8 +467,6 @@ upfetch('https://example.com/', {
 ## <samp>\<onError\></samp>
 
 **Type:** `<TError>(error: TError, options: ComputedOptions) => void`
-
-See the `type definitions` for more details
 
 Called when an error was generated (either a response or an unknown error), after [onResponseError](#onresponseerror) and [onUnknownError](#onunknownerror)
 
@@ -513,6 +499,3 @@ upfetch('https://example.com/', {
 
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
-
-[parseResponse]: https://github.com/L-Blondy/up-fetch?tab=readme-ov-file#parseresponse
-[parseResponse2]: #parseresponse
