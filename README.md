@@ -109,6 +109,7 @@ try {
 catch(error){
    if(isResponseError(error)){
       console.log(error.data)
+      console.log(error.response.status)
    } else {
       console.log('unknown error')
    }
