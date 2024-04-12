@@ -49,6 +49,8 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+See the full [options](#options) list for more details.
+
 ### Set the url `params` as object
 
 ```ts
