@@ -132,7 +132,7 @@ catch(error){
 
 # Examples
 
-<details><summary>Authentication</summary>
+<details><summary><b>Authentication</b></summary>
 
 Since the options are evaluated at request time, the Authentication header can be defined when creating the instance
 
@@ -154,7 +154,6 @@ upfetch('/profile')
 ```
 
 The same approach can be used with `cookies` instead of `localStorage`
-
 </details>
 
 Error handling (server response vs unknown response)
