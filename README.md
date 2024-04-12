@@ -132,14 +132,20 @@ catch(error){
 
 # Examples
 
-Authentication
+<details><summary>Authentication</summary>
+
+```ts
+yes
+```
+</details>
+
 Error handling (server response vs unknown response)
 Form data
 Conditionally override the defaults
 
 DONT extend upfetch instance
 
-# types
+# Types
 
 See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/types.ts) file for more details
 
