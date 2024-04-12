@@ -357,7 +357,6 @@ catch(error){
 }
 ```
 
-<!-- TODO: check the links  -->
 
 ## <samp>\<parseUnknownError\></samp>
 
@@ -366,7 +365,6 @@ catch(error){
 See the `type definitions` for more details
 
 Customize the parsing of an unknown fetch error (eg. when the server did not respond) \
-<!-- TODO: link -->
 
 **Example:**
 
@@ -397,7 +395,6 @@ catch(error){
 }
 ```
 
-<!-- TODO: check the links  -->
 
 ## <samp>\<onBeforeFetch\></samp>
 
@@ -405,7 +402,7 @@ catch(error){
 
 See the `type definitions` for more details
 
-Called just before the `fetch` call is made
+Called just before the [fetch][MDN] call is made
 
 **Example:**
 
