@@ -37,7 +37,7 @@ Since the upfetch options extend the fetch api options, anything that can be don
 
 # Features
 
-### The response is parsed automatically
+### response parsed automatically
 
 The parsing method is customizable via the [parseResponse](#parseresponse) option
 
