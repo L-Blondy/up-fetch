@@ -116,20 +116,9 @@ catch(error){
 }
 ```
 
-### Automatic `application/json` content-type header
-
-```ts
-// before
-const response = await fetch('https://my.url/todos', {
-   headers: {'Content-Type': 'application/json'}
-})
-const todos = await response.json()
-
-// after
-const todos = await upfetch('https://my.url/todos')
-```
-
 ### Set the `body` as object
+
+The `'Content-Type': 'application/json'` header is automatically set when the body is a Jsonifiable object or array. Plain objects, arrays and classes with a `toJSON` method are Jsonifiable. 
 
 ```ts
 // before
