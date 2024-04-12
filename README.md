@@ -96,7 +96,9 @@ const todos = await upfetch('https://my.url/todos')
 
 Throws a `ResponseError` when `response.ok` is `false`
 
-The `ResponseError` contains the parsed response data, the response and the options used make the api call.
+A parsed error body is available with `error.data`. 
+The raw Response can be accessed with `error.response`
+The options used make the api call are available with `error.options`
 
 ```ts
 import { isResponseError } from 'up-fetch'
