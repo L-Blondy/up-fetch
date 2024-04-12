@@ -1,4 +1,4 @@
-# up-fetch (draft docs)
+# up-fetch 
 
 Tiny [fetch API][MDN] wrapper with configurable defaults
 
@@ -145,22 +145,108 @@ const upfetch = up(fetch, () => {
 })
 
 localStorage.setItem('token', 'abcdef123456')
-// Authenticated request
-upfetch('/profile')
+upfetch('/profile') // Authenticated request
 
 localStorage.removeItem('token')
-// Non authenticated request
-upfetch('/profile')
+upfetch('/profile') // Non authenticated request
 ```
 
 The same approach can be used with `cookies` instead of `localStorage`
 </details>
 
-Error handling (server response vs unknown response)
-Form data
-Conditionally override the defaults
+<details><summary><b>Error handling</b></summary>
 
-DONT extend upfetch instance
+Two types of errors can occur:
+1. When the server responds with an error code (`response.ok` is `false`)
+2. When the server did not respond (failed to fetch, runtime error, etc)
+
+By default response errors generate throw a [ResponseError](#throws-by-default) 
+Otherwise, the errors are thrown "as is"
+
+**up-fetch** provides a [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) to check if the error is a  `ResponseError`
+
+```ts
+import { isResponseError } from 'up-fetch'
+
+// with try/catch
+try {
+   return await upfetch('https://a.b.c')
+}
+catch(error){
+   if(isResponseError(error)) {
+      // The server responded, the parsed data is available on the ReponseError
+      console.log(error.data) 
+   }
+   else {
+      console.log(error.message)
+   }
+}
+
+// with Promise.catch
+upfetch('https://a.b.c')
+   .catch((error) => {
+      if(isResponseError(error)) {
+         // The server responded, the parsed data is available on the ReponseError
+         console.log(error.data) 
+      }
+      else {
+         console.log(error.message)
+      }
+   })
+```
+
+**up-fetch** also export some listeners, usefull for logging
+
+```ts
+import { log } from './my-logging-service'
+
+const upfetch = up(fetch, () => ({
+   onResponseError(error){
+      // error is of type ResponseError
+      log.responseError(error)
+   },
+   onUnknownError(error){
+      log.unknownError(error)
+   },
+   onError(error){
+      // the error can either be a ResponseError or an unknown error
+      log.error(error)
+   },
+}))
+
+upfetch('/fail-to-fetch')
+```
+</details>
+
+<details><summary><b>Conditionally override the defaults</b></summary>
+
+You may sometimes need to conditionally override the defaults. Javascript makes it a bit tricky:
+
+```ts
+const upfetch = up(fetch, () => ({
+   headers: { 'X-Header': 'value' }
+}))
+
+❌ Don't
+// if `condition` is false, the header will be deleted
+upfetch('https://a.b.c', {
+   headers: { 'X-Header': condition ? 'newValue' : undefined }
+})
+```
+
+In order to solve this problem, upfetch exposes the `upOptions` when the options (2nd arg) are defined as a function. \
+`upOptions` are stricly typed (const generic)
+
+```ts
+✅ Do
+upfetch('https://a.b.c', (upOptions) => ({
+   headers: { 'X-Header': condition ? 'newValue' : upOptions.headers['X-Header'] }
+}))
+```
+
+</details>
+
+<!-- TODO: FormData -->
 
 # Types
 

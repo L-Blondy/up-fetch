@@ -2,8 +2,6 @@ import { buildOptions } from './build-options.js'
 import { ComputedOptions, UpFetchOptions, UpOptions } from './types.js'
 import { emptyOptions } from './utils.js'
 
-// TODO: validationStrategy
-
 export function up<
    TFetchFn extends typeof fetch,
    TUpOptions extends UpOptions<TFetchFn>,
