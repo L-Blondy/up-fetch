@@ -39,7 +39,6 @@ Note that upfetch options extend fetch options. Anything that can be done with f
 
 ### The response is parsed automatically
 
-<!-- TODO: link to parseResponse -->
 The parsing method is customizable via the [parseResponse](#parseresponse) option
 
 ```ts
@@ -112,7 +111,6 @@ const todos = await upfetch('/todos')
 
 ### throws by default
 
-<!-- TODO: link -->
 Throws a `ResponseError` when `response.ok` is `false`
 
 The `ResponseError` contains the parsed response data, the response and the options used make the api call.
@@ -162,7 +160,7 @@ upfetch('todos', {
 })
 ```
 
-**upfetch** adds the following options to the `fetch API`. 
+**upfetch** adds the following options to the [fetch API][MDN]. 
 
 <!--  -->
 
