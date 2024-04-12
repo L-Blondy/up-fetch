@@ -37,20 +37,7 @@ Since the upfetch options extend the fetch api options, anything that can be don
 
 # Features
 
-### response parsed automatically
-
-The parsing method is customizable via the [parseResponse](#parseresponse) option
-
-```ts
-// before
-const response = await fetch('https://my.url/todos')
-const todos = await response.json()
-
-// after
-const todos = await upfetch('https://my.url/todos')
-```
-
-### Set `params` as object
+### Set the url `params` as object
 
 ```ts
 // before
@@ -59,23 +46,6 @@ fetch(`https://my.url/todos?search=${search}&skip=${skip}&take=${take}`)
 // after
 upfetch('https://my.url/todos', {
    params: { search, skip, take },
-})
-```
-
-### Set `body` as object
-
-```ts
-// before
-fetch('https://my.url/todos', {
-   method: 'POST',
-   headers: {'Content-Type': 'application/json'},
-   body: JSON.stringify({ post: 'Hello World'})
-})
-
-// after
-upfetch('https://my.url/todos', {
-   method: 'POST',
-   body: { post: 'Hello World'}
 })
 ```
 
@@ -95,6 +65,18 @@ You can then omit it on all requests
 const todos = await upfetch('/todos')
 ```
 
+### response parsed automatically
+
+The parsing method is customizable via the [parseResponse](#parseresponse) option
+
+```ts
+// before
+const response = await fetch('https://my.url/todos')
+const todos = await response.json()
+
+// after
+const todos = await upfetch('https://my.url/todos')
+``` 
 
 ### throws by default
 
@@ -128,6 +110,23 @@ const todos = await response.json()
 
 // after
 const todos = await upfetch('https://my.url/todos')
+```
+
+### Set the `body` as object
+
+```ts
+// before
+fetch('https://my.url/todos', {
+   method: 'POST',
+   headers: {'Content-Type': 'application/json'},
+   body: JSON.stringify({ post: 'Hello World'})
+})
+
+// after
+upfetch('https://my.url/todos', {
+   method: 'POST',
+   body: { post: 'Hello World'}
+})
 ``` 
 
 # Examples
