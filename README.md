@@ -122,7 +122,7 @@ Conditionally override the defaults
 
 DONT extend upfetch instance
 
-# API
+# Options
 
 <!-- TODO: link to the fetch API -->
 
@@ -319,7 +319,7 @@ const data = await response.json()
 
 See the `type definitions` for more details
 
-Customize the fetch response error parsing (when response.ok is false) \
+Customize the parsing of a fetch response error (when response.ok is false) \
 <!-- TODO: link -->
 By default a `ResponseError` is created
 
@@ -329,6 +329,13 @@ By default a `ResponseError` is created
 const upfetch = up(fetch, () => ({
    parseResponseError: (res) => new CustomResponseError(res)
 }))
+
+// using the onResponseError callback
+upfetch('https://example.com/', {
+   onResponseError(error){
+      // the error is already typed
+   }
+})
 
 // using try/catch
 try {
@@ -342,29 +349,164 @@ catch(error){
       // unknown error (no response from the server)
    }
 }
+```
 
-// using the onResponseError callback
+<!-- TODO: check the links  -->
+
+## <samp>\<parseUnknownError\></samp>
+
+**Type:** `ParseUnknownError<TError> = (error: any, options: ComputedOptions) => TError`
+
+See the `type definitions` for more details
+
+Customize the parsing of an unknown fetch error (eg. when the server did not respond) \
+<!-- TODO: link -->
+
+**Example:**
+
+```ts
+// extract the error.message for all unknown errors
+const upfetch = up(fetch, () => ({
+   parseUnknownError: (error) => error.message
+}))
+
+// using the onUnknwonError callback
 upfetch('https://example.com/', {
-   onResponseError(error){
-      // the error is already typed
+   onUnknownError(error){
+      // the error is already typed as a string
    }
+})
+
+// using try/catch
+try {
+   await upfetch('https://example.com/')
+}
+catch(error){
+   if(isResponseError(error)){
+      // response error
+   }
+   else {
+      // unknown error
+   }
+}
+```
+
+<!-- TODO: check the links  -->
+
+## <samp>\<onBeforeFetch\></samp>
+
+**Type:** `(options: ComputedOptions) => void`
+
+See the `type definitions` for more details
+
+Called just before the `fetch` call is made
+
+**Example:**
+
+```ts
+const upfetch = up(fetch, () => ({
+   onBeforeFetch: (options) => console.log('first')
+}))
+
+upfetch('https://example.com/', {
+   onBeforeFetch: (options) => console.log('second')
 })
 ```
 
-<!-- 
-parseResponseError
-parseUnknownError
-onBeforeFetch
-onError
-onResponseError
-onSuccess
-onUnknownError
--->
+## <samp>\<onSuccess\></samp>
 
+**Type:** `<TData>(data: TData, options: ComputedOptions) => void`
 
+See the `type definitions` for more details
 
+Called when everything went fine
 
+**Example:**
 
+```ts
+const upfetch = up(fetch, () => ({
+   onSuccess: (data, options) => console.log('first')
+}))
+
+upfetch('https://example.com/', {
+   onSuccess: (data, options) => console.log('second')
+})
+```
+
+## <samp>\<onResponseError\></samp>
+
+**Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
+
+See the `type definitions` for more details
+
+<!-- TODO: link -->
+Called when a response error was generated (response.ok is false), before `onError`
+
+**Example:**
+
+```ts
+const upfetch = up(fetch, () => ({
+   onResponseError: (error, options) => console.log('first')
+}))
+
+upfetch('https://example.com/', {
+   onResponseError: (error, options) => console.log('second')
+})
+```
+
+## <samp>\<onUnknownError\></samp>
+
+**Type:** `<TUnknownError>(error: TUnknownError, options: ComputedOptions) => void`
+
+See the `type definitions` for more details
+
+<!-- TODO: link -->
+Called when an unknown error was generated (an error that is not a response error), before `onError` 
+
+**Example:**
+
+```ts
+const upfetch = up(fetch, () => ({
+   onUnknownError: (error, options) => console.log('first')
+}))
+
+upfetch('https://example.com/', {
+   onUnknownError: (error, options) => console.log('second')
+})
+```
+
+## <samp>\<onError\></samp>
+
+**Type:** `<TError>(error: TError, options: ComputedOptions) => void`
+
+See the `type definitions` for more details
+
+<!-- TODO: link -->
+Called when an error was generated (either a response or an unknown error), after onResponseError and onUnknownError
+
+**Example:**
+
+```ts
+const upfetch = up(fetch, () => ({
+   onError: (error, options) => console.log('first')
+}))
+
+upfetch('https://example.com/', {
+   onError: (error, options) => console.log('second')
+})
+```
+
+```ts
+const upfetch = up(fetch, () => ({
+   onResponseError: (error, options) => console.log('first')
+   onError: (error, options) => console.log('third')
+}))
+
+upfetch('https://example.com/', {
+   onResponseError: (error, options) => console.log('second')
+   onError: (error, options) => console.log('fourth')
+})
+```
 
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
