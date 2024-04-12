@@ -52,7 +52,7 @@ const response = await fetch('https://my.url/todos')
 const todos = await response.json()
 
 // after
-const todos = await fetch('https://my.url/todos')
+const todos = await upfetch('https://my.url/todos')
 ```
 
 ### The `'Content-Type': 'application/json'` header is added when necessary
@@ -65,10 +65,10 @@ const response = await fetch('https://my.url/todos', {
 const todos = await response.json()
 
 // after
-const todos = await fetch('https://my.url/todos')
+const todos = await upfetch('https://my.url/todos')
 ```
 
-### Define the `params` as object
+### `params` as object
 
 ```ts
 // before
@@ -80,7 +80,7 @@ upfetch('https://my.url/todos', {
 })
 ```
 
-### Define the `body` as object
+### `body` as object
 
 ```ts
 // before
@@ -97,9 +97,9 @@ upfetch('https://my.url/todos', {
 })
 ```
 
-### Share a `baseUrl` between requests
+### `baseUrl` option
 
-Set the baseUrl on the instance
+Set the baseUrl when you create the instance
 
 ```ts
 export const upfetch = up(fetch, () => ({
@@ -107,10 +107,10 @@ export const upfetch = up(fetch, () => ({
 }))
 ```
 
-The baseUrl can then be omitted 
+You can then omit it on all requests 
 
 ```ts
-const todos = await fetch('/todos')
+const todos = await upfetch('/todos')
 ```
 
 # Examples
@@ -126,7 +126,7 @@ DONT extend upfetch instance
 <!-- TODO: link to the fetch API -->
 **upfetch** adds the following options to the `fetch API`. 
 
-All options can be set either on **up** or on an **upfetch** instance
+All options can be set either on **up** or on an **upfetch** instance except for the `body`
 
 ```ts
 // set defaults for the instance
@@ -173,7 +173,7 @@ upfetch('/id', { baseUrl: 'https://another-url.com' })
 
 <!-- TODO: check the link -->
 The url search params. \
-The default params defined in `up` and the `upfetch` instance params are shallowly merged. \
+The default params defined in `up` and the `upfetch` instance params are **shallowly merged**. \
 Only non-nested objects are supported by default. See the [serializeParams](#serializeparams-upfetch-createfetcher) option for nested objects.
 
 **Example:**
@@ -184,21 +184,21 @@ const upfetch = up(fetch, () => ({
    params : { expand: true  }
 }))
 
-// The default `expand` can be omitted
+// `expand` can be omitted
 // the request is sent to: https://example.com/?expand=true&page=2&limit=10
 upfetch({ 
    url: 'https://example.com/',
    params: { page: 2, limit: 10 }
 })
 
-// override the default `expand` value
+// override the `expand` value
 // https://example.com/?expand=false&page=2&limit=10
 upfetch({ 
    url: 'https://example.com/',
    params: { page: 2, limit: 10, expand: false }
 })
 
-// remove the `expand` param
+// remove `expand` from the params
 // https://example.com/?expand=false&page=2&limit=10
 upfetch({ 
    url: 'https://example.com/',
@@ -236,7 +236,7 @@ upfetch('/todos', {
 **Type:** `(params: { [key: string]: any } ) => string`
 
 This option is used to customize the [params](#params-upfetch) serialization into a query string. \
-The default implementation supports non-nested objects only.
+The default implementation only supports **non-nested objects**.
 
 **Example:**
 
