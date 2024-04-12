@@ -1,6 +1,6 @@
 # up-fetch (draft docs)
 
-Tiny Fetch API wrapper with configurable defaults
+Tiny [fetch API][MDN] wrapper with configurable defaults
 
 # Highlights
 
@@ -141,8 +141,6 @@ DONT extend upfetch instance
 
 # Options
 
-<!-- TODO: link to the fetch API -->
-
 All options can be set either on **up** or on an **upfetch** instance except for the `body`
 
 ```ts
@@ -193,7 +191,7 @@ upfetch('/id', { baseUrl: 'https://another-url.com' })
 <!-- TODO: check the link -->
 The url search params. \
 The default params defined in `up` and the `upfetch` instance params are **shallowly merged**. \
-Only non-nested objects are supported by default. See the [serializeParams](#serializeparams-upfetch-createfetcher) option for nested objects.
+Only non-nested objects are supported by default. See the [serializeParams](#serializeparams) option for nested objects.
 
 **Example:**
 
