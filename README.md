@@ -50,20 +50,7 @@ const todos = await response.json()
 const todos = await upfetch('https://my.url/todos')
 ```
 
-### The `'application/json'` content-type header is added when necessary
-
-```ts
-// before
-const response = await fetch('https://my.url/todos', {
-   headers: {'Content-Type': 'application/json'}
-})
-const todos = await response.json()
-
-// after
-const todos = await upfetch('https://my.url/todos')
-```
-
-### `params` as object
+### Set `params` as object
 
 ```ts
 // before
@@ -75,7 +62,7 @@ upfetch('https://my.url/todos', {
 })
 ```
 
-### `body` as object
+### Set `body` as object
 
 ```ts
 // before
@@ -129,6 +116,19 @@ catch(error){
    }
 }
 ```
+
+### Automatic `application/json` content-type header
+
+```ts
+// before
+const response = await fetch('https://my.url/todos', {
+   headers: {'Content-Type': 'application/json'}
+})
+const todos = await response.json()
+
+// after
+const todos = await upfetch('https://my.url/todos')
+``` 
 
 # Examples
 
