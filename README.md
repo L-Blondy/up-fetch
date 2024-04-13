@@ -2,12 +2,6 @@
 
 Tiny [fetch API][MDN] wrapper with configurable defaults. 
 
-Works in:
-- ✅ All browsers (except ie)
-- ✅ Bun
-- ✅ Node 18+
-- ✅ Deno (with the `npm:` specifier) 
-
 # Highlights
 
 * **Lightweight** - 1kB gzipped, no dependency
@@ -17,6 +11,13 @@ Works in:
 * **Reusable** - create instances with custom defaults
 * **Strongly typed** - best in class type inferrence and autocomplete
 * **Throws by default** - when `response.ok` is `false`
+
+Works in:
+- ✅ All browsers (except ie)
+- ✅ Bun
+- ✅ Node 18+
+- ✅ Deno (with the `npm:` specifier) 
+ 
 
 # QuickStart
 
