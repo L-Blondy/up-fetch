@@ -145,6 +145,8 @@ upfetch('https://my.url/todos', {
 Since the options are evaluated at request time, the Authentication header can be defined when creating the instance
 
 ```ts
+import { up } from 'up-fetch' 
+
 const upfetch = up(fetch, () => {
    const token = localStorage.getItem('token')
    return {
@@ -174,6 +176,7 @@ Otherwise, the errors are thrown "as is"
 **up-fetch** provides a [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) to check if the error is a `ResponseError`
 
 ```ts
+import { upfetch } from '...'
 import { isResponseError } from 'up-fetch'
 
 // with try/catch
@@ -206,6 +209,7 @@ upfetch('https://a.b.c')
 **up-fetch** also exports some listeners, useful for logging
 
 ```ts
+import { up } from 'up-fetch' 
 import { log } from './my-logging-service'
 
 const upfetch = up(fetch, () => ({
@@ -231,6 +235,8 @@ upfetch('/fail-to-fetch')
 Simply pass `undefined`
 
 ```ts
+import { up } from 'up-fetch' 
+
 const upfetch = up(fetch, () => ({
    cache: 'no-store',
    params: { expand: true, count: 1 },
@@ -250,6 +256,8 @@ upfetch('https://a.b.c', {
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
 ```ts
+import { up } from 'up-fetch' 
+
 const upfetch = up(fetch, () => ({
    headers: { 'X-Header': 'value' }
 }))
