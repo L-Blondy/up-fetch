@@ -276,7 +276,7 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/types.ts) file for more details
 
-# Options
+# API
 
 All options can be set either on **up** or on an **upfetch** instance except for the [body](#body)
 
