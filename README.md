@@ -13,10 +13,10 @@ Tiny [fetch API][MDN] wrapper with configurable defaults.
 * **Throws by default** - when `response.ok` is `false`
 
 Works in: \
-&nbsp;&nbsp;&nbsp;&nbsp;✅ All browsers (except ie) \
-&nbsp;&nbsp;&nbsp;&nbsp;✅ Bun \
-&nbsp;&nbsp;&nbsp;&nbsp;✅ Node 18+ \
-&nbsp;&nbsp;&nbsp;&nbsp;✅ Deno (with the `npm:` specifier) 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ All browsers (except ie) \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Bun \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Node 18+ \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Deno (with the `npm:` specifier) 
  
 
 # QuickStart
