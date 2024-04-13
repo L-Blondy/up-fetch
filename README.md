@@ -103,6 +103,7 @@ The options used make the api call are available with `error.options`.
 
 ```ts
 import { isResponseError } from 'up-fetch'
+import { upfetch } from '...'
 
 try {
    await upfetch('https://my.url/todos')
