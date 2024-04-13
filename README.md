@@ -44,8 +44,7 @@ Since the upfetch options extend the fetch api options, anything that can be don
 
 ```ts
 const upfetch = up(fetch, () => ({
-   baseUrl: 'https://a.b.c',
-   parseResponse: res => res.blob(),
+   baseUrl: 'https://a.b.c', 
    headers: { 'X-Header': 'hello world' }
 }))
 ```
