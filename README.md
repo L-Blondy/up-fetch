@@ -6,7 +6,7 @@ Works in:
 - ✅ all browsers (except ie)
 - ✅ bun
 - ✅ node 18+
-- ✅ (with the `npm:` specifier) 
+- ✅ deno (with the `npm:` specifier) 
 
 # Highlights
 
