@@ -6,9 +6,9 @@ Tiny [fetch API][MDN] wrapper with configurable defaults
 
 * **Lightweight** - 1kB gzipped
 * **Simple** - stays close to the fetch API
-* **adaptive** - bring your own serialization and parsing strategies for more complex cases
+* **Adaptive** - bring your own serialization and parsing strategies for more complex cases
 * **Intuitive** - automatic body and URL search params (de)serialization, response parsing
-* **Customizable** - create instances with custom defaults
+* **Reusable** - create instances with custom defaults
 * **Type safe** - written with typescript
 * **throws by default**
 
