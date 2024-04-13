@@ -23,14 +23,12 @@ Create a new upfetch instance
 ```ts
 import { up } from 'up-fetch' 
 
-export const upfetch = up(fetch)
+const upfetch = up(fetch)
 ```
 
 Make a fetch request
 
 ```ts
-import { upfetch } from '...'
-
 const todos = await upfetch('https://my.url/todos', {
    params: { search: 'Hello world' },
 })
