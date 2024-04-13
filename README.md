@@ -5,7 +5,7 @@ Tiny [fetch API][MDN] wrapper with configurable defaults
 # Highlights
 
 * **Lightweight** - 1kB gzipped
-* **Simple** - stays close to the fetch API
+* **Simple** - adds options and defaults to the [fetch API][MDN] but preserves its syntax
 * **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box 
 * **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
 * **Reusable** - create instances with custom defaults
