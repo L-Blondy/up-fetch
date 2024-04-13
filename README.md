@@ -10,7 +10,7 @@ Tiny [fetch API][MDN] wrapper with configurable defaults
 * **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
 * **Reusable** - create instances with custom defaults
 * **Strongly typed** - best in class type inferrence and autocomplete
-* **Throws by default** - when `reponse.ok` is `false`
+* **Throws by default** - when `response.ok` is `false`
 
 # QuickStart
 
