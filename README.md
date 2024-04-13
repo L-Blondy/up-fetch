@@ -2,7 +2,11 @@
 
 Tiny [fetch API][MDN] wrapper with configurable defaults. 
 
-Works in **bun**, **node 18+**, **deno** (with the `npm:` specifier) 
+Works in:
+- all browsers (except ie)
+- bun
+- node 18+
+- deno (with the `npm:` specifier) 
 
 # Highlights
 
