@@ -21,6 +21,8 @@ npm i up-fetch
 Create a new upfetch instance
 
 ```ts
+import { up } from 'up-fetch' 
+
 export const upfetch = up(fetch)
 ```
 
