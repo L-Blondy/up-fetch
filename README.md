@@ -3,10 +3,10 @@
 Tiny [fetch API][MDN] wrapper with configurable defaults. 
 
 Works in:
-- all browsers (except ie)
-- bun
-- node 18+
-- deno (with the `npm:` specifier) 
+- ✅ all browsers (except ie)
+- ✅ bun
+- ✅ node 18+
+- ✅ (with the `npm:` specifier) 
 
 # Highlights
 
