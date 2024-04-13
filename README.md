@@ -9,8 +9,8 @@ Tiny [fetch API][MDN] wrapper with configurable defaults
 * **Adaptive** - bring your own serialization and parsing strategies for more complex cases
 * **Intuitive** - automatic body and URL search params (de)serialization, response parsing
 * **Reusable** - create instances with custom defaults
-* **Type safe** - written with typescript
-* **throws by default**
+* **Strongly typed** - best in class type inferrence and autocomplete
+* **Throws by default**
 
 # QuickStart
 
