@@ -1,6 +1,8 @@
 # up-fetch 
 
-Tiny [fetch API][MDN] wrapper with configurable defaults
+Tiny [fetch API][MDN] wrapper with configurable defaults. 
+
+Works in **bun**, **node 18+**, **deno** (with the `npm:` specifier) 
 
 # Highlights
 
