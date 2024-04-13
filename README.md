@@ -38,7 +38,7 @@ Since the upfetch options extend the fetch api options, anything that can be don
 
 # Features
 
-### Set defaults for your fetcher instance
+### Set defaults for an upfetch instance
 
 **up-fetch** default behaviour can be entirely customized
 
