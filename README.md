@@ -36,8 +36,9 @@ const upfetch = up(fetch)
 Make a fetch request
 
 ```ts
-const todos = await upfetch('https://my.url/todos', {
-   params: { search: 'Hello world' },
+const todos = await upfetch('https://a.b.c', {
+   method: 'POST', 
+   body: { hello: 'world' },
 })
 ```
 
