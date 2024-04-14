@@ -45,7 +45,7 @@ export type ParseResponseError<TError = any> = (
 ) => Promise<TError>
 
 export type ParseRequestError<TError = any> = (
-   error: any,
+   error: Error,
    options: ComputedOptions,
 ) => TError
 
