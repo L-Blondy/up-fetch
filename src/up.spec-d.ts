@@ -10,7 +10,10 @@ import { defaultOptions } from './default-options.js'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
-      parseResponse: (res, options) => Promise.resolve(1),
+      parseResponse: (res, options) => Promise.resolve(1), 
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<any>()
+      },
    }))
    const data1 = await upfetch('')
    expectTypeOf(data1).toEqualTypeOf<number>()
