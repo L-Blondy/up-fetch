@@ -63,8 +63,8 @@ type RawHeaders =
 
 export type ComputedOptions<
    TData = any,
-   TRespError = any,
-   TUnkError = any,
+   TResponseError = any,
+   TRequestError = any,
    TFetchFn extends typeof fetch = typeof fetch,
 > = BaseOptions<TFetchFn> & {
    readonly body?: BodyInit | null
@@ -72,8 +72,8 @@ export type ComputedOptions<
    readonly input: Request | string
    params: Params
    parseResponse: ParseResponse<TData>
-   parseResponseError: ParseResponseError<TRespError>
-   parseRequestError: ParseRequestError<TUnkError>
+   parseResponseError: ParseResponseError<TResponseError>
+   parseRequestError: ParseRequestError<TRequestError>
    rawBody?: RawBody
    serializeBody: SerializeBody
    serializeParams: SerializeParams
