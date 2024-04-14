@@ -7,30 +7,21 @@ export function up<
    TUpOptions extends UpOptions<TFetchFn>,
 >(fetchFn: TFetchFn, getUpOptions: () => TUpOptions = () => emptyOptions) {
    return <
-      TFetchData = Awaited<
-         ReturnType<NonNullable<TUpOptions['parseResponse']>>
-      >,
-      TFetchResponseError = Awaited<
+      TData = Awaited<ReturnType<NonNullable<TUpOptions['parseResponse']>>>,
+      TResponseError = Awaited<
          ReturnType<NonNullable<TUpOptions['parseResponseError']>>
       >,
-      TFetchUnknownError = ReturnType<
-         NonNullable<TUpOptions['parseUnknownError']>
-      >,
+      TUnknownError = ReturnType<NonNullable<TUpOptions['parseUnknownError']>>,
    >(
       input: RequestInfo | URL,
       upfetchOptions:
-         | UpFetchOptions<
-              TFetchData,
-              TFetchResponseError,
-              TFetchUnknownError,
-              TFetchFn
-           >
+         | UpFetchOptions<TData, TResponseError, TUnknownError, TFetchFn>
          | ((
               upOptions: TUpOptions,
            ) => UpFetchOptions<
-              TFetchData,
-              TFetchResponseError,
-              TFetchUnknownError,
+              TData,
+              TResponseError,
+              TUnknownError,
               TFetchFn
            >) = emptyOptions,
    ) => {
@@ -45,12 +36,12 @@ export function up<
 
       return fetchFn(options.input, options)
          .catch((error) => {
-            handleUnknownError<
-               TFetchData,
-               TFetchResponseError,
-               TFetchUnknownError,
-               TFetchFn
-            >(error, options, upOptions, upFetchOpts)
+            handleUnknownError<TData, TResponseError, TUnknownError, TFetchFn>(
+               error,
+               options,
+               upOptions,
+               upFetchOpts,
+            )
          })
          .then(async (res) => {
             if (res.ok) {
@@ -61,21 +52,21 @@ export function up<
                   return data
                } catch (error) {
                   handleUnknownError<
-                     TFetchData,
-                     TFetchResponseError,
-                     TFetchUnknownError,
+                     TData,
+                     TResponseError,
+                     TUnknownError,
                      TFetchFn
                   >(error, options, upOptions, upFetchOpts)
                }
             }
-            let responseError: TFetchResponseError
+            let responseError: TResponseError
             try {
                responseError = await options.parseResponseError(res, options)
             } catch (error) {
                handleUnknownError<
-                  TFetchData,
-                  TFetchResponseError,
-                  TFetchUnknownError,
+                  TData,
+                  TResponseError,
+                  TUnknownError,
                   TFetchFn
                >(error, options, upOptions, upFetchOpts)
             }
@@ -89,27 +80,22 @@ export function up<
 }
 
 function handleUnknownError<
-   TFetchData,
-   TFetchResponseError,
-   TFetchUnknownError,
+   TData,
+   TResponseError,
+   TUnknownError,
    TFetchFn extends typeof fetch,
 >(
    error: any,
-   options: ComputedOptions<
-      TFetchData,
-      TFetchResponseError,
-      TFetchUnknownError,
-      TFetchFn
-   >,
+   options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    upOptions: UpOptions,
    upfetchOptions: UpFetchOptions<
-      TFetchData,
-      TFetchResponseError,
-      TFetchUnknownError,
+      TData,
+      TResponseError,
+      TUnknownError,
       TFetchFn
    >,
 ): never {
-   let unknownError: TFetchUnknownError
+   let unknownError: TUnknownError
    try {
       unknownError = options.parseUnknownError(error, options)
    } catch (parsingError: any) {

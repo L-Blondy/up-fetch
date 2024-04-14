@@ -7,10 +7,11 @@ import {
    ComputedOptions,
 } from './types.js'
 import { defaultOptions } from './default-options.js'
+import { ResponseError } from './response-error.js'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
-      parseResponse: (res, options) => Promise.resolve(1), 
+      parseResponse: (res, options) => Promise.resolve(1),
       onSuccess(data, options) {
          expectTypeOf(data).toEqualTypeOf<any>()
       },
@@ -18,7 +19,7 @@ test('infer TData', async () => {
    const data1 = await upfetch('', {
       onSuccess(data, options) {
          expectTypeOf(data).toEqualTypeOf<number>()
-      }, 
+      },
    })
    expectTypeOf(data1).toEqualTypeOf<number>()
 
@@ -48,6 +49,12 @@ test('infer TData', async () => {
 })
 
 test('infer TResponseError', async () => {
+   up(fetch)('', {
+      onResponseError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<ResponseError>()
+      },
+   })
+
    const upfetch = up(fetch, () => ({
       parseResponseError: (res, options) => Promise.resolve(1),
       onResponseError(error, options) {
@@ -85,6 +92,12 @@ test('infer TResponseError', async () => {
 })
 
 test('infer TUnknownError', async () => {
+   // up(fetch)('', {
+   //    onUnknownError(error, options) {
+   //       expectTypeOf(error).toEqualTypeOf<Error>()
+   //    },
+   // })
+
    const upfetch = up(fetch, () => ({
       parseUnknownError: (res, options) => 1,
       onUnknownError(error, options) {
