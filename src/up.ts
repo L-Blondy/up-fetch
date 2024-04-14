@@ -1,10 +1,15 @@
 import { buildOptions } from './build-options.js'
+import { ResponseError } from './response-error.js'
 import { ComputedOptions, UpFetchOptions, UpOptions } from './types.js'
 import { emptyOptions } from './utils.js'
 
 export function up<
    TFetchFn extends typeof fetch,
-   TUpOptions extends UpOptions<TFetchFn>,
+   TUpOptions extends UpOptions<TFetchFn> = UpOptions<
+      TFetchFn,
+      ResponseError,
+      Error
+   >,
 >(fetchFn: TFetchFn, getUpOptions: () => TUpOptions = () => emptyOptions) {
    return <
       TData = Awaited<ReturnType<NonNullable<TUpOptions['parseResponse']>>>,

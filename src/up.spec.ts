@@ -1090,7 +1090,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError: () => 'Unknown Error',
+            parseUnknownError: (error) => 'Unknown Error',
             onUnknownError() {
                expect(count).toBe(1)
                count++
@@ -1117,7 +1117,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError: () => 'Unknown Error',
+            parseUnknownError: (error) => 'Unknown Error',
             onError() {
                expect(count).toBe(2)
                count++

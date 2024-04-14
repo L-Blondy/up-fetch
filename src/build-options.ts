@@ -25,15 +25,9 @@ export let eventListeners = [
 
 export let buildOptions = <
    TFetchFn extends typeof fetch,
-   TData = Awaited<
-      ReturnType<NonNullable<UpOptions<TFetchFn>['parseResponse']>>
-   >,
-   TResponseError = Awaited<
-      ReturnType<NonNullable<UpOptions<TFetchFn>['parseResponseError']>>
-   >,
-   TUnknownError = ReturnType<
-      NonNullable<UpOptions<TFetchFn>['parseUnknownError']>
-   >,
+   TData,
+   TResponseError,
+   TUnknownError,
 >(
    input: RequestInfo | URL, // fetch 1st arg
    upOpts: UpOptions<TFetchFn> = emptyOptions,

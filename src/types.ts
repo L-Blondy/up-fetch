@@ -79,21 +79,24 @@ export type ComputedOptions<
    serializeParams: SerializeParams
 }
 
-export type UpOptions<TFetchFn extends typeof fetch = typeof fetch> =
-   BaseOptions<TFetchFn> & {
-      headers?: RawHeaders
-      onBeforeFetch?: (options: ComputedOptions) => void
-      onError?: (error: any, options: ComputedOptions) => void
-      onResponseError?: (error: any, options: ComputedOptions) => void
-      onSuccess?: (data: any, options: ComputedOptions) => void
-      onUnknownError?: (error: any, options: ComputedOptions) => void
-      params?: Params
-      parseResponse?: ParseResponse<any>
-      parseResponseError?: ParseResponseError<any>
-      parseUnknownError?: ParseUnknownError<any>
-      serializeBody?: SerializeBody
-      serializeParams?: SerializeParams
-   }
+export type UpOptions<
+   TFetchFn extends typeof fetch = typeof fetch,
+   TResponseError = any,
+   TUnknownError = any,
+> = BaseOptions<TFetchFn> & {
+   headers?: RawHeaders
+   onBeforeFetch?: (options: ComputedOptions) => void
+   onError?: (error: any, options: ComputedOptions) => void
+   onResponseError?: (error: any, options: ComputedOptions) => void
+   onSuccess?: (data: any, options: ComputedOptions) => void
+   onUnknownError?: (error: any, options: ComputedOptions) => void
+   params?: Params
+   parseResponse?: ParseResponse<any>
+   parseResponseError?: ParseResponseError<TResponseError>
+   parseUnknownError?: ParseUnknownError<TUnknownError>
+   serializeBody?: SerializeBody
+   serializeParams?: SerializeParams
+}
 
 export type UpFetchOptions<
    TData = any,
@@ -107,7 +110,7 @@ export type UpFetchOptions<
       options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
    onError?: (
-      error: TResponseError | TUnknownError,
+      error: any,
       options: ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn>,
    ) => void
    onResponseError?: (
