@@ -617,7 +617,7 @@ describe('up', () => {
       })
    })
 
-   describe('parseUnknownError', () => {
+   describe('parseRequestError', () => {
       test('Should not transform the error by default', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
@@ -642,18 +642,18 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError(error, options) {
+            parseRequestError(error, options) {
                expect(error instanceof Error).toEqual(true)
                expect(options.input).toEqual('https://example.coms/')
-               return 'Unknown Error'
+               return 'Request Error'
             },
          }))
          await upfetch('').catch((error) => {
-            expect(error).toEqual('Unknown Error')
+            expect(error).toEqual('Request Error')
          })
       })
 
-      test('Should be called before onUnknownError and onError', async () => {
+      test('Should be called before onRequestError and onError', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -664,12 +664,12 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError(res) {
+            parseRequestError(res) {
                expect(count).toEqual(1)
                count++
-               return 'Unknown Error'
+               return 'Request Error'
             },
-            onUnknownError() {
+            onRequestError() {
                expect(count).toEqual(2)
                count++
             },
@@ -683,7 +683,7 @@ describe('up', () => {
          })
       })
 
-      test('If parseUnknownError throws, onUnknownError & onError should still be called', async () => {
+      test('If parseRequestError throws, onRequestError & onError should still be called', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -694,10 +694,10 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError() {
+            parseRequestError() {
                throw new Error('THROW')
             },
-            onUnknownError(error) {
+            onRequestError(error) {
                expect(error.message).toEqual('THROW')
                expect(count).toEqual(1)
                count++
@@ -714,7 +714,7 @@ describe('up', () => {
          })
       })
 
-      test('parseUnknownError in upfetch should override parseUnknownError in up', async () => {
+      test('parseRequestError in upfetch should override parseRequestError in up', async () => {
          server.use(
             http.post('https://example.com', async ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -723,12 +723,12 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError: () => 'from=up',
+            parseRequestError: () => 'from=up',
          }))
          await upfetch('', {
             body: { a: 1 },
             method: 'POST',
-            parseUnknownError: () => 'from=upfetch',
+            parseRequestError: () => 'from=upfetch',
          }).catch((error) => {
             expect(error).toEqual('from=upfetch')
          })
@@ -904,7 +904,7 @@ describe('up', () => {
       })
    })
 
-   describe('onUnknownError', () => {
+   describe('onRequestError', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
@@ -916,14 +916,14 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            onUnknownError() {
+            onRequestError() {
                expect(count).toBe(2)
                count++
             },
          }))
 
          await upfetch('', {
-            onUnknownError() {
+            onRequestError() {
                expect(count).toEqual(1)
                count++
             },
@@ -934,7 +934,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should receive the parsed unknown error and the options', async () => {
+      test('Should receive the parsed Request error and the options', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -943,22 +943,22 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError(error) {
-               return 'Unknown error'
+            parseRequestError(error) {
+               return 'Request error'
             },
-            onUnknownError(error, options) {
-               expect(error).toBe('Unknown error')
+            onRequestError(error, options) {
+               expect(error).toBe('Request error')
                expect(options.input).toBe('https://example.coms/')
             },
          }))
 
          await upfetch('', {
-            onUnknownError(error, options) {
-               expect(error).toBe('Unknown error')
+            onRequestError(error, options) {
+               expect(error).toBe('Request error')
                expect(options.input).toBe('https://example.coms/')
             },
          }).catch((error) => {
-            expect(error).toEqual('Unknown error')
+            expect(error).toEqual('Request error')
          })
       })
 
@@ -973,7 +973,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onUnknownError() {
+            onRequestError() {
                count++
             },
             parseResponse: () => {
@@ -982,7 +982,7 @@ describe('up', () => {
          }))
 
          await upfetch('', {
-            onUnknownError() {
+            onRequestError() {
                count++
             },
          }).catch((error) => {
@@ -1002,7 +1002,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onUnknownError() {
+            onRequestError() {
                count++
             },
             parseResponseError: () => {
@@ -1011,7 +1011,7 @@ describe('up', () => {
          }))
 
          await upfetch('', {
-            onUnknownError() {
+            onRequestError() {
                count++
             },
          }).catch((error) => {
@@ -1020,7 +1020,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should be called once when parseUnknownError throws', async () => {
+      test('Should be called once when parseRequestError throws', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -1031,16 +1031,16 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            onUnknownError() {
+            onRequestError() {
                count++
             },
-            parseUnknownError: () => {
+            parseRequestError: () => {
                throw new Error('Some error')
             },
          }))
 
          await upfetch('', {
-            onUnknownError() {
+            onRequestError() {
                count++
             },
          }).catch((error) => {
@@ -1079,7 +1079,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should be called after onUnknownError', async () => {
+      test('Should be called after onRequestError', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -1090,8 +1090,8 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError: (error) => 'Unknown Error',
-            onUnknownError() {
+            parseRequestError: (error) => 'Request Error',
+            onRequestError() {
                expect(count).toBe(1)
                count++
             },
@@ -1102,7 +1102,7 @@ describe('up', () => {
          }))
 
          await upfetch('').catch((error) => {
-            expect(error).toEqual('Unknown Error')
+            expect(error).toEqual('Request Error')
          })
       })
 
@@ -1117,7 +1117,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseUnknownError: (error) => 'Unknown Error',
+            parseRequestError: (error) => 'Request Error',
             onError() {
                expect(count).toBe(2)
                count++
@@ -1130,7 +1130,7 @@ describe('up', () => {
                count++
             },
          }).catch((error) => {
-            expect(error).toBe('Unknown Error')
+            expect(error).toBe('Request Error')
          })
 
          expect(count).toBe(3)
@@ -1219,7 +1219,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should be called once when parseUnknownError throws', async () => {
+      test('Should be called once when parseRequestError throws', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -1233,7 +1233,7 @@ describe('up', () => {
             onError() {
                count++
             },
-            parseUnknownError: () => {
+            parseRequestError: () => {
                throw new Error('Some error')
             },
          }))

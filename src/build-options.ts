@@ -20,24 +20,24 @@ export let eventListeners = [
    'onSuccess',
    'onBeforeFetch',
    'onResponseError',
-   'onUnknownError',
+   'onRequestError',
 ] as const satisfies (keyof UpOptions & keyof UpFetchOptions)[]
 
 export let buildOptions = <
    TFetchFn extends typeof fetch,
    TData,
    TResponseError,
-   TUnknownError,
+   TRequestError,
 >(
    input: RequestInfo | URL, // fetch 1st arg
    upOpts: UpOptions<TFetchFn> = emptyOptions,
    fetcherOpts: UpFetchOptions<
       TData,
       TResponseError,
-      TUnknownError,
+      TRequestError,
       TFetchFn
    > = emptyOptions,
-): ComputedOptions<TData, TResponseError, TUnknownError, TFetchFn> => ({
+): ComputedOptions<TData, TResponseError, TRequestError, TFetchFn> => ({
    // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
    ...({} satisfies BaseOptions<typeof fetch> as BaseOptions<TFetchFn>),
    ...defaultOptions,

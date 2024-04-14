@@ -120,7 +120,7 @@ catch(error){
       console.log(error.data)
       console.log(error.response.status)
    } else {
-      console.log('unknown error')
+      console.log('Request error')
    }
 }
 ```
@@ -173,8 +173,8 @@ The same approach can be used with `cookies` instead of `localStorage`
 <details><summary><b>Error handling</b></summary>
 
 Two types of error can occur:
-1. a response error when the server responds with an error code (`response.ok` is `false`)
-2. an unknown error when the server did not respond (failed to fetch, runtime error, etc)
+1. a Response error when the server responds with an error code (`response.ok` is `false`)
+2. a Request error when the server did not respond (failed to fetch, runtime error, etc)
 
 By default response errors throw a [ResponseError](#throws-by-default) 
 Otherwise, the errors are thrown "as is"
@@ -223,11 +223,11 @@ const upfetch = up(fetch, () => ({
       // error is of type ResponseError
       log.responseError(error)
    },
-   onUnknownError(error){
-      log.unknownError(error)
+   onRequestError(error){
+      log.requestError(error)
    },
    onError(error){
-      // the error can either be a ResponseError or an unknown error
+      // the error can be a ResponseError, a request Error or an unexpected Error
       log.error(error)
    },
 }))
@@ -499,29 +499,29 @@ catch(error){
       // handle the error
    }
    else {
-      // unknown error (no response from the server)
+      // unexpected error or request error
    }
 }
 ```
 
 
-## <samp>\<parseUnknownError\></samp>
+## <samp>\<parseRequestError\></samp>
 
-**Type:** `ParseUnknownError<TError> = (error: any, options: ComputedOptions) => TError`
+**Type:** `ParseRequestError<TError> = (error: any, options: ComputedOptions) => TError`
 
-Customize the parsing of an unknown fetch error (eg. when the server did not respond) 
+Customize the parsing of an request fetch error (eg. failed to fetch) 
 
 **Example:**
 
 ```ts
-// extract the error.message for all unknown errors
+// extract the error.message for all request errors
 const upfetch = up(fetch, () => ({
-   parseUnknownError: (error) => error.message
+   parseRequestError: (error) => error.message
 }))
 
 // using the onUnknwonError callback
 upfetch('https://example.com/', {
-   onUnknownError(error){
+   onRequestError(error){
       // the error is already typed as a string
    }
 })
@@ -535,7 +535,7 @@ catch(error){
       // response error
    }
    else {
-      // unknown error
+      // unexpected error or request error
    }
 }
 ```
@@ -595,21 +595,21 @@ upfetch('https://example.com/', {
 })
 ```
 
-## <samp>\<onUnknownError\></samp>
+## <samp>\<onRequestError\></samp>
 
-**Type:** `<TUnknownError>(error: TUnknownError, options: ComputedOptions) => void`
+**Type:** `<TRequestError>(error: TRequestError, options: ComputedOptions) => void`
 
-Called when an unknown error was thrown (an error that is not a response error), before [onError](#onerror)
+Called when a request error was thrown (an error that is not a response error), before [onError](#onerror)
 
 **Example:**
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onUnknownError: (error, options) => console.log('first')
+   onRequestError: (error, options) => console.log('first')
 }))
 
 upfetch('https://example.com/', {
-   onUnknownError: (error, options) => console.log('second')
+   onRequestError: (error, options) => console.log('second')
 })
 ```
 
@@ -617,7 +617,7 @@ upfetch('https://example.com/', {
 
 **Type:** `<TError>(error: TError, options: ComputedOptions) => void`
 
-Called when an error was thrown (either a response or an unknown error), after [onResponseError](#onresponseerror) and [onUnknownError](#onunknownerror)
+Called when an error was thrown (either a response a request or an unexpected error), after [onResponseError](#onresponseerror) and [onRequestError](#onrequesterror)
 
 **Example:**
 

@@ -91,44 +91,44 @@ test('infer TResponseError', async () => {
    }))
 })
 
-test('infer TUnknownError', async () => {
+test('infer TRequestError', async () => {
    up(fetch)('', {
-      onUnknownError(error, options) {
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<Error>()
       },
    })
 
    const upfetch = up(fetch, () => ({
-      parseUnknownError: (res, options) => 1,
-      onUnknownError(error, options) {
+      parseRequestError: (res, options) => 1,
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
       },
    }))
    await upfetch('', {
-      onUnknownError(error, options) {
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<number>()
       },
    })
    await upfetch('', {
-      parseUnknownError: (res, options) => '',
-      onUnknownError(error, options) {
+      parseRequestError: (res, options) => '',
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<string>()
       },
    })
    await upfetch('', (upOpts) => ({
-      onUnknownError(error, options) {
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<number>()
       },
    }))
    await upfetch('', (upOpts) => ({
-      parseUnknownError: (res, options) => '',
-      onUnknownError(error, options) {
+      parseRequestError: (res, options) => '',
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<string>()
       },
    }))
    await upfetch('', (upOpts) => ({
-      parseUnknownError: upOpts.parseUnknownError,
-      onUnknownError(error, options) {
+      parseRequestError: upOpts.parseRequestError,
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<number>()
       },
    }))
@@ -137,7 +137,7 @@ test('infer TUnknownError', async () => {
 test('infer TError', async () => {
    const upfetch = up(fetch, () => ({
       parseResponseError: (res, options) => Promise.resolve(''),
-      parseUnknownError: (res, options) => 1,
+      parseRequestError: (res, options) => 1,
       onError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
       },
@@ -149,7 +149,7 @@ test('infer TError', async () => {
    })
    await upfetch('', {
       parseResponseError: (res, options) => Promise.resolve(true),
-      parseUnknownError: (res, options) => ({} as object),
+      parseRequestError: (res, options) => ({} as object),
       onError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
       },
@@ -161,14 +161,14 @@ test('infer TError', async () => {
    }))
    await upfetch('', (upOpts) => ({
       parseResponseError: (res, options) => Promise.resolve(true),
-      parseUnknownError: (res, options) => ({} as object),
+      parseRequestError: (res, options) => ({} as object),
       onError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
       },
    }))
    await upfetch('', (upOpts) => ({
       parseResponseError: upOpts.parseResponseError,
-      parseUnknownError: upOpts.parseUnknownError,
+      parseRequestError: upOpts.parseRequestError,
       onError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
       },
@@ -244,7 +244,7 @@ test('callback types', async () => {
             ComputedOptions<any, any, any, typeof fetch>
          >()
       },
-      onUnknownError(error, options) {
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<any, any, any, typeof fetch>
@@ -270,7 +270,7 @@ test('callback types', async () => {
          >()
          return Promise.resolve(true)
       },
-      parseUnknownError(error, options) {
+      parseRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<any, any, any, typeof fetch>
@@ -307,7 +307,7 @@ test('callback types', async () => {
             ComputedOptions<number, boolean, string, typeof fetch>
          >()
       },
-      onUnknownError(error, options) {
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<string>()
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<number, boolean, string, typeof fetch>
@@ -333,7 +333,7 @@ test('callback types', async () => {
          >()
          return Promise.resolve(true)
       },
-      parseUnknownError(error, options) {
+      parseRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<any, any, any, typeof fetch>
@@ -370,7 +370,7 @@ test('callback types', async () => {
             ComputedOptions<number, boolean, string, typeof fetch>
          >()
       },
-      onUnknownError(error, options) {
+      onRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<string>()
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<number, boolean, string, typeof fetch>
@@ -396,7 +396,7 @@ test('callback types', async () => {
          >()
          return Promise.resolve(true)
       },
-      parseUnknownError(error, options) {
+      parseRequestError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<any, any, any, typeof fetch>
@@ -446,7 +446,7 @@ test('When the fetcher options are functional, They should receive the fully inf
    const upOpts = {
       parseResponse: () => Promise.resolve(1),
       parseResponseError: () => Promise.resolve(''),
-      parseUnknownError: () => true,
+      parseRequestError: () => true,
       params: { a: 1, b: true },
       headers: { c: 2, d: 'false' },
    } as const
