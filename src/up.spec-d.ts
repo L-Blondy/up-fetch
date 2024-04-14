@@ -15,21 +15,34 @@ test('infer TData', async () => {
          expectTypeOf(data).toEqualTypeOf<any>()
       },
    }))
-   const data1 = await upfetch('')
+   const data1 = await upfetch('', {
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<number>()
+      }, 
+   })
    expectTypeOf(data1).toEqualTypeOf<number>()
 
    const data2 = await upfetch('', {
       parseResponse: (res, options) => Promise.resolve(''),
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<string>()
+      },
    })
    expectTypeOf(data2).toEqualTypeOf<string>()
 
    const data3 = await upfetch('', () => ({
       parseResponse: (res, options) => Promise.resolve(''),
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<string>()
+      },
    }))
    expectTypeOf(data3).toEqualTypeOf<string>()
 
    const data4 = await upfetch('', (upOptions) => ({
       parseResponse: upOptions.parseResponse,
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<number>()
+      },
    }))
    expectTypeOf(data4).toEqualTypeOf<number>()
 })
