@@ -41,19 +41,15 @@ export function up<
 
       return fetchFn(options.input, options)
          .catch((error) => {
-            let requestError: TRequestError
             try {
-               requestError = options.parseRequestError(error, options)
+               throw options.parseRequestError(error, options)
+            } catch (error: any) {
                upFetchOpts.onRequestError?.(requestError, options)
                upOptions.onRequestError?.(requestError, options)
-               upFetchOpts.onError?.(requestError, options)
-               upOptions.onError?.(requestError, options)
-            } catch (error: any) {
                upFetchOpts.onError?.(error, options)
                upOptions.onError?.(error, options)
                throw error
             }
-            throw requestError
          })
          .then(async (res) => {
             if (res.ok) {
@@ -63,6 +59,8 @@ export function up<
                   upOptions.onSuccess?.(data, options)
                   return data
                } catch (error) {
+                  upFetchOpts.onRequestError?.(requestError, options)
+                  upOptions.onRequestError?.(requestError, options)
                   upFetchOpts.onError?.(error, options)
                   upOptions.onError?.(error, options)
                   throw error
@@ -76,6 +74,8 @@ export function up<
                   upFetchOpts.onError?.(responseError, options)
                   upOptions.onError?.(responseError, options)
                } catch (error) {
+                  upFetchOpts.onRequestError?.(requestError, options)
+                  upOptions.onRequestError?.(requestError, options)
                   upFetchOpts.onError?.(error, options)
                   upOptions.onError?.(error, options)
                   throw error
