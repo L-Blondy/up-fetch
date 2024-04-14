@@ -507,7 +507,7 @@ catch(error){
 
 ## <samp>\<parseRequestError\></samp>
 
-**Type:** `ParseRequestError<TError> = (error: any, options: ComputedOptions) => TError`
+**Type:** `ParseRequestError<TError> = (error: Error, options: ComputedOptions) => TError`
 
 Customize the parsing of an request fetch error (eg. failed to fetch) 
 
