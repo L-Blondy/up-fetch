@@ -617,7 +617,7 @@ describe('up', () => {
       })
    })
 
-   describe('parseRequestError', () => {
+   describe('parseUnexpectedError', () => {
       test('Should not transform the error by default', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
@@ -642,18 +642,18 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseRequestError(error, options) {
+            parseUnexpectedError(error, options) {
                expect(error instanceof Error).toEqual(true)
                expect(options.input).toEqual('https://example.coms/')
-               return 'Request Error'
+               return 'Unexpected Error'
             },
          }))
          await upfetch('').catch((error) => {
-            expect(error).toEqual('Request Error')
+            expect(error).toEqual('Unexpected Error')
          })
       })
 
-      test('Should be called before onRequestError and onError', async () => {
+      test('Should be called before onUnexpectedError and onError', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -664,12 +664,12 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseRequestError(res) {
+            parseUnexpectedError(res) {
                expect(count).toEqual(1)
                count++
-               return 'Request Error'
+               return 'Unexpected Error'
             },
-            onRequestError() {
+            onUnexpectedError() {
                expect(count).toEqual(2)
                count++
             },
@@ -683,7 +683,7 @@ describe('up', () => {
          })
       })
 
-      test('If parseRequestError throws, onRequestError & onError should still be called', async () => {
+      test('If parseUnexpectedError throws, onUnexpectedError & onError should still be called', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -694,10 +694,10 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseRequestError() {
+            parseUnexpectedError() {
                throw new Error('THROW')
             },
-            onRequestError(error) {
+            onUnexpectedError(error) {
                expect(error.message).toEqual('THROW')
                expect(count).toEqual(1)
                count++
@@ -714,7 +714,7 @@ describe('up', () => {
          })
       })
 
-      test('parseRequestError in upfetch should override parseRequestError in up', async () => {
+      test('parseUnexpectedError in upfetch should override parseUnexpectedError in up', async () => {
          server.use(
             http.post('https://example.com', async ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -723,12 +723,12 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseRequestError: () => 'from=up',
+            parseUnexpectedError: () => 'from=up',
          }))
          await upfetch('', {
             body: { a: 1 },
             method: 'POST',
-            parseRequestError: () => 'from=upfetch',
+            parseUnexpectedError: () => 'from=upfetch',
          }).catch((error) => {
             expect(error).toEqual('from=upfetch')
          })
@@ -904,7 +904,7 @@ describe('up', () => {
       })
    })
 
-   describe('onRequestError', () => {
+   describe('onUnexpectedError', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
@@ -916,14 +916,14 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            onRequestError() {
+            onUnexpectedError() {
                expect(count).toBe(2)
                count++
             },
          }))
 
          await upfetch('', {
-            onRequestError() {
+            onUnexpectedError() {
                expect(count).toEqual(1)
                count++
             },
@@ -934,7 +934,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should receive the parsed Request error and the options', async () => {
+      test('Should receive the parsed Unexpected error and the options', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -943,22 +943,22 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseRequestError(error) {
-               return 'Request error'
+            parseUnexpectedError(error) {
+               return 'Unexpected error'
             },
-            onRequestError(error, options) {
-               expect(error).toBe('Request error')
+            onUnexpectedError(error, options) {
+               expect(error).toBe('Unexpected error')
                expect(options.input).toBe('https://example.coms/')
             },
          }))
 
          await upfetch('', {
-            onRequestError(error, options) {
-               expect(error).toBe('Request error')
+            onUnexpectedError(error, options) {
+               expect(error).toBe('Unexpected error')
                expect(options.input).toBe('https://example.coms/')
             },
          }).catch((error) => {
-            expect(error).toEqual('Request error')
+            expect(error).toEqual('Unexpected error')
          })
       })
 
@@ -973,7 +973,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onRequestError() {
+            onUnexpectedError() {
                count++
             },
             parseResponse: () => {
@@ -982,7 +982,7 @@ describe('up', () => {
          }))
 
          await upfetch('', {
-            onRequestError() {
+            onUnexpectedError() {
                count++
             },
          }).catch((error) => {
@@ -1002,7 +1002,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onRequestError() {
+            onUnexpectedError() {
                count++
             },
             parseResponseError: () => {
@@ -1011,7 +1011,7 @@ describe('up', () => {
          }))
 
          await upfetch('', {
-            onRequestError() {
+            onUnexpectedError() {
                count++
             },
          }).catch((error) => {
@@ -1020,7 +1020,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should be called once when parseRequestError throws', async () => {
+      test('Should be called once when parseUnexpectedError throws', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -1031,16 +1031,16 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            onRequestError() {
+            onUnexpectedError() {
                count++
             },
-            parseRequestError: () => {
+            parseUnexpectedError: () => {
                throw new Error('Some error')
             },
          }))
 
          await upfetch('', {
-            onRequestError() {
+            onUnexpectedError() {
                count++
             },
          }).catch((error) => {
@@ -1079,7 +1079,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should be called after onRequestError', async () => {
+      test('Should be called after onUnexpectedError', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -1090,8 +1090,8 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseRequestError: (error) => 'Request Error',
-            onRequestError() {
+            parseUnexpectedError: (error) => 'Unexpected Error',
+            onUnexpectedError() {
                expect(count).toBe(1)
                count++
             },
@@ -1102,7 +1102,7 @@ describe('up', () => {
          }))
 
          await upfetch('').catch((error) => {
-            expect(error).toEqual('Request Error')
+            expect(error).toEqual('Unexpected Error')
          })
       })
 
@@ -1117,7 +1117,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.coms',
-            parseRequestError: (error) => 'Request Error',
+            parseUnexpectedError: (error) => 'Unexpected Error',
             onError() {
                expect(count).toBe(2)
                count++
@@ -1130,7 +1130,7 @@ describe('up', () => {
                count++
             },
          }).catch((error) => {
-            expect(error).toBe('Request Error')
+            expect(error).toBe('Unexpected Error')
          })
 
          expect(count).toBe(3)
@@ -1219,7 +1219,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should be called once when parseRequestError throws', async () => {
+      test('Should be called once when parseUnexpectedError throws', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -1233,7 +1233,7 @@ describe('up', () => {
             onError() {
                count++
             },
-            parseRequestError: () => {
+            parseUnexpectedError: () => {
                throw new Error('Some error')
             },
          }))

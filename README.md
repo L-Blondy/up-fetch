@@ -120,7 +120,7 @@ catch(error){
       console.log(error.data)
       console.log(error.response.status)
    } else {
-      console.log('Request error')
+      console.log('Unexpected error')
    }
 }
 ```
@@ -174,10 +174,9 @@ The same approach can be used with `cookies` instead of `localStorage`
 
 Two types of error can occur:
 1. a Response error when the server responds with an error code (`response.ok` is `false`)
-2. a Request error when the server did not respond (failed to fetch, runtime error, etc)
+2. an Unexpected error produced when the server did not respond (eg. failed to fetch) or by the user code
 
 By default response errors throw a [ResponseError](#throws-by-default) 
-Otherwise, the errors are thrown "as is"
 
 **up-fetch** provides a [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) to check if the error is a `ResponseError`
 
@@ -223,11 +222,11 @@ const upfetch = up(fetch, () => ({
       // error is of type ResponseError
       log.responseError(error)
    },
-   onRequestError(error){
-      log.requestError(error)
+   onUnexpectedError(error){
+      log.unexpectedError(error)
    },
    onError(error){
-      // the error can be a ResponseError, a request Error or an unexpected Error
+      // the error can be a ResponseError, or an unexpected Error
       log.error(error)
    },
 }))
@@ -499,30 +498,32 @@ catch(error){
       // handle the error
    }
    else {
-      // unexpected error or request error
+      // Unexpected error
    }
 }
 ```
 
 
-## <samp>\<parseRequestError\></samp>
+## <samp>\<parseUnexpectedError\></samp>
 
-**Type:** `ParseRequestError<TError> = (error: Error, options: ComputedOptions) => TError`
+**Type:** `ParseUnexpectedError<TError> = (error: Error, options: ComputedOptions) => TError`
 
-Customize the parsing of an request fetch error (eg. failed to fetch) 
+Modify unexpected errors. Unexpected errors are generated when:
+* the server did not respond or could not be reached (eg. failed to fetch)
+* the user code produced an error
 
 **Example:**
 
 ```ts
-// extract the error.message for all request errors
+// extract the error.message for all unexpected errors
 const upfetch = up(fetch, () => ({
-   parseRequestError: (error) => error.message
+   parseUnexpectedError: (error) => error.message
 }))
 
 // using the onUnknwonError callback
 upfetch('https://example.com/', {
-   onRequestError(error){
-      // the error is already typed as a string
+   onUnexpectedError(error){
+      // error is of type string
    }
 })
 
@@ -535,7 +536,7 @@ catch(error){
       // response error
    }
    else {
-      // unexpected error or request error
+      // unexpected error 
    }
 }
 ```
@@ -581,7 +582,8 @@ upfetch('https://example.com/', {
 
 **Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
 
-Called when a response error was thrown (response.ok is false), before [onError](#onerror)
+Called when a response error was thrown (response.ok is false). \
+Called before [onError](#onerror)
 
 **Example:**
 
@@ -595,21 +597,22 @@ upfetch('https://example.com/', {
 })
 ```
 
-## <samp>\<onRequestError\></samp>
+## <samp>\<onUnexpectedError\></samp>
 
-**Type:** `<TRequestError>(error: TRequestError, options: ComputedOptions) => void`
+**Type:** `<TUnexpectedError>(error: TUnexpectedError, options: ComputedOptions) => void`
 
-Called when a request error was thrown (an error that is not a response error), before [onError](#onerror)
+Called when a unexpected error was thrown (an error that is not a response error). \ 
+Called before [onError](#onerror)
 
 **Example:**
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onRequestError: (error, options) => console.log('first')
+   onUnexpectedError: (error, options) => console.log('first')
 }))
 
 upfetch('https://example.com/', {
-   onRequestError: (error, options) => console.log('second')
+   onUnexpectedError: (error, options) => console.log('second')
 })
 ```
 
@@ -617,7 +620,8 @@ upfetch('https://example.com/', {
 
 **Type:** `<TError>(error: TError, options: ComputedOptions) => void`
 
-Called when an error was thrown (either a response a request or an unexpected error), after [onResponseError](#onresponseerror) and [onRequestError](#onrequesterror)
+Called when an error was thrown (either a response or an unexpected error). \ 
+Called after [onResponseError](#onresponseerror) and [onUnexpectedError](#onunexpectederror)
 
 **Example:**
 

@@ -16,17 +16,19 @@ export function up<
       TResponseError = Awaited<
          ReturnType<NonNullable<TUpOptions['parseResponseError']>>
       >,
-      TRequestError = ReturnType<NonNullable<TUpOptions['parseRequestError']>>,
+      TUnexpectedError = ReturnType<
+         NonNullable<TUpOptions['parseUnexpectedError']>
+      >,
    >(
       input: RequestInfo | URL,
       upfetchOptions:
-         | UpFetchOptions<TData, TResponseError, TRequestError, TFetchFn>
+         | UpFetchOptions<TData, TResponseError, TUnexpectedError, TFetchFn>
          | ((
               upOptions: TUpOptions,
            ) => UpFetchOptions<
               TData,
               TResponseError,
-              TRequestError,
+              TUnexpectedError,
               TFetchFn
            >) = emptyOptions,
    ) => {
@@ -42,10 +44,10 @@ export function up<
       return fetchFn(options.input, options)
          .catch((error) => {
             try {
-               throw options.parseRequestError(error, options)
+               throw options.parseUnexpectedError(error, options)
             } catch (error: any) {
-               upFetchOpts.onRequestError?.(requestError, options)
-               upOptions.onRequestError?.(requestError, options)
+               upFetchOpts.onUnexpectedError?.(error, options)
+               upOptions.onUnexpectedError?.(error, options)
                upFetchOpts.onError?.(error, options)
                upOptions.onError?.(error, options)
                throw error
@@ -58,9 +60,9 @@ export function up<
                   upFetchOpts.onSuccess?.(data, options)
                   upOptions.onSuccess?.(data, options)
                   return data
-               } catch (error) {
-                  upFetchOpts.onRequestError?.(requestError, options)
-                  upOptions.onRequestError?.(requestError, options)
+               } catch (error: any) {
+                  upFetchOpts.onUnexpectedError?.(error, options)
+                  upOptions.onUnexpectedError?.(error, options)
                   upFetchOpts.onError?.(error, options)
                   upOptions.onError?.(error, options)
                   throw error
@@ -73,9 +75,9 @@ export function up<
                   upOptions.onResponseError?.(responseError, options)
                   upFetchOpts.onError?.(responseError, options)
                   upOptions.onError?.(responseError, options)
-               } catch (error) {
-                  upFetchOpts.onRequestError?.(requestError, options)
-                  upOptions.onRequestError?.(requestError, options)
+               } catch (error: any) {
+                  upFetchOpts.onUnexpectedError?.(error, options)
+                  upOptions.onUnexpectedError?.(error, options)
                   upFetchOpts.onError?.(error, options)
                   upOptions.onError?.(error, options)
                   throw error
