@@ -158,8 +158,6 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Learn more [here](#onbeforefetch). 
-
 Or single requests
 
 ```ts
@@ -169,7 +167,9 @@ upfetch('/todos', {
    onResponseError: (error, options) => console.log(error),
    onUnexpectedError: (error, options) => console.log(error),
 })
-``` 
+```
+
+Learn more [here](#onbeforefetch).  
 
 # Examples
 
