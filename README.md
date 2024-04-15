@@ -147,7 +147,7 @@ upfetch('https://my.url/todos', {
 
 ### Interceptors
 
-You can intercept all requests
+You can setup the interceptors for all requests
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -158,7 +158,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Or single requests
+Or for single requests
 
 ```ts
 upfetch('/todos', {
