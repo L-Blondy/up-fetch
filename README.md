@@ -145,6 +145,30 @@ upfetch('https://my.url/todos', {
 })
 ```
 
+### Interceptors
+
+You can intercept all requests
+
+```ts
+const upfetch = up(fetch, () => ({
+   onBeforeFetch: (options) => console.log('Before fetch'),
+   onSuccess: (data, options) => console.log(data),
+   onResponseError: (error, options) => console.log(error),
+   onUnexpectedError: (error, options) => console.log(error),
+}))
+```
+
+Or single requests
+
+```ts
+upfetch('/todos', {
+   onBeforeFetch: (options) => console.log('Before fetch'),
+   onSuccess: (todos, options) => console.log(todos),
+   onResponseError: (error, options) => console.log(error),
+   onUnexpectedError: (error, options) => console.log(error),
+})
+``` 
+
 # Examples
 
 <details><summary><b>Authentication</b></summary><br />
