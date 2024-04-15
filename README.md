@@ -1,23 +1,22 @@
-# up-fetch 
+# up-fetch
 
-Tiny [fetch API][MDN] wrapper with configurable defaults. 
+Tiny [fetch API][MDN] wrapper with configurable defaults.
 
 # Highlights
 
-* **Lightweight** - 1kB gzipped, no dependency
-* **Simple** - same syntax as the [fetch API][MDN] with additional options and defaults
-* **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box 
-* **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
-* **Reusable** - create instances with custom defaults
-* **Strongly typed** - best in class type inferrence and autocomplete
-* **Throws by default** - when `response.ok` is `false`
+-  **Lightweight** - 1kB gzipped, no dependency
+-  **Simple** - same syntax as the [fetch API][MDN] with additional options and defaults
+-  **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
+-  **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
+-  **Reusable** - create instances with custom defaults
+-  **Strongly typed** - best in class type inferrence and autocomplete
+-  **Throws by default** - when `response.ok` is `false`
 
 Works in: \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ All modern browsers \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Bun \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Node 18+ \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Deno (with the `npm:` specifier) 
- 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Deno (with the `npm:` specifier)
 
 # QuickStart
 
@@ -28,7 +27,7 @@ npm i up-fetch
 Create a new upfetch instance
 
 ```ts
-import { up } from 'up-fetch' 
+import { up } from 'up-fetch'
 
 const upfetch = up(fetch)
 ```
@@ -37,12 +36,12 @@ Make a fetch request
 
 ```ts
 const todos = await upfetch('https://a.b.c', {
-   method: 'POST', 
+   method: 'POST',
    body: { hello: 'world' },
 })
 ```
 
-Since the upfetch options extend the fetch api options, ***anything that can be done with fetch can also be done with upfetch***.
+Since the upfetch options extend the fetch api options, **_anything that can be done with fetch can also be done with upfetch_**.
 
 # Features
 
@@ -52,8 +51,8 @@ Since the upfetch options extend the fetch api options, ***anything that can be 
 
 ```ts
 const upfetch = up(fetch, () => ({
-   baseUrl: 'https://a.b.c', 
-   headers: { 'X-Header': 'hello world' }
+   baseUrl: 'https://a.b.c',
+   headers: { 'X-Header': 'hello world' },
 }))
 ```
 
@@ -77,11 +76,11 @@ Set the baseUrl when you create the instance
 
 ```ts
 export const upfetch = up(fetch, () => ({
-   baseUrl: 'https://my.url'
+   baseUrl: 'https://my.url',
 }))
 ```
 
-You can then omit it on all requests 
+You can then omit it on all requests
 
 ```ts
 const todos = await upfetch('/todos')
@@ -98,7 +97,7 @@ const todos = await response.json()
 
 // after
 const todos = await upfetch('https://my.url/todos')
-``` 
+```
 
 ### throws by default
 
@@ -106,7 +105,7 @@ Throws a `ResponseError` when `response.ok` is `false`
 
 A parsed error body is available with `error.data`. \
 The raw Response can be accessed with `error.response`. \
-The options used make the api call are available with `error.options`. 
+The options used make the api call are available with `error.options`.
 
 ```ts
 import { isResponseError } from 'up-fetch'
@@ -114,9 +113,8 @@ import { upfetch } from '...'
 
 try {
    await upfetch('https://my.url/todos')
-} 
-catch(error){
-   if(isResponseError(error)){
+} catch (error) {
+   if (isResponseError(error)) {
       console.log(error.data)
       console.log(error.response.status)
    } else {
@@ -127,22 +125,22 @@ catch(error){
 
 ### Set the `body` as object
 
-The `'Content-Type': 'application/json'` header is automatically set when the body is a Jsonifiable object or array. Plain objects, arrays and classes with a `toJSON` method are Jsonifiable. 
+The `'Content-Type': 'application/json'` header is automatically set when the body is a Jsonifiable object or array. Plain objects, arrays and classes with a `toJSON` method are Jsonifiable.
 
 ```ts
 // before
 fetch('https://my.url/todos', {
    method: 'POST',
-   headers: {'Content-Type': 'application/json'},
-   body: JSON.stringify({ post: 'Hello World'})
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ post: 'Hello World' }),
 })
 
 // after
 upfetch('https://my.url/todos', {
    method: 'POST',
-   body: { post: 'Hello World'}
+   body: { post: 'Hello World' },
 })
-``` 
+```
 
 # Examples
 
@@ -151,12 +149,12 @@ upfetch('https://my.url/todos', {
 Since the options are evaluated at request time, the Authentication header can be defined when creating the instance
 
 ```ts
-import { up } from 'up-fetch' 
+import { up } from 'up-fetch'
 
 const upfetch = up(fetch, () => {
    const token = localStorage.getItem('token')
    return {
-      headers: { Authentication: token ? `Bearer ${token}` : undefined }
+      headers: { Authentication: token ? `Bearer ${token}` : undefined },
    }
 })
 
@@ -168,15 +166,17 @@ upfetch('/profile') // Non authenticated request
 ```
 
 The same approach can be used with `cookies` instead of `localStorage`
+
 </details>
 
 <details><summary><b>Error handling</b></summary><br />
 
 Two types of error can occur:
+
 1. a Response error when the server responds with an error code (`response.ok` is `false`)
 2. an Unexpected error produced when the server did not respond (eg. failed to fetch) or by the user code
 
-By default response errors throw a [ResponseError](#throws-by-default) 
+By default response errors throw a [ResponseError](#throws-by-default)
 
 **up-fetch** provides a [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) to check if the error is a `ResponseError`
 
@@ -187,45 +187,41 @@ import { isResponseError } from 'up-fetch'
 // with try/catch
 try {
    return await upfetch('https://a.b.c')
-}
-catch(error){
-   if(isResponseError(error)) {
+} catch (error) {
+   if (isResponseError(error)) {
       // The server responded, the parsed data is available on the ReponseError
-      console.log(error.data) 
-   }
-   else {
+      console.log(error.data)
+   } else {
       console.log(error.message)
    }
 }
 
 // with Promise.catch
-upfetch('https://a.b.c')
-   .catch((error) => {
-      if(isResponseError(error)) {
-         // The server responded, the parsed data is available on the ReponseError
-         console.log(error.data) 
-      }
-      else {
-         console.log(error.message)
-      }
-   })
+upfetch('https://a.b.c').catch((error) => {
+   if (isResponseError(error)) {
+      // The server responded, the parsed data is available on the ReponseError
+      console.log(error.data)
+   } else {
+      console.log(error.message)
+   }
+})
 ```
 
 **up-fetch** also exports some listeners, useful for logging
 
 ```ts
-import { up } from 'up-fetch' 
+import { up } from 'up-fetch'
 import { log } from './my-logging-service'
 
 const upfetch = up(fetch, () => ({
-   onResponseError(error){
+   onResponseError(error) {
       // error is of type ResponseError
       log.responseError(error)
    },
-   onUnexpectedError(error){
+   onUnexpectedError(error) {
       log.unexpectedError(error)
    },
-   onError(error){
+   onError(error) {
       // the error can be a ResponseError, or an unexpected Error
       log.error(error)
    },
@@ -233,6 +229,7 @@ const upfetch = up(fetch, () => ({
 
 upfetch('/fail-to-fetch')
 ```
+
 </details>
 
 <details><summary><b>Delete a default option</b></summary><br />
@@ -240,20 +237,21 @@ upfetch('/fail-to-fetch')
 Simply pass `undefined`
 
 ```ts
-import { up } from 'up-fetch' 
+import { up } from 'up-fetch'
 
 const upfetch = up(fetch, () => ({
    cache: 'no-store',
    params: { expand: true, count: 1 },
-   headers: { Authorization: `Bearer ${token}` }
+   headers: { Authorization: `Bearer ${token}` },
 }))
 
 upfetch('https://a.b.c', {
    cache: undefined, // remove cache
    params: { expand: undefined }, // only remove `expand` from the params
-   headers: undefined // remove all headers
+   headers: undefined, // remove all headers
 })
 ```
+
 </details>
 
 <details><summary><b>Override a default option conditionally</b></summary><br />
@@ -261,7 +259,7 @@ upfetch('https://a.b.c', {
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
 ```ts
-import { up } from 'up-fetch' 
+import { up } from 'up-fetch'
 
 const upfetch = up(fetch, () => ({
    headers: { 'X-Header': 'value' }
@@ -283,6 +281,7 @@ upfetch('https://a.b.c', (upOptions) => ({
    headers: { 'X-Header': condition ? 'newValue' : upOptions.headers['X-Header'] }
 }))
 ```
+
 </details>
 
 <details><summary><b>Next.js App Router</b></summary><br />
@@ -292,20 +291,21 @@ Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](h
 Choose a default caching strategy
 
 ```ts
-import { up } from 'up-fetch' 
+import { up } from 'up-fetch'
 
 const upfetch = up(fetch, () => ({
-   next: { revalidate: false }
+   next: { revalidate: false },
 }))
 ```
 
-Override it for a specific request 
+Override it for a specific request
 
 ```ts
 upfetch('/posts', {
-   next: { revalidate: 60 }
+   next: { revalidate: 60 },
 })
 ```
+
 </details>
 
 <!-- TODO: FormData -->
@@ -323,31 +323,31 @@ All options can be set either on **up** or on an **upfetch** instance except for
 const upfetch = up(fetch, () => ({
    baseUrl: 'https://my.url.com',
    cache: 'no-store',
-   headers: { 'Authorization': `Bearer ${token}` }
+   headers: { Authorization: `Bearer ${token}` },
 }))
 
 // override the defaults for a specific call
 upfetch('todos', {
    baseUrl: 'https://another.url.com',
-   cache: 'force-cache'
+   cache: 'force-cache',
 })
 ```
 
-**upfetch** adds the following options to the [fetch API][MDN]. 
+**upfetch** adds the following options to the [fetch API][MDN].
 
 <!--  -->
 
 ## <samp>\<baseUrl\></samp>
 
-**Type:** `string` 
+**Type:** `string`
 
 Sets the base url for the requests
 
 **Example:**
 
 ```ts
-const upfetch = up(fetch, () => ({ 
-   baseUrl: 'https://example.com' 
+const upfetch = up(fetch, () => ({
+   baseUrl: 'https://example.com',
 }))
 
 // make a GET request to 'https://example.com/id'
@@ -370,26 +370,26 @@ Only non-nested objects are supported by default. See the [serializeParams](#ser
 **Example:**
 
 ```ts
-const upfetch = up(fetch, () => ({ 
-   params : { expand: true  }
+const upfetch = up(fetch, () => ({
+   params: { expand: true },
 }))
 
 // `expand` can be omitted
 // the request is sent to: https://example.com/?expand=true&page=2&limit=10
-upfetch('https://example.com', { 
-   params: { page: 2, limit: 10 }
+upfetch('https://example.com', {
+   params: { page: 2, limit: 10 },
 })
 
 // override the `expand` value
 // https://example.com/?expand=false&page=2&limit=10
-upfetch('https://example.com', { 
-   params: { page: 2, limit: 10, expand: false }
+upfetch('https://example.com', {
+   params: { page: 2, limit: 10, expand: false },
 })
 
 // remove `expand` from the params
 // https://example.com/?expand=false&page=2&limit=10
-upfetch('https://example.com', { 
-   params: { page: 2, limit: 10, expand: undefined }
+upfetch('https://example.com', {
+   params: { page: 2, limit: 10, expand: undefined },
 })
 ```
 
@@ -408,9 +408,9 @@ See the [serializeBody](#serializebody) for more details.
 **Example:**
 
 ```ts
-upfetch('/todos', { 
+upfetch('/todos', {
    method: 'POST',
-   body: { hello: 'world' } 
+   body: { hello: 'world' },
 })
 ```
 
@@ -430,15 +430,14 @@ import qs from 'qs'
 
 // add support for nested objects using the 'qs' library
 const upfetch = up(fetch, () => ({
-   serializeParams: (params) => qs.stringify(params)
+   serializeParams: (params) => qs.stringify(params),
 }))
 
 // https://example.com/todos?a[b]=c
-upfetch('https://example.com/todos', { 
-   params: { a: { b: 'c' } }
+upfetch('https://example.com/todos', {
+   params: { a: { b: 'c' } },
 })
 ```
-
 
 ## <samp>\<serializeBody\></samp>
 
@@ -456,14 +455,13 @@ import stringify from 'json-stringify-safe'
 
 // Add support for circular references.
 const upfetch = up(fetch, () => ({
-   serializeBody: (body) => stringify(body)
+   serializeBody: (body) => stringify(body),
 }))
 
-upfetch('https://example.com/', { 
-   body: { now: 'imagine a circular ref' }
+upfetch('https://example.com/', {
+   body: { now: 'imagine a circular ref' },
 })
 ```
-
 
 ## <samp>\<parseResponse\></samp>
 
@@ -477,14 +475,14 @@ By default `json` and `text` responses are parsed
 ```ts
 // parse a blob
 const fetchBlob = up(fetch, () => ({
-   parseResponse: (res) => res.blob()
+   parseResponse: (res) => res.blob(),
 }))
 
 fetchBlob('https://example.com/')
 
 // disable the default parsing
 const upfetch = up(fetch, () => ({
-   parseResponse: (res) => res
+   parseResponse: (res) => res,
 }))
 
 const response = await upfetch('https://example.com/')
@@ -502,84 +500,79 @@ By default a [ResponseError](#throws-by-default) is created
 
 ```ts
 const upfetch = up(fetch, () => ({
-   parseResponseError: (res) => new CustomResponseError(res)
+   parseResponseError: (res) => new CustomResponseError(res),
 }))
 
 // using the onResponseError callback
 upfetch('https://example.com/', {
-   onResponseError(error){
+   onResponseError(error) {
       // the error is already typed
-   }
+   },
 })
 
 // using try/catch
 try {
    await upfetch('https://example.com/')
-}
-catch(error){
-   if(error instanceof CustomResponseError){
+} catch (error) {
+   if (error instanceof CustomResponseError) {
       // handle the error
-   }
-   else {
+   } else {
       // Unexpected error
    }
 }
 ```
-
 
 ## <samp>\<parseUnexpectedError\></samp>
 
 **Type:** `ParseUnexpectedError<TError> = (error: Error, options: ComputedOptions) => TError`
 
 Modify unexpected errors. Unexpected errors are generated when:
-* the server did not respond or could not be reached (eg. failed to fetch)
-* the user code produced an error
+
+-  the server did not respond or could not be reached (eg. failed to fetch)
+-  the user code produced an error
 
 **Example:**
 
 ```ts
 // extract the error.message for all unexpected errors
 const upfetch = up(fetch, () => ({
-   parseUnexpectedError: (error) => error.message
+   parseUnexpectedError: (error) => error.message,
 }))
 
 // using the onUnknwonError callback
 upfetch('https://example.com/', {
-   onUnexpectedError(error){
+   onUnexpectedError(error) {
       // error is of type string
-   }
+   },
 })
 
 // using try/catch
 try {
    await upfetch('https://example.com/')
-}
-catch(error){
-   if(isResponseError(error)){
+} catch (error) {
+   if (isResponseError(error)) {
       // response error
-   }
-   else {
-      // unexpected error 
+   } else {
+      // unexpected error
    }
 }
 ```
-
 
 ## <samp>\<onBeforeFetch\></samp>
 
 **Type:** `(options: ComputedOptions) => void`
 
-Called before the [fetch][MDN] call is made. 
+Called before the [fetch][MDN] call is made.
 
 **Example:**
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onBeforeFetch: (options) => console.log('first')
+   onBeforeFetch: (options) => console.log('first'),
 }))
 
 upfetch('https://example.com/', {
-   onBeforeFetch: (options) => console.log('second')
+   onBeforeFetch: (options) => console.log('second'),
 })
 ```
 
@@ -593,11 +586,11 @@ Called when everything went fine
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onSuccess: (data, options) => console.log('first')
+   onSuccess: (data, options) => console.log('first'),
 }))
 
 upfetch('https://example.com/', {
-   onSuccess: (data, options) => console.log('second')
+   onSuccess: (data, options) => console.log('second'),
 })
 ```
 
@@ -612,11 +605,11 @@ Called before [onError](#onerror)
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onResponseError: (error, options) => console.log('first')
+   onResponseError: (error, options) => console.log('first'),
 }))
 
 upfetch('https://example.com/', {
-   onResponseError: (error, options) => console.log('second')
+   onResponseError: (error, options) => console.log('second'),
 })
 ```
 
@@ -624,18 +617,18 @@ upfetch('https://example.com/', {
 
 **Type:** `<TUnexpectedError>(error: TUnexpectedError, options: ComputedOptions) => void`
 
-Called when a unexpected error was thrown (an error that is not a response error). \ 
+Called when a unexpected error was thrown (an error that is not a response error). \
 Called before [onError](#onerror)
 
 **Example:**
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onUnexpectedError: (error, options) => console.log('first')
+   onUnexpectedError: (error, options) => console.log('first'),
 }))
 
 upfetch('https://example.com/', {
-   onUnexpectedError: (error, options) => console.log('second')
+   onUnexpectedError: (error, options) => console.log('second'),
 })
 ```
 
@@ -643,18 +636,18 @@ upfetch('https://example.com/', {
 
 **Type:** `<TError>(error: TError, options: ComputedOptions) => void`
 
-Called when an error was thrown (either a response or an unexpected error). \ 
+Called when an error was thrown (either a response or an unexpected error). \
 Called after [onResponseError](#onresponseerror) and [onUnexpectedError](#onunexpectederror)
 
 **Example:**
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onError: (error, options) => console.log('first')
+   onError: (error, options) => console.log('first'),
 }))
 
 upfetch('https://example.com/', {
-   onError: (error, options) => console.log('second')
+   onError: (error, options) => console.log('second'),
 })
 ```
 
@@ -669,9 +662,5 @@ upfetch('https://example.com/', {
    onError: (error, options) => console.log('fourth')
 })
 ```
-
-
-
-
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
