@@ -285,6 +285,28 @@ upfetch('https://a.b.c', (upOptions) => ({
 ```
 </details>
 
+<details><summary><b>Next.js App Router</b></summary>
+Since **up-fetch** extends the fetch API, Next.js fetch extension also work when using **up-fetch**.
+
+Choose a default caching strategy
+
+```ts
+import { up } from 'up-fetch' 
+
+const upfetch = up(fetch, () => ({
+   next: { revalidate: false }
+}))
+```
+
+Override it for a specific request 
+
+```ts
+upfetch('/posts', {
+   next: { revalidate: 60 }
+})
+```
+</details>
+
 <!-- TODO: FormData -->
 
 # Types
