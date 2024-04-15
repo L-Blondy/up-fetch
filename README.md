@@ -287,7 +287,7 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 <details><summary><b>Next.js App Router</b></summary>
 
-Since **up-fetch** extends the fetch API, Next.js fetch extension also work when using **up-fetch**.
+Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
 Choose a default caching strategy
 
