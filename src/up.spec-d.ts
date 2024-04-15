@@ -56,7 +56,7 @@ test('infer TResponseError', async () => {
    })
 
    const upfetch = up(fetch, () => ({
-      parseResponseError: () => Promise.resolve(1),
+      parseResponseError: (_) => Promise.resolve(1),
       onResponseError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
       },
@@ -99,7 +99,7 @@ test('infer TUnexpectedError', async () => {
    })
 
    const upfetch = up(fetch, () => ({
-      parseUnexpectedError: () => 1,
+      parseUnexpectedError: (_) => 1,
       onUnexpectedError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
       },

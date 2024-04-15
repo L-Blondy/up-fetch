@@ -5,7 +5,7 @@ import { emptyOptions } from './utils.js'
 
 export function up<
    TFetchFn extends typeof fetch,
-   TUpOptions extends UpOptions<TFetchFn> = UpOptions<
+   TUpOptions extends UpOptions<TFetchFn, any, any> = UpOptions<
       TFetchFn,
       ResponseError,
       Error
