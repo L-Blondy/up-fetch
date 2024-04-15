@@ -2,10 +2,6 @@
 
 Tiny [fetch API][MDN] wrapper with configurable defaults.
 
-# Why
-
-Because it's time to say goodbye to **axios**
-
 # Highlights
 
 <!-- 📦  -->
