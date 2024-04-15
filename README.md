@@ -8,8 +8,8 @@ Tiny [fetch API][MDN] wrapper with configurable defaults.
 
 -  ⚡ **Lightweight** - 1kB gzipped, no dependency
 -  🤗 **Simple** - same syntax as the [fetch API][MDN] with additional options and defaults
--  💆 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
--  **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
+-  💫 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
+-  ✨ **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
 -  💫 **Reusable** - create instances with custom defaults
 -  🔥 **Strongly typed** - best in class type inferrence and autocomplete
 -  🎯 **Throws by default** - when `response.ok` is `false`
