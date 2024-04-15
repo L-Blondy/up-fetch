@@ -158,6 +158,8 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+Learn more [here](#onbeforefetch). 
+
 Or single requests
 
 ```ts
