@@ -146,7 +146,7 @@ upfetch('https://my.url/todos', {
 
 # Examples
 
-<details><summary><b>Authentication</b></summary>
+<details><summary><b>Authentication</b></summary><br />
 
 Since the options are evaluated at request time, the Authentication header can be defined when creating the instance
 
@@ -170,7 +170,7 @@ upfetch('/profile') // Non authenticated request
 The same approach can be used with `cookies` instead of `localStorage`
 </details>
 
-<details><summary><b>Error handling</b></summary>
+<details><summary><b>Error handling</b></summary><br />
 
 Two types of error can occur:
 1. a Response error when the server responds with an error code (`response.ok` is `false`)
@@ -235,7 +235,7 @@ upfetch('/fail-to-fetch')
 ```
 </details>
 
-<details><summary><b>Delete a default option</b></summary>
+<details><summary><b>Delete a default option</b></summary><br />
 
 Simply pass `undefined`
 
@@ -256,7 +256,7 @@ upfetch('https://a.b.c', {
 ```
 </details>
 
-<details><summary><b>Override a default option conditionally</b></summary>
+<details><summary><b>Override a default option conditionally</b></summary><br />
 
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
@@ -285,9 +285,8 @@ upfetch('https://a.b.c', (upOptions) => ({
 ```
 </details>
 
-<details><summary><b>Next.js App Router</b></summary>
+<details><summary><b>Next.js App Router</b></summary><br />
 
-\
 Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
 Choose a default caching strategy
