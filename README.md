@@ -14,16 +14,12 @@ Tiny [fetch API][MDN] wrapper with configurable defaults.
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  👻 **Throws by default** - when `response.ok` is `false`
 
-Works in: \
+Works in:
 
--  ✅ All modern browsers \
--  ✅ Bun \
--  ✅ Node 18+ \
+-  ✅ All modern browsers
+-  ✅ Bun
+-  ✅ Node 18+
 -  ✅ Deno (with the `npm:` specifier)
-<!-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ All modern browsers \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Bun \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Node 18+ \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✅ Deno (with the `npm:` specifier) -->
 
 # QuickStart
 
