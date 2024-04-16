@@ -171,6 +171,16 @@ upfetch('/todos', {
 
 Learn more [here](#onbeforefetch).  
 
+### Timeout
+
+Worth mentionning that **up-fetch** does not provide any `timeout` option since the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static) static method is now supported everywhere. 
+
+```ts
+upfetch('/todos', {
+   signal: AbortSignal.timeout(5000)
+});
+``` 
+
 # Examples
 
 <details><summary><b>Authentication</b></summary><br />
@@ -195,18 +205,6 @@ upfetch('/profile') // Non authenticated request
 ```
 
 The same approach can be used with `cookies` instead of `localStorage`
-
-</details>
-
-<details><summary><b>Timeout</b></summary><br />
-
-Worth mentionning that **up-fetch** does not provide any `timeout` option since the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static) static method is now supported everywhere. 
-
-```ts
-upfetch('/todos', {
-   signal: AbortSignal.timeout(5000)
-});
-``` 
 
 </details>
 
