@@ -2,7 +2,7 @@
 
 Tiny [fetch API][MDN] wrapper with configurable defaults.
 
-## ✨ Highlights
+## ⭐ Highlights
 
 <!-- 📦  -->
 
@@ -21,7 +21,7 @@ Works in:
 -  ✅ Node 18+
 -  ✅ Deno (with the `npm:` specifier)
 
-## ✨ QuickStart
+## ⭐ QuickStart
 
 ```bash
 npm i up-fetch
@@ -46,7 +46,7 @@ const todos = await upfetch('https://a.b.c', {
 
 Since the upfetch options extend the fetch api options, **_anything that can be done with fetch can also be done with upfetch_**.
 
-## ✨ Features
+## ⭐ Features
 
 ### Set defaults for an upfetch instance
 
@@ -181,7 +181,7 @@ upfetch('/todos', {
 });
 ``` 
 
-## ✨ Examples
+## ⭐ Examples
 
 <details><summary><b>Authentication</b></summary><br />
 
@@ -349,11 +349,11 @@ upfetch('/posts', {
 
 <!-- TODO: FormData -->
 
-## ✨ Types
+## ⭐ Types
 
 See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/types.ts) file for more details
 
-## ✨ API
+## ⭐ API
 
 All options can be set either on **up** or on an **upfetch** instance except for the [body](#body)
 
