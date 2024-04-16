@@ -376,7 +376,7 @@ upfetch('todos', {
 
 <!--  -->
 
-### <samp>\<baseUrl\></samp>
+## <samp>\<baseUrl\></samp>
 
 **Type:** `string`
 
@@ -398,7 +398,7 @@ upfetch('/id', { baseUrl: 'https://another-url.com' })
 
 <!--  -->
 
-### <samp>\<params\></samp>
+## <samp>\<params\></samp>
 
 **Type:** `{ [key: string]: any }`
 
