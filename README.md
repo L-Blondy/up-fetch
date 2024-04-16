@@ -198,6 +198,18 @@ The same approach can be used with `cookies` instead of `localStorage`
 
 </details>
 
+<details><summary><b>Timeout</b>
+
+Since the `AbortController.timeout` static method (see [MDN](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static)) is now supported everywhere, there is no need for a `timeout` option
+
+```ts
+
+```
+
+</summary><br />
+
+</details>
+
 <details><summary><b>Error handling</b></summary><br />
 
 Two types of error can occur:
