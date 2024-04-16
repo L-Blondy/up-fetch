@@ -200,10 +200,12 @@ The same approach can be used with `cookies` instead of `localStorage`
 
 <details><summary><b>Timeout</b></summary><br />
 
-Since the `AbortController.timeout` static method (see [MDN](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static)) is now supported everywhere, there is no need for a `timeout` option
+Since the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static) static method is now supported everywhere, there is no need for a `timeout` option
 
 ```ts
-
+upfetch('/todos', {
+   signal: AbortSignal.timeout(5000)
+});
 ``` 
 
 </details>
