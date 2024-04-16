@@ -12,13 +12,6 @@ Tiny [fetch API][MDN] wrapper with configurable defaults.
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  👻 **Throws by default** - when `response.ok` is `false`
 
-Works in:
-
--  ✅ All modern browsers
--  ✅ Bun
--  ✅ Node 18+
--  ✅ Deno (with the `npm:` specifier)
-
 ## QuickStart
 
 ```bash
@@ -699,5 +692,12 @@ upfetch('https://example.com/', {
    onError: (error, options) => console.log('fourth')
 })
 ```
+
+## Compatibility
+
+-  ✅ All modern browsers
+-  ✅ Bun
+-  ✅ Node 18+
+-  ✅ Deno (with the `npm:` specifier)
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
