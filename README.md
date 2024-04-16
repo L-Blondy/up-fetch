@@ -2,7 +2,7 @@
 
 Tiny [fetch API][MDN] wrapper with configurable defaults.
 
-## ► Highlights
+## ▷ Highlights
 
 <!-- 📦  -->
 
