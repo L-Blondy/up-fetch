@@ -200,7 +200,7 @@ The same approach can be used with `cookies` instead of `localStorage`
 
 <details><summary><b>Timeout</b></summary><br />
 
-Since the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static) static method is now supported everywhere, there is no need for a `timeout` option
+Worth mentionning that **up-fetch** does not provide any `timeout` option since the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static) static method is now supported everywhere. 
 
 ```ts
 upfetch('/todos', {
