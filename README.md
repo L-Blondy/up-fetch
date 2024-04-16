@@ -318,7 +318,7 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
-Choose a default caching strategy
+*Choose a default caching strategy*
 
 ```ts
 import { up } from 'up-fetch'
@@ -328,7 +328,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Override it for a specific request
+*Override it for a specific request*
 
 ```ts
 upfetch('/posts', {
