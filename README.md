@@ -193,7 +193,7 @@ const todo = await upfetch('/todo/1', {
       }),
    ),
 })
-// typeof todo = { id: number, title: string, description: string, createdOn: string}
+// the type of todo is { id: number, title: string, description: string, createdOn: string}
 ```
 
 **valibot example:**
@@ -214,7 +214,7 @@ const todo = await upfetch('/todo/1', {
       }),
    ),
 })
-// typeof todo = { id: number, title: string, description: string, createdOn: string}
+// the type of todo is { id: number, title: string, description: string, createdOn: string}
 ```
 
 In case of error the adapters will throw. You can listen to these errors with the [onParsingError](#onparsingerror) option.
