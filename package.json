@@ -5,12 +5,24 @@
    "type": "module",
    "main": "dist/index.js",
    "types": "dist/index.d.ts",
-   "engines": {
-      "node": ">=14.18"
+   "exports": {
+      ".": {
+         "types": "./dist/index.d.ts",
+         "default": "./dist/index.js"
+      },
+      "./parsers/zod": {
+         "types": "./dist/parsers/zod.d.ts",
+         "default": "./dist/parsers/zod.js"
+      },
+      "./parsers/valibot": {
+         "types": "./dist/parsers/valibot.d.ts",
+         "default": "./dist/parsers/valibot.js"
+      }
    },
+   "sideEffects": false,
    "scripts": {
       "lint": "eslint . --ext .ts",
-      "build": "tsup src/index.ts",
+      "build": "tsup",
       "dev": "vitest",
       "test": "vitest run && tsc --noEmit",
       "prepublish": "npm run test && npm run build",
@@ -69,5 +81,8 @@
    "repository": {
       "type": "git",
       "url": "https://github.com/L-Blondy/up-fetch"
+   },
+   "engines": {
+      "node": ">=18"
    }
 }
