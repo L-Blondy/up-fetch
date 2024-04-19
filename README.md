@@ -63,7 +63,7 @@ const todo = await upfetch('/todos', {
 
 ## ➡️ Features
 
-### Set defaults for an upfetch instance
+### ✔️ Set defaults for an upfetch instance
 
 **up-fetch** default behaviour can be entirely customized
 
@@ -76,7 +76,7 @@ const upfetch = up(fetch, () => ({
 
 See the full [options](#options) list for more details.
 
-### Set the url `params` as object
+### ✔️ Set the url `params` as object
 
 ```ts
 // before
@@ -88,7 +88,7 @@ upfetch('https://a.b.c/todos', {
 })
 ```
 
-### `baseUrl` option
+### ✔️ `baseUrl` option
 
 Set the baseUrl when you create the instance
 
@@ -104,7 +104,7 @@ You can then omit it on all requests
 const todos = await upfetch('/todos')
 ```
 
-### Automatic `Response` parsing
+### ✔️ Automatic `Response` parsing
 
 The parsing method is customizable via the [parseResponse](#parseresponse) option
 
@@ -117,7 +117,7 @@ const todos = await response.json()
 const todos = await upfetch('https://a.b.c/todos')
 ```
 
-### throws by default
+### ✔️ throws by default
 
 Throws a `ResponseError` when `response.ok` is `false`
 
@@ -141,7 +141,7 @@ try {
 }
 ```
 
-### Set the `body` as object
+### ✔️ Set the `body` as object
 
 The `'Content-Type': 'application/json'` header is automatically set when the body is a Jsonifiable object or array. Plain objects, arrays and classes with a `toJSON` method are Jsonifiable.
 
@@ -160,7 +160,7 @@ upfetch('https://a.b.c/todos', {
 })
 ```
 
-### Validate the data
+### ✔️ Data Validation
 
 **up-fetch** has built-in integrations for [zod](https://zod.dev/) and [valibot](https://valibot.dev/)
 
@@ -217,7 +217,7 @@ const todo = await upfetch('/todo/1', {
 
 The same can be done on `parseResponseError`
 
-### Interceptors
+### ✔️ Interceptors
 
 You can setup the interceptors for all requests
 
@@ -245,7 +245,7 @@ upfetch('/todos', {
 
 Learn more [here](#onbeforefetch).
 
-### Timeout
+### ✔️ Timeout
 
 Worth mentionning that **up-fetch** does not provide any `timeout` option since the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static) static method is now supported everywhere.
 
