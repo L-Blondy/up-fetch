@@ -62,6 +62,8 @@ const todo = await upfetch('/todos', {
 })
 ```
 
+%EF%B8%8F-
+
 ## ➡️ Features
 
 ### ✔️ Set defaults for an upfetch instance
@@ -75,7 +77,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-See the full [options](#options) list for more details.
+See the full [options](#%EF%B8%8F-api) list for more details.
 
 ### ✔️ Set the url `params` as object
 
@@ -306,7 +308,7 @@ The same approach can be used with `cookies`
 
 <details><summary><b>💡 Error handling</b></summary><br />
 
-**up-fetch** throws a [ResponseError](#throws-by-default) when `response.ok` is `false`.
+**up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`.
 
 The parsed response body is available with `error.data`. \
 The response status is available with `error.response.status`. \
@@ -761,7 +763,7 @@ upfetch('https://a.b.c', {
 **Type:** `(error: any, options: ComputedOptions) => void`
 
 Called when either `parseResponse` or `parseResponseError` throw. \
-Usefull when using a [validation adapter](#-data-validation)
+Usefull when using a [validation adapter](#%EF%B8%8F-data-validation)
 
 **Example:**
 
