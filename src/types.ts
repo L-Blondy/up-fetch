@@ -80,10 +80,7 @@ export type UpOptions<
    onBeforeFetch?: (options: ComputedOptions) => void
    onResponseError?: (error: any, options: ComputedOptions) => void
    onSuccess?: (data: any, options: ComputedOptions) => void
-   onRequestError?: (
-      error: Error & { [key: string]: any },
-      options: ComputedOptions,
-   ) => void
+   onRequestError?: (error: Error, options: ComputedOptions) => void
    params?: Params
    parseResponse?: ParseResponse<any>
    parseResponseError?: ParseResponseError<TResponseError>
@@ -110,7 +107,7 @@ export type UpFetchOptions<
       options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
    onRequestError?: (
-      error: Error & { [key: string]: any },
+      error: Error,
       options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
    params?: Params

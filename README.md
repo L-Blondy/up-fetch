@@ -650,7 +650,7 @@ upfetch('https://example.com/', {
 
 ## <samp>\<onRequestError\></samp>
 
-**Type:** `(error: Error & Record<string, any>, options: ComputedOptions) => void`
+**Type:** `(error: Error, options: ComputedOptions) => void`
 
 Called when the fetch request fails (no response from the server). \
 
