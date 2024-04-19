@@ -46,11 +46,11 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Since the defaults are evaluated at request time, the `Authorization` header can be defined in `up` by dynamically reading the localStorage/cookies.
+The defaults are dynamic, since they are evaluated before each request it becomes trivial to implement authentication.
 
 ```ts
 // the baseUrl and Authorization header can be omitted
-const todos = await upfetch('/todos', {
+const data = await upfetch('/todos', {
    method: 'POST',
    body: { title: 'Hello World' },
    params: { some: 'query params' },
