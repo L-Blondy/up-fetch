@@ -3,7 +3,6 @@ import {
    ComputedOptions,
    ParseResponse,
    ParseResponseError,
-   ParseUnexpectedError,
    SerializeBody,
    SerializeParams,
 } from './types.js'
@@ -11,7 +10,6 @@ import {
 export type DefaultOptions = {
    parseResponse: ParseResponse<any>
    parseResponseError: ParseResponseError<any>
-   parseUnexpectedError: ParseUnexpectedError<any>
    serializeParams: SerializeParams
    serializeBody: SerializeBody
 }
@@ -33,8 +31,6 @@ export let defaultOptions: DefaultOptions = {
          await defaultOptions.parseResponse(res, {} as any), // the second arg is not used but required in the type
          options,
       ),
-
-   parseUnexpectedError: (error: any) => error,
 
    serializeParams: (params: ComputedOptions['params']) =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined

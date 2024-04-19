@@ -44,11 +44,6 @@ export type ParseResponseError<TError = any> = (
    options: ComputedOptions,
 ) => Promise<TError>
 
-export type ParseUnexpectedError<TError = any> = (
-   error: Error,
-   options: ComputedOptions,
-) => TError
-
 export type SerializeBody = (body: Exclude<RawBody, BodyInit | null>) => string
 
 export type SerializeParams = (params: Params) => string
@@ -64,7 +59,6 @@ type RawHeaders =
 export type ComputedOptions<
    TData = any,
    TResponseError = any,
-   TUnexpectedError = any,
    TFetchFn extends typeof fetch = typeof fetch,
 > = BaseOptions<TFetchFn> & {
    readonly body?: BodyInit | null
@@ -73,7 +67,6 @@ export type ComputedOptions<
    params: Params
    parseResponse: ParseResponse<TData>
    parseResponseError: ParseResponseError<TResponseError>
-   parseUnexpectedError: ParseUnexpectedError<TUnexpectedError>
    rawBody?: RawBody
    serializeBody: SerializeBody
    serializeParams: SerializeParams
@@ -82,18 +75,18 @@ export type ComputedOptions<
 export type UpOptions<
    TFetchFn extends typeof fetch = typeof fetch,
    TResponseError = any,
-   TUnexpectedError = any,
 > = BaseOptions<TFetchFn> & {
    headers?: RawHeaders
    onBeforeFetch?: (options: ComputedOptions) => void
-   onError?: (error: any, options: ComputedOptions) => void
    onResponseError?: (error: any, options: ComputedOptions) => void
    onSuccess?: (data: any, options: ComputedOptions) => void
-   onUnexpectedError?: (error: any, options: ComputedOptions) => void
+   onRequestError?: (
+      error: Error & { [key: string]: any },
+      options: ComputedOptions,
+   ) => void
    params?: Params
    parseResponse?: ParseResponse<any>
    parseResponseError?: ParseResponseError<TResponseError>
-   parseUnexpectedError?: ParseUnexpectedError<TUnexpectedError>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
 }
@@ -101,59 +94,28 @@ export type UpOptions<
 export type UpFetchOptions<
    TData = any,
    TResponseError = any,
-   TUnexpectedError = any,
    TFetchFn extends typeof fetch = typeof fetch,
 > = BaseOptions<TFetchFn> & {
    body?: RawBody
    headers?: RawHeaders
    onBeforeFetch?: (
-      options: ComputedOptions<
-         TData,
-         TResponseError,
-         TUnexpectedError,
-         TFetchFn
-      >,
-   ) => void
-   onError?: (
-      error: TResponseError | TUnexpectedError,
-      options: ComputedOptions<
-         TData,
-         TResponseError,
-         TUnexpectedError,
-         TFetchFn
-      >,
+      options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
    onResponseError?: (
       error: TResponseError,
-      options: ComputedOptions<
-         TData,
-         TResponseError,
-         TUnexpectedError,
-         TFetchFn
-      >,
+      options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
    onSuccess?: (
       data: TData,
-      options: ComputedOptions<
-         TData,
-         TResponseError,
-         TUnexpectedError,
-         TFetchFn
-      >,
+      options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
-   onUnexpectedError?: (
-      error: TUnexpectedError,
-      options: ComputedOptions<
-         TData,
-         TResponseError,
-         TUnexpectedError,
-         TFetchFn
-      >,
+   onRequestError?: (
+      error: Error & { [key: string]: any },
+      options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
    params?: Params
    parseResponse?: ParseResponse<TData>
    parseResponseError?: ParseResponseError<TResponseError>
-   parseUnexpectedError?: ParseUnexpectedError<TUnexpectedError>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
 }

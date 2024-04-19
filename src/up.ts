@@ -5,10 +5,9 @@ import { emptyOptions } from './utils.js'
 
 export function up<
    TFetchFn extends typeof fetch,
-   TUpOptions extends UpOptions<TFetchFn, any, any> = UpOptions<
+   TUpOptions extends UpOptions<TFetchFn, any> = UpOptions<
       TFetchFn,
-      ResponseError,
-      Error
+      ResponseError
    >,
 >(fetchFn: TFetchFn, getUpOptions: () => TUpOptions = () => emptyOptions) {
    return <
@@ -16,21 +15,13 @@ export function up<
       TResponseError = Awaited<
          ReturnType<NonNullable<TUpOptions['parseResponseError']>>
       >,
-      TUnexpectedError = ReturnType<
-         NonNullable<TUpOptions['parseUnexpectedError']>
-      >,
    >(
       input: RequestInfo | URL,
       upfetchOptions:
-         | UpFetchOptions<TData, TResponseError, TUnexpectedError, TFetchFn>
+         | UpFetchOptions<TData, TResponseError, TFetchFn>
          | ((
               upOptions: TUpOptions,
-           ) => UpFetchOptions<
-              TData,
-              TResponseError,
-              TUnexpectedError,
-              TFetchFn
-           >) = emptyOptions,
+           ) => UpFetchOptions<TData, TResponseError, TFetchFn>) = emptyOptions,
    ) => {
       let upOptions = getUpOptions()
       let upfetchOpts =
@@ -41,43 +32,25 @@ export function up<
       upfetchOpts.onBeforeFetch?.(options)
       upOptions.onBeforeFetch?.(options)
 
-      function handleUnexpectedError(error: any) {
-         upfetchOpts.onUnexpectedError?.(error, options)
-         upOptions.onUnexpectedError?.(error, options)
-         upfetchOpts.onError?.(error, options)
-         upOptions.onError?.(error, options)
-         return error
-      }
-
       return fetchFn(options.input, options)
          .catch((error) => {
-            try {
-               throw options.parseUnexpectedError(error, options)
-            } catch (error: any) {
-               throw handleUnexpectedError(error)
-            }
+            upfetchOpts.onRequestError?.(error, options)
+            upOptions.onRequestError?.(error, options)
+            throw error
          })
          .then(async (res) => {
             if (res.ok) {
-               try {
-                  let data = await options.parseResponse(res, options)
-                  upfetchOpts.onSuccess?.(data, options)
-                  upOptions.onSuccess?.(data, options)
-                  return data
-               } catch (error: any) {
-                  throw handleUnexpectedError(error)
-               }
+               let data = await options.parseResponse(res, options)
+               upfetchOpts.onSuccess?.(data, options)
+               upOptions.onSuccess?.(data, options)
+               return data
             } else {
-               let responseError: Awaited<TResponseError>
-               try {
-                  responseError = await options.parseResponseError(res, options)
-                  upfetchOpts.onResponseError?.(responseError, options)
-                  upOptions.onResponseError?.(responseError, options)
-                  upfetchOpts.onError?.(responseError, options)
-                  upOptions.onError?.(responseError, options)
-               } catch (error: any) {
-                  throw handleUnexpectedError(error)
-               }
+               const responseError = await options.parseResponseError(
+                  res,
+                  options,
+               )
+               upfetchOpts.onResponseError?.(responseError, options)
+               upOptions.onResponseError?.(responseError, options)
                throw responseError
             }
          })

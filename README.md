@@ -112,7 +112,7 @@ try {
       console.log(error.data)
       console.log(error.response.status)
    } else {
-      console.log('Unexpected error')
+      console.log('Request error')
    }
 }
 ```
@@ -145,7 +145,7 @@ const upfetch = up(fetch, () => ({
    onBeforeFetch: (options) => console.log('Before fetch'),
    onSuccess: (data, options) => console.log(data),
    onResponseError: (error, options) => console.log(error),
-   onUnexpectedError: (error, options) => console.log(error),
+   onRequestError: (error, options) => console.log(error),
 }))
 ```
 
@@ -156,7 +156,7 @@ upfetch('/todos', {
    onBeforeFetch: (options) => console.log('Before fetch'),
    onSuccess: (todos, options) => console.log(todos),
    onResponseError: (error, options) => console.log(error),
-   onUnexpectedError: (error, options) => console.log(error),
+   onRequestError: (error, options) => console.log(error),
 })
 ```
 
@@ -201,14 +201,13 @@ The same approach can be used with `cookies` instead of `localStorage`
 
 <details><summary><b>Error handling</b></summary><br />
 
-Two types of error can occur:
+**up-fetch** throws a [ResponseError](#throws-by-default) when `response.ok` is `false`.
 
-1. a Response error when the server responds with an error code (`response.ok` is `false`)
-2. an Unexpected error produced when the server did not respond (eg. failed to fetch) or by the user code
+The parsed response body is available with `error.data`. \
+The response status is available with `error.response.status`. \
+The options used the make the request are available with `error.options`.
 
-By default response errors throw a [ResponseError](#throws-by-default)
-
-**up-fetch** provides a [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) to check if the error is a `ResponseError`
+The [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` can be used to check if the error is a `ResponseError`
 
 ```ts
 import { upfetch } from '...'
@@ -219,9 +218,13 @@ try {
    return await upfetch('https://a.b.c')
 } catch (error) {
    if (isResponseError(error)) {
-      // The server responded, the parsed data is available on the ReponseError
+      console.log(error.name)
+      console.log(error.message)
       console.log(error.data)
+      console.log(error.response.status)
+      console.log(error.options)
    } else {
+      console.log(error.name)
       console.log(error.message)
    }
 }
@@ -229,9 +232,13 @@ try {
 // with Promise.catch
 upfetch('https://a.b.c').catch((error) => {
    if (isResponseError(error)) {
-      // The server responded, the parsed data is available on the ReponseError
+      console.log(error.name)
+      console.log(error.message)
       console.log(error.data)
+      console.log(error.response.status)
+      console.log(error.options)
    } else {
+      console.log(error.name)
       console.log(error.message)
    }
 })
@@ -245,15 +252,10 @@ import { log } from './my-logging-service'
 
 const upfetch = up(fetch, () => ({
    onResponseError(error) {
-      // error is of type ResponseError
       log.responseError(error)
    },
-   onUnexpectedError(error) {
-      log.unexpectedError(error)
-   },
-   onError(error) {
-      // the error can be a ResponseError, or an unexpected Error
-      log.error(error)
+   onRequestError(error) {
+      log.requestError(error)
    },
 }))
 
@@ -547,43 +549,7 @@ try {
    if (error instanceof CustomResponseError) {
       // handle the error
    } else {
-      // Unexpected error
-   }
-}
-```
-
-## <samp>\<parseUnexpectedError\></samp>
-
-**Type:** `ParseUnexpectedError<TError> = (error: Error, options: ComputedOptions) => TError`
-
-Modify unexpected errors. Unexpected errors are generated when:
-
--  the server did not respond or could not be reached (eg. failed to fetch)
--  the user code produced an error
-
-**Example:**
-
-```ts
-// extract the error.message for all unexpected errors
-const upfetch = up(fetch, () => ({
-   parseUnexpectedError: (error) => error.message,
-}))
-
-// using the onUnknwonError callback
-upfetch('https://example.com/', {
-   onUnexpectedError(error) {
-      // error is of type string
-   },
-})
-
-// using try/catch
-try {
-   await upfetch('https://example.com/')
-} catch (error) {
-   if (isResponseError(error)) {
-      // response error
-   } else {
-      // unexpected error
+      // Request error
    }
 }
 ```
@@ -629,7 +595,6 @@ upfetch('https://example.com/', {
 **Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
 
 Called when a response error was thrown (response.ok is false). \
-Called before [onError](#onerror)
 
 **Example:**
 
@@ -643,53 +608,21 @@ upfetch('https://example.com/', {
 })
 ```
 
-## <samp>\<onUnexpectedError\></samp>
+## <samp>\<onRequestError\></samp>
 
-**Type:** `<TUnexpectedError>(error: TUnexpectedError, options: ComputedOptions) => void`
+**Type:** `(error: Error & Record<string, any>, options: ComputedOptions) => void`
 
-Called when a unexpected error was thrown (an error that is not a response error). \
-Called before [onError](#onerror)
-
-**Example:**
-
-```ts
-const upfetch = up(fetch, () => ({
-   onUnexpectedError: (error, options) => console.log('first'),
-}))
-
-upfetch('https://example.com/', {
-   onUnexpectedError: (error, options) => console.log('second'),
-})
-```
-
-## <samp>\<onError\></samp>
-
-**Type:** `<TError>(error: TError, options: ComputedOptions) => void`
-
-Called when an error was thrown (either a response or an unexpected error). \
-Called after [onResponseError](#onresponseerror) and [onUnexpectedError](#onunexpectederror)
+Called when the fetch request fails (no response from the server). \
 
 **Example:**
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onError: (error, options) => console.log('first'),
+   onRequestError: (error, options) => console.log('first'),
 }))
 
 upfetch('https://example.com/', {
-   onError: (error, options) => console.log('second'),
-})
-```
-
-```ts
-const upfetch = up(fetch, () => ({
-   onResponseError: (error, options) => console.log('first')
-   onError: (error, options) => console.log('third')
-}))
-
-upfetch('https://example.com/', {
-   onResponseError: (error, options) => console.log('second')
-   onError: (error, options) => console.log('fourth')
+   onRequestError: (error, options) => console.log('second'),
 })
 ```
 
