@@ -40,18 +40,29 @@ export function up<
          })
          .then(async (res) => {
             if (res.ok) {
-               let data = await options.parseResponse(res, options)
+               let data: Awaited<TData>
+               try {
+                  data = await options.parseResponse(res, options)
+               } catch (error: any) {
+                  upfetchOpts.onParsingError?.(error, options)
+                  upOptions.onParsingError?.(error, options)
+                  throw error
+               }
                upfetchOpts.onSuccess?.(data, options)
                upOptions.onSuccess?.(data, options)
                return data
             } else {
-               let responseError = await options.parseResponseError(
-                  res,
-                  options,
-               )
-               upfetchOpts.onResponseError?.(responseError, options)
-               upOptions.onResponseError?.(responseError, options)
-               throw responseError
+               let respError: Awaited<TResponseError>
+               try {
+                  respError = await options.parseResponseError(res, options)
+               } catch (error: any) {
+                  upfetchOpts.onParsingError?.(error, options)
+                  upOptions.onParsingError?.(error, options)
+                  throw error
+               }
+               upfetchOpts.onResponseError?.(respError, options)
+               upOptions.onResponseError?.(respError, options)
+               throw respError
             }
          })
    }

@@ -18,6 +18,7 @@ import {
 export let eventListeners = [
    'onSuccess',
    'onBeforeFetch',
+   'onParsingError',
    'onResponseError',
    'onRequestError',
 ] as const satisfies (keyof UpOptions & keyof UpFetchOptions)[]

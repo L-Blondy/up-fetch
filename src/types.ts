@@ -78,9 +78,10 @@ export type UpOptions<
 > = BaseOptions<TFetchFn> & {
    headers?: RawHeaders
    onBeforeFetch?: (options: ComputedOptions) => void
+   onParsingError?: (error: any, options: ComputedOptions) => void
    onResponseError?: (error: any, options: ComputedOptions) => void
-   onSuccess?: (data: any, options: ComputedOptions) => void
    onRequestError?: (error: Error, options: ComputedOptions) => void
+   onSuccess?: (data: any, options: ComputedOptions) => void
    params?: Params
    parseResponse?: ParseResponse<any>
    parseResponseError?: ParseResponseError<TResponseError>
@@ -98,16 +99,17 @@ export type UpFetchOptions<
    onBeforeFetch?: (
       options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
+   onParsingError?: (error: any, options: ComputedOptions) => void
    onResponseError?: (
       error: TResponseError,
       options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
-   onSuccess?: (
-      data: TData,
-      options: ComputedOptions<TData, TResponseError, TFetchFn>,
-   ) => void
    onRequestError?: (
       error: Error,
+      options: ComputedOptions<TData, TResponseError, TFetchFn>,
+   ) => void
+   onSuccess?: (
+      data: TData,
       options: ComputedOptions<TData, TResponseError, TFetchFn>,
    ) => void
    params?: Params

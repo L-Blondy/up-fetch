@@ -695,6 +695,165 @@ describe('up', () => {
       })
    })
 
+   describe('onParsingError', () => {
+      test('on parseResponse error, should be called on upfetch, then on up', async () => {
+         server.use(
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            parseResponse: () => {
+               throw new Error('error message')
+            },
+            onParsingError() {
+               expect(count).toBe(2)
+               count++
+            },
+         }))
+
+         await upfetch('', {
+            onParsingError() {
+               expect(count).toEqual(1)
+               count++
+            },
+         }).catch((error) => {
+            expect(count).toBe(3)
+            count++
+            expect(error.message).toBe('error message')
+         })
+
+         expect(count).toBe(4)
+      })
+
+      test('on parseResponseError error, should be called on upfetch, then on up', async () => {
+         server.use(
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
+            }),
+         )
+
+         let count = 1
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            parseResponseError: () => {
+               throw new Error('error message')
+            },
+            onParsingError() {
+               expect(count).toBe(2)
+               count++
+            },
+         }))
+
+         await upfetch('', {
+            onParsingError() {
+               expect(count).toEqual(1)
+               count++
+            },
+         }).catch((error) => {
+            expect(count).toBe(3)
+            count++
+            expect(error.message).toBe('error message')
+         })
+
+         expect(count).toBe(4)
+      })
+
+      test('Should receive the error and the options', async () => {
+         server.use(
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            parseResponse: () => {
+               throw new Error('error message')
+            },
+            onParsingError(error, options) {
+               expect(error.message).toEqual('error message')
+               expect(options.input).toEqual('https://example.com/')
+            },
+         }))
+
+         await upfetch('', {
+            onParsingError(error, options) {
+               expect(error.message).toEqual('error message')
+               expect(options.input).toEqual('https://example.com/')
+            },
+         }).catch((error) => {
+            expect(error.message).toBe('error message')
+         })
+      })
+
+      test('Should not be called when onSuccess throws', async () => {
+         server.use(
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+         let count = 0
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onSuccess(data, options) {
+               throw new Error('on success error')
+            },
+            onParsingError() {
+               count++
+            },
+         }))
+
+         await upfetch('', {
+            onSuccess(data, options) {
+               count++
+               throw new Error('on success error')
+            },
+            onParsingError() {
+               count++
+            },
+         }).catch(() => {})
+
+         expect(count).toBe(1)
+      })
+      test('Should not be called when onResponseError throws', async () => {
+         server.use(
+            http.get('https://example.com', ({ request }) => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
+            }),
+         )
+         let count = 0
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onResponseError(error, options) {
+               throw new Error('on response error')
+            },
+            onParsingError() {
+               count++
+            },
+         }))
+
+         await upfetch('', {
+            onResponseError(error, options) {
+               count++
+               throw new Error('on response error')
+            },
+            onParsingError() {
+               count++
+            },
+         }).catch(() => {})
+
+         expect(count).toBe(1)
+      })
+   })
+
    describe('onResponseError', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(

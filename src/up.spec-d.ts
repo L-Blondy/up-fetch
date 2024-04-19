@@ -148,6 +148,12 @@ test('callback types', async () => {
             ComputedOptions<any, any, typeof fetch>
          >()
       },
+      onParsingError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, typeof fetch>
+         >()
+      },
       onResponseError(error, options) {
          expectTypeOf(error).toEqualTypeOf<any>()
          expectTypeOf(options).toEqualTypeOf<
@@ -196,6 +202,12 @@ test('callback types', async () => {
       onBeforeFetch(options) {
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<number, boolean, typeof fetch>
+         >()
+      },
+      onParsingError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<any, any, typeof fetch>
          >()
       },
       onResponseError(error, options) {
