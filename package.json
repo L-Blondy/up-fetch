@@ -1,13 +1,22 @@
 {
    "name": "up-fetch",
-   "version": "0.4.0-beta.3",
+   "version": "0.4.0-beta.4",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
    "main": "dist/index.js",
    "exports": {
-      ".": "./dist/index.js",
-      "./parsers/zod": "./dist/parsers/zod.js",
-      "./parsers/valibot": "./dist/parsers/valibot.js",
+      ".": {
+         "default": "./dist/index.js",
+         "types": "./dist/index.d.ts"
+      },
+      "./parsers/zod": {
+         "default": "./dist/parsers/zod.js",
+         "types": "./dist/parsers/zod.d.ts"
+      },
+      "./parsers/valibot": {
+         "default": "./dist/parsers/valibot.js",
+         "types": "./dist/parsers/valibot.d.ts"
+      },
       "./package.json": "./package.json"
    },
    "typesVersions": {
