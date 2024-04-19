@@ -35,9 +35,9 @@ const todos = await upfetch('https://a.b.c', {
 })
 ```
 
-Since the upfetch options extend the fetch api options, **_anything that can be done with fetch can also be done with upfetch_**.
+Since the upfetch options extend the fetch api options, anything that can be done with fetch can also be done with upfetch.
 
-Set some defaults
+You can set some defaults for all requests
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -49,6 +49,7 @@ const upfetch = up(fetch, () => ({
 Since the defaults are evaluated at request time, the `Authorization` header can be defined in `up` by dynamically reading the localStorage/cookies.
 
 ```ts
+// the baseUrl and Authorization header can be omitted
 const todos = await upfetch('/todos', {
    method: 'POST',
    body: { title: 'Hello World' },
