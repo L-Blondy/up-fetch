@@ -215,8 +215,6 @@ localStorage.removeItem('bearer-token')
 upfetch('/profile') // Non authenticated request
 ```
 
-The same approach can be used with `cookies`
-
 ```ts
 // ❌ Don't read the storage / cookies outside of `up`
 
@@ -236,6 +234,8 @@ const upfetch = up(fetch, () => ({
    headers: { Authentication: localStorage.getItem('bearer-token') },
 }))
 ```
+
+The same approach can be used with `cookies`
 
 </details>
 
