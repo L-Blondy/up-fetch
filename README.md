@@ -17,7 +17,11 @@ Tiny [fetch API][MDN] wrapper with configurable defaults.
 
 ```bash
 npm i up-fetch
-## or
+```
+
+or
+
+```bash
 bun i up-fetch
 ```
 
