@@ -37,6 +37,28 @@ const todos = await upfetch('https://a.b.c', {
 
 Since the upfetch options extend the fetch api options, **_anything that can be done with fetch can also be done with upfetch_**.
 
+Set some defaults
+
+```ts
+const upfetch = up(fetch, () => ({
+   baseUrl: 'https://a.b.c',
+   headers: { Authorization: localStorage.getItem('bearer-token') },
+}))
+```
+
+Since the defaults are evaluated at request time, the `Authorization` header can be defined in `up` by dynamically reading the localStorage/cookies.
+
+```ts
+const todos = await upfetch('/todos', {
+   method: 'POST',
+   body: { title: 'Hello World' },
+   params: { some: 'query params' },
+   headers: { 'X-Header': 'Another header' },
+   signal: AbortSignal.timeout(5000),
+   cache: 'no-store',
+})
+```
+
 ## ➡️ Features
 
 ### Set defaults for an upfetch instance
@@ -320,7 +342,7 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
-*Choose a default caching strategy*
+_Choose a default caching strategy_
 
 ```ts
 import { up } from 'up-fetch'
@@ -330,7 +352,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-*Override it for a specific request*
+_Override it for a specific request_
 
 ```ts
 upfetch('/posts', {
