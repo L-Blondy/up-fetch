@@ -228,6 +228,15 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+```ts
+// ✅ Keep it inside the function call
+
+// Checks the localStorage on each request
+const upfetch = up(fetch, () => ({
+   headers: { Authentication: localStorage.getItem('bearer-token') },
+}))
+```
+
 </details>
 
 <details><summary><b>Error handling</b></summary><br />
