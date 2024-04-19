@@ -655,20 +655,15 @@ This option is best used with a [validation adapter](#%EF%B8%8F-data-validation)
 **Example:**
 
 ```ts
-// parse a blob
+// create a fetcher for blobs
 const fetchBlob = up(fetch, () => ({
    parseResponse: (res) => res.blob(),
 }))
-
-fetchBlob('https://a.b.c')
 
 // disable the default parsing
 const upfetch = up(fetch, () => ({
    parseResponse: (res) => res,
 }))
-
-const response = await upfetch('https://a.b.c')
-const data = await response.json()
 ```
 
 **With a validation adapter:**
@@ -699,27 +694,10 @@ By default a [ResponseError](#%EF%B8%8F-throws-by-default) is thrown
 **Example:**
 
 ```ts
+// throw a `CustomResponseError` when `response.ok` is `false`
 const upfetch = up(fetch, () => ({
    parseResponseError: (res) => new CustomResponseError(res),
 }))
-
-// using the onResponseError callback
-upfetch('https://a.b.c', {
-   onResponseError(error) {
-      // the error is already typed as `CustomResponseError`
-   },
-})
-
-// using try/catch
-try {
-   await upfetch('https://a.b.c')
-} catch (error) {
-   if (error instanceof CustomResponseError) {
-      // handle the error
-   } else {
-      // Request error
-   }
-}
 ```
 
 `parseResponse` can also be used with a [validation adapter](#%EF%B8%8F-data-validation)
@@ -746,7 +724,7 @@ upfetch('https://a.b.c', {
 
 **Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
 
-Called when a response error was thrown (response.ok is false).
+Called when a response error was thrown (`response.ok` is `false`).
 
 **Example:**
 
