@@ -1,16 +1,14 @@
 {
    "name": "up-fetch",
-   "version": "0.3.0",
+   "version": "0.4.0-beta.10",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
    "main": "dist/index.js",
    "types": "dist/index.d.ts",
-   "engines": {
-      "node": ">=14.18"
-   },
+   "sideEffects": false,
    "scripts": {
       "lint": "eslint . --ext .ts",
-      "build": "tsup src/index.ts",
+      "build": "tsup",
       "dev": "vitest",
       "test": "vitest run && tsc --noEmit",
       "prepublish": "npm run test && npm run build",
@@ -44,8 +42,21 @@
       "prettier": "^2.8.7",
       "tsup": "^8.0.2",
       "typescript": "^5.3.3",
+      "valibot": ">=0.1.0",
       "vitest": "^0.29.8",
-      "zod": "^3.22.4"
+      "zod": ">=3"
+   },
+   "peerDependencies": {
+      "zod": ">=3",
+      "valibot": ">=0.1.0"
+   },
+   "peerDependenciesMeta": {
+      "zod": {
+         "optional": true
+      },
+      "valibot": {
+         "optional": true
+      }
    },
    "publishConfig": {
       "access": "public",
@@ -56,5 +67,8 @@
    "repository": {
       "type": "git",
       "url": "https://github.com/L-Blondy/up-fetch"
+   },
+   "engines": {
+      "node": ">=18"
    }
 }
