@@ -160,6 +160,63 @@ upfetch('https://a.b.c/todos', {
 })
 ```
 
+### Validate the data
+
+**up-fetch** has built-in integrations for [zod](https://zod.dev/) and [valibot](https://valibot.dev/)
+
+First install either `zod` or `valibot`
+
+```bash
+npm i zod
+# or
+npm i valibot
+```
+
+Validate the data with the built-in helpers. \
+The output data is typed properly
+
+**zod example:**
+
+```ts
+import { z } from 'zod'
+import { withZod } from 'up-fetch'
+
+// ...create or import your upfetch instance
+
+const todo = await upfetch('/todo/1', {
+   parseResponse: withZod(
+      z.object({
+         id: z.number(),
+         title: z.string(),
+         description: z.string(),
+         createdOn: z.string(),
+      }),
+   ),
+})
+```
+
+**valibot example:**
+
+```ts
+import { object, string, number } from 'zod'
+import { withValibot } from 'up-fetch'
+
+// ...create or import your upfetch instance
+
+const todo = await upfetch('/todo/1', {
+   parseResponse: withValibot(
+      object({
+         id: number(),
+         title: string(),
+         description: string(),
+         createdOn: string(),
+      }),
+   ),
+})
+```
+
+The same can be done on `parseResponseError`
+
 ### Interceptors
 
 You can setup the interceptors for all requests
