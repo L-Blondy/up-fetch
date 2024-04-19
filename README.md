@@ -199,26 +199,34 @@ upfetch('/todos', {
 
 <details><summary><b>Authentication</b></summary><br />
 
-Since the options are evaluated at request time, the Authentication header can be defined when creating the instance
+Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
 
 ```ts
 import { up } from 'up-fetch'
 
-const upfetch = up(fetch, () => {
-   const token = localStorage.getItem('token')
-   return {
-      headers: { Authentication: token ? `Bearer ${token}` : undefined },
-   }
-})
+const upfetch = up(fetch, () => ({
+   headers: { Authentication: localStorage.getItem('bearer-token') },
+}))
 
-localStorage.setItem('token', 'abcdef123456')
+localStorage.setItem('bearer-token', 'Bearer abcdef123456')
 upfetch('/profile') // Authenticated request
 
-localStorage.removeItem('token')
+localStorage.removeItem('bearer-token')
 upfetch('/profile') // Non authenticated request
 ```
 
-The same approach can be used with `cookies` instead of `localStorage`
+The same approach can be used with `cookies`
+
+```ts
+❌ Don't read the storage outside of `up`
+
+// This value never changes
+const bearerToken = localStorage.getItem('bearer-token')
+
+const upfetch = up(fetch, () => ({
+   headers: { Authentication: bearerToken },
+}))
+```
 
 </details>
 
@@ -297,7 +305,7 @@ import { up } from 'up-fetch'
 const upfetch = up(fetch, () => ({
    cache: 'no-store',
    params: { expand: true, count: 1 },
-   headers: { Authorization: `Bearer ${token}` },
+   headers: { Authorization: localStorage.getItem('bearer-token') },
 }))
 
 upfetch('https://a.b.c', {
