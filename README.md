@@ -12,7 +12,7 @@ Tiny [fetch API][MDN] wrapper with configurable defaults.
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  🤯 **Validation integrations** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
 -  👻 **Throws by default** - when `response.ok` is `false`
--  ⚡ **Works everywhere** - Modern browsers, bun, node 18+, deno
+-  ⚡ **Works everywhere** - Modern browsers, [bun](https://bun.sh/), [node](https://nodejs.org/en) 18+, [deno](https://deno.com/) (with the `npm:` specifier)
 
 ## ➡️ QuickStart
 
