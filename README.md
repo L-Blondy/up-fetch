@@ -17,6 +17,8 @@ Tiny [fetch API][MDN] wrapper with configurable defaults.
 
 ```bash
 npm i up-fetch
+## or
+bun i up-fetch
 ```
 
 Create a new upfetch instance
