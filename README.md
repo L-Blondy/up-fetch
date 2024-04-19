@@ -29,7 +29,7 @@ const upfetch = up(fetch)
 Make a fetch request
 
 ```ts
-const todos = await upfetch('https://a.b.c', {
+const todo = await upfetch('https://a.b.c', {
    method: 'POST',
    body: { hello: 'world' },
 })
@@ -46,11 +46,11 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-The defaults are dynamic, since they are evaluated before each request it becomes trivial to implement authentication.
+The **defaults** are dynamic, since they are **evaluated before each request** it becomes trivial to implement authentication.
 
 ```ts
 // the baseUrl and Authorization header can be omitted
-const data = await upfetch('/todos', {
+const todo = await upfetch('/todos', {
    method: 'POST',
    body: { title: 'Hello World' },
    params: { some: 'query params' },
