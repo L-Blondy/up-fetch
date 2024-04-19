@@ -176,7 +176,6 @@ npm i valibot
 ...then validate the data with the built-in helpers.
 
 The output data will be typed properly. \
-In case of error the adapters will throw. You can listen to these errors with the [onParsingError](#onparsingerror) option
 
 **zod example:**
 
@@ -220,7 +219,8 @@ const todo = await upfetch('/todo/1', {
 // typeof todo = { id: number, title: string, description: string, createdOn: string}
 ```
 
-The same can be done on `parseResponseError`
+In case of error the adapters will throw. You can listen to these errors with the [onParsingError](#onparsingerror) option.
+The adapters can also be used on `parseResponseError`
 
 ### ✔️ Interceptors
 
@@ -761,7 +761,7 @@ upfetch('https://a.b.c', {
 **Type:** `(error: any, options: ComputedOptions) => void`
 
 Called when either `parseResponse` or `parseResponseError` throw. \
-Usefull when using a [validation integration](#validation-integrations)
+Usefull when using a [validation adapter](#data-validation)
 
 **Example:**
 
