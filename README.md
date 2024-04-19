@@ -672,6 +672,8 @@ const upfetch = up(fetch, () => ({
 import { z } from 'zod'
 import { withZod } from 'up-fetch'
 
+// ...create or import your upfetch instance
+
 const todo = await upfetch('/todo/1', {
    parseResponse: withZod(
       z.object({
