@@ -650,6 +650,8 @@ upfetch('https://a.b.c', {
 Customize the fetch response parsing. \
 By default `json` and `text` responses are parsed
 
+This option is best used with a [validation adapter](#%EF%B8%8F-data-validation)
+
 **Example:**
 
 ```ts
@@ -669,12 +671,30 @@ const response = await upfetch('https://a.b.c')
 const data = await response.json()
 ```
 
+**With a validation adapter:**
+
+```ts
+import { z } from 'zod'
+import { withZod } from 'up-fetch'
+
+const todo = await upfetch('/todo/1', {
+   parseResponse: withZod(
+      z.object({
+         id: z.number(),
+         title: z.string(),
+         description: z.string(),
+         createdOn: z.string(),
+      }),
+   ),
+})
+```
+
 ## <samp>\<parseResponseError\></samp>
 
 **Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
 
 Customize the parsing of a fetch response error (when response.ok is false) \
-By default a [ResponseError](#%EF%B8%8F-throws-by-default) is created
+By default a [ResponseError](#%EF%B8%8F-throws-by-default) is thrown
 
 **Example:**
 
@@ -686,7 +706,7 @@ const upfetch = up(fetch, () => ({
 // using the onResponseError callback
 upfetch('https://a.b.c', {
    onResponseError(error) {
-      // the error is already typed
+      // the error is already typed as `CustomResponseError`
    },
 })
 
@@ -701,6 +721,8 @@ try {
    }
 }
 ```
+
+`parseResponse` can also be used with a [validation adapter](#%EF%B8%8F-data-validation)
 
 ## <samp>\<onSuccess\></samp>
 
@@ -730,11 +752,11 @@ Called when a response error was thrown (response.ok is false).
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onResponseError: (error, options) => console.log('2nd'),
+   onResponseError: (error, options) => console.log('Response error', error),
 }))
 
 upfetch('https://a.b.c', {
-   onResponseError: (error, options) => console.log('1st'),
+   onResponseError: (error, options) => console.log('Response error', error),
 })
 ```
 
@@ -748,11 +770,11 @@ Called when the fetch request fails (no response from the server).
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onRequestError: (error, options) => console.log('2nd'),
+   onRequestError: (error, options) => console.log('Request error', error),
 }))
 
 upfetch('https://a.b.c', {
-   onRequestError: (error, options) => console.log('1st'),
+   onRequestError: (error, options) => console.log('Request error', error),
 })
 ```
 
@@ -766,12 +788,15 @@ Usefull when using a [validation adapter](#%EF%B8%8F-data-validation)
 **Example:**
 
 ```ts
+import { z } from 'zod'
+import { withZod } from 'up-fetch'
+
 const upfetch = up(fetch, () => ({
-   onParsingError: (options) => console.log('2nd'),
+   onParsingError: (error, options) => console.log('Validation error', error),
 }))
 
 upfetch('https://a.b.c', {
-   onParsingError: (error, options) => console.log('1st'),
+   onParsingError: (error, options) => console.log('Validation error', error),
    parseResponse: withZod(
       z.object({
          id: z.number(),
