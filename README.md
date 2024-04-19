@@ -163,9 +163,9 @@ upfetch('https://a.b.c/todos', {
 
 ### ✔️ Data Validation
 
-**up-fetch** has built-in integrations for [zod](https://zod.dev/) and [valibot](https://valibot.dev/)
+**up-fetch** has built-in adapters for [zod](https://zod.dev/) and [valibot](https://valibot.dev/)
 
-First install either `zod` or `valibot`
+First install either `zod` or `valibot`...
 
 ```bash
 npm i zod
@@ -173,8 +173,10 @@ npm i zod
 npm i valibot
 ```
 
-Validate the data with the built-in helpers. \
-The output data is typed properly
+...then validate the data with the built-in helpers.
+
+The output data will be typed properly. \
+In case of error the adapters will throw. You can listen to these errors with the [onParsingError](#onparsingerror) option
 
 **zod example:**
 
@@ -194,6 +196,7 @@ const todo = await upfetch('/todo/1', {
       }),
    ),
 })
+// typeof todo = { id: number, title: string, description: string, createdOn: string}
 ```
 
 **valibot example:**
@@ -214,6 +217,7 @@ const todo = await upfetch('/todo/1', {
       }),
    ),
 })
+// typeof todo = { id: number, title: string, description: string, createdOn: string}
 ```
 
 The same can be done on `parseResponseError`
