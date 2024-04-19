@@ -761,7 +761,7 @@ upfetch('https://a.b.c', {
 **Type:** `(error: any, options: ComputedOptions) => void`
 
 Called when either `parseResponse` or `parseResponseError` throw. \
-Usefull when using a [validation adapter](#✔️-data-validation)
+Usefull when using a [validation adapter](#-data-validation)
 
 **Example:**
 
