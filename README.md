@@ -81,10 +81,10 @@ See the full [options](#%EF%B8%8F-api) list for more details.
 
 ```ts
 // before
-fetch(`https://a.b.c/todos?search=${search}&skip=${skip}&take=${take}`)
+fetch(`https://a.b.c/?search=${search}&skip=${skip}&take=${take}`)
 
 // after
-upfetch('https://a.b.c/todos', {
+upfetch('https://a.b.c', {
    params: { search, skip, take },
 })
 ```
@@ -111,11 +111,11 @@ The parsing method is customizable via the [parseResponse](#parseresponse) optio
 
 ```ts
 // before
-const response = await fetch('https://a.b.c/todos')
+const response = await fetch('https://a.b.c')
 const todos = await response.json()
 
 // after
-const todos = await upfetch('https://a.b.c/todos')
+const todos = await upfetch('https://a.b.c')
 ```
 
 ### ✔️ throws by default
@@ -131,7 +131,7 @@ import { isResponseError } from 'up-fetch'
 import { upfetch } from '...'
 
 try {
-   await upfetch('https://a.b.c/todos')
+   await upfetch('https://a.b.c')
 } catch (error) {
    if (isResponseError(error)) {
       console.log(error.data)
@@ -148,14 +148,14 @@ The `'Content-Type': 'application/json'` header is automatically set when the bo
 
 ```ts
 // before
-fetch('https://a.b.c/todos', {
+fetch('https://a.b.c', {
    method: 'POST',
    headers: { 'Content-Type': 'application/json' },
    body: JSON.stringify({ post: 'Hello World' }),
 })
 
 // after
-upfetch('https://a.b.c/todos', {
+upfetch('https://a.b.c', {
    method: 'POST',
    body: { post: 'Hello World' },
 })
@@ -462,8 +462,8 @@ const upfetch = up(fetch, () => ({
 }))
 
 // override the defaults for a specific call
-upfetch('todos', {
-   baseUrl: 'https://another.url.com',
+upfetch('/todos', {
+   baseUrl: 'https://x.y.z',
    cache: 'force-cache',
 })
 ```
@@ -489,7 +489,7 @@ const upfetch = up(fetch, () => ({
 upfetch('/id')
 
 // change the baseUrl for a single request
-upfetch('/id', { baseUrl: 'https://another-url.com' })
+upfetch('/id', { baseUrl: 'https://x.y.z' })
 ```
 
 <!--  -->
@@ -510,25 +510,25 @@ const upfetch = up(fetch, () => ({
 }))
 
 // `expand` can be omitted
-// https://a.b.c/?expand=true&page=2&limit=10
+// ?expand=true&page=2&limit=10
 upfetch('https://a.b.c', {
    params: { page: 2, limit: 10 },
 })
 
 // override the `expand` param
-// https://a.b.c/?expand=false&page=2&limit=10
+// ?expand=false&page=2&limit=10
 upfetch('https://a.b.c', {
    params: { page: 2, limit: 10, expand: false },
 })
 
 // delete `expand` param
-// https://a.b.c/?expand=false&page=2&limit=10
+// ?expand=false&page=2&limit=10
 upfetch('https://a.b.c', {
    params: { expand: undefined },
 })
 
 // conditionally override the expand param `expand` param
-// https://a.b.c/?expand=false&page=2&limit=10
+// ?expand=false&page=2&limit=10
 upfetch('https://a.b.c', (upOptions) => ({
    params: { expand: isTruthy ? true : upOptions.params.expand },
 }))
@@ -613,8 +613,8 @@ const upfetch = up(fetch, () => ({
    serializeParams: (params) => qs.stringify(params),
 }))
 
-// https://a.b.c/todos?a[b]=c
-upfetch('https://a.b.c/todos', {
+// ?a[b]=c
+upfetch('https://a.b.c', {
    params: { a: { b: 'c' } },
 })
 ```
