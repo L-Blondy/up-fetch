@@ -616,7 +616,7 @@ upfetch('https://example.com/', {
 
 **Type:** `<TData>(data: TData, options: ComputedOptions) => void`
 
-Called when everything went fine
+Called when `response.ok` is `true`
 
 **Example:**
 
