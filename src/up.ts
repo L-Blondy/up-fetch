@@ -45,7 +45,7 @@ export function up<
                upOptions.onSuccess?.(data, options)
                return data
             } else {
-               const responseError = await options.parseResponseError(
+               let responseError = await options.parseResponseError(
                   res,
                   options,
                )

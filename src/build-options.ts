@@ -53,8 +53,8 @@ export let buildOptions = <
    get input() {
       if (isRequest(input)) return input
       if (input instanceof URL) return input.toString()
-      const base = this.baseUrl ? new URL(this.baseUrl) : undefined
-      const path = [base?.pathname, input.toString()]
+      let base = this.baseUrl ? new URL(this.baseUrl) : undefined
+      let path = [base?.pathname, input.toString()]
          .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
          .filter(Boolean)
          .join('/')
