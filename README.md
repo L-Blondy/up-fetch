@@ -62,8 +62,6 @@ const todo = await upfetch('/todos', {
 })
 ```
 
-%EF%B8%8F-
-
 ## ➡️ Features
 
 ### ✔️ Set defaults for an upfetch instance
@@ -676,7 +674,7 @@ const data = await response.json()
 **Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
 
 Customize the parsing of a fetch response error (when response.ok is false) \
-By default a [ResponseError](#throws-by-default) is created
+By default a [ResponseError](#%EF%B8%8F-throws-by-default) is created
 
 **Example:**
 
