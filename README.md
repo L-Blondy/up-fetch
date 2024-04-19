@@ -175,8 +175,6 @@ npm i valibot
 
 ...then validate the data with the built-in helpers.
 
-The output data will be typed properly. \
-
 **zod example:**
 
 ```ts
