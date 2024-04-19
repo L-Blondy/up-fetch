@@ -218,9 +218,9 @@ upfetch('/profile') // Non authenticated request
 The same approach can be used with `cookies`
 
 ```ts
-❌ Don't read the storage outside of up
+// ❌ Don't read the storage outside of up
 
-// This value never changes
+// This value will never change
 const bearerToken = localStorage.getItem('bearer-token')
 
 const upfetch = up(fetch, () => ({
