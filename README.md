@@ -197,7 +197,7 @@ upfetch('/todos', {
 
 ## ➡️ Examples
 
-<details><summary><b>Authentication</b></summary><br />
+<details><summary><b>💡 Authentication</b></summary><br />
 
 Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
 
@@ -239,7 +239,7 @@ The same approach can be used with `cookies`
 
 </details>
 
-<details><summary><b>Error handling</b></summary><br />
+<details><summary><b>💡 Error handling</b></summary><br />
 
 **up-fetch** throws a [ResponseError](#throws-by-default) when `response.ok` is `false`.
 
@@ -304,7 +304,7 @@ upfetch('/fail-to-fetch')
 
 </details>
 
-<details><summary><b>Delete a default option</b></summary><br />
+<details><summary><b>💡 Delete a default option</b></summary><br />
 
 Simply pass `undefined`
 
@@ -326,7 +326,7 @@ upfetch('https://a.b.c', {
 
 </details>
 
-<details><summary><b>Override a default option conditionally</b></summary><br />
+<details><summary><b>💡 Override a default option conditionally</b></summary><br />
 
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
@@ -356,7 +356,7 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 </details>
 
-<details><summary><b>Next.js App Router</b></summary><br />
+<details><summary><b>💡 Next.js App Router</b></summary><br />
 
 Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
@@ -379,8 +379,6 @@ upfetch('/posts', {
 ```
 
 </details>
-
-<!-- TODO: FormData -->
 
 ## ➡️ Types
 
@@ -634,7 +632,7 @@ upfetch('https://example.com/', {
 
 **Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
 
-Called when a response error was thrown (response.ok is false). \
+Called when a response error was thrown (response.ok is false).
 
 **Example:**
 
@@ -652,7 +650,7 @@ upfetch('https://example.com/', {
 
 **Type:** `(error: Error, options: ComputedOptions) => void`
 
-Called when the fetch request fails (no response from the server). \
+Called when the fetch request fails (no response from the server).
 
 **Example:**
 
