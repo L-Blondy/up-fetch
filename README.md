@@ -79,10 +79,10 @@ See the full [options](#options) list for more details.
 
 ```ts
 // before
-fetch(`https://my.url/todos?search=${search}&skip=${skip}&take=${take}`)
+fetch(`https://a.b.c/todos?search=${search}&skip=${skip}&take=${take}`)
 
 // after
-upfetch('https://my.url/todos', {
+upfetch('https://a.b.c/todos', {
    params: { search, skip, take },
 })
 ```
@@ -93,7 +93,7 @@ Set the baseUrl when you create the instance
 
 ```ts
 export const upfetch = up(fetch, () => ({
-   baseUrl: 'https://my.url',
+   baseUrl: 'https://a.b.c',
 }))
 ```
 
@@ -109,11 +109,11 @@ The parsing method is customizable via the [parseResponse](#parseresponse) optio
 
 ```ts
 // before
-const response = await fetch('https://my.url/todos')
+const response = await fetch('https://a.b.c/todos')
 const todos = await response.json()
 
 // after
-const todos = await upfetch('https://my.url/todos')
+const todos = await upfetch('https://a.b.c/todos')
 ```
 
 ### throws by default
@@ -129,7 +129,7 @@ import { isResponseError } from 'up-fetch'
 import { upfetch } from '...'
 
 try {
-   await upfetch('https://my.url/todos')
+   await upfetch('https://a.b.c/todos')
 } catch (error) {
    if (isResponseError(error)) {
       console.log(error.data)
@@ -146,14 +146,14 @@ The `'Content-Type': 'application/json'` header is automatically set when the bo
 
 ```ts
 // before
-fetch('https://my.url/todos', {
+fetch('https://a.b.c/todos', {
    method: 'POST',
    headers: { 'Content-Type': 'application/json' },
    body: JSON.stringify({ post: 'Hello World' }),
 })
 
 // after
-upfetch('https://my.url/todos', {
+upfetch('https://a.b.c/todos', {
    method: 'POST',
    body: { post: 'Hello World' },
 })
@@ -169,6 +169,7 @@ const upfetch = up(fetch, () => ({
    onSuccess: (data, options) => console.log(data),
    onResponseError: (error, options) => console.log(error),
    onRequestError: (error, options) => console.log(error),
+   onParsingError: (error, options) => console.log(error),
 }))
 ```
 
@@ -180,6 +181,7 @@ upfetch('/todos', {
    onSuccess: (todos, options) => console.log(todos),
    onResponseError: (error, options) => console.log(error),
    onRequestError: (error, options) => console.log(error),
+   onParsingError: (error, options) => console.log(error),
 })
 ```
 
@@ -391,7 +393,7 @@ All options can be set either on **up** or on an **upfetch** instance except for
 ```ts
 // set defaults for the instance
 const upfetch = up(fetch, () => ({
-   baseUrl: 'https://my.url.com',
+   baseUrl: 'https://a.b.c',
    cache: 'no-store',
    headers: { Authorization: `Bearer ${token}` },
 }))
@@ -417,10 +419,10 @@ Sets the base url for the requests
 
 ```ts
 const upfetch = up(fetch, () => ({
-   baseUrl: 'https://example.com',
+   baseUrl: 'https://a.b.c',
 }))
 
-// make a GET request to 'https://example.com/id'
+// make a GET request to 'https://a.b.c/id'
 upfetch('/id')
 
 // change the baseUrl for a single request
@@ -434,7 +436,7 @@ upfetch('/id', { baseUrl: 'https://another-url.com' })
 **Type:** `{ [key: string]: any }`
 
 The url search params. \
-The default params defined in `up` and the `upfetch` instance params are **shallowly merged**. \
+The params defined in `up` and the params defined in `upfetch` are **shallowly merged**. \
 Only non-nested objects are supported by default. See the [serializeParams](#serializeparams) option for nested objects.
 
 **Example:**
@@ -445,22 +447,67 @@ const upfetch = up(fetch, () => ({
 }))
 
 // `expand` can be omitted
-// the request is sent to: https://example.com/?expand=true&page=2&limit=10
-upfetch('https://example.com', {
+// https://a.b.c/?expand=true&page=2&limit=10
+upfetch('https://a.b.c', {
    params: { page: 2, limit: 10 },
 })
 
-// override the `expand` value
-// https://example.com/?expand=false&page=2&limit=10
-upfetch('https://example.com', {
+// override the `expand` param
+// https://a.b.c/?expand=false&page=2&limit=10
+upfetch('https://a.b.c', {
    params: { page: 2, limit: 10, expand: false },
 })
 
-// remove `expand` from the params
-// https://example.com/?expand=false&page=2&limit=10
-upfetch('https://example.com', {
-   params: { page: 2, limit: 10, expand: undefined },
+// delete `expand` param
+// https://a.b.c/?expand=false&page=2&limit=10
+upfetch('https://a.b.c', {
+   params: { expand: undefined },
 })
+
+// conditionally override the expand param `expand` param
+// https://a.b.c/?expand=false&page=2&limit=10
+upfetch('https://a.b.c', (upOptions) => ({
+   params: { expand: isTruthy ? true : upOptions.params.expand },
+}))
+```
+
+<!--  -->
+
+## <samp>\<headers\></samp>
+
+**Type:** `HeadersInit | Record<string, string | number | null | undefined>`
+
+Same as the fetch API headers with widened types. \
+The headers defined in `up` and the headers defined in `upfetch` are **shallowly merged**. \
+
+**Example:**
+
+```ts
+const upfetch = up(fetch, () => ({
+   headers: { Authorization: 'Bearer ...' },
+}))
+
+// the request will have both the `Authorization` and the `Test-Header` headers
+upfetch('https://a.b.c', {
+   headers: { 'Test-Header': 'test value' },
+})
+
+// override the `Authorization` header
+upfetch('https://a.b.c', {
+   headers: { Authorization: 'Bearer ...2' },
+})
+
+// delete the `Authorization` header
+upfetch('https://a.b.c', {
+   headers: { Authorization: null }, // undefined also works
+})
+
+// conditionally override the `Authorization` header
+upfetch('https://a.b.c', (upOptions) => ({
+   headers: {
+      Authorization: isTruthy ? 'Bearer ...3' : upOptions.headers.val,
+   },
+}))
 ```
 
 <!--  -->
@@ -503,8 +550,8 @@ const upfetch = up(fetch, () => ({
    serializeParams: (params) => qs.stringify(params),
 }))
 
-// https://example.com/todos?a[b]=c
-upfetch('https://example.com/todos', {
+// https://a.b.c/todos?a[b]=c
+upfetch('https://a.b.c/todos', {
    params: { a: { b: 'c' } },
 })
 ```
@@ -528,7 +575,7 @@ const upfetch = up(fetch, () => ({
    serializeBody: (body) => stringify(body),
 }))
 
-upfetch('https://example.com/', {
+upfetch('https://a.b.c', {
    body: { now: 'imagine a circular ref' },
 })
 ```
@@ -548,14 +595,14 @@ const fetchBlob = up(fetch, () => ({
    parseResponse: (res) => res.blob(),
 }))
 
-fetchBlob('https://example.com/')
+fetchBlob('https://a.b.c')
 
 // disable the default parsing
 const upfetch = up(fetch, () => ({
    parseResponse: (res) => res,
 }))
 
-const response = await upfetch('https://example.com/')
+const response = await upfetch('https://a.b.c')
 const data = await response.json()
 ```
 
@@ -574,7 +621,7 @@ const upfetch = up(fetch, () => ({
 }))
 
 // using the onResponseError callback
-upfetch('https://example.com/', {
+upfetch('https://a.b.c', {
    onResponseError(error) {
       // the error is already typed
    },
@@ -582,7 +629,7 @@ upfetch('https://example.com/', {
 
 // using try/catch
 try {
-   await upfetch('https://example.com/')
+   await upfetch('https://a.b.c')
 } catch (error) {
    if (error instanceof CustomResponseError) {
       // handle the error
@@ -590,24 +637,6 @@ try {
       // Request error
    }
 }
-```
-
-## <samp>\<onBeforeFetch\></samp>
-
-**Type:** `(options: ComputedOptions) => void`
-
-Called before the [fetch][MDN] call is made.
-
-**Example:**
-
-```ts
-const upfetch = up(fetch, () => ({
-   onBeforeFetch: (options) => console.log('first'),
-}))
-
-upfetch('https://example.com/', {
-   onBeforeFetch: (options) => console.log('second'),
-})
 ```
 
 ## <samp>\<onSuccess\></samp>
@@ -620,11 +649,11 @@ Called when `response.ok` is `true`
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onSuccess: (data, options) => console.log('first'),
+   onSuccess: (data, options) => console.log('2nd'),
 }))
 
-upfetch('https://example.com/', {
-   onSuccess: (data, options) => console.log('second'),
+upfetch('https://a.b.c', {
+   onSuccess: (data, options) => console.log('1st'),
 })
 ```
 
@@ -638,11 +667,11 @@ Called when a response error was thrown (response.ok is false).
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onResponseError: (error, options) => console.log('first'),
+   onResponseError: (error, options) => console.log('2nd'),
 }))
 
-upfetch('https://example.com/', {
-   onResponseError: (error, options) => console.log('second'),
+upfetch('https://a.b.c', {
+   onResponseError: (error, options) => console.log('1st'),
 })
 ```
 
@@ -656,11 +685,56 @@ Called when the fetch request fails (no response from the server).
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onRequestError: (error, options) => console.log('first'),
+   onRequestError: (error, options) => console.log('2nd'),
 }))
 
-upfetch('https://example.com/', {
-   onRequestError: (error, options) => console.log('second'),
+upfetch('https://a.b.c', {
+   onRequestError: (error, options) => console.log('1st'),
+})
+```
+
+## <samp>\<onParsingError\></samp>
+
+**Type:** `(error: any, options: ComputedOptions) => void`
+
+Called when either `parseResponse` or `parseResponseError` throw. \
+Usefull when using a [validation integration](#validation-integrations)
+
+**Example:**
+
+```ts
+const upfetch = up(fetch, () => ({
+   onParsingError: (options) => console.log('2nd'),
+}))
+
+upfetch('https://a.b.c', {
+   onParsingError: (error, options) => console.log('1st'),
+   parseResponse: withZod(
+      z.object({
+         id: z.number(),
+         title: z.string(),
+         description: z.string(),
+         createdOn: z.string(),
+      }),
+   ),
+})
+```
+
+## <samp>\<onBeforeFetch\></samp>
+
+**Type:** `(options: ComputedOptions) => void`
+
+Called before the request is sent.
+
+**Example:**
+
+```ts
+const upfetch = up(fetch, () => ({
+   onBeforeFetch: (options) => console.log('2nd'),
+}))
+
+upfetch('https://a.b.c', {
+   onBeforeFetch: (options) => console.log('1st'),
 })
 ```
 
