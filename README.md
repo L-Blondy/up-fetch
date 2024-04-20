@@ -1,6 +1,11 @@
 # up-fetch
 
-Tiny [fetch API][MDN] wrapper with configurable defaults.
+Want to leave axios but can't find an alternative? \
+Want to use the fetch API but it's too cumbersome to work with? \
+Sick of writing your own fetch wrapper on every single project? \
+**up-fetch** might be what you are looking for. 
+
+**up-fetch** is a 1kb wrapper around the fetch API, smoothing out rough edges making it dead simple to work with. It's [validation adapters](#%EF%B8%8F-data-validation) provide easy end to end type safety
 
 ## ➡️ Highlights
 
@@ -10,7 +15,7 @@ Tiny [fetch API][MDN] wrapper with configurable defaults.
 -  🔥 **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
 -  💫 **Reusable** - create instances with custom defaults
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
--  🤯 **Validation integrations** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
+-  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
 -  👻 **Throws by default** - when `response.ok` is `false`
 -  😉 **Works everywhere** - All Modern browsers, bun, node 18+, deno (with the `npm:` specifier)
 
