@@ -178,13 +178,13 @@ npm i zod
 npm i valibot
 ```
 
-...then validate the data with the built-in helpers.
+...then validate the data with the built-in _tree shakeable_ helpers.
 
 **zod example:**
 
 ```ts
 import { z } from 'zod'
-import { withZod } from 'up-fetch'
+import { withZod } from 'up-fetch' 
 
 // ...create or import your upfetch instance
 
