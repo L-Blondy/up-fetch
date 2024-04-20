@@ -4,7 +4,7 @@ Sick of writing your own fetch wrapper on every single project? \
 Want to use the fetch API but it's too cumbersome to work with? \
 **up-fetch** might be what you are looking for. 
 
-**up-fetch** is a 1kb wrapper around the fetch API, smoothing out rough edges making it dead simple to work with. It's [validation adapters](#%EF%B8%8F-data-validation) provide easy end to end type safety
+**up-fetch** is a tiny 1kb configuration tool for the fetch API with sensible default. 
 
 ## ➡️ Highlights
 
