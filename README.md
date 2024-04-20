@@ -1,8 +1,6 @@
 # up-fetch
 
-Sick of writing your own fetch wrapper on every single project? \
-Want to use the fetch API but it's too cumbersome to work with? \
-**up-fetch** might be what you are looking for. 
+Sick of writing your own fetch wrapper on every single project? **up-fetch** might be what you are looking for. 
 
 **up-fetch** is a tiny 1kb configuration tool for the fetch API with sensible default. 
 
