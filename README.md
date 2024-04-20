@@ -18,6 +18,7 @@ Sick of writing your own fetch wrapper on every single project? \
 -  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
 -  👻 **Throws by default** - when `response.ok` is `false`
 -  😉 **Works everywhere** - All Modern browsers, bun, node 18+, deno (with the `npm:` specifier)
+-  📦 **Tree Shakable** - You only get what you use
 
 ## ➡️ QuickStart
 
