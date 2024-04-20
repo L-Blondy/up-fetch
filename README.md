@@ -40,9 +40,8 @@ const todo = await upfetch('https://a.b.c', {
 })
 ```
 
-Since the upfetch options extend the fetch api options, anything that can be done with fetch can also be done with upfetch.
-
-You can set some defaults for all requests
+You can set some defaults for all requests. \
+The **defaults** are dynamic, since they are **evaluated before each request** it becomes trivial to implement authentication. 
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -51,7 +50,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-The **defaults** are dynamic, since they are **evaluated before each request** it becomes trivial to implement authentication.
+Since the upfetch options extend the fetch api options, anything that can be done with fetch can also be done with upfetch.
 
 ```ts
 // the baseUrl and Authorization header can be omitted
@@ -63,6 +62,14 @@ const todo = await upfetch('/todos', {
    signal: AbortSignal.timeout(5000),
    cache: 'no-store',
 })
+```
+
+Any fetch API implementation can be used, like [undici](https://github.com/nodejs/undici) or [node-fetch](https://github.com/node-fetch/node-fetch)
+
+```ts
+import { fetch } from 'undici'
+
+const upfetch = up(fetch)
 ```
 
 ## ➡️ Features
