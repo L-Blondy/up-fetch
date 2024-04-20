@@ -41,7 +41,7 @@ const todo = await upfetch('https://a.b.c', {
 ```
 
 You can set some defaults for all requests. \
-The **defaults** are dynamic, since they are **evaluated before each request** it becomes trivial to implement authentication. 
+The **defaults** are dynamic, they are **evaluated before each request**, great for handling authentication. 
 
 ```ts
 const upfetch = up(fetch, () => ({
