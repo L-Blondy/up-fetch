@@ -1,8 +1,7 @@
 # up-fetch
 
-Want to leave axios but can't find an alternative? \
-Want to use the fetch API but it's too cumbersome to work with? \
 Sick of writing your own fetch wrapper on every single project? \
+Want to use the fetch API but it's too cumbersome to work with? \
 **up-fetch** might be what you are looking for. 
 
 **up-fetch** is a 1kb wrapper around the fetch API, smoothing out rough edges making it dead simple to work with. It's [validation adapters](#%EF%B8%8F-data-validation) provide easy end to end type safety
