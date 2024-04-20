@@ -812,7 +812,7 @@ upfetch('https://a.b.c', {
 ## ➡️ Compatibility
 
 -  ✅ All modern browsers
--  ✅ Bun
+-  ✅ Bun (Bun 1.1.3 does not support upload streaming with `duplex: "half"` over HTTP/2 [Implement HTTP2 server support to enable gRPC #8823](https://github.com/oven-sh/bun/issues/8823))
 -  ✅ Node 18+
 -  ✅ Deno (with the `npm:` specifier)
 
