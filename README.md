@@ -71,27 +71,31 @@ import { fetch } from 'undici'
 const upfetch = up(fetch)
 ```
 
-### upfetch vs raw fetch
+### raw fetch vs upfetch
 
-Raw fetch api call that throws on response error:
+#### Raw fetch example that throws when response.ok is false:
+
+You should first create a custom Response Error class that extends the built in Error class in order to expose the response ans the parsed response data. 
+
+A naive implementation might look like this
 
 ```ts
-// you first need to create a custom Error class that extends the default Error class
-// A naive implementation might look like this
-export class ResponseError<TData> extends Error {
-   override name: 'ResponseError'
-   response: Response
-   data: TData
-
-   constructor(res: Response, data: TData) {
+export class ResponseError extends Error {
+   constructor(response, data) {
       super(`Request failed with status ${res.status}`)
       this.data = data
       this.name = 'ResponseError'
-      this.response = res
+      this.response = response
+      // don't need to expose the status at the top level,
+      // it will be available with `error.response.status`
    }
 }
+```
 
-const fetchData = async ({ search, take, skip }: MyParams) => {
+Then proceed with the definition of the fetcher itself
+
+```ts
+const fetchTodos = async ({ search, take, skip }) => {
    const response = await fetch(
       `https://a.b.c/?search=${search}&skip=${skip}&take=${take}`,
    )
@@ -103,10 +107,12 @@ const fetchData = async ({ search, take, skip }: MyParams) => {
 }
 ```
 
-Same thing using **up-fetch**:
+#### Same example using **up-fetch**:
+
+Taking for granted you've already created an `up(fetch)` instance
 
 ```ts
-const fetchData = (params: MyParams) => upfetch('https://a.b.c', { params })
+const fetchData = (params) => upfetch('https://a.b.c', { params })
 ```
 
 ## ➡️ Features
