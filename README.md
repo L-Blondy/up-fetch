@@ -315,12 +315,13 @@ The same approach can be used with `cookies`
 
 **Node Only**
 
-_April 2024_ \
+_April 2024_
+
 The global fetch API in browsers, node, bun and deno do not support HTTP agents.
 
-In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) instead
+In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) instead (node only)
 
-_add HTTP Agent on a single request_
+_Add an HTTP Agent on a single request_
 
 ```ts
 import { fetch, Agent } from 'undici'
