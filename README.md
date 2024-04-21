@@ -75,7 +75,7 @@ const upfetch = up(fetch)
 
 #### Raw fetch example that throws when response.ok is false:
 
-You should first create a custom Response Error class that extends the built in Error class in order to expose the response ans the parsed response data. 
+You should first create a custom ResponseError class that extends the built in Error class in order to expose the response and the parsed response data. 
 
 A naive implementation might look like this
 
@@ -109,7 +109,7 @@ const fetchTodos = async ({ search, take, skip }) => {
 
 #### Same example using **up-fetch**:
 
-Taking for granted you've already created an `up(fetch)` instance
+Granted that you've already created an `up(fetch)` instance the previous example can be written like this:
 
 ```ts
 const fetchData = (params) => upfetch('https://a.b.c', { params })
