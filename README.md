@@ -91,7 +91,7 @@ export class ResponseError<TData> extends Error {
    }
 }
 
-const fetchData = async ({ search, take, skip }) => {
+const fetchData = async ({ search, take, skip }: MyParams) => {
    const response = await fetch(
       `https://a.b.c/?search=${search}&skip=${skip}&take=${take}`,
    )
@@ -106,7 +106,7 @@ const fetchData = async ({ search, take, skip }) => {
 Same thing using **up-fetch**:
 
 ```ts
-const fetchData = (params) => upfetch('https://a.b.c', { params })
+const fetchData = (params: MyParams) => upfetch('https://a.b.c', { params })
 ```
 
 ## ➡️ Features
