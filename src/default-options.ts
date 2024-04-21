@@ -28,7 +28,7 @@ export let defaultOptions: DefaultOptions = {
    ): Promise<ResponseError> =>
       new ResponseError(
          res,
-         await defaultOptions.parseResponse(res, {} as any), // the second arg is not used but required by the ResponseError type
+         await defaultOptions.parseResponse(res, {} as any), // the second arg is not used but required by the parseResponse type
          options,
       ),
 
