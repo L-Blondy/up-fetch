@@ -1,8 +1,6 @@
 # up-fetch
 
-Sick of writing your own fetch wrapper on every single project? **up-fetch** might be what you are looking for. 
-
-**up-fetch** is a tiny 1kb configuration tool for the fetch API with sensible default. 
+**up-fetch** is a tiny 1kb configuration tool for the fetch API with sensible default.
 
 ## ➡️ Highlights
 
@@ -41,7 +39,7 @@ const todo = await upfetch('https://a.b.c', {
 ```
 
 You can set some defaults for all requests. \
-The **defaults** are dynamic, they are **evaluated before each request**, great for handling authentication. 
+The defaults are dynamic, they are **evaluated before each request**, great for handling authentication.
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -50,7 +48,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Since the upfetch options extend the fetch api options, anything that can be done with fetch can also be done with upfetch.
+Since **`up` extends the provided fetch API options**, anything that can be done with fetch can also be done with upfetch.
 
 ```ts
 // the baseUrl and Authorization header can be omitted
@@ -60,6 +58,7 @@ const todo = await upfetch('/todos', {
    params: { some: 'query params' },
    headers: { 'X-Header': 'Another header' },
    signal: AbortSignal.timeout(5000),
+   keepalive: true,
    cache: 'no-store',
 })
 ```
@@ -189,7 +188,7 @@ npm i valibot
 
 ```ts
 import { z } from 'zod'
-import { withZod } from 'up-fetch' 
+import { withZod } from 'up-fetch'
 
 // ...create or import your upfetch instance
 
