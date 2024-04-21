@@ -71,7 +71,7 @@ import { fetch } from 'undici'
 const upfetch = up(fetch)
 ```
 
-### fetch vs upfetch
+### upfetch vs raw fetch
 
 Raw fetch api call that throws on response error:
 
