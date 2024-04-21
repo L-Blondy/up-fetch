@@ -311,9 +311,7 @@ The same approach can be used with `cookies`
 
 </details>
 
-<details><summary><b>💡 Adding HTTP Agent</b></summary><br />
-
-**Node Only**
+<details><summary><b>💡 Add an HTTP Agent (node only)</b></summary><br />
 
 _April 2024_
 
