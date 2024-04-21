@@ -71,6 +71,44 @@ import { fetch } from 'undici'
 const upfetch = up(fetch)
 ```
 
+### fetch vs upfetch
+
+Raw fetch api call that throws on response error:
+
+```ts
+// you first need to create a custom Error class that extends the default Error class
+// A naive implementation might look like this
+export class ResponseError<TData> extends Error {
+   override name: 'ResponseError'
+   response: Response
+   data: TData
+
+   constructor(res: Response, data: TData) {
+      super(`Request failed with status ${res.status}`)
+      this.data = data
+      this.name = 'ResponseError'
+      this.response = res
+   }
+}
+
+const fetchData = async ({ search, take, skip }) => {
+   const response = await fetch(
+      `https://a.b.c/?search=${search}&skip=${skip}&take=${take}`,
+   )
+   const data = await response.json()
+   if (response.ok) {
+      return data
+   }
+   throw new ResponseError(response, data)
+}
+```
+
+Same thing using upfetch:
+
+```ts
+const fetchData = (params) => upfetch('https://a.b.c', { params })
+```
+
 ## ➡️ Features
 
 ### ✔️ Set defaults for an upfetch instance
@@ -311,7 +349,9 @@ The same approach can be used with `cookies`
 
 </details>
 
-<details><summary><b>💡 Add an HTTP Agent (node only)</b></summary><br />
+<details><summary><b>💡 Adding HTTP Agent</b></summary><br />
+
+**Node Only**
 
 _April 2024_
 
