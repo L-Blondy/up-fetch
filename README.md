@@ -103,7 +103,7 @@ const fetchData = async ({ search, take, skip }) => {
 }
 ```
 
-Same thing using upfetch:
+Same thing using **up-fetch**:
 
 ```ts
 const fetchData = (params) => upfetch('https://a.b.c', { params })
