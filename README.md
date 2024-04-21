@@ -312,6 +312,47 @@ The same approach can be used with `cookies`
 
 </details>
 
+<details><summary><b>💡 Adding HTTP Agent</b></summary><br />
+
+**Node Only**
+
+_April 2024_ \
+The global fetch API in browsers, node, bun and deno do not support HTTP agents.
+
+In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) instead
+
+_add HTTP Agent on a single request_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch)
+
+const data = await upfetch('https://a.b.c', {
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+})
+```
+
+_Dynamically add an HTTP Agent on each request request_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch, () => ({
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+}))
+
+const data = await upfetch('https://a.b.c')
+```
+
+</details>
+
 <details><summary><b>💡 Error handling</b></summary><br />
 
 **up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`.
