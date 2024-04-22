@@ -90,7 +90,7 @@
          "optional": true
       },
       "valibot": {
-         "optional": false
+         "optional": true
       }
    },
    "publishConfig": {
