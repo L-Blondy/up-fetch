@@ -60,7 +60,6 @@
       "api",
       "rest",
       "get",
-      "node-fetch",
       "axios",
       "wretch",
       "got",
