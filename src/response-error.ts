@@ -1,4 +1,4 @@
-import { ComputedOptions } from './types.js'
+import { ComputedOptions } from './types'
 
 export class ResponseError<TData = any> extends Error {
    override name: 'ResponseError'

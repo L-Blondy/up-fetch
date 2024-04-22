@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { buildOptions } from './build-options.js'
-import { bodyMock } from './_mocks.js'
+import { buildOptions } from './build-options'
+import { bodyMock } from './_mocks'
 
 describe('buildOptions input', () => {
    test.each`

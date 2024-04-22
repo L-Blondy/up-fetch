@@ -1,6 +1,6 @@
-import { up } from 'src/up.js'
+import { up } from 'src/up'
 import { expectTypeOf, test } from 'vitest'
-import { withZod } from './zod.js'
+import { withZod } from './zod'
 import { z } from 'zod'
 
 test('Infers output properly', async () => {

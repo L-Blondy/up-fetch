@@ -3,7 +3,7 @@ import {
    JsonifiableObject,
    JsonifiableArray,
    UpOptions,
-} from './types.js'
+} from './types'
 
 export let mergeHeaders = (...headerInits: UpFetchOptions['headers'][]) => {
    let res: Record<string, string> = {}

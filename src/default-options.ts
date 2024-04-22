@@ -1,4 +1,4 @@
-import { ResponseError } from './response-error.js'
+import { ResponseError } from './response-error'
 import {
    ComputedOptions,
    ParseResponse,

@@ -6,8 +6,8 @@ import {
    strip,
    withPrefix,
    buildParams,
-} from './utils.js'
-import { bodyMock } from './_mocks.js'
+} from './utils'
+import { bodyMock } from './_mocks'
 
 describe('isJsonifiableObjectOrArray', () => {
    test.each`

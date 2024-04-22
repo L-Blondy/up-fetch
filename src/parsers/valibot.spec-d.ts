@@ -1,6 +1,6 @@
-import { up } from 'src/up.js'
+import { up } from 'src/up'
 import { expectTypeOf, test } from 'vitest'
-import { withValibot } from './valibot.js'
+import { withValibot } from './valibot'
 import { email, number, object, string, transform } from 'valibot'
 
 test('Infers output properly', async () => {
