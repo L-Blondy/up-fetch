@@ -1,6 +1,5 @@
 # up-fetch
 
-假如你已经厌倦了在每个项目中都编写 fetch 封装程序，那么，up-fetch 或许就是你的救命稻草。
 up-fetch 是一个仅有 1kb 大小，同时集成了一些合理配置的Fetch API 工具。
 
 ## 特点
@@ -12,7 +11,7 @@ up-fetch 是一个仅有 1kb 大小，同时集成了一些合理配置的Fetch 
 - 💪 强类型 - 优秀的类型推断和自动补全能力
 - 🤯 校验适配器 -（可选）使用 zod 或 valibot 校验数据，以获得最大程度上的类型安全性
 - 👻 异常默认抛出 - 当 response.ok 为 false 时
-- 😉 适用环境广发 - 所有现代浏览器、bun、node 18+、deno（使用 npm: 限定符）
+- 😉 适用环境广泛 - 所有现代浏览器、bun、node 18+、deno（使用 npm: 限定符）
 - 📦 树摇优化 - 只打包使用到的内容
 
 ## 快速上手
@@ -33,14 +32,14 @@ const todo = await upfetch('https://a.b.c', {
 })
 ```
 可以为所有的请求设定一些默认选项。\
-**默认项**支持动态设定，在**每次请求生成时获取**，这对认证场景有很大帮助。
+默认项支持动态设定，在**每次请求生成时获取**，这对认证场景有很大帮助。
 ```ts
 const upfetch = up(fetch, () => ({
    baseUrl: 'https://a.b.c',
    headers: { Authorization: localStorage.getItem('bearer-token') },
 }))
 ```
-因为 up-fetch 是基于 Fetch API 进行扩展的超集，所以任何 Fetch API 支持的特性，up-fetch 也都可以兼容。
+因为 **`up` 方法** 是基于 Fetch API 进行扩展，所以任何 Fetch API 支持的特性，up-fetch 也都可以兼容。
 ```ts
 // baseUrl 和 Authorization header 可以不被设定
 const todo = await upfetch('/todos', {
@@ -49,6 +48,7 @@ const todo = await upfetch('/todos', {
    params: { some: 'query params' },
    headers: { 'X-Header': 'Another header' },
    signal: AbortSignal.timeout(5000),
+   keepalive: true,
    cache: 'no-store',
 })
 ```
@@ -58,6 +58,44 @@ const todo = await upfetch('/todos', {
 import { fetch } from 'undici'
 
 const upfetch = up(fetch)
+```
+
+### 原生 fetch vs upfetch
+**当 response.ok 为 false 时，抛出异常的原生 fetch 示例：**
+
+首先创建一个自定义的 ResponseError 类，该类扩展了内置的 Error 类，以便导出 Response 和解析后的 Response 数据。
+
+简单的实现可能如下所示：
+
+```javascript
+export class ResponseError extends Error {
+   constructor(response, data) {
+      super(`Request failed with status ${res.status}`)
+      this.data = data
+      this.name = 'ResponseError'
+      this.response = response
+      // don't need to expose the status at the top level,
+      // it will be available with `error.response.status`
+   }
+}
+```
+然后，在 fetcher 方法中使用方式如下：
+```javascript
+const fetchTodos = async ({ search, take, skip }) => {
+   const response = await fetch(
+      `https://a.b.c/?search=${search}&skip=${skip}&take=${take}`,
+   )
+   const data = await response.json()
+   if (response.ok) {
+      return data
+   }
+   throw new ResponseError(response, data)
+}
+```
+**相同场景下，up-fetch的写法**
+如果您已经创建了一个upfetch实例，上面的示例就可以这样写了：
+```javascript
+const fetchData = (params) => upfetch('https://a.b.c', { params })
 ```
 
 ## 特性
@@ -232,7 +270,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-也可以为单个请求设定拦截器
+也可以为单次请求设定拦截器
 
 ```ts
 upfetch('/todos', {
@@ -296,7 +334,47 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
- `cookies` 同理。
+`cookies` 同理。
+
+</details>
+
+<details><summary><b>💡 支持 HTTP 代理 (仅 node 环境下)</b></summary><br />
+
+_April 2024_
+
+Node, bun 和 浏览器实现的 fetch API 不支持 HTTP 代理。
+
+要想使用 HTTP 代理，需要借助 [undici](https://github.com/nodejs/undici)  (仅 node 环境下)
+
+_单次请求中使用 HTTP 代理_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch)
+
+const data = await upfetch('https://a.b.c', {
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+})
+```
+
+_为每次请求动态添加 HTTP 代理_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch, () => ({
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+}))
+
+const data = await upfetch('https://a.b.c')
+```
 
 </details>
 
