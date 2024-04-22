@@ -1,9 +1,10 @@
 {
    "name": "up-fetch",
-   "version": "0.4.3-beta.0",
+   "version": "0.4.3-beta.1",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
-   "main": "dist/index.js",
+   "main": "dist/index.cjs",
+   "module": "dist/index.js",
    "types": "dist/index.d.ts",
    "sideEffects": false,
    "exports": {
