@@ -1,45 +1,55 @@
 # up-fetch
 
-up-fetch 是一个仅有 1kb 大小，同时集成了一些合理配置的Fetch API 工具。
+up-fetch 是一个仅有 1kb 大小，同时集成了一些合理配置的 Fetch API 工具。
 
 ## 特点
-- 🚀 轻量 - 生产版本只有 1KB，没有其它依赖
-- 🤩 简单 - 基于 Fetch API，扩展了配置项，并集成了默认配置
-- 🎯 直观 - params 和 body 可以是普通对象，同时，Response 开箱即用
-- 🔥 灵活 - 复杂的场景下，支持自定义序列化和解析策略
-- 💫 复用 - 可创建带自定义默认项的实例
-- 💪 强类型 - 优秀的类型推断和自动补全能力
-- 🤯 校验适配器 -（可选）使用 zod 或 valibot 校验数据，以获得最大程度上的类型安全性
-- 👻 异常默认抛出 - 当 response.ok 为 false 时
-- 😉 适用环境广泛 - 所有现代浏览器、bun、node 18+、deno（使用 npm: 限定符）
-- 📦 树摇优化 - 只打包使用到的内容
+
+-  🚀 轻量 - 生产版本只有 1KB，没有其它依赖
+-  🤩 简单 - 基于 Fetch API，扩展了配置项，并集成了默认配置
+-  🎯 直观 - params 和 body 可以是普通对象，同时，Response 开箱即用
+-  🔥 灵活 - 复杂的场景下，支持自定义序列化和解析策略
+-  💫 复用 - 可创建带自定义默认项的实例
+-  💪 强类型 - 优秀的类型推断和自动补全能力
+-  🤯 校验适配器 -（可选）使用 zod 或 valibot 校验数据，以获得最大程度上的类型安全性
+-  👻 异常默认抛出 - 当 response.ok 为 false 时
+-  😉 适用环境广泛 - 所有现代浏览器、bun、node 18+、deno（使用 npm: 限定符）
+-  📦 树摇优化 - 只打包使用到的内容
 
 ## 快速上手
-``` bash
+
+```bash
 npm i up-fetch
 ```
+
 创建一个 upfetch 实例
-``` ts
+
+```ts
 import { up } from 'up-fetch'
 
 const upfetch = up(fetch)
 ```
+
 发送请求
+
 ```ts
 const todo = await upfetch('https://a.b.c', {
    method: 'POST',
    body: { hello: 'world' },
 })
 ```
+
 可以为所有的请求设定一些默认选项。\
 默认项支持动态设定，在**每次请求生成时获取**，这对认证场景有很大帮助。
+
 ```ts
 const upfetch = up(fetch, () => ({
    baseUrl: 'https://a.b.c',
    headers: { Authorization: localStorage.getItem('bearer-token') },
 }))
 ```
+
 因为 **`up` 方法** 是基于 Fetch API 进行扩展，所以任何 Fetch API 支持的特性，up-fetch 也都可以兼容。
+
 ```ts
 // baseUrl 和 Authorization header 可以不被设定
 const todo = await upfetch('/todos', {
@@ -52,6 +62,7 @@ const todo = await upfetch('/todos', {
    cache: 'no-store',
 })
 ```
+
 同样，也支持其它任何基于 Fetch API 规范实现的第三方工具，例如 [undici](https://github.com/nodejs/undici) 或者 [node-fetch](https://github.com/node-fetch/node-fetch)
 
 ```ts
@@ -61,6 +72,7 @@ const upfetch = up(fetch)
 ```
 
 ### 原生 fetch vs upfetch
+
 **当 response.ok 为 false 时，抛出异常的原生 fetch 示例：**
 
 首先创建一个自定义的 ResponseError 类，该类扩展了内置的 Error 类，以便导出 Response 和解析后的 Response 数据。
@@ -79,7 +91,9 @@ export class ResponseError extends Error {
    }
 }
 ```
+
 然后，在 fetcher 方法中使用方式如下：
+
 ```javascript
 const fetchTodos = async ({ search, take, skip }) => {
    const response = await fetch(
@@ -92,8 +106,10 @@ const fetchTodos = async ({ search, take, skip }) => {
    throw new ResponseError(response, data)
 }
 ```
-**相同场景下，up-fetch的写法**
-如果您已经创建了一个upfetch实例，上面的示例就可以这样写了：
+
+**相同场景下，up-fetch 的写法**
+如果您已经创建了一个 upfetch 实例，上面的示例就可以这样写了：
+
 ```javascript
 const fetchData = (params) => upfetch('https://a.b.c', { params })
 ```
@@ -127,7 +143,7 @@ upfetch('https://a.b.c', {
 
 ### ✔️ `baseUrl` 选项
 
-在创建upfetch实例时，设定 baseUrl 
+在创建 upfetch 实例时，设定 baseUrl
 
 ```ts
 export const upfetch = up(fetch, () => ({
@@ -141,9 +157,9 @@ export const upfetch = up(fetch, () => ({
 const todos = await upfetch('/todos')
 ```
 
-### ✔️ 自动解析 `Response` 
+### ✔️ 自动解析 `Response`
 
-解析方法支持自定义 [parseResponse](#parseresponse) 
+解析方法支持自定义 [parseResponse](#parseresponse)
 
 ```ts
 // 普通fetch
@@ -180,8 +196,8 @@ try {
 
 ### ✔️ `body` 可设定为 json 格式
 
-如果 body 是可转换为JSON格式的 object 或 数组， 请求头中会自动设定 `'Content-Type': 'application/json'` 。
-普通 object, 数组和带有 `toJSON` 方法的类实例都认为是可转成JSON格式的数据类型。
+如果 body 是可转换为 JSON 格式的 object 或 数组， 请求头中会自动设定 `'Content-Type': 'application/json'` 。
+普通 object, 数组和带有 `toJSON` 方法的类实例都认为是可转成 JSON 格式的数据类型。
 
 ```ts
 // before
@@ -209,13 +225,14 @@ npm i zod
 # or
 npm i valibot
 ```
+
 接下来就可以使用内部集成的一些数据校验 helper，这些 helper 方法支持 Tree Shaking 。
 
 **zod 示例：**
 
 ```ts
 import { z } from 'zod'
-import { withZod } from 'up-fetch' 
+import { withZod } from 'up-fetch/with-zod'
 
 // ...create or import your upfetch instance
 
@@ -236,7 +253,7 @@ const todo = await upfetch('/todo/1', {
 
 ```ts
 import { object, string, number } from 'zod'
-import { withValibot } from 'up-fetch'
+import { withValibot } from 'up-fetch/with-valibot'
 
 // ...create or import your upfetch instance
 
@@ -315,7 +332,7 @@ upfetch('/profile') // Non authenticated request
 ```
 
 ```ts
-// ❌ 不要在 `up` 方法之外读取 storage / cookies 
+// ❌ 不要在 `up` 方法之外读取 storage / cookies
 
 // bearerToken 从不会改变
 const bearerToken = localStorage.getItem('bearer-token')
@@ -344,7 +361,7 @@ _April 2024_
 
 Node, bun 和 浏览器实现的 fetch API 不支持 HTTP 代理。
 
-要想使用 HTTP 代理，需要借助 [undici](https://github.com/nodejs/undici)  (仅 node 环境下)
+要想使用 HTTP 代理，需要借助 [undici](https://github.com/nodejs/undici) (仅 node 环境下)
 
 _单次请求中使用 HTTP 代理_
 
@@ -381,7 +398,6 @@ const data = await upfetch('https://a.b.c')
 <details><summary><b>💡 错误处理</b></summary><br />
 
 当 `response.ok` 为 `false` 时，**up-fetch** 抛出 [ResponseError](#%EF%B8%8F-throws-by-default) 异常。
-
 
 解析后的异常信息可以通过 `error.data`获取。 \
 原始的 response status 可以通过 `error.response.status` 获取。 \
@@ -468,7 +484,7 @@ upfetch('https://a.b.c', {
 
 <details><summary><b>💡 根据特定条件选择是否覆盖默认值</b></summary><br />
 
-有时候可能需要有条件地覆盖 `up` 方法中提供的默认选项。这对Javascript来说，有点麻烦：
+有时候可能需要有条件地覆盖 `up` 方法中提供的默认选项。这对 Javascript 来说，有点麻烦：
 
 ```ts
 import { up } from 'up-fetch'
@@ -500,7 +516,7 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 因为 **up-fetch** 基于 fetch API 进行扩展, 所以 **Next.js** 特定的 [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) 也适用于 **up-fetch**.
 
-***设定默认缓存策略***
+**_设定默认缓存策略_**
 
 ```ts
 import { up } from 'up-fetch'
@@ -510,7 +526,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-***特定请求覆盖***
+**_特定请求覆盖_**
 
 ```ts
 upfetch('/posts', {
@@ -654,7 +670,7 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 **Type:** `BodyInit | JsonifiableObject | JsonifiableArray | null`
 
-PS: 这个选项在 **up** 方法中不可用🚫。
+PS: 这个选项在 **up** 方法中不可用 🚫。
 
 设定请求中的 body.\
 可以是任何类型的数据. \
@@ -745,7 +761,7 @@ const upfetch = up(fetch, () => ({
 
 ```ts
 import { z } from 'zod'
-import { withZod } from 'up-fetch'
+import { withZod } from 'up-fetch/with-zod'
 
 // ...create or import your upfetch instance
 
@@ -844,7 +860,7 @@ upfetch('https://a.b.c', {
 
 ```ts
 import { z } from 'zod'
-import { withZod } from 'up-fetch'
+import { withZod } from 'up-fetch/with-zod'
 
 const upfetch = up(fetch, () => ({
    onParsingError: (error, options) => console.log('Validation error', error),

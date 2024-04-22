@@ -231,7 +231,7 @@ npm i valibot
 
 ```ts
 import { z } from 'zod'
-import { withZod } from 'up-fetch'
+import { withZod } from 'up-fetch/with-zod'
 
 // ...create or import your upfetch instance
 
@@ -252,7 +252,7 @@ const todo = await upfetch('/todo/1', {
 
 ```ts
 import { object, string, number } from 'zod'
-import { withValibot } from 'up-fetch'
+import { withValibot } from 'up-fetch/with-valibot'
 
 // ...create or import your upfetch instance
 
@@ -760,7 +760,7 @@ const upfetch = up(fetch, () => ({
 
 ```ts
 import { z } from 'zod'
-import { withZod } from 'up-fetch'
+import { withZod } from 'up-fetch/with-zod'
 
 // ...create or import your upfetch instance
 
@@ -859,7 +859,7 @@ Usefull when using a [validation adapter](#%EF%B8%8F-data-validation)
 
 ```ts
 import { z } from 'zod'
-import { withZod } from 'up-fetch'
+import { withZod } from 'up-fetch/with-zod'
 
 const upfetch = up(fetch, () => ({
    onParsingError: (error, options) => console.log('Validation error', error),
