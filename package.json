@@ -1,6 +1,6 @@
 {
    "name": "up-fetch",
-   "version": "0.4.4-beta.2",
+   "version": "0.4.4",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
    "main": "dist/index.cjs",
@@ -48,7 +48,7 @@
       "prepublish": "npm run test && npm run build",
       "postpublish": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
       "pub:beta": "npm publish --tag beta",
-      "pub": "npm publish"
+      "pub:stable": "npm publish"
    },
    "keywords": [
       "fetch",
