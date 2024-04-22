@@ -1,10 +1,10 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
-import { up } from './up.js'
+import { up } from './up'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { isResponseError } from './response-error.js'
-import { bodyMock } from './_mocks.js'
-import { defaultOptions } from './default-options.js'
+import { isResponseError } from './response-error'
+import { bodyMock } from './_mocks'
+import { defaultOptions } from './default-options'
 
 describe('up', () => {
    const server = setupServer()

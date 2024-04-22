@@ -1,4 +1,4 @@
-import { DistributiveOmit } from './utils.js'
+import { DistributiveOmit } from './utils'
 
 export type JsonifiableObject =
    | {

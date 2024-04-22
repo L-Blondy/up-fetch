@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { defaultOptions } from './default-options.js'
-import { ResponseError } from './response-error.js'
+import { defaultOptions } from './default-options'
+import { ResponseError } from './response-error'
 
 describe('serializeParams', () => {
    test.each`

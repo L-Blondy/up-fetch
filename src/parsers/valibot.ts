@@ -1,5 +1,5 @@
-import { defaultOptions } from 'src/default-options.js'
-import { ComputedOptions } from 'src/types.js'
+import { defaultOptions } from 'src/default-options'
+import { ComputedOptions } from 'src/types'
 import { BaseSchema, parse } from 'valibot'
 
 export function withValibot<TOutput>(schema: BaseSchema<any, TOutput>) {

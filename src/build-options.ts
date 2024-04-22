@@ -3,8 +3,8 @@ import {
    ComputedOptions,
    UpFetchOptions,
    UpOptions,
-} from './types.js'
-import { defaultOptions } from './default-options.js'
+} from './types'
+import { defaultOptions } from './default-options'
 import {
    buildParams,
    isRequest,
@@ -13,7 +13,7 @@ import {
    strip,
    withPrefix,
    emptyOptions,
-} from './utils.js'
+} from './utils'
 
 export let eventListeners = [
    'onSuccess',

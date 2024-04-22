@@ -1,7 +1,7 @@
-import { buildOptions } from './build-options.js'
-import { ResponseError } from './response-error.js'
-import { UpFetchOptions, UpOptions } from './types.js'
-import { emptyOptions } from './utils.js'
+import { buildOptions } from './build-options'
+import { ResponseError } from './response-error'
+import { UpFetchOptions, UpOptions } from './types'
+import { emptyOptions } from './utils'
 
 export function up<
    TFetchFn extends typeof fetch,

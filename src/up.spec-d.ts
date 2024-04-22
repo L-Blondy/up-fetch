@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { expectTypeOf, test } from 'vitest'
-import { up } from './up.js'
-import {
-   JsonifiableArray,
-   JsonifiableObject,
-   ComputedOptions,
-} from './types.js'
-import { defaultOptions } from './default-options.js'
-import { ResponseError } from './response-error.js'
+import { up } from './up'
+import { JsonifiableArray, JsonifiableObject, ComputedOptions } from './types'
+import { defaultOptions } from './default-options'
+import { ResponseError } from './response-error'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
