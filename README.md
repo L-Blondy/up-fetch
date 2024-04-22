@@ -12,13 +12,12 @@
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
 -  👻 **Throws by default** - when `response.ok` is `false`
--  😉 **Works everywhere** - All Modern browsers, bun, node 18+, deno (with the `npm:` specifier)
 -  📦 **Tree Shakable** - You only get what you use
 
 ## ➡️ QuickStart
 
 ```bash
-npm i up-fetch
+npm i up-fetch # or bun i up-fetch
 ```
 
 Create a new upfetch instance
@@ -355,13 +354,11 @@ The same approach can be used with `cookies`
 
 </details>
 
-<details><summary><b>💡 Adding HTTP Agent</b></summary><br />
-
-**Node Only**
+<details><summary><b>💡 Adding HTTP Agent (node only)</b></summary><br />
 
 _April 2024_
 
-The global fetch API in browsers, node, bun and deno do not support HTTP agents.
+Node, bun and browsers implementation of the fetch API do not support HTTP agents.
 
 In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) instead (node only)
 
@@ -904,7 +901,6 @@ upfetch('https://a.b.c', {
 -  ✅ All modern browsers
 -  ✅ Bun
 -  ✅ Node 18+
--  ✅ Deno (with the `npm:` specifier)
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
 
