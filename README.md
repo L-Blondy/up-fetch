@@ -75,7 +75,7 @@ const upfetch = up(fetch)
 
 #### Raw fetch example that throws when response.ok is false:
 
-You should first create a custom ResponseError class that extends the built in Error class in order to expose the response and the parsed response data. 
+You should first create a custom ResponseError class that extends the built in Error class in order to expose the response and the parsed response data.
 
 A naive implementation might look like this
 
@@ -907,3 +907,7 @@ upfetch('https://a.b.c', {
 -  ✅ Deno (with the `npm:` specifier)
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
+
+## From the same author
+
+-  [tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to easily add multiple color themes to your projects.
