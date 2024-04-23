@@ -16,7 +16,7 @@
       "no-alert": "error",
       "no-case-declarations": "warn",
       "no-class-assign": "error",
-      "no-cond-assign": "error",
+      "no-cond-assign": 0,
       "no-console": "warn",
       "no-const-assign": "error",
       "no-constructor-return": "error",

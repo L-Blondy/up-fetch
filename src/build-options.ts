@@ -1,6 +1,8 @@
 import {
    BaseOptions,
    ComputedOptions,
+   JsonifiableArray,
+   JsonifiableObject,
    UpFetchOptions,
    UpOptions,
 } from './types'
@@ -40,34 +42,40 @@ export let buildOptions = <
       ...strip(fetcherOpts, eventListeners),
    }
    let rawBody = fetcherOpts.body
-   // Do not use a getter for the body to ensure it gets computed only once
-   let body = isJsonifiableObjectOrArray(rawBody)
-      ? mergedOptions.serializeBody(rawBody)
+   let params = buildParams(upOpts.params, input, fetcherOpts.params)
+   let isJsonifiable: boolean
+   // assign isJsonifiable value while making use of the type guard
+   let body = (isJsonifiable = isJsonifiableObjectOrArray(rawBody))
+      ? mergedOptions.serializeBody(
+           rawBody as JsonifiableObject | JsonifiableArray,
+        )
       : rawBody
+   let headers = mergeHeaders(
+      isJsonifiable && typeof body === 'string'
+         ? { 'content-type': 'application/json' }
+         : {},
+      upOpts.headers,
+      fetcherOpts.headers,
+   )
    return {
       ...mergedOptions,
-      headers: mergeHeaders(
-         isJsonifiableObjectOrArray(fetcherOpts.body) &&
-            typeof body === 'string'
-            ? { 'content-type': 'application/json' }
-            : {},
-         upOpts.headers,
-         fetcherOpts.headers,
-      ),
-      params: buildParams(upOpts.params, input, fetcherOpts.params),
+      headers,
+      params,
       rawBody,
       body,
       // convenience getter, usefull if the user wants to modify the url in onBeforeFetch
       get input() {
          if (isRequest(input)) return input
          if (input instanceof URL) return input.toString()
-         let base = this.baseUrl ? new URL(this.baseUrl) : undefined
+         let base = mergedOptions.baseUrl
+            ? new URL(mergedOptions.baseUrl)
+            : undefined
          let path = [base?.pathname, input.toString()]
             .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
             .filter(Boolean)
             .join('/')
          let url = new URL(path, base?.origin)
-         let serializedParams = this.serializeParams(this.params)
+         let serializedParams = mergedOptions.serializeParams(params)
          return `${url.href}${withPrefix(
             url.search ? '&' : '?',
             serializedParams,
