@@ -93,7 +93,7 @@ export class ResponseError extends Error {
 }
 ```
 
-Then proceed with the definition of the fetcher itself
+Then proceed with the definition of the fetcher itself. The following is a simplified example
 
 ```ts
 const fetchTodos = async ({ search, take, skip }) => {
