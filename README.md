@@ -730,18 +730,20 @@ upfetch('https://a.b.c', {
 Customize the [body](#body) serialization into a valid `BodyInit`. \
 The body is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
 
-**Example:**
+**Example: serialize `objects` to `FormData`**
+
+_Note: when sending FormData the headers are added automatically. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
 
 ```ts
-import stringify from 'json-stringify-safe'
+import { serialize } from 'object-to-formdata'
 
-// Add support for circular references.
 const upfetch = up(fetch, () => ({
-   serializeBody: (body) => stringify(body),
+   serializeBody: (body) => serialize(body),
 }))
 
 upfetch('https://a.b.c', {
-   body: { now: 'imagine a circular ref' },
+   method: 'POST',
+   body: { file: new File(['foo'], 'foo.txt') },
 })
 ```
 
