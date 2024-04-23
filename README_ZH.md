@@ -712,7 +712,7 @@ upfetch('https://a.b.c', {
 
 ## <samp>\<serializeBody\></samp>
 
-**Type:** `(body: JsonifiableObject | JsonifiableArray) => string`
+**Type:** `(body: JsonifiableObject | JsonifiableArray) => BodyInit | null | undefined`
 
 **Default:** `JSON.stringify`
 

@@ -723,11 +723,11 @@ upfetch('https://a.b.c', {
 
 ## <samp>\<serializeBody\></samp>
 
-**Type:** `(body: JsonifiableObject | JsonifiableArray) => string`
+**Type:** `(body: JsonifiableObject | JsonifiableArray) => BodyInit | null | undefined`
 
 **Default:** `JSON.stringify`
 
-Customize the [body](#body) serialization into a string. \
+Customize the [body](#body) serialization into a valid `BodyInit`. \
 The body is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
 
 **Example:**
