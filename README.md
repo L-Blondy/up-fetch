@@ -727,7 +727,7 @@ upfetch('https://a.b.c', {
 
 **Default:** `JSON.stringify`
 
-Customize the [body](#body) serialization into a valid `BodyInit`. \
+Customize the [body](#body) serialization into a valid `BodyInit`, a `string` in most cases\
 The body is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
 
 **Example: serialize `objects` to `FormData` using [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)**
