@@ -80,7 +80,7 @@ describe('up', () => {
          ${undefined}                    | ${false}
          ${null}                         | ${false}
       `(
-         'Should automatically have "content-type: application/json" if the body is serializable',
+         'Should automatically have "content-type: application/json" if the body is jsonifiable and the serialized body is a string',
          async ({ body, expected }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
@@ -94,6 +94,38 @@ describe('up', () => {
             const upfetch = up(fetch, () => ({
                baseUrl: 'https://example.com',
                method: 'POST',
+               serializeBody: (body) => JSON.stringify(body),
+            }))
+            await upfetch('', {
+               body,
+               // @ts-ignore the global fetch type does not include "duplex"
+               duplex: (body as any)?.getReader ? 'half' : undefined,
+            })
+         },
+      )
+
+      test.each`
+         body                         | expected
+         ${{}}                        | ${false}
+         ${{ a: 1 }}                  | ${false}
+         ${[1, 2]}                    | ${false}
+         ${bodyMock.classJsonifiable} | ${false}
+      `(
+         'Should NOT automatically have "content-type: application/json" if the body is jsonifiable BUT the serialized body is NOT a string',
+         async ({ body, expected }) => {
+            server.use(
+               http.post('https://example.com', async ({ request }) => {
+                  const hasApplicationJsonHeader =
+                     request.headers.get('content-type') === 'application/json'
+                  expect(hasApplicationJsonHeader).toEqual(expected)
+                  return HttpResponse.json({ hello: 'world' }, { status: 200 })
+               }),
+            )
+
+            const upfetch = up(fetch, () => ({
+               baseUrl: 'https://example.com',
+               method: 'POST',
+               serializeBody: () => new FormData(),
             }))
             await upfetch('', {
                body,

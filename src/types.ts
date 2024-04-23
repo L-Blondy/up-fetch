@@ -44,7 +44,9 @@ export type ParseResponseError<TError = any> = (
    options: ComputedOptions,
 ) => Promise<TError>
 
-export type SerializeBody = (body: Exclude<RawBody, BodyInit | null>) => string
+export type SerializeBody = (
+   body: Exclude<RawBody, BodyInit | null>,
+) => BodyInit | null | undefined
 
 export type SerializeParams = (params: Params) => string
 
