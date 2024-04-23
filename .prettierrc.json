@@ -10,5 +10,6 @@
    "singleQuote": true,
    "tabWidth": 3,
    "trailingComma": "all",
-   "useTabs": false
+   "useTabs": false,
+   "quoteProps": "preserve"
 }

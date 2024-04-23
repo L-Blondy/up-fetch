@@ -34,6 +34,7 @@
       "no-unused-vars": "off",
       "prefer-template": "error",
       "prefer-const": 0,
+      "no-ex-assign": "error",
       "spaced-comment": [
          "warn",
          "always",
