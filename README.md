@@ -7,7 +7,7 @@
 -  🚀 **Lightweight** - 1kB gzipped, no dependency
 -  🤩 **Simple** - same syntax as the [fetch API][MDN] with additional options and defaults
 -  🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
--  🔥 **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
+-  🔥 **Composable** - bring your own `serialization` and `parsing` strategies for more complex cases
 -  💫 **Reusable** - create instances with custom defaults
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
