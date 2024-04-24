@@ -2,8 +2,6 @@
 
 **up-fetch** is a 1kb fetch API configuration tool with sensible defaults. 
 
-_Go to the [Chinese docs](https://github.com/L-Blondy/up-fetch/blob/master/README_ZH.md)_
-
 ## ➡️ Highlights
 
 -  🚀 **Lightweight** - 1kB gzipped, no dependency
