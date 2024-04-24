@@ -7,6 +7,7 @@ describe('buildOptions input', () => {
       input                                 | upOpts                            | fetcherOpts                   | output
       ${'b'}                                | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a/b'}
       ${'c'}                                | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://a/b/c'}
+      ${'http://d/e'}                       | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://d/e'}
       ${''}                                 | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a/'}
       ${'http://b'}                         | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://b/'}
       ${'http://b'}                         | ${{ baseUrl: 'http://a' }}        | ${{ baseUrl: 'http://c' }}    | ${'http://b/'}

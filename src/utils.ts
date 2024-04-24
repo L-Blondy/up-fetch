@@ -74,8 +74,7 @@ export let isJsonifiableObjectOrArray = (
 export let withPrefix = (prefix: string, str?: string) =>
    !str ? '' : str.startsWith(prefix) ? str : `${prefix}${str}`
 
-export let isRequest = (input: any): input is Request => {
-   return !!input.url
-}
+// faster than input instanceof Request
+export let isRequest = (input: any): input is Request => !!input.url
 
 export let emptyOptions: any = {}

@@ -43,6 +43,7 @@ export let buildOptions = <
    }
    let rawBody = fetcherOpts.body
    let params = buildParams(upOpts.params, input, fetcherOpts.params)
+   let queryString = mergedOptions.serializeParams(params)
    let isJsonifiable: boolean
    // assign isJsonifiable value while making use of the type guard
    let body = (isJsonifiable = isJsonifiableObjectOrArray(rawBody))
@@ -65,21 +66,33 @@ export let buildOptions = <
       body,
       // convenience getter, usefull if the user wants to modify the url in onBeforeFetch
       get input() {
+         // nothing to do if we deal with a Request object
          if (isRequest(input)) return input
-         if (input instanceof URL) return input.toString()
-         let base = mergedOptions.baseUrl
-            ? new URL(mergedOptions.baseUrl)
-            : undefined
-         let path = [base?.pathname, input.toString()]
-            .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
-            .filter(Boolean)
-            .join('/')
-         let url = new URL(path, base?.origin)
-         let serializedParams = mergedOptions.serializeParams(params)
-         return `${url.href}${withPrefix(
-            url.search ? '&' : '?',
-            serializedParams,
-         )}`
+         // input is the source of truth
+         let url: URL
+         if (input instanceof URL)
+            // input is the source of truth, ignore the baseUrl
+            url = input
+         else if (/^(http(s)?):\/\//.test(input)) {
+            url = new URL(input)
+         } else {
+            let base = mergedOptions.baseUrl
+               ? new URL(mergedOptions.baseUrl)
+               : undefined
+            // input is always a relative path, never a protocol
+            // we can concat the base path and the input
+            let path = [base?.pathname, input]
+               // standardize by remiving the leading slash
+               .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
+               // remove empty strings ('/' originaly)
+               .filter(Boolean)
+               .join('/')
+            url = new URL(path, base?.origin)
+         }
+         // add the queryString to the url.search
+         // (url.search is the queryString defined in the input)
+         url.search += withPrefix(url.search ? '&' : '?', queryString)
+         return url.href
       },
    }
 }
