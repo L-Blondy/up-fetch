@@ -1,12 +1,11 @@
 import {
    Params, 
-   FetcherOptions,
+   RawHeaders, 
    JsonifiableObject,
    JsonifiableArray,
-   DefaultOptions,
 } from './types'
 
-export let mergeHeaders = (...headerInits: FetcherOptions['headers'][]) => {
+export let mergeHeaders = (...headerInits: RawHeaders[]) => {
    let res: Record<string, string> = {}
    headerInits.forEach((init) => {
       // casting `init as HeadersInit` because `Record<string any>` is
