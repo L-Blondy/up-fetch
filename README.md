@@ -946,7 +946,7 @@ upfetch('https://a.b.c', {
 Decide when to trigger [parseResponseError](#parseresponseerror) and throw an error. \
 It can be an async function.
 
-**Example: never throw a response**
+**Example: never throw upon response**
 
 ```ts
 // for all requests
