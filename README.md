@@ -324,48 +324,6 @@ upfetch('/todos', {
 
 ## ➡️ Recipies
 
-<details><summary><b>💡 Authentication</b></summary><br />
-
-Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
-
-```ts
-import { up } from 'up-fetch'
-
-const upfetch = up(fetch, () => ({
-   headers: { Authentication: localStorage.getItem('bearer-token') },
-}))
-
-localStorage.setItem('bearer-token', 'Bearer abcdef123456')
-upfetch('/profile') // Authenticated request
-
-localStorage.removeItem('bearer-token')
-upfetch('/profile') // Non authenticated request
-```
-
-```ts
-// ❌ Don't read the storage / cookies outside of `up`
-
-// This value will never change
-const bearerToken = localStorage.getItem('bearer-token')
-
-const upfetch = up(fetch, () => ({
-   headers: { Authentication: bearerToken },
-}))
-```
-
-```ts
-// ✅ Keep it inside the function call
-
-// Checks the localStorage on each request
-const upfetch = up(fetch, () => ({
-   headers: { Authentication: localStorage.getItem('bearer-token') },
-}))
-```
-
-The same approach can be used with `cookies`
-
-</details>
-
 <details><summary><b>💡 Adding HTTP Agent (node only)</b></summary><br />
 
 _April 2024_
@@ -549,9 +507,45 @@ upfetch('/posts', {
 
 ## ➡️ How to
 
-<details><summary>💡 Handle <b>authentication</b></summary><br />
+<details><summary>💡 handle <b>Authentication</b></summary><br />
 
-### authentication
+Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
+
+```ts
+import { up } from 'up-fetch'
+
+const upfetch = up(fetch, () => ({
+   headers: { Authentication: localStorage.getItem('bearer-token') },
+}))
+
+localStorage.setItem('bearer-token', 'Bearer abcdef123456')
+upfetch('/profile') // Authenticated request
+
+localStorage.removeItem('bearer-token')
+upfetch('/profile') // Non authenticated request
+```
+
+```ts
+// ❌ Don't read the storage / cookies outside of `up`
+
+// This value will never change
+const bearerToken = localStorage.getItem('bearer-token')
+
+const upfetch = up(fetch, () => ({
+   headers: { Authentication: bearerToken },
+}))
+```
+
+```ts
+// ✅ Keep it inside the function call
+
+// Checks the localStorage on each request
+const upfetch = up(fetch, () => ({
+   headers: { Authentication: localStorage.getItem('bearer-token') },
+}))
+```
+
+The same approach can be used with `cookies`
 
 </details>
 
