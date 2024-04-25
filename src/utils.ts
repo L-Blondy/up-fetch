@@ -1,4 +1,5 @@
 import {
+   Params, 
    FetcherOptions,
    JsonifiableObject,
    JsonifiableArray,
@@ -22,18 +23,16 @@ export let mergeHeaders = (...headerInits: FetcherOptions['headers'][]) => {
 }
 
 export let buildParams = (
-   upParams: DefaultOptions['params'],
+   defaultParams: Params,
    input: URL | Request | string,
-   fetcherParams: FetcherOptions['params'],
+   fetcherParams: Params,
 ) =>
    isRequest(input)
       ? {} // an input of type Request cannot use the "params" option
       : strip({
-           // The 'url.search' should take precedence over the `up` params.
-           // It will be retained in the 'input' as it should not undergo unserialization and reserialization.
-           // Therefore, I remove the 'url.searchParams.keys()' from the 'up' params.
-           // However I don't remove it from the 'fetcherParams'. The user should be careful not to
-           // specify the params in both the "input" and the fetcher "params" option.
+           // Removing the 'url.searchParams.keys()' from the defaultParams
+           // but not from the 'fetcherParams'. The user is responsible for not
+           // specifying the params in both the "input" and the fetcher "params" option.
            ...strip(upParams, [
               ...new URL(input, 'http://a').searchParams.keys(),
            ]),
