@@ -6,12 +6,14 @@ import {
    SerializeBody,
    SerializeParams,
 } from './types.js'
+import { MaybePromise } from './utils'
 
 export type FallbackOptions = {
    parseResponse: ParseResponse<any>
    parseResponseError: ParseResponseError<any>
    serializeParams: SerializeParams
    serializeBody: SerializeBody
+   throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
 }
 
 export let fallbackOptions: FallbackOptions = {
@@ -37,4 +39,6 @@ export let fallbackOptions: FallbackOptions = {
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
 
    serializeBody: (val: any) => JSON.stringify(val),
+
+   throwResponseErrorWhen: (response: Response) => !response.ok,
 }

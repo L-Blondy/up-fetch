@@ -12,24 +12,139 @@ describe('up', () => {
    afterEach(() => server.resetHandlers())
    afterAll(() => server.close())
 
-   test('Should throw if !res.ok', async () => {
-      server.use(
-         http.get('https://example.com', async () => {
-            return HttpResponse.json({ hello: 'world' }, { status: 400 })
-         }),
-      )
+   describe('throwResponseErrorWhen', () => {
+      test('Should throw by default if !response.ok', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
+            }),
+         )
 
-      let catchCount = 0
+         let catchCount = 0
 
-      const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
-      }))
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+         }))
 
-      await upfetch('').catch((error) => {
-         expect(isResponseError(error)).toEqual(true)
-         catchCount++
+         await upfetch('').catch((error) => {
+            expect(isResponseError(error)).toEqual(true)
+            catchCount++
+         })
+         expect(catchCount).toEqual(1)
       })
-      expect(catchCount).toEqual(1)
+
+      test('Should not throw if () => false', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
+            }),
+         )
+
+         let catchCount = 0
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            throwResponseErrorWhen: () => false,
+         }))
+
+         await upfetch('').catch(() => {
+            catchCount++
+         })
+         expect(catchCount).toEqual(0)
+      })
+
+      test('Should be called before the up parseResponseError', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
+            }),
+         )
+
+         let catchCount = 0
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            throwResponseErrorWhen: () => {
+               expect(catchCount).toBe(0)
+               catchCount++
+               return true
+            },
+            parseResponseError: async (e) => {
+               expect(catchCount).toBe(1)
+               catchCount++
+               return e
+            },
+         }))
+
+         await upfetch('').catch(() => {
+            expect(catchCount).toBe(2)
+            catchCount++
+         })
+         expect(catchCount).toEqual(3)
+      })
+
+      test('Should be called before the upfetch parseResponseError', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
+            }),
+         )
+
+         let catchCount = 0
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            throwResponseErrorWhen: () => {
+               expect(catchCount).toBe(0)
+               catchCount++
+               return true
+            },
+         }))
+
+         await upfetch('', {
+            parseResponseError: async (e) => {
+               expect(catchCount).toBe(1)
+               catchCount++
+               return e
+            },
+         }).catch(() => {
+            expect(catchCount).toBe(2)
+            catchCount++
+         })
+         expect(catchCount).toEqual(3)
+      })
+
+      test('Should support async functions', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
+            }),
+         )
+
+         let catchCount = 0
+
+         const upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            throwResponseErrorWhen: async () => {
+               return new Promise((resolve) => {
+                  catchCount++
+                  setTimeout(() => resolve(true), 100)
+               })
+            },
+         }))
+
+         await upfetch('', {
+            parseResponseError: async (e) => {
+               expect(catchCount).toBe(1)
+               catchCount++
+               return e
+            },
+         }).catch(() => {
+            expect(catchCount).toBe(2)
+            catchCount++
+         })
+         expect(catchCount).toEqual(3)
+      })
    })
 
    describe('body', () => {

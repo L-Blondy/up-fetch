@@ -43,11 +43,12 @@ export function up<
             defaultOpts.onRequestError?.(error, options)
             throw error
          })
-         .then(async (res) => {
-            if (res.ok) {
+         .then(async (response) => {
+            const shouldThrow = await options.throwResponseErrorWhen(response)
+            if (!shouldThrow) {
                let data: Awaited<TData>
                try {
-                  data = await options.parseResponse(res, options)
+                  data = await options.parseResponse(response, options)
                } catch (error: any) {
                   fetcherOpts.onParsingError?.(error, options)
                   defaultOpts.onParsingError?.(error, options)
@@ -59,7 +60,10 @@ export function up<
             } else {
                let respError: Awaited<TResponseError>
                try {
-                  respError = await options.parseResponseError(res, options)
+                  respError = await options.parseResponseError(
+                     response,
+                     options,
+                  )
                } catch (error: any) {
                   fetcherOpts.onParsingError?.(error, options)
                   defaultOpts.onParsingError?.(error, options)

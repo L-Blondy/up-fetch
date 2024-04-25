@@ -49,6 +49,8 @@ export type DistributiveOmit<
    TKey extends KeysOfUnion<TObject> | (string & {}),
 > = TObject extends unknown ? Omit<TObject, TKey> : never
 
+export type MaybePromise<T> = T | Promise<T>
+
 export let strip = <O extends object, K extends KeysOfUnion<O> | (string & {})>(
    obj?: O,
    keys: K[] | readonly K[] = [],

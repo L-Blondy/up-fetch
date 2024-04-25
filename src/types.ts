@@ -1,4 +1,4 @@
-import { DistributiveOmit } from './utils'
+import { DistributiveOmit, MaybePromise } from './utils'
 
 export type JsonifiableObject =
    | {
@@ -72,6 +72,7 @@ export type ComputedOptions<
    rawBody?: RawBody
    serializeBody: SerializeBody
    serializeParams: SerializeParams
+   throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
 }
 
 export type DefaultOptions<
@@ -89,6 +90,7 @@ export type DefaultOptions<
    parseResponseError?: ParseResponseError<TResponseError>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
+   throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
 }
 
 export type FetcherOptions<
@@ -119,4 +121,5 @@ export type FetcherOptions<
    parseResponseError?: ParseResponseError<TResponseError>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
+   throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
 }
