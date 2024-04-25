@@ -433,7 +433,7 @@ upfetch('/fail-to-fetch')
 
 </details>
 
-<details><summary>💡 <b>delete</b> a default option</summary><br />
+<details><summary>💡 <b>Delete</b> a default option</summary><br />
 
 Simply pass `undefined`
 
@@ -455,7 +455,7 @@ upfetch('https://a.b.c', {
 
 </details>
 
-<details><summary>💡 conditionally <b>override</b> a default option</summary><br />
+<details><summary>💡 <b>Override</b> a default option conditionally</summary><br />
 
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
@@ -485,7 +485,7 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 </details>
 
-<details><summary><b>💡 Adding HTTP Agent (node only)</b></summary><br />
+<details><summary>💡 use an <b>HTTP Agent</b> (node only)</summary><br />
 
 _April 2024_
 
@@ -525,7 +525,7 @@ const data = await upfetch('https://a.b.c')
 
 </details>
 
-<details><summary>💡 use with <b>Next.js<b/> App Router</summary><br />
+<details><summary>💡 use with <b>Next.js</b> App Router</summary><br />
 
 Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
