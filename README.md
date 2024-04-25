@@ -7,7 +7,8 @@ Tiny & Composable fetch config tool with sensible defaults.
 -  🚀 **Lightweight** - 1kB gzipped, no dependency
 -  🤩 **Familiar** - same API as [fetch][MDN] with additional options and sensible defaults
 -  🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
--  🔥 **Composable** - for complex cases, bring your own `serialization` and `parsing` strategies
+-  🔥 **Composable** - bring your own `serialization` and `parsing` strategies when necessary
+-  **observable** - thanks to the built in `interceptors`
 -  💫 **Reusable** - create instances with custom defaults
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
