@@ -507,7 +507,17 @@ upfetch('/posts', {
 
 </details>
 
-<details><summary>💡 Add an <b>HTTP Agent</b> (node only)</summary><br />
+## ➡️ Adapters
+
+<details><summary>💡 <b>zod</b> validation</summary>💡</details>
+
+<details><summary>💡 <b>valibot</b> validation</summary>💡</details>
+
+<details><summary>💡 <b>FormData</b> serialization</summary>💡</details>
+
+<details><summary>💡 <b>progress</b> (upload / download)</summary>🔗</details>
+
+<details><summary>💡 <b>HTTP Agent</b> (node only)</summary><br />
 
 _April 2024_
 
@@ -546,13 +556,6 @@ const data = await upfetch('https://a.b.c')
 ```
 
 </details>
-
-## ➡️ Adapters
-
-<details><summary>💡 <b>zod</b> validation</summary>💡</details>
-<details><summary>💡 <b>valibot</b> validation</summary>💡</details>
-<details><summary>💡 <b>FormData</b> serialization</summary>💡</details>
-<details><summary>💡 <b>progress</b> (upload / download)</summary>🔗</details>
 
 ## ➡️ Types
 
