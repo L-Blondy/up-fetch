@@ -507,7 +507,7 @@ upfetch('/posts', {
 
 </details>
 
-## ➡️ Adapters
+## ➡️ Recipies
 
 <details><summary>💡 <b>zod</b> validation</summary>💡</details>
 
