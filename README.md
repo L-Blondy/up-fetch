@@ -749,7 +749,7 @@ The body is passed to `serializeBody` when it is a plain object, an array or a c
 
 This example uses [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)
 
-_Note: when sending FormData the headers are added automatically. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
+_Note: when sending FormData the fetch API automatically adds the correct header. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
 
 ```ts
 import { serialize } from 'object-to-formdata'
@@ -812,7 +812,7 @@ const todo = await upfetch('/todo/1', {
 **Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
 
 Customize the parsing of a thrown fetch response. \
-By default the response is thrown when `response.ok` is `false`, it is customizable with the [throwResponseErrorWhen](#throwresponseerrorwhen) option) \
+By default the response is thrown when `response.ok` is `false`, it is customizable with [throwResponseErrorWhen](#throwresponseerrorwhen). \
 By default a [ResponseError](#%EF%B8%8F-throws-by-default) is thrown
 
 **Example:**
