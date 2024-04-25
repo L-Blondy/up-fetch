@@ -509,11 +509,11 @@ upfetch('/posts', {
 
 ## ➡️ Recipies
 
-<details><summary>💡 <b>zod</b> validation</summary>💡</details>
+<details><summary>💡 <b>zod</b></summary>💡</details>
 
-<details><summary>💡 <b>valibot</b> validation</summary>💡</details>
+<details><summary>💡 <b>valibot</b></summary>💡</details>
 
-<details><summary>💡 <b>FormData</b> serialization</summary>💡</details>
+<details><summary>💡 <b>FormData</b></summary>💡</details>
 
 <details><summary>💡 <b>progress</b> (upload / download)</summary>🔗</details>
 
