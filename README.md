@@ -322,8 +322,6 @@ upfetch('/todos', {
 })
 ```
 
-## ➡️ Recipies
-
 ## ➡️ How to
 
 <details><summary>💡 handle <b>Authentication</b></summary><br />
@@ -553,7 +551,16 @@ const data = await upfetch('https://a.b.c')
 
 See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/types.ts) file for more details
 
-## ➡️ API
+## ➡️ Recipies
+
+<details><summary>💡 blablabla</summary></details>
+<details><summary>💡 blablabla</summary></details>
+<details><summary>💡 blablabla</summary></details>
+<details><summary>💡 blablabla</summary></details>
+<details><summary>💡 blablabla</summary></details>
+<details><summary>💡 blablabla</summary></details>
+
+## ➡️ Options
 
 All options can be set either on **up** or on an **upfetch** instance except for the [body](#body)
 
