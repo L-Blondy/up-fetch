@@ -7,7 +7,7 @@ Tiny & Composable fetch config tool with sensible default.
 -  🚀 **Lightweight** - 1kB gzipped, no dependency
 -  🤩 **Simple** - same syntax as the [fetch API][MDN] with additional options and defaults
 -  🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
--  🔥 **Adaptive** - bring your own `serialization` and `parsing` strategies for more complex cases
+-  🔥 **Composable** - bring your own `serialization` and `parsing` strategies for more complex cases
 -  💫 **Reusable** - create instances with custom defaults
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
@@ -740,7 +740,9 @@ upfetch('https://a.b.c', {
 Customize the [body](#body) serialization into a valid `BodyInit`, a `string` in most cases\
 The body is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
 
-**Example: serialize `objects` to `FormData` using [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)**
+**Example: serialize `objects` to `FormData`**
+
+This example uses [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)
 
 _Note: when sending FormData the headers are added automatically. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
 
@@ -780,7 +782,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-**With a validation adapter:**
+**Example: with the [zod](https://zod.dev/) adapter**
 
 ```ts
 import { z } from 'zod'
