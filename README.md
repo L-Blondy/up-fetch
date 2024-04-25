@@ -944,8 +944,8 @@ upfetch('https://a.b.c', {
 
 **Default:** `(response: Response) => !response.ok`
 
-You get to decide when to throw the `Response` to `parseResponseError`. \
-It can be an async function
+Decide when to trigger [parseResponseError](#parseresponseerror) and throw an error. \
+It can be an async function.
 
 **Example: never throw a response**
 
