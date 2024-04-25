@@ -12,7 +12,7 @@ Tiny & Composable fetch config tool with sensible defaults.
 -  💫 **Reusable** - create instances with custom defaults
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
--  👻 **Throws by default** - _(yet customizable)_ when `response.ok` is `false`
+-  👻 **Throws by default** - _(customizable)_ when `response.ok` is `false`
 -  📦 **Tree Shakable** - You only get what you use
 
 ## ➡️ QuickStart
