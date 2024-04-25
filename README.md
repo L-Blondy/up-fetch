@@ -324,46 +324,6 @@ upfetch('/todos', {
 
 ## ➡️ Recipies
 
-<details><summary>💡 Add an <b>HTTP Agent</b> (node only)</summary><br />
-
-_April 2024_
-
-Node, bun and browsers implementation of the fetch API do not support HTTP agents.
-
-In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) (node only)
-
-_Add an HTTP Agent on a single request_
-
-```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch)
-
-const data = await upfetch('https://a.b.c', {
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
-})
-```
-
-_Dynamically add an HTTP Agent on each request request_
-
-```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch, () => ({
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
-}))
-
-const data = await upfetch('https://a.b.c')
-```
-
-</details>
-
 ## ➡️ How to
 
 <details><summary>💡 handle <b>Authentication</b></summary><br />
@@ -545,6 +505,46 @@ _Override it for a specific request_
 upfetch('/posts', {
    next: { revalidate: 60 },
 })
+```
+
+</details>
+
+<details><summary>💡 Add an <b>HTTP Agent</b> (node only)</summary><br />
+
+_April 2024_
+
+Node, bun and browsers implementation of the fetch API do not support HTTP agents.
+
+In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) (node only)
+
+_Add an HTTP Agent on a single request_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch)
+
+const data = await upfetch('https://a.b.c', {
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+})
+```
+
+_Dynamically add an HTTP Agent on each request request_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch, () => ({
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+}))
+
+const data = await upfetch('https://a.b.c')
 ```
 
 </details>
