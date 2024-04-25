@@ -549,12 +549,12 @@ const data = await upfetch('https://a.b.c')
 
 ## ➡️ Adapters
 
-<details><summary>🔌 blablabla</summary></details>
-<details><summary>🔌 blablabla</summary></details>
-<details><summary>🔌 blablabla</summary></details>
-<details><summary>🔌 blablabla</summary></details>
-<details><summary>🔌 blablabla</summary></details>
-<details><summary>🔌 blablabla</summary></details>
+<details><summary>🔗 blablabla</summary>🌐</details>
+<details><summary>🔗 blablabla</summary>🌐</details>
+<details><summary>🔗 blablabla</summary>🌐</details>
+<details><summary>🔗 blablabla</summary>🌐</details>
+<details><summary>🔗 blablabla</summary>🌐</details>
+<details><summary>🔗 blablabla</summary>🌐</details>
 
 ## ➡️ Types
 
