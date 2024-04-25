@@ -72,9 +72,9 @@ import { fetch } from 'undici'
 const upfetch = up(fetch)
 ```
 
-### raw fetch vs upfetch
+### Raw fetch vs upfetch
 
-#### Raw fetch example that throws when response.ok is false:
+#### fetch that throws when response.ok is false:
 
 You should first create a custom ResponseError class that extends the built in Error class in order to expose the response and the parsed response data.
 
