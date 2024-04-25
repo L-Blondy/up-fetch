@@ -453,7 +453,7 @@ upfetch('https://a.b.c', {
 
 </details>
 
-<details><summary>💡 <b>Override</b> a default option conditionally</summary><br />
+<details><summary>💡 <b>Override</b> a default conditionally</summary><br />
 
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
