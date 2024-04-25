@@ -728,7 +728,9 @@ upfetch('https://a.b.c', {
 Customize the [body](#body) serialization into a valid `BodyInit`, a `string` in most cases\
 The body is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
 
-**Example: serialize `objects` to `FormData` using [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)**
+**Example: serialize `objects` to `FormData`
+
+This example uses [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)
 
 _Note: when sending FormData the headers are added automatically. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
 
