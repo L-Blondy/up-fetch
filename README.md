@@ -5,7 +5,7 @@ Tiny & Composable fetch config tool with sensible defaults.
 ## ➡️ Highlights
 
 -  🚀 **Lightweight** - 1kB gzipped, no dependency
--  🤩 **Familiar** - same API as [fetch][MDN] with additional options and defaults
+-  🤩 **Familiar** - same API as [fetch][MDN] with additional options and sensible defaults
 -  🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
 -  🔥 **Composable** - bring your own `serialization` and `parsing` strategies for more complex cases
 -  💫 **Reusable** - create instances with custom defaults
