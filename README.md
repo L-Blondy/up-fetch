@@ -770,7 +770,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-**Example With the [zod](https://zod.dev/) adapter:**
+**Example: with the [zod](https://zod.dev/) adapter**
 
 ```ts
 import { z } from 'zod'
