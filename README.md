@@ -507,11 +507,13 @@ upfetch('/posts', {
 
 </details>
 
-## ➡️ Recipies
+## ➡️ Adapters & Recipies
 
-<details><summary>💡 <b>zod</b></summary>💡</details>
+<details><summary>💡 <b>transform</b></summary>withTransform</details>
 
-<details><summary>💡 <b>valibot</b></summary>💡</details>
+<details><summary>💡 <b>zod</b></summary>withZod</details>
+
+<details><summary>💡 <b>valibot</b></summary>withValibot</details>
 
 <details><summary>💡 <b>FormData</b></summary>💡</details>
 
