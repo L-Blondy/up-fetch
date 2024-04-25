@@ -175,7 +175,7 @@ const todos = await upfetch('https://a.b.c')
 Throws a `ResponseError` when `response.ok` is `false`. \
 This behavior can be customized using the [throwResponseErrorWhen](#throwresponseerrorwhen) option
 
-A parsed error body is available with `error.data`. \
+The parsed error body is available with `error.data`. \
 The raw Response can be accessed with `error.response`. \
 The options used make the api call are available with `error.options`.
 
