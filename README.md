@@ -549,7 +549,7 @@ upfetch('/posts', {
 
 ## ➡️ How to
 
-<details><summary><b>💡 How to handle <a href='#authentication'>authentication</a></b></summary><br />
+<details><summary>💡 Handle <b>authentication</b></summary><br />
 
 ### authentication
 
