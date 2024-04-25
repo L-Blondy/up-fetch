@@ -28,19 +28,19 @@ export function up<
               defaultOptions: TDefaultOptions,
            ) => FetcherOptions<TData, TResponseError, TFetchFn>) = emptyOptions,
    ) => {
-      let defaultOptions = getDefaultOptions()
-      let fetcherOptions =
+      let defaultOpts = getDefaultOptions()
+      let fetcherOpts =
          typeof fetcherOptions === 'function'
-            ? fetcherOptions(defaultOptions)
+            ? fetcherOptions(defaultOpts)
             : fetcherOptions
-      let options = buildOptions(input, defaultOptions, fetcherOptions)
-      fetcherOptions.onBeforeFetch?.(options)
-      defaultOptions.onBeforeFetch?.(options)
+      let options = buildOptions(input, defaultOpts, fetcherOpts)
+      fetcherOpts.onBeforeFetch?.(options)
+      defaultOpts.onBeforeFetch?.(options)
 
       return fetchFn(options.input, options)
          .catch((error) => {
-            fetcherOptions.onRequestError?.(error, options)
-            defaultOptions.onRequestError?.(error, options)
+            fetcherOpts.onRequestError?.(error, options)
+            defaultOpts.onRequestError?.(error, options)
             throw error
          })
          .then(async (res) => {
@@ -49,24 +49,24 @@ export function up<
                try {
                   data = await options.parseResponse(res, options)
                } catch (error: any) {
-                  fetcherOptions.onParsingError?.(error, options)
-                  defaultOptions.onParsingError?.(error, options)
+                  fetcherOpts.onParsingError?.(error, options)
+                  defaultOpts.onParsingError?.(error, options)
                   throw error
                }
-               fetcherOptions.onSuccess?.(data, options)
-               defaultOptions.onSuccess?.(data, options)
+               fetcherOpts.onSuccess?.(data, options)
+               defaultOpts.onSuccess?.(data, options)
                return data
             } else {
                let respError: Awaited<TResponseError>
                try {
                   respError = await options.parseResponseError(res, options)
                } catch (error: any) {
-                  fetcherOptions.onParsingError?.(error, options)
-                  defaultOptions.onParsingError?.(error, options)
+                  fetcherOpts.onParsingError?.(error, options)
+                  defaultOpts.onParsingError?.(error, options)
                   throw error
                }
-               fetcherOptions.onResponseError?.(respError, options)
-               defaultOptions.onResponseError?.(respError, options)
+               fetcherOpts.onResponseError?.(respError, options)
+               defaultOpts.onResponseError?.(respError, options)
                throw respError
             }
          })
