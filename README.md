@@ -11,7 +11,7 @@ Tiny & Composable fetch config tool with sensible defaults.
 -  💫 **Reusable** - create instances with custom defaults
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
--  👻 **Throws by default** - when `response.ok` is `false`
+-  👻 **Throws by default** - when `response.ok` is `false` (customizable)
 -  📦 **Tree Shakable** - You only get what you use
 
 ## ➡️ QuickStart
@@ -172,7 +172,8 @@ const todos = await upfetch('https://a.b.c')
 
 ### ✔️ throws by default
 
-Throws a `ResponseError` when `response.ok` is `false`
+Throws a `ResponseError` when `response.ok` is `false`. \
+This behavior can be customized using the [throwResponseErrorWhen](#throwresponseerrorwhen) option
 
 A parsed error body is available with `error.data`. \
 The raw Response can be accessed with `error.response`. \
@@ -366,13 +367,17 @@ The same approach can be used with `cookies`
 
 <details><summary>💡 handle <b>errors</b></summary><br />
 
-**up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`.
+**up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`. \
+You can decide **when** to throw using the [throwResponseErrorWhen](#throwresponseerrorwhen) option. \
+You can decide **what** to throw using the [parseResponseError](#parseresponseerror) option.
 
-The parsed response body is available with `error.data`. \
-The response status is available with `error.response.status`. \
-The options used the make the request are available with `error.options`.
+On the default `ResponseError`:
 
-The [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` can be used to check if the error is a `ResponseError`
+-  The parsed response body is available with `error.data`. \
+-  The response status is available with `error.response.status`. \
+-  The options used the make the request are available with `error.options`.
+
+The [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` can be used to check if an error is a `ResponseError`
 
 ```ts
 import { upfetch } from '...'
@@ -806,7 +811,8 @@ const todo = await upfetch('/todo/1', {
 
 **Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
 
-Customize the parsing of a fetch response error (when response.ok is false) \
+Customize the parsing of a thrown fetch response. \
+By default the response is thrown when `response.ok` is `false`, it is customizable with the [throwResponseErrorWhen](#throwresponseerrorwhen) option) \
 By default a [ResponseError](#%EF%B8%8F-throws-by-default) is thrown
 
 **Example:**
@@ -829,10 +835,12 @@ Called when `response.ok` is `true`
 **Example:**
 
 ```ts
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onSuccess: (data, options) => console.log('2nd'),
 }))
 
+// listen to  requests
 upfetch('https://a.b.c', {
    onSuccess: (data, options) => console.log('1st'),
 })
@@ -842,15 +850,17 @@ upfetch('https://a.b.c', {
 
 **Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
 
-Called when a response error was thrown (`response.ok` is `false`).
+Called when a response error was thrown, by default when `response.ok` is `false`, customizable with the [throwResponseErrorWhen](#throwresponseerrorwhen) option
 
 **Example:**
 
 ```ts
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onResponseError: (error, options) => console.log('Response error', error),
 }))
 
+// listen to one requests
 upfetch('https://a.b.c', {
    onResponseError: (error, options) => console.log('Response error', error),
 })
@@ -865,10 +875,12 @@ Called when the fetch request fails (no response from the server).
 **Example:**
 
 ```ts
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onRequestError: (error, options) => console.log('Request error', error),
 }))
 
+// listen to one requests
 upfetch('https://a.b.c', {
    onRequestError: (error, options) => console.log('Request error', error),
 })
@@ -887,10 +899,12 @@ Usefull when using a [validation adapter](#%EF%B8%8F-data-validation)
 import { z } from 'zod'
 import { withZod } from 'up-fetch/with-zod'
 
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onParsingError: (error, options) => console.log('Validation error', error),
 }))
 
+// listen to one requests
 upfetch('https://a.b.c', {
    onParsingError: (error, options) => console.log('Validation error', error),
    parseResponse: withZod(
@@ -913,12 +927,37 @@ Called before the request is sent.
 **Example:**
 
 ```ts
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onBeforeFetch: (options) => console.log('2nd'),
 }))
 
+// listen to one requests
 upfetch('https://a.b.c', {
    onBeforeFetch: (options) => console.log('1st'),
+})
+```
+
+## <samp>\<throwResponseErrorWhen\></samp>
+
+**Type:** `(response: Response) => MaybePromise<boolean>`
+
+**Default:** `(response: Response) => !response.ok`
+
+You get to decide when to throw the `Response` to `parseResponseError`. \
+It can be an async function
+
+**Example: never throw a response**
+
+```ts
+// for all requests
+const upfetch = up(fetch, () => ({
+   throwResponseErrorWhen: () => false,
+}))
+
+// for one requests
+upfetch('https://a.b.c', {
+   throwResponseErrorWhen: () => false,
 })
 ```
 
