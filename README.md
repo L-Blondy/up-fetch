@@ -547,18 +547,18 @@ const data = await upfetch('https://a.b.c')
 
 </details>
 
+## ➡️ Adapters
+
+<details><summary>🔌 blablabla</summary></details>
+<details><summary>🔌 blablabla</summary></details>
+<details><summary>🔌 blablabla</summary></details>
+<details><summary>🔌 blablabla</summary></details>
+<details><summary>🔌 blablabla</summary></details>
+<details><summary>🔌 blablabla</summary></details>
+
 ## ➡️ Types
 
 See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/types.ts) file for more details
-
-## ➡️ Recipies
-
-<details><summary>💡 blablabla</summary></details>
-<details><summary>💡 blablabla</summary></details>
-<details><summary>💡 blablabla</summary></details>
-<details><summary>💡 blablabla</summary></details>
-<details><summary>💡 blablabla</summary></details>
-<details><summary>💡 blablabla</summary></details>
 
 ## ➡️ Options
 
