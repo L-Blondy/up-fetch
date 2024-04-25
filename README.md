@@ -549,10 +549,10 @@ const data = await upfetch('https://a.b.c')
 
 ## ➡️ Adapters
 
-<details><summary>🌐 zod</summary>🌐</details>
-<details><summary>🌐 valibot</summary>🌐</details>
-<details><summary>🌐 FormData</summary>🌐</details>
-<details><summary>🌐 upload / download progress</summary>🔗</details>
+<details><summary>💡 zod</summary>💡</details>
+<details><summary>💡 valibot</summary>💡</details>
+<details><summary>💡 FormData</summary>💡</details>
+<details><summary>💡 upload / download progress</summary>🔗</details>
 
 ## ➡️ Types
 
