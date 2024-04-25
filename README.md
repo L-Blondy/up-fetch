@@ -1,6 +1,6 @@
 # up-fetch
 
-Tiny & Composable fetch config tool with sensible defaults.
+Tiny & Composable fetch configuration tool with sensible defaults.
 
 ## ➡️ Highlights
 
