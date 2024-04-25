@@ -4,7 +4,7 @@ import { bodyMock } from './_mocks'
 
 describe('buildOptions input', () => {
    test.each`
-      input                                 | upOpts                            | fetcherOpts                   | output
+      input                                 | defaultOptions                    | fetcherOpts                   | output
       ${'b'}                                | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a/b'}
       ${'c'}                                | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://a/b/c'}
       ${'http://d/e'}                       | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://d/e'}
@@ -23,18 +23,22 @@ describe('buildOptions input', () => {
       ${'http://c/d?q=search'}              | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c/d?q=search'}
       ${'http://c'}                         | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c/?q=query'}
       ${'http://c'}                         | ${{}}                             | ${{ params: { q: 'query' } }} | ${'http://c/?q=query'}
-   `('Input: $body', ({ input, upOpts, fetcherOpts, output }) => {
+   `('Input: $body', ({ input, defaultOptions, fetcherOpts, output }) => {
       if (input instanceof Request) {
-         expect(buildOptions(input, upOpts, fetcherOpts).input).toBe(input)
+         expect(buildOptions(input, defaultOptions, fetcherOpts).input).toBe(
+            input,
+         )
       } else {
-         expect(buildOptions(input, upOpts, fetcherOpts).input).toEqual(output)
+         expect(buildOptions(input, defaultOptions, fetcherOpts).input).toEqual(
+            output,
+         )
       }
    })
 })
 
 describe('buildOptions body', () => {
    test.each`
-      upOpts                | fetcherOpts                               | output
+      defaultOptions        | fetcherOpts                               | output
       ${{ body: { a: 1 } }} | ${{}}                                     | ${undefined}
       ${{}}                 | ${{ body: { a: 1 } }}                     | ${'{"a":1}'}
       ${{}}                 | ${{ body: bodyMock.buffer }}              | ${bodyMock.buffer}
@@ -51,9 +55,11 @@ describe('buildOptions body', () => {
       ${{}}                 | ${{ body: 0 }}                            | ${0}
       ${{}}                 | ${{ body: undefined }}                    | ${undefined}
       ${{}}                 | ${{ body: null }}                         | ${null}
-   `('Input: $body', ({ upOpts, fetcherOpts, output }) => {
+   `('Input: $body', ({ defaultOptions, fetcherOpts, output }) => {
       const input = 'http://a'
 
-      expect(buildOptions(input, upOpts, fetcherOpts).body).toEqual(output)
+      expect(buildOptions(input, defaultOptions, fetcherOpts).body).toEqual(
+         output,
+      )
    })
 })

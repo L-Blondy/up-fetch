@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { defaultOptions } from './default-options'
+import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'
 
 describe('serializeParams', () => {
@@ -13,7 +13,7 @@ describe('serializeParams', () => {
       ${{ key5: [true, false, null, undefined, 7] }}                       | ${'key5=true%2Cfalse%2C%2C%2C7'}
       ${{ key5: [1, [2, true, null]] }}                                    | ${'key5=1%2C2%2Ctrue%2C'}
    `('serializeParams: $params', ({ params, output }) => {
-      expect(defaultOptions.serializeParams(params)).toBe(output)
+      expect(fallbackOptions.serializeParams(params)).toBe(output)
    })
 })
 
@@ -32,7 +32,7 @@ describe('parseResponse', () => {
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseResponse: $response', async ({ response, output }) => {
       expect(
-         await defaultOptions.parseResponse(response, {} as any),
+         await fallbackOptions.parseResponse(response, {} as any),
       ).toStrictEqual(output)
    })
 })
@@ -46,7 +46,7 @@ describe('parseResponseError', () => {
       ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseResponseError: $response', async ({ response, output }) => {
-      const responseError = await defaultOptions.parseResponseError(response, {
+      const responseError = await fallbackOptions.parseResponseError(response, {
          href: 'my-options',
       } as any)
       expect(responseError instanceof ResponseError).toBeTruthy()

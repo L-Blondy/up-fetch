@@ -1,11 +1,11 @@
 # up-fetch
 
-Tiny & Composable fetch config tool with sensible default.
+Tiny & Composable fetch config tool with sensible defaults.
 
 ## ➡️ Highlights
 
 -  🚀 **Lightweight** - 1kB gzipped, no dependency
--  🤩 **Simple** - same syntax as the [fetch API][MDN] with additional options and defaults
+-  🤩 **Familiar** - same API as [fetch][MDN] with additional options and defaults
 -  🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
 -  🔥 **Composable** - bring your own `serialization` and `parsing` strategies for more complex cases
 -  💫 **Reusable** - create instances with custom defaults
@@ -469,13 +469,13 @@ upfetch('https://a.b.c', {
 })
 ```
 
-In order to solve this problem, upfetch exposes the `upOptions` when the options (2nd arg) are defined as a function. \
-`upOptions` are stricly typed (const generic)
+In order to solve this problem, upfetch exposes the `defaultOptions` when the options (2nd arg) are defined as a function. \
+`defaultOptions` are stricly typed (const generic)
 
 ```ts
 ✅ Do
-upfetch('https://a.b.c', (upOptions) => ({
-   headers: { 'X-Header': condition ? 'newValue' : upOptions.headers['X-Header'] }
+upfetch('https://a.b.c', (defaultOptions) => ({
+   headers: { 'X-Header': condition ? 'newValue' : defaultOptions.headers['X-Header'] }
 }))
 ```
 
@@ -641,8 +641,8 @@ upfetch('https://a.b.c', {
 
 // conditionally override the expand param `expand` param
 // ?expand=false&page=2&limit=10
-upfetch('https://a.b.c', (upOptions) => ({
-   params: { expand: isTruthy ? true : upOptions.params.expand },
+upfetch('https://a.b.c', (defaultOptions) => ({
+   params: { expand: isTruthy ? true : defaultOptions.params.expand },
 }))
 ```
 
@@ -678,9 +678,9 @@ upfetch('https://a.b.c', {
 })
 
 // conditionally override the `Authorization` header
-upfetch('https://a.b.c', (upOptions) => ({
+upfetch('https://a.b.c', (defaultOptions) => ({
    headers: {
-      Authorization: isTruthy ? 'Bearer ...3' : upOptions.headers.val,
+      Authorization: isTruthy ? 'Bearer ...3' : defaultOptions.headers.val,
    },
 }))
 ```

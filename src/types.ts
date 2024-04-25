@@ -74,7 +74,7 @@ export type ComputedOptions<
    serializeParams: SerializeParams
 }
 
-export type UpOptions<
+export type DefaultOptions<
    TFetchFn extends typeof fetch = typeof fetch,
    TResponseError = any,
 > = BaseOptions<TFetchFn> & {
@@ -91,7 +91,7 @@ export type UpOptions<
    serializeParams?: SerializeParams
 }
 
-export type UpFetchOptions<
+export type FetcherOptions<
    TData = any,
    TResponseError = any,
    TFetchFn extends typeof fetch = typeof fetch,
