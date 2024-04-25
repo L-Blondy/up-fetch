@@ -50,11 +50,11 @@ export type SerializeBody = (
 
 export type SerializeParams = (params: Params) => string
 
-type Params = Record<string, any>
+export type Params = Record<string, any>
 
 type RawBody = BodyInit | JsonifiableObject | JsonifiableArray | null
 
-type RawHeaders =
+export type RawHeaders =
    | HeadersInit
    | Record<string, string | number | null | undefined>
 
