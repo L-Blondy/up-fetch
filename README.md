@@ -1,6 +1,6 @@
 # up-fetch
 
-**up-fetch** is a tiny 1kb configuration tool for the fetch API with sensible default.
+Tiny & Composable fetch config tool with sensible default.
 
 _Go to the [Chinese docs](https://github.com/L-Blondy/up-fetch/blob/master/README_ZH.md)_
 
