@@ -324,47 +324,51 @@ upfetch('/todos', {
 
 ## ➡️ Recipies
 
-<details><summary><b>💡 Adding HTTP Agent (node only)</b></summary><br />
+## ➡️ How to
 
-_April 2024_
+<details><summary>💡 handle <b>Authentication</b></summary><br />
 
-Node, bun and browsers implementation of the fetch API do not support HTTP agents.
-
-In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) instead (node only)
-
-_Add an HTTP Agent on a single request_
+Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
 
 ```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch)
-
-const data = await upfetch('https://a.b.c', {
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
-})
-```
-
-_Dynamically add an HTTP Agent on each request request_
-
-```ts
-import { fetch, Agent } from 'undici'
+import { up } from 'up-fetch'
 
 const upfetch = up(fetch, () => ({
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
+   headers: { Authentication: localStorage.getItem('bearer-token') },
 }))
 
-const data = await upfetch('https://a.b.c')
+localStorage.setItem('bearer-token', 'Bearer abcdef123456')
+upfetch('/profile') // Authenticated request
+
+localStorage.removeItem('bearer-token')
+upfetch('/profile') // Non authenticated request
 ```
+
+```ts
+// ❌ Don't read the storage / cookies outside of `up`
+
+// This value will never change
+const bearerToken = localStorage.getItem('bearer-token')
+
+const upfetch = up(fetch, () => ({
+   headers: { Authentication: bearerToken },
+}))
+```
+
+```ts
+// ✅ Keep it inside the function call
+
+// Checks the localStorage on each request
+const upfetch = up(fetch, () => ({
+   headers: { Authentication: localStorage.getItem('bearer-token') },
+}))
+```
+
+The same approach can be used with `cookies`
 
 </details>
 
-<details><summary><b>💡 Error handling</b></summary><br />
+<details><summary>💡 handle <b>errors</b></summary><br />
 
 **up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`.
 
@@ -429,7 +433,7 @@ upfetch('/fail-to-fetch')
 
 </details>
 
-<details><summary><b>💡 Delete a default option</b></summary><br />
+<details><summary>💡 <b>delete</b> a default option</summary><br />
 
 Simply pass `undefined`
 
@@ -451,7 +455,7 @@ upfetch('https://a.b.c', {
 
 </details>
 
-<details><summary><b>💡 Override a default option conditionally</b></summary><br />
+<details><summary>💡 conditionally <b>override</b> a default option</summary><br />
 
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
@@ -481,7 +485,47 @@ upfetch('https://a.b.c', (upOptions) => ({
 
 </details>
 
-<details><summary><b>💡 Next.js App Router</b></summary><br />
+<details><summary><b>💡 Adding HTTP Agent (node only)</b></summary><br />
+
+_April 2024_
+
+Node, bun and browsers implementation of the fetch API do not support HTTP agents.
+
+In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) instead (node only)
+
+_Add an HTTP Agent on a single request_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch)
+
+const data = await upfetch('https://a.b.c', {
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+})
+```
+
+_Dynamically add an HTTP Agent on each request request_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch, () => ({
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+}))
+
+const data = await upfetch('https://a.b.c')
+```
+
+</details>
+
+<details><summary>💡 use with <b>Next.js<b/> App Router</summary><br />
 
 Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
@@ -502,50 +546,6 @@ upfetch('/posts', {
    next: { revalidate: 60 },
 })
 ```
-
-</details>
-
-## ➡️ How to
-
-<details><summary>💡 handle <b>Authentication</b></summary><br />
-
-Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
-
-```ts
-import { up } from 'up-fetch'
-
-const upfetch = up(fetch, () => ({
-   headers: { Authentication: localStorage.getItem('bearer-token') },
-}))
-
-localStorage.setItem('bearer-token', 'Bearer abcdef123456')
-upfetch('/profile') // Authenticated request
-
-localStorage.removeItem('bearer-token')
-upfetch('/profile') // Non authenticated request
-```
-
-```ts
-// ❌ Don't read the storage / cookies outside of `up`
-
-// This value will never change
-const bearerToken = localStorage.getItem('bearer-token')
-
-const upfetch = up(fetch, () => ({
-   headers: { Authentication: bearerToken },
-}))
-```
-
-```ts
-// ✅ Keep it inside the function call
-
-// Checks the localStorage on each request
-const upfetch = up(fetch, () => ({
-   headers: { Authentication: localStorage.getItem('bearer-token') },
-}))
-```
-
-The same approach can be used with `cookies`
 
 </details>
 
