@@ -2,8 +2,6 @@
 
 Tiny & Composable fetch config tool with sensible default.
 
-_Go to the [Chinese docs](https://github.com/L-Blondy/up-fetch/blob/master/README_ZH.md)_
-
 ## ➡️ Highlights
 
 -  🚀 **Lightweight** - 1kB gzipped, no dependency
