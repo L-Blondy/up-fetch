@@ -322,7 +322,7 @@ upfetch('/todos', {
 })
 ```
 
-## ➡️ Examples
+## ➡️ Recipies
 
 <details><summary><b>💡 Authentication</b></summary><br />
 
@@ -544,6 +544,14 @@ upfetch('/posts', {
    next: { revalidate: 60 },
 })
 ```
+
+</details>
+
+## ➡️ How to
+
+<details><summary><b>💡 How to handle <a href='#authentication'>authentication</a></b></summary><br />
+
+### authentication
 
 </details>
 
