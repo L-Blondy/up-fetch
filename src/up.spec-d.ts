@@ -304,7 +304,7 @@ test('callback types', async () => {
 test('base fetch type should be extended', async () => {
    type CustomFetchType = (
       input: RequestInfo | URL,
-      init?: RequestInit & { additionalOption?: string },
+      init?: RequestInit & { additionalOption: string },
    ) => Promise<Response>
 
    const upfetch = up(fetch as CustomFetchType, () => ({
