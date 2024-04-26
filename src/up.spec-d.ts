@@ -2,7 +2,7 @@
 import { expectTypeOf, test } from 'vitest'
 import { up } from './up'
 import { JsonifiableArray, JsonifiableObject, ComputedOptions } from './types'
-import { defaultOptions } from './default-options'
+import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'
 
 test('infer TData', async () => {
@@ -35,8 +35,8 @@ test('infer TData', async () => {
    }))
    expectTypeOf(data3).toEqualTypeOf<string>()
 
-   const data4 = await upfetch('', (upOptions) => ({
-      parseResponse: upOptions.parseResponse,
+   const data4 = await upfetch('', (defaultOptions) => ({
+      parseResponse: defaultOptions.parseResponse,
       onSuccess(data, options) {
          expectTypeOf(data).toEqualTypeOf<number>()
       },
@@ -68,19 +68,19 @@ test('infer TResponseError', async () => {
          expectTypeOf(error).toEqualTypeOf<string>()
       },
    })
-   await upfetch('', (upOpts) => ({
+   await upfetch('', (defaultOptions) => ({
       onResponseError(error, options) {
          expectTypeOf(error).toEqualTypeOf<number>()
       },
    }))
-   await upfetch('', (upOpts) => ({
+   await upfetch('', (defaultOptions) => ({
       parseResponseError: (res, options) => Promise.resolve(''),
       onResponseError(error, options) {
          expectTypeOf(error).toEqualTypeOf<string>()
       },
    }))
-   await upfetch('', (upOpts) => ({
-      parseResponseError: upOpts.parseResponseError,
+   await upfetch('', (defaultOptions) => ({
+      parseResponseError: defaultOptions.parseResponseError,
       onResponseError(error, options) {
          expectTypeOf(error).toEqualTypeOf<number>()
       },
@@ -91,20 +91,20 @@ test('The defaultSerializer of params should expect 1 arg only (the params)', as
    const upfetch = up(fetch, () => ({
       serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         return defaultOptions.serializeParams(params)
+         return fallbackOptions.serializeParams(params)
       },
    }))
 
    await upfetch('', {
       serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         return defaultOptions.serializeParams(params)
+         return fallbackOptions.serializeParams(params)
       },
    })
-   await upfetch('', (upOpts) => ({
+   await upfetch('', (defaultOptions) => ({
       serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
-         return defaultOptions.serializeParams(params)
+         return fallbackOptions.serializeParams(params)
       },
    }))
 })
@@ -115,7 +115,7 @@ test('The defaultSerializer of body should expect 1 arg only (the body)', async 
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
          >()
-         return defaultOptions.serializeBody(body)
+         return fallbackOptions.serializeBody(body)
       },
    }))
 
@@ -124,15 +124,15 @@ test('The defaultSerializer of body should expect 1 arg only (the body)', async 
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
          >()
-         return defaultOptions.serializeBody(body)
+         return fallbackOptions.serializeBody(body)
       },
    })
-   await upfetch('', (upOpts) => ({
+   await upfetch('', (defaultOptions) => ({
       serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
             JsonifiableObject | JsonifiableArray
          >()
-         return defaultOptions.serializeBody(body)
+         return fallbackOptions.serializeBody(body)
       },
    }))
 })
@@ -250,7 +250,7 @@ test('callback types', async () => {
       },
    })
 
-   await upfetch('', (upOpts) => ({
+   await upfetch('', (defaultOptions) => ({
       onBeforeFetch(options) {
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<number, boolean, typeof fetch>
@@ -319,7 +319,7 @@ test('base fetch type should be extended', async () => {
       },
    })
 
-   upfetch('', (upOpts) => ({
+   upfetch('', (defaultOptions) => ({
       additionalOption: '',
       onBeforeFetch(options) {
          options.additionalOption
@@ -327,19 +327,19 @@ test('base fetch type should be extended', async () => {
    }))
 })
 
-test('When the fetcher options are functional, They should receive the fully infered upOptions as argument', async () => {
-   const upOpts = {
+test('When the fetcher options are functional, They should receive the fully infered defaultOptions as argument', async () => {
+   const defaultOptions = {
       parseResponse: () => Promise.resolve(1),
       parseResponseError: () => Promise.resolve(''),
       params: { a: 1, b: true },
       headers: { c: 2, d: 'false' },
    } as const
 
-   const upfetch = up(fetch, () => upOpts)
+   const upfetch = up(fetch, () => defaultOptions)
 
    // @ts-expect-error type check dhould still work on the return type
-   upfetch('', (upOptions) => {
-      expectTypeOf(upOptions).toEqualTypeOf<typeof upOpts>()
+   upfetch('', (defaultOptions) => {
+      expectTypeOf(defaultOptions).toEqualTypeOf<typeof defaultOptions>()
 
       return { headers: '' } // This incorrect return type produces the error
    })

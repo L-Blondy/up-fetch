@@ -1,4 +1,4 @@
-import { DistributiveOmit } from './utils'
+import { DistributiveOmit, MaybePromise } from './utils'
 
 export type JsonifiableObject =
    | {
@@ -50,11 +50,11 @@ export type SerializeBody = (
 
 export type SerializeParams = (params: Params) => string
 
-type Params = Record<string, any>
+export type Params = Record<string, any>
 
 type RawBody = BodyInit | JsonifiableObject | JsonifiableArray | null
 
-type RawHeaders =
+export type RawHeaders =
    | HeadersInit
    | Record<string, string | number | null | undefined>
 
@@ -72,9 +72,10 @@ export type ComputedOptions<
    rawBody?: RawBody
    serializeBody: SerializeBody
    serializeParams: SerializeParams
+   throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
 }
 
-export type UpOptions<
+export type DefaultOptions<
    TFetchFn extends typeof fetch = typeof fetch,
    TResponseError = any,
 > = BaseOptions<TFetchFn> & {
@@ -89,9 +90,10 @@ export type UpOptions<
    parseResponseError?: ParseResponseError<TResponseError>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
+   throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
 }
 
-export type UpFetchOptions<
+export type FetcherOptions<
    TData = any,
    TResponseError = any,
    TFetchFn extends typeof fetch = typeof fetch,
@@ -119,4 +121,5 @@ export type UpFetchOptions<
    parseResponseError?: ParseResponseError<TResponseError>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
+   throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
 }

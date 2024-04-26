@@ -1,17 +1,17 @@
 # up-fetch
 
-**up-fetch** is a 1kb fetch API configuration tool with sensible defaults. 
+Tiny & Composable fetch configuration tool with sensible defaults.
 
 ## ➡️ Highlights
 
 -  🚀 **Lightweight** - 1kB gzipped, no dependency
--  🤩 **Simple** - same syntax as the [fetch API][MDN] with additional options and defaults
+-  🤩 **Familiar** - same API as [fetch][MDN] with additional options and sensible defaults
 -  🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
--  🔥 **Composable** - bring your own `serialization` and `parsing` strategies for more complex cases
+-  🔥 **Composable** - bring your own `serialization`, `parsing` and `throwing` strategies when needed
+-  👁️ **observable** - thanks to the built in `interceptors`
 -  💫 **Reusable** - create instances with custom defaults
 -  💪 **Strongly typed** - best in class type inferrence and autocomplete
 -  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
--  👻 **Throws by default** - when `response.ok` is `false`
 -  📦 **Tree Shakable** - You only get what you use
 
 ## ➡️ QuickStart
@@ -37,8 +37,7 @@ const todo = await upfetch('https://a.b.c', {
 })
 ```
 
-You can set some defaults for all requests. \
-The defaults are dynamic, they are **evaluated before each request**, great for handling authentication.
+You can set some defaults for all requests. They are **evaluated before each request** to avoid using stale values
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -70,9 +69,9 @@ import { fetch } from 'undici'
 const upfetch = up(fetch)
 ```
 
-### raw fetch vs upfetch
+### Raw fetch vs upfetch
 
-#### Raw fetch example that throws when response.ok is false:
+#### fetch that throws when response.ok is false:
 
 You should first create a custom ResponseError class that extends the built in Error class in order to expose the response and the parsed response data.
 
@@ -159,6 +158,8 @@ const todos = await upfetch('/todos')
 
 ### ✔️ Automatic `Response` parsing
 
+The response is automatically parsed to `json` with a fallback to `text` in case of invalid json.
+
 The parsing method is customizable via the [parseResponse](#parseresponse) option
 
 ```ts
@@ -172,9 +173,10 @@ const todos = await upfetch('https://a.b.c')
 
 ### ✔️ throws by default
 
-Throws a `ResponseError` when `response.ok` is `false`
+Throws a `ResponseError` when `response.ok` is `false`. \
+This behavior can be customized using the [throwResponseErrorWhen](#throwresponseerrorwhen) option
 
-A parsed error body is available with `error.data`. \
+The parsed error body is available with `error.data`. \
 The raw Response can be accessed with `error.response`. \
 The options used make the api call are available with `error.options`.
 
@@ -215,25 +217,18 @@ upfetch('https://a.b.c', {
 
 ### ✔️ Data Validation
 
-**up-fetch** has built-in adapters for [zod](https://zod.dev/) and [valibot](https://valibot.dev/)
+**up-fetch** has built-in validation adapters for **zod** and **valibot**, see the [adapters list](#%EF%B8%8F-adapters--recipies) below.
 
-First install either `zod` or `valibot`...
+**Example: with zod**
 
 ```bash
 npm i zod
-# or
-npm i valibot
 ```
-
-...then validate the data with the built-in _tree shakeable_ helpers.
-
-**zod example:**
 
 ```ts
 import { z } from 'zod'
 import { withZod } from 'up-fetch/with-zod'
-
-// ...create or import your upfetch instance
+import { upfetch } from './abc'
 
 const todo = await upfetch('/todo/1', {
    parseResponse: withZod(
@@ -245,32 +240,12 @@ const todo = await upfetch('/todo/1', {
       }),
    ),
 })
-// the type of todo is { id: number, title: string, description: string, createdOn: string}
+// todo is properly typed in case of validation success
 ```
 
-**valibot example:**
+Using an adapter ensures that data flows properly through the [onParsingError](#onparsingerror) and [onSuccess](#onsuccess) interceptors
 
-```ts
-import { object, string, number } from 'zod'
-import { withValibot } from 'up-fetch/with-valibot'
-
-// ...create or import your upfetch instance
-
-const todo = await upfetch('/todo/1', {
-   parseResponse: withValibot(
-      object({
-         id: number(),
-         title: string(),
-         description: string(),
-         createdOn: string(),
-      }),
-   ),
-})
-// the type of todo is { id: number, title: string, description: string, createdOn: string}
-```
-
-In case of error the adapters will throw. You can listen to these errors with the [onParsingError](#onparsingerror) option.
-The adapters can also be used on `parseResponseError`
+In case of error the validation adapters will throw.
 
 ### ✔️ Interceptors
 
@@ -320,9 +295,9 @@ upfetch('/todos', {
 })
 ```
 
-## ➡️ Examples
+## ➡️ How to
 
-<details><summary><b>💡 Authentication</b></summary><br />
+<details><summary>💡 handle <b>Authentication</b></summary><br />
 
 Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
 
@@ -364,55 +339,19 @@ The same approach can be used with `cookies`
 
 </details>
 
-<details><summary><b>💡 Adding HTTP Agent (node only)</b></summary><br />
+<details><summary>💡 handle <b>errors</b></summary><br />
 
-_April 2024_
+**up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`. \
+You can decide **when** to throw using the [throwResponseErrorWhen](#throwresponseerrorwhen) option. \
+You can decide **what** to throw using the [parseResponseError](#parseresponseerror) option.
 
-Node, bun and browsers implementation of the fetch API do not support HTTP agents.
+On the default `ResponseError`:
 
-In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) instead (node only)
+-  The parsed response body is available with `error.data`. \
+-  The response status is available with `error.response.status`. \
+-  The options used the make the request are available with `error.options`.
 
-_Add an HTTP Agent on a single request_
-
-```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch)
-
-const data = await upfetch('https://a.b.c', {
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
-})
-```
-
-_Dynamically add an HTTP Agent on each request request_
-
-```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch, () => ({
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
-}))
-
-const data = await upfetch('https://a.b.c')
-```
-
-</details>
-
-<details><summary><b>💡 Error handling</b></summary><br />
-
-**up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`.
-
-The parsed response body is available with `error.data`. \
-The response status is available with `error.response.status`. \
-The options used the make the request are available with `error.options`.
-
-The [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` can be used to check if the error is a `ResponseError`
+The [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` can be used to check if an error is a `ResponseError`
 
 ```ts
 import { upfetch } from '...'
@@ -469,7 +408,7 @@ upfetch('/fail-to-fetch')
 
 </details>
 
-<details><summary><b>💡 Delete a default option</b></summary><br />
+<details><summary>💡 <b>Delete</b> a default option</summary><br />
 
 Simply pass `undefined`
 
@@ -491,7 +430,7 @@ upfetch('https://a.b.c', {
 
 </details>
 
-<details><summary><b>💡 Override a default option conditionally</b></summary><br />
+<details><summary>💡 <b>Override</b> a default conditionally</summary><br />
 
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
@@ -509,19 +448,19 @@ upfetch('https://a.b.c', {
 })
 ```
 
-In order to solve this problem, upfetch exposes the `upOptions` when the options (2nd arg) are defined as a function. \
-`upOptions` are stricly typed (const generic)
+In order to solve this problem, upfetch exposes the `defaultOptions` when the options (2nd arg) are defined as a function. \
+`defaultOptions` are stricly typed (const generic)
 
 ```ts
 ✅ Do
-upfetch('https://a.b.c', (upOptions) => ({
-   headers: { 'X-Header': condition ? 'newValue' : upOptions.headers['X-Header'] }
+upfetch('https://a.b.c', (defaultOptions) => ({
+   headers: { 'X-Header': condition ? 'newValue' : defaultOptions.headers['X-Header'] }
 }))
 ```
 
 </details>
 
-<details><summary><b>💡 Next.js App Router</b></summary><br />
+<details><summary>💡 use with <b>Next.js</b> App Router</summary><br />
 
 Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
@@ -545,11 +484,238 @@ upfetch('/posts', {
 
 </details>
 
+## ➡️ Adapters & Recipies
+
+<details><summary>💡 <b>transform</b></summary>
+
+You can transform the data directly in `parseResponse` or `parseResponseError` using the `withTransform` adapter. It provides a simple interface to work with the already parsed data (`json` or `text`)
+
+Note that using this adapter will not reuse the result of the default parsing methods defined in `up`
+
+```ts
+import { withTransform } from 'up-fetch/with-transform'
+import { upfetch } from './abc'
+
+const todo1 = await upfetch('/todo/1', {
+   parseResponse: withTransform((data) => ({ result: data })),
+})
+// todo is typed: { result: any }
+
+const todo2 = await upfetch('/todo/1', {
+   parseResponse: withTransform((data, response) => ({
+      result: data,
+      status: response.status,
+   })),
+})
+// todo is typed: { result: any, status: number }
+
+// Same with errors
+await upfetch('/todo/1', {
+   parseResponseError: withTransform((data, response) =>
+      createError({
+         result: data,
+         status: response.status,
+      }),
+   ),
+})
+```
+
+You might also apply it by default
+
+```ts
+const upfetch = up(fetch, () => ({
+   parseResponse: withTransform((data, response) => ({
+      result: data,
+      status: response.status,
+   })),
+   parseResponseError: withTransform((data, response) =>
+      createError({
+         result: data,
+         status: response.status,
+      }),
+   ),
+}))
+```
+
+</details>
+
+<details><summary>💡 <b>zod</b></summary>
+
+You can use the [zod](https://github.com/colinhacks/zod) validation adapter to guarantee the type safety of the data.
+
+```ts
+import { z } from 'zod'
+import { withZod } from 'up-fetch/with-zod'
+import { upfetch } from './abc'
+
+const todo = await upfetch('/todo/1', {
+   parseResponse: withZod(
+      z.object({
+         id: z.number(),
+         title: z.string(),
+         description: z.string(),
+         createdOn: z.string(),
+      }),
+   ),
+})
+// todo is properly typed in case of validation success
+```
+
+Using an adapter ensures the data properly flows through the interceptors
+
+```ts
+import { z } from 'zod'
+import { withZod } from 'up-fetch/with-zod'
+
+const upfetch = up(fetch, () => ({
+   onParsingError: (error) => console.log(error),
+   onSuccess: (data) => console.log(data),
+}))
+
+const todo = await upfetch('/todo/1', {
+   onParsingError: (error) => console.log(error),
+   onSuccess: (data) => console.log(data),
+   parseResponse: withZod(
+      z.object({
+         id: z.number(),
+         title: z.string(),
+         description: z.string(),
+         createdOn: z.string(),
+      }),
+   ),
+})
+```
+
+</details>
+
+<details><summary>💡 <b>valibot</b></summary>
+
+You can use the [valibot](https://github.com/fabian-hiller/valibot) validation adapter to guarantee the type safety of the data.
+
+```ts
+import { object, number, string } from 'valibot'
+import { withValibot } from 'up-fetch/with-valibot'
+import { upfetch } from './abc'
+
+const todo = await upfetch('/todo/1', {
+   parseResponse: withValibot(
+      object({
+         id: number(),
+         title: string(),
+         description: string(),
+         createdOn: string(),
+      }),
+   ),
+})
+// todo is properly typed in case of validation success
+```
+
+Using an adapter ensures the data properly flows through the interceptors
+
+```ts
+import { object, number, string } from 'valibot'
+import { withValibot } from 'up-fetch/with-valibot'
+
+const upfetch = up(fetch, () => ({
+   onParsingError: (error) => console.log(error),
+   onSuccess: (data) => console.log(data),
+}))
+
+const todo = await upfetch('/todo/1', {
+   onParsingError: (error) => console.log(error),
+   onSuccess: (data) => console.log(data),
+   parseResponse: withValibot(
+      object({
+         id: number(),
+         title: string(),
+         description: string(),
+         createdOn: string(),
+      }),
+   ),
+})
+```
+
+</details>
+
+<details><summary>💡 <b>FormData</b></summary>
+
+If you grab the `FormData` from a `form`, you dont need any adapter.
+
+```ts
+const form = document.querySelector('#my-form')
+
+upfetch('/todos', {
+   method: 'POST',
+   body: new FormData(form),
+})
+```
+
+However if you need to transform an `object` to `FormData` you might use [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)
+
+_Note: when sending FormData the fetch API automatically adds the correct header. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
+
+```ts
+import { serialize } from 'object-to-formdata'
+
+const upfetch = up(fetch, () => ({
+   serializeBody: (body) => serialize(body),
+}))
+
+upfetch('https://a.b.c', {
+   method: 'POST',
+   body: { file: new File(['foo'], 'foo.txt') },
+})
+```
+
+</details>
+
+<details><summary>💡 <b>progress</b> (upload / download) <i>	&lt;coming soon&gt;</i></summary>🔗</details>
+
+<details><summary>💡 <b>HTTP Agent</b> (node only)</summary><br />
+
+_April 2024_
+
+Node, bun and browsers implementation of the fetch API do not support HTTP agents.
+
+In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) (node only)
+
+_Add an HTTP Agent on a single request_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch)
+
+const data = await upfetch('https://a.b.c', {
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+})
+```
+
+_Dynamically add an HTTP Agent on each request request_
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch, () => ({
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+}))
+
+const data = await upfetch('https://a.b.c')
+```
+
+</details>
+
 ## ➡️ Types
 
 See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/types.ts) file for more details
 
-## ➡️ API
+## ➡️ Options
 
 All options can be set either on **up** or on an **upfetch** instance except for the [body](#body)
 
@@ -629,8 +795,8 @@ upfetch('https://a.b.c', {
 
 // conditionally override the expand param `expand` param
 // ?expand=false&page=2&limit=10
-upfetch('https://a.b.c', (upOptions) => ({
-   params: { expand: isTruthy ? true : upOptions.params.expand },
+upfetch('https://a.b.c', (defaultOptions) => ({
+   params: { expand: isTruthy ? true : defaultOptions.params.expand },
 }))
 ```
 
@@ -666,9 +832,9 @@ upfetch('https://a.b.c', {
 })
 
 // conditionally override the `Authorization` header
-upfetch('https://a.b.c', (upOptions) => ({
+upfetch('https://a.b.c', (defaultOptions) => ({
    headers: {
-      Authorization: isTruthy ? 'Bearer ...3' : upOptions.headers.val,
+      Authorization: isTruthy ? 'Bearer ...3' : defaultOptions.headers.val,
    },
 }))
 ```
@@ -732,7 +898,7 @@ The body is passed to `serializeBody` when it is a plain object, an array or a c
 
 This example uses [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)
 
-_Note: when sending FormData the headers are added automatically. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
+_Note: when sending FormData the fetch API automatically adds the correct header. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
 
 ```ts
 import { serialize } from 'object-to-formdata'
@@ -794,7 +960,8 @@ const todo = await upfetch('/todo/1', {
 
 **Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
 
-Customize the parsing of a fetch response error (when response.ok is false) \
+Customize the parsing of a thrown fetch response. \
+By default the response is thrown when `response.ok` is `false`, it is customizable with [throwResponseErrorWhen](#throwresponseerrorwhen). \
 By default a [ResponseError](#%EF%B8%8F-throws-by-default) is thrown
 
 **Example:**
@@ -817,10 +984,12 @@ Called when `response.ok` is `true`
 **Example:**
 
 ```ts
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onSuccess: (data, options) => console.log('2nd'),
 }))
 
+// listen to  requests
 upfetch('https://a.b.c', {
    onSuccess: (data, options) => console.log('1st'),
 })
@@ -830,15 +999,17 @@ upfetch('https://a.b.c', {
 
 **Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
 
-Called when a response error was thrown (`response.ok` is `false`).
+Called when a response error was thrown, by default when `response.ok` is `false`, customizable with the [throwResponseErrorWhen](#throwresponseerrorwhen) option
 
 **Example:**
 
 ```ts
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onResponseError: (error, options) => console.log('Response error', error),
 }))
 
+// listen to one requests
 upfetch('https://a.b.c', {
    onResponseError: (error, options) => console.log('Response error', error),
 })
@@ -853,10 +1024,12 @@ Called when the fetch request fails (no response from the server).
 **Example:**
 
 ```ts
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onRequestError: (error, options) => console.log('Request error', error),
 }))
 
+// listen to one requests
 upfetch('https://a.b.c', {
    onRequestError: (error, options) => console.log('Request error', error),
 })
@@ -875,10 +1048,12 @@ Usefull when using a [validation adapter](#%EF%B8%8F-data-validation)
 import { z } from 'zod'
 import { withZod } from 'up-fetch/with-zod'
 
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onParsingError: (error, options) => console.log('Validation error', error),
 }))
 
+// listen to one requests
 upfetch('https://a.b.c', {
    onParsingError: (error, options) => console.log('Validation error', error),
    parseResponse: withZod(
@@ -901,13 +1076,47 @@ Called before the request is sent.
 **Example:**
 
 ```ts
+// listen to all requests
 const upfetch = up(fetch, () => ({
    onBeforeFetch: (options) => console.log('2nd'),
 }))
 
+// listen to one requests
 upfetch('https://a.b.c', {
    onBeforeFetch: (options) => console.log('1st'),
 })
+```
+
+## <samp>\<throwResponseErrorWhen\></samp>
+
+**Type:** `(response: Response) => MaybePromise<boolean>`
+
+**Default:** `(response: Response) => !response.ok`
+
+Decide when to trigger [parseResponseError](#parseresponseerror) and throw an error. \
+It can be an async function.
+
+**Example: never throw upon response**
+
+```ts
+// for all requests
+const upfetch = up(fetch, () => ({
+   throwResponseErrorWhen: () => false,
+}))
+
+// for one requests
+upfetch('https://a.b.c', {
+   throwResponseErrorWhen: () => false,
+})
+```
+
+**Example: throw for specific statuses**
+
+```ts
+// for all requests
+const upfetch = up(fetch, () => ({
+   throwResponseErrorWhen: (response) => [ 400, 404, ... ].includes(response.status),
+}))
 ```
 
 ## ➡️ Compatibility

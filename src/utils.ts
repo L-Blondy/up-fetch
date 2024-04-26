@@ -1,16 +1,16 @@
 import {
-   UpFetchOptions,
+   Params,
+   RawHeaders,
    JsonifiableObject,
    JsonifiableArray,
-   UpOptions,
 } from './types'
 
-export let mergeHeaders = (...headerInits: UpFetchOptions['headers'][]) => {
+export let mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
    let res: Record<string, string> = {}
    headerInits.forEach((init) => {
-      // casting `init as HeadersInit` because `Record<string any>` is
+      // casting `init` to `HeadersInit` because `Record<string, any>` is
       // properly transformed to `Record<string,string>` by `new Headers(init)`
-      new Headers(init as HeadersInit).forEach((value, key) => {
+      new Headers(init as HeadersInit | undefined).forEach((value, key) => {
          if (value === 'null' || value === 'undefined') {
             delete res[key]
          } else {
@@ -22,19 +22,17 @@ export let mergeHeaders = (...headerInits: UpFetchOptions['headers'][]) => {
 }
 
 export let buildParams = (
-   upParams: UpOptions['params'],
+   defaultParams: Params | undefined,
    input: URL | Request | string,
-   fetcherParams: UpFetchOptions['params'],
+   fetcherParams: Params | undefined,
 ) =>
    isRequest(input)
       ? {} // an input of type Request cannot use the "params" option
       : strip({
-           // The 'url.search' should take precedence over 'defaultParams'.
-           // It will be retained in the 'input' as it should not undergo unserialization and reserialization.
-           // Therefore, I remove the 'url.searchParams.keys()' from the 'up' params.
-           // However I don't remove it from the 'fetcherParams'. The user should be careful not to
-           // specify the params in both the "input" and the fetcher "params" option.
-           ...strip(upParams, [
+           // Removing the 'url.searchParams.keys()' from the defaultParams
+           // but not from the 'fetcherParams'. The user is responsible for not
+           // specifying the params in both the "input" and the fetcher "params" option.
+           ...strip(defaultParams, [
               ...new URL(input, 'http://a').searchParams.keys(),
            ]),
            ...fetcherParams,
@@ -48,6 +46,8 @@ export type DistributiveOmit<
    TObject extends object,
    TKey extends KeysOfUnion<TObject> | (string & {}),
 > = TObject extends unknown ? Omit<TObject, TKey> : never
+
+export type MaybePromise<T> = T | Promise<T>
 
 export let strip = <O extends object, K extends KeysOfUnion<O> | (string & {})>(
    obj?: O,

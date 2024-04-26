@@ -1,6 +1,6 @@
 {
    "name": "up-fetch",
-   "version": "0.4.6",
+   "version": "0.5.0-beta.0",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
    "main": "dist/index.cjs",
@@ -36,6 +36,16 @@
          "require": {
             "types": "./dist/with-zod.d.cts",
             "default": "./dist/with-zod.cjs"
+         }
+      },
+      "./with-transform": {
+         "import": {
+            "types": "./dist/with-transform.d.ts",
+            "default": "./dist/with-transform.js"
+         },
+         "require": {
+            "types": "./dist/with-transform.d.cts",
+            "default": "./dist/with-transform.cjs"
          }
       },
       "./package.json": "./package.json"

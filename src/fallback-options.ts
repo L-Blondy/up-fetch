@@ -6,15 +6,17 @@ import {
    SerializeBody,
    SerializeParams,
 } from './types.js'
+import { MaybePromise } from './utils'
 
-export type DefaultOptions = {
+export type FallbackOptions = {
    parseResponse: ParseResponse<any>
    parseResponseError: ParseResponseError<any>
    serializeParams: SerializeParams
    serializeBody: SerializeBody
+   throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
 }
 
-export let defaultOptions: DefaultOptions = {
+export let fallbackOptions: FallbackOptions = {
    parseResponse: (res: Response) =>
       res
          .clone()
@@ -28,7 +30,7 @@ export let defaultOptions: DefaultOptions = {
    ): Promise<ResponseError> =>
       new ResponseError(
          res,
-         await defaultOptions.parseResponse(res, {} as any), // the second arg is not used but required by the parseResponse type
+         await fallbackOptions.parseResponse(res, {} as any), // the second arg is not used but required by the parseResponse type
          options,
       ),
 
@@ -37,4 +39,6 @@ export let defaultOptions: DefaultOptions = {
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
 
    serializeBody: (val: any) => JSON.stringify(val),
+
+   throwResponseErrorWhen: (response: Response) => !response.ok,
 }

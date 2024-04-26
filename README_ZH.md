@@ -500,13 +500,13 @@ upfetch('https://a.b.c', {
 })
 ```
 
-为解决上述问题, 当`up` 方法第二个参数是函数类型时，upfetch 提供 `upOptions` 作为其参数. \
-`upOptions` 类型严格 (const 泛型)
+为解决上述问题, 当`up` 方法第二个参数是函数类型时，upfetch 提供 `defaultOptions` 作为其参数. \
+`defaultOptions` 类型严格 (const 泛型)
 
 ```ts
 ✅ OK
-upfetch('https://a.b.c', (upOptions) => ({
-   headers: { 'X-Header': condition ? 'newValue' : upOptions.headers['X-Header'] }
+upfetch('https://a.b.c', (defaultOptions) => ({
+   headers: { 'X-Header': condition ? 'newValue' : defaultOptions.headers['X-Header'] }
 }))
 ```
 
@@ -620,8 +620,8 @@ upfetch('https://a.b.c', {
 
 // conditionally override the expand param `expand` param
 // ?expand=false&page=2&limit=10
-upfetch('https://a.b.c', (upOptions) => ({
-   params: { expand: isTruthy ? true : upOptions.params.expand },
+upfetch('https://a.b.c', (defaultOptions) => ({
+   params: { expand: isTruthy ? true : defaultOptions.params.expand },
 }))
 ```
 
@@ -657,9 +657,9 @@ upfetch('https://a.b.c', {
 })
 
 // conditionally override the `Authorization` header
-upfetch('https://a.b.c', (upOptions) => ({
+upfetch('https://a.b.c', (defaultOptions) => ({
    headers: {
-      Authorization: isTruthy ? 'Bearer ...3' : upOptions.headers.val,
+      Authorization: isTruthy ? 'Bearer ...3' : defaultOptions.headers.val,
    },
 }))
 ```
