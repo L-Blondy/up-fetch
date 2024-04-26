@@ -241,7 +241,7 @@ const todo = await upfetch('/todo/1', {
 // todo is properly type in case of validation success
 ```
 
-Using an adapter ensure the data flows properly through the [onParsingError](#onparsingerror) and [onSuccess](#onsuccess) interceptors
+Using an adapter ensures that data flows properly through the [onParsingError](#onparsingerror) and [onSuccess](#onsuccess) interceptors
 
 In case of error the validation adapters will throw. 
 
