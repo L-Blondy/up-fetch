@@ -486,7 +486,7 @@ upfetch('/posts', {
 
 ## ➡️ Adapters & Recipies
 
-<details><summary>💡 <b>transform</b></summary>
+<details><summary>🥘 <b>transform</b></summary>
 
 You can transform the data directly in `parseResponse` or `parseResponseError` using the `withTransform` adapter. It provides a simple interface to work with the already parsed data (`json` or `text`)
 
@@ -539,7 +539,7 @@ const upfetch = up(fetch, () => ({
 
 </details>
 
-<details><summary>💡 <b>zod</b></summary>
+<details><summary>🥘 <b>zod</b></summary>
 
 You can use the [zod](https://github.com/colinhacks/zod) validation adapter to guarantee the type safety of the data.
 
@@ -588,7 +588,7 @@ const todo = await upfetch('/todo/1', {
 
 </details>
 
-<details><summary>💡 <b>valibot</b></summary>
+<details><summary>🥘 <b>valibot</b></summary>
 
 You can use the [valibot](https://github.com/fabian-hiller/valibot) validation adapter to guarantee the type safety of the data.
 
@@ -637,7 +637,7 @@ const todo = await upfetch('/todo/1', {
 
 </details>
 
-<details><summary>💡 <b>FormData</b></summary>
+<details><summary>🥘 <b>FormData</b></summary>
 
 If you grab the `FormData` from a `form`, you dont need any adapter.
 
@@ -669,9 +669,13 @@ upfetch('https://a.b.c', {
 
 </details>
 
-<details><summary>💡 <b>progress</b> (upload / download) <i>	&lt;coming soon&gt;</i></summary>🔗</details>
+<details><summary>🥘 <b>progress</b> (upload / download) <i>	&lt;coming soon&gt;</i></summary>
 
-<details><summary>💡 <b>HTTP Agent</b> (node only)</summary><br />
+Coming soon
+
+</details>
+
+<details><summary>🥘 <b>HTTP Agent</b> (node only)</summary><br />
 
 _April 2024_
 
