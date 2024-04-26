@@ -307,9 +307,8 @@ test('base fetch type should be extended', async () => {
       init?: RequestInit & { additionalOption?: string },
    ) => Promise<Response>
 
-   // @ts-expect-error additionalOption should be string | undefined
    const upfetch = up(fetch as CustomFetchType, () => ({
-      additionalOption: 1,
+      additionalOption: '1',
    }))
 
    upfetch('', {
