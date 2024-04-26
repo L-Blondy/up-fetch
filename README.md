@@ -219,7 +219,6 @@ upfetch('https://a.b.c', {
 
 **Example: with zod** 
 
-First install `zod`
 ```bash
 npm i zod
 ```
@@ -242,7 +241,9 @@ const todo = await upfetch('/todo/1', {
 // todo is properly type in case of validation success
 ```
 
-In case of error the adapters throw. The [onParsingError](#onparsingerror) option can be used to listen to such errors. 
+Using an adapter ensure the data flows properly through the [onParsingError](#onparsingerror) and [onSuccess](#onsuccess) interceptors
+
+In case of error the validation adapters will throw. 
 
 ### ✔️ Interceptors
 
