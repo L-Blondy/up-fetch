@@ -60,16 +60,18 @@ describe('mergeHeaders', () => {
 
 describe('buildParams', () => {
    test.each`
-      upParams    | input                      | fetcherParams | output
-      ${{ a: 1 }} | ${''}                      | ${{ a: 2 }}   | ${{ a: 2 }}
-      ${{ a: 1 }} | ${'url?a=2'}               | ${{}}         | ${{}}
-      ${{ a: 1 }} | ${'url?a=2'}               | ${{ a: 2 }}   | ${{ a: 2 }}
-      ${{ a: 1 }} | ${'url?b=2'}               | ${{}}         | ${{ a: 1 }}
-      ${{ a: 1 }} | ${new Request('http://a')} | ${{ a: 2 }}   | ${{}}
+      defaultParams | input                      | fetcherParams | output
+      ${{ a: 1 }}   | ${''}                      | ${{ a: 2 }}   | ${{ a: 2 }}
+      ${{ a: 1 }}   | ${'url?a=2'}               | ${{}}         | ${{}}
+      ${{ a: 1 }}   | ${'url?a=2'}               | ${{ a: 2 }}   | ${{ a: 2 }}
+      ${{ a: 1 }}   | ${'url?b=2'}               | ${{}}         | ${{ a: 1 }}
+      ${{ a: 1 }}   | ${new Request('http://a')} | ${{ a: 2 }}   | ${{}}
    `(
       'Input: $defaultHeaders, $fetcherHeaders',
-      ({ upParams, input, fetcherParams, output }) => {
-         expect(buildParams(upParams, input, fetcherParams)).toEqual(output)
+      ({ defaultParams, input, fetcherParams, output }) => {
+         expect(buildParams(defaultParams, input, fetcherParams)).toEqual(
+            output,
+         )
       },
    )
 })

@@ -1,16 +1,16 @@
 import {
-   Params, 
-   RawHeaders, 
+   Params,
+   RawHeaders,
    JsonifiableObject,
    JsonifiableArray,
 } from './types'
 
-export let mergeHeaders = (...headerInits: RawHeaders[]) => {
+export let mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
    let res: Record<string, string> = {}
    headerInits.forEach((init) => {
-      // casting `init as HeadersInit` because `Record<string any>` is
+      // casting `init` to `HeadersInit` because `Record<string, any>` is
       // properly transformed to `Record<string,string>` by `new Headers(init)`
-      new Headers(init as HeadersInit).forEach((value, key) => {
+      new Headers(init as HeadersInit | undefined).forEach((value, key) => {
          if (value === 'null' || value === 'undefined') {
             delete res[key]
          } else {
@@ -22,9 +22,9 @@ export let mergeHeaders = (...headerInits: RawHeaders[]) => {
 }
 
 export let buildParams = (
-   defaultParams: Params,
+   defaultParams: Params | undefined,
    input: URL | Request | string,
-   fetcherParams: Params,
+   fetcherParams: Params | undefined,
 ) =>
    isRequest(input)
       ? {} // an input of type Request cannot use the "params" option
@@ -32,7 +32,7 @@ export let buildParams = (
            // Removing the 'url.searchParams.keys()' from the defaultParams
            // but not from the 'fetcherParams'. The user is responsible for not
            // specifying the params in both the "input" and the fetcher "params" option.
-           ...strip(upParams, [
+           ...strip(defaultParams, [
               ...new URL(input, 'http://a').searchParams.keys(),
            ]),
            ...fetcherParams,
