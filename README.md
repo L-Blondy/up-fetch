@@ -219,7 +219,7 @@ upfetch('https://a.b.c', {
 
 **Example: with zod** 
 
-First install either `zod`
+First install `zod`
 ```bash
 npm i zod
 ```
@@ -239,10 +239,10 @@ const todo = await upfetch('/todo/1', {
       }),
    ),
 })
-// the type of todo is { id: number, title: string, description: string, createdOn: string}
+// todo is properly type in case of validation success
 ```
 
-In case of error the adapters throws. The [onParsingError](#onparsingerror) option can be used to listen to such errors. 
+In case of error the adapters throw. The [onParsingError](#onparsingerror) option can be used to listen to such errors. 
 
 ### ✔️ Interceptors
 
