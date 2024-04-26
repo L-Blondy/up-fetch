@@ -933,6 +933,15 @@ upfetch('https://a.b.c', {
 })
 ```
 
+**Example: throw for specific statuses**
+
+```ts
+// for all requests
+const upfetch = up(fetch, () => ({
+   throwResponseErrorWhen: (response) => [ 400, 404, ... ].includes(response.status),
+}))
+```
+
 ## ➡️ Compatibility
 
 -  ✅ All modern browsers
