@@ -6,6 +6,7 @@ export default defineConfig({
       index: 'src/index.ts',
       'with-valibot': 'src/parsers/valibot.ts',
       'with-zod': 'src/parsers/zod.ts',
+      'with-transform': 'src/parsers/transform.ts',
    },
    sourcemap: true,
    clean: true,

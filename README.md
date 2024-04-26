@@ -158,6 +158,8 @@ const todos = await upfetch('/todos')
 
 ### ✔️ Automatic `Response` parsing
 
+The response is automatically parsed to `json` with a fallback to `text` in case of invalid json.
+
 The parsing method is customizable via the [parseResponse](#parseresponse) option
 
 ```ts
@@ -215,9 +217,9 @@ upfetch('https://a.b.c', {
 
 ### ✔️ Data Validation
 
-**up-fetch** has built-in validation adapters for **zod** and **valibot**, see the [adapters list](#%EF%B8%8F-adapters--recipies) below. 
+**up-fetch** has built-in validation adapters for **zod** and **valibot**, see the [adapters list](#%EF%B8%8F-adapters--recipies) below.
 
-**Example: with zod** 
+**Example: with zod**
 
 ```bash
 npm i zod
@@ -238,12 +240,12 @@ const todo = await upfetch('/todo/1', {
       }),
    ),
 })
-// todo is properly type in case of validation success
+// todo is properly typed in case of validation success
 ```
 
 Using an adapter ensures that data flows properly through the [onParsingError](#onparsingerror) and [onSuccess](#onsuccess) interceptors
 
-In case of error the validation adapters will throw. 
+In case of error the validation adapters will throw.
 
 ### ✔️ Interceptors
 
@@ -484,15 +486,190 @@ upfetch('/posts', {
 
 ## ➡️ Adapters & Recipies
 
-<details><summary>💡 <b>transform</b></summary>withTransform</details>
+<details><summary>💡 <b>transform</b></summary>
 
-<details><summary>💡 <b>zod</b></summary>withZod</details>
+You can transform the data directly in `parseResponse` or `parseResponseError` using the `withTransform` adapter. It provides a simple interface to work with the already parsed data (`json` or `text`)
 
-<details><summary>💡 <b>valibot</b></summary>withValibot</details>
+Note that using this adapter will not reuse the result of the default parsing methods defined in `up`
 
-<details><summary>💡 <b>FormData</b></summary>💡</details>
+```ts
+import { withTransform } from 'up-fetch/with-transform'
+import { upfetch } from './abc'
 
-<details><summary>💡 <b>progress</b> (upload / download)</summary>🔗</details>
+const todo1 = await upfetch('/todo/1', {
+   parseResponse: withTransform((data) => ({ result: data })),
+})
+// todo is typed: { result: any }
+
+const todo2 = await upfetch('/todo/1', {
+   parseResponse: withTransform((data, response) => ({
+      result: data,
+      status: response.status,
+   })),
+})
+// todo is typed: { result: any, status: number }
+
+// Same with errors
+await upfetch('/todo/1', {
+   parseResponseError: withTransform((data, response) =>
+      createError({
+         result: data,
+         status: response.status,
+      }),
+   ),
+})
+```
+
+You might also apply it by default
+
+```ts
+const upfetch = up(fetch, () => ({
+   parseResponse: withTransform((data, response) => ({
+      result: data,
+      status: response.status,
+   })),
+   parseResponseError: withTransform((data, response) =>
+      createError({
+         result: data,
+         status: response.status,
+      }),
+   ),
+}))
+```
+
+</details>
+
+<details><summary>💡 <b>zod</b></summary>
+
+You can use the [zod](https://github.com/colinhacks/zod) validation adapter to guarantee the type safety of the data.
+
+```ts
+import { z } from 'zod'
+import { withZod } from 'up-fetch/with-zod'
+import { upfetch } from './abc'
+
+const todo = await upfetch('/todo/1', {
+   parseResponse: withZod(
+      z.object({
+         id: z.number(),
+         title: z.string(),
+         description: z.string(),
+         createdOn: z.string(),
+      }),
+   ),
+})
+// todo is properly typed in case of validation success
+```
+
+Using an adapter ensures the data properly flows through the interceptors
+
+```ts
+import { z } from 'zod'
+import { withZod } from 'up-fetch/with-zod'
+
+const upfetch = up(fetch, () => ({
+   onParsingError: (error) => console.log(error),
+   onSuccess: (data) => console.log(data),
+}))
+
+const todo = await upfetch('/todo/1', {
+   onParsingError: (error) => console.log(error),
+   onSuccess: (data) => console.log(data),
+   parseResponse: withZod(
+      z.object({
+         id: z.number(),
+         title: z.string(),
+         description: z.string(),
+         createdOn: z.string(),
+      }),
+   ),
+})
+```
+
+</details>
+
+<details><summary>💡 <b>valibot</b></summary>
+
+You can use the [valibot](https://github.com/fabian-hiller/valibot) validation adapter to guarantee the type safety of the data.
+
+```ts
+import { object, number, string } from 'valibot'
+import { withValibot } from 'up-fetch/with-valibot'
+import { upfetch } from './abc'
+
+const todo = await upfetch('/todo/1', {
+   parseResponse: withValibot(
+      object({
+         id: number(),
+         title: string(),
+         description: string(),
+         createdOn: string(),
+      }),
+   ),
+})
+// todo is properly typed in case of validation success
+```
+
+Using an adapter ensures the data properly flows through the interceptors
+
+```ts
+import { object, number, string } from 'valibot'
+import { withValibot } from 'up-fetch/with-valibot'
+
+const upfetch = up(fetch, () => ({
+   onParsingError: (error) => console.log(error),
+   onSuccess: (data) => console.log(data),
+}))
+
+const todo = await upfetch('/todo/1', {
+   onParsingError: (error) => console.log(error),
+   onSuccess: (data) => console.log(data),
+   parseResponse: withValibot(
+      object({
+         id: number(),
+         title: string(),
+         description: string(),
+         createdOn: string(),
+      }),
+   ),
+})
+```
+
+</details>
+
+<details><summary>💡 <b>FormData</b></summary>
+
+If you grab the `FormData` from a `form`, you dont need any adapter.
+
+```ts
+const form = document.querySelector('#my-form')
+
+upfetch('/todos', {
+   method: 'POST',
+   body: new FormData(form),
+})
+```
+
+However if you need to transform an `object` to `FormData` you might use [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)
+
+_Note: when sending FormData the fetch API automatically adds the correct header. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
+
+```ts
+import { serialize } from 'object-to-formdata'
+
+const upfetch = up(fetch, () => ({
+   serializeBody: (body) => serialize(body),
+}))
+
+upfetch('https://a.b.c', {
+   method: 'POST',
+   body: { file: new File(['foo'], 'foo.txt') },
+})
+```
+
+</details>
+
+<details><summary>💡 <b>progress</b> (upload / download) <i>	&lt;coming soon&gt;</i></summary>🔗</details>
 
 <details><summary>💡 <b>HTTP Agent</b> (node only)</summary><br />
 
