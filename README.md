@@ -297,7 +297,7 @@ upfetch('/todos', {
 
 ## ➡️ How to
 
-<details><summary>❔ handle <b>Authentication</b></summary><br />
+<details><summary>❓ handle <b>Authentication</b></summary><br />
 
 Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
 
@@ -339,7 +339,7 @@ The same approach can be used with `cookies`
 
 </details>
 
-<details><summary>❔ handle <b>errors</b></summary><br />
+<details><summary>❓ handle <b>errors</b></summary><br />
 
 **up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`. \
 You can decide **when** to throw using the [throwResponseErrorWhen](#throwresponseerrorwhen) option. \
@@ -408,7 +408,7 @@ upfetch('/fail-to-fetch')
 
 </details>
 
-<details><summary>❔ <b>Delete</b> a default option</summary><br />
+<details><summary>❓ <b>Delete</b> a default option</summary><br />
 
 Simply pass `undefined`
 
@@ -430,7 +430,7 @@ upfetch('https://a.b.c', {
 
 </details>
 
-<details><summary>❔ <b>Override</b> a default conditionally</summary><br />
+<details><summary>❓ <b>Override</b> a default conditionally</summary><br />
 
 You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
 
@@ -460,7 +460,7 @@ upfetch('https://a.b.c', (defaultOptions) => ({
 
 </details>
 
-<details><summary>❔ use with <b>Next.js</b> App Router</summary><br />
+<details><summary>❓ use with <b>Next.js</b> App Router</summary><br />
 
 Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
 
