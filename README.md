@@ -215,25 +215,19 @@ upfetch('https://a.b.c', {
 
 ### ✔️ Data Validation
 
-**up-fetch** has built-in adapters for [zod](https://zod.dev/) and [valibot](https://valibot.dev/)
+**up-fetch** has built-in validation adapters for **zod** and **valibot**, see the [adapters list](#%EF%B8%8F-adapters--recipies) below. 
 
-First install either `zod` or `valibot`...
+**Example: with zod** 
 
+First install either `zod`
 ```bash
 npm i zod
-# or
-npm i valibot
 ```
-
-...then validate the data with the built-in _tree shakeable_ helpers.
-
-**zod example:**
 
 ```ts
 import { z } from 'zod'
 import { withZod } from 'up-fetch/with-zod'
-
-// ...create or import your upfetch instance
+import { upfetch } from './abc'
 
 const todo = await upfetch('/todo/1', {
    parseResponse: withZod(
@@ -248,29 +242,7 @@ const todo = await upfetch('/todo/1', {
 // the type of todo is { id: number, title: string, description: string, createdOn: string}
 ```
 
-**valibot example:**
-
-```ts
-import { object, string, number } from 'zod'
-import { withValibot } from 'up-fetch/with-valibot'
-
-// ...create or import your upfetch instance
-
-const todo = await upfetch('/todo/1', {
-   parseResponse: withValibot(
-      object({
-         id: number(),
-         title: string(),
-         description: string(),
-         createdOn: string(),
-      }),
-   ),
-})
-// the type of todo is { id: number, title: string, description: string, createdOn: string}
-```
-
-In case of error the adapters will throw. You can listen to these errors with the [onParsingError](#onparsingerror) option.
-The adapters can also be used on `parseResponseError`
+In case of error the adapters throws. The [onParsingError](#onparsingerror) option can be used to listen to such errors. 
 
 ### ✔️ Interceptors
 
