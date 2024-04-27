@@ -565,7 +565,7 @@ describe('up', () => {
             baseUrl: 'https://example.com',
             parseResponse(res, options) {
                expect(res instanceof Response).toEqual(true)
-               expect(options.input).toEqual('https://example.com/')
+               expect(options.input).toEqual('https://example.com')
                return res.text()
             },
          }))
@@ -682,7 +682,7 @@ describe('up', () => {
             baseUrl: 'https://example.com',
             parseResponseError(res, options) {
                expect(res instanceof Response).toEqual(true)
-               expect(options.input).toEqual('https://example.com/')
+               expect(options.input).toEqual('https://example.com')
                return res.text()
             },
          }))
@@ -798,14 +798,14 @@ describe('up', () => {
             baseUrl: 'https://example.com',
             onSuccess(data, options) {
                expect(data).toEqual({ hello: 'world' })
-               expect(options.input).toEqual('https://example.com/')
+               expect(options.input).toEqual('https://example.com')
             },
          }))
 
          await upfetch('', {
             onSuccess(data, options) {
                expect(data).toEqual({ hello: 'world' })
-               expect(options.input).toEqual('https://example.com/')
+               expect(options.input).toEqual('https://example.com')
             },
          })
       })
@@ -925,14 +925,14 @@ describe('up', () => {
             },
             onParsingError(error, options) {
                expect(error.message).toEqual('error message')
-               expect(options.input).toEqual('https://example.com/')
+               expect(options.input).toEqual('https://example.com')
             },
          }))
 
          await upfetch('', {
             onParsingError(error, options) {
                expect(error.message).toEqual('error message')
-               expect(options.input).toEqual('https://example.com/')
+               expect(options.input).toEqual('https://example.com')
             },
          }).catch((error) => {
             expect(error.message).toBe('error message')
@@ -1042,14 +1042,14 @@ describe('up', () => {
             baseUrl: 'https://example.com',
             onResponseError(error, options) {
                expect(error.data).toEqual({ hello: 'world' })
-               expect(options.input).toEqual('https://example.com/')
+               expect(options.input).toEqual('https://example.com')
             },
          }))
 
          await upfetch('', {
             onResponseError(error, options) {
                expect(error.data).toEqual({ hello: 'world' })
-               expect(options.input).toEqual('https://example.com/')
+               expect(options.input).toEqual('https://example.com')
             },
          }).catch((error) => {
             expect(isResponseError(error)).toBe(true)
@@ -1169,13 +1169,13 @@ describe('up', () => {
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             onBeforeFetch(options) {
-               expect(options.input).toBe('https://example.com/')
+               expect(options.input).toBe('https://example.com')
             },
          }))
 
          await upfetch('', {
             onBeforeFetch(options) {
-               expect(options.input).toBe('https://example.com/')
+               expect(options.input).toBe('https://example.com')
             },
          })
       })

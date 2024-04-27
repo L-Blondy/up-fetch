@@ -13,7 +13,6 @@ import {
    isJsonifiableObjectOrArray,
    mergeHeaders,
    strip,
-   withPrefix,
    emptyOptions,
 } from './utils'
 
@@ -62,33 +61,17 @@ export let buildOptions = <TFetchFn extends BaseFetchFn, TData, TResponseError>(
       body,
       // convenience getter, usefull if the user wants to modify the url in onBeforeFetch
       get input() {
-         // nothing to do if we deal with a Request object
-         if (isRequest(input)) return input
-         // input is the source of truth
-         let url: URL
-         if (input instanceof URL)
-            // input is the source of truth, ignore the baseUrl
-            url = input
-         else if (/^(http(s)?):\/\//.test(input)) {
-            url = new URL(input)
-         } else {
-            let base = mergedOptions.baseUrl
-               ? new URL(mergedOptions.baseUrl)
-               : undefined
-            // input is always a relative path, never a protocol
-            // we can concat the base path and the input
-            let path = [base?.pathname, input]
-               // standardize by remiving the leading slash
-               .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
-               // remove empty strings ('/' originaly)
-               .filter(Boolean)
-               .join('/')
-            url = new URL(path, base?.origin)
-         }
-         // add the queryString to the url.search
-         // (url.search is the queryString defined in the input)
-         url.search += withPrefix(url.search ? '&' : '?', queryString)
-         return url.href
+         if (typeof input !== 'string') return input
+         // assume the url contains no hash, password or username
+         let url = /^https?:\/\//.test(input)
+            ? input
+            : [mergedOptions.baseUrl, input]
+                 .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
+                 .filter(Boolean)
+                 .join('/')
+         return [url, queryString]
+            .filter(Boolean)
+            .join(input.includes('?') ? '&' : '?')
       },
    }
 }

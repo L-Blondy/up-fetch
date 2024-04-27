@@ -27,9 +27,14 @@ export let buildParams = (
    fetcherParams: Params | undefined,
 ) =>
    typeof input !== 'string'
-      ? {}
+      ? {} // an input of type Request cannot use the "params" option
       : strip({
-           ...defaultParams,
+           // Removing the 'url.searchParams.keys()' from the defaultParams
+           // but not from the 'fetcherParams'. The user is responsible for not
+           // specifying the params in both the "input" and the fetcher "params" option.
+           ...strip(defaultParams, [
+              ...new URL(input, 'http://a').searchParams.keys(),
+           ]),
            ...fetcherParams,
         })
 
@@ -66,7 +71,7 @@ export let isJsonifiableObjectOrArray = (
    )
 }
 
-export let withPrefix = (prefix: string, str?: string) =>
-   !str ? '' : str.startsWith(prefix) ? str : `${prefix}${str}`
+// faster than input instanceof Request
+export let isRequest = (input: any): input is Request => !!input.url
 
 export let emptyOptions: any = {}

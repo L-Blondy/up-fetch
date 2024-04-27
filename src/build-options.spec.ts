@@ -8,23 +8,23 @@ describe('buildOptions input', () => {
       ${'b'}                                | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a/b'}
       ${'c'}                                | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://a/b/c'}
       ${'http://d/e'}                       | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://d/e'}
-      ${''}                                 | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a/'}
-      ${'http://b'}                         | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://b/'}
-      ${'http://b'}                         | ${{ baseUrl: 'http://a' }}        | ${{ baseUrl: 'http://c' }}    | ${'http://b/'}
-      ${new URL('http://c/d')}              | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://c/d'}
-      ${new URL('http://c/d')}              | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://c/d'}
+      ${''}                                 | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a'}
+      ${'http://b'}                         | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://b'}
+      ${'http://b'}                         | ${{ baseUrl: 'http://a' }}        | ${{ baseUrl: 'http://c' }}    | ${'http://b'}
+      ${new URL('http://c/d')}              | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${undefined}
+      ${new URL('http://c/d')}              | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${undefined}
       ${new Request('http://c/d')}          | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${undefined}
       ${new Request('http://c/d?q=search')} | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${undefined}
-      ${new URL('http://c/d?q=search')}     | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://c/d?q=search'}
-      ${new URL('http://c/d?q=search')}     | ${{ baseUrl: 'http://a?b=b' }}    | ${{}}                         | ${'http://c/d?q=search'}
+      ${new URL('http://c/d?q=search')}     | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${undefined}
+      ${new URL('http://c/d?q=search')}     | ${{ baseUrl: 'http://a?b=b' }}    | ${{}}                         | ${undefined}
       ${'http://c/d?q=search'}              | ${{ baseUrl: 'http://a?b=b' }}    | ${{}}                         | ${'http://c/d?q=search'}
       ${'http://c/d?q=search'}              | ${{ params: { a: 'a', b: 'b' } }} | ${{}}                         | ${'http://c/d?q=search&a=a&b=b'}
       ${'http://c/d?q=search'}              | ${{ params: { a: 'a', b: 'b' } }} | ${{ params: { a: 1, b: 2 } }} | ${'http://c/d?q=search&a=1&b=2'}
       ${'http://c/d?q=search'}              | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c/d?q=search'}
-      ${'http://c'}                         | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c/?q=query'}
-      ${'http://c'}                         | ${{}}                             | ${{ params: { q: 'query' } }} | ${'http://c/?q=query'}
+      ${'http://c'}                         | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c?q=query'}
+      ${'http://c'}                         | ${{}}                             | ${{ params: { q: 'query' } }} | ${'http://c?q=query'}
    `('Input: $body', ({ input, defaultOptions, fetcherOpts, output }) => {
-      if (input instanceof Request) {
+      if (input instanceof Request || input instanceof URL) {
          expect(buildOptions(input, defaultOptions, fetcherOpts).input).toBe(
             input,
          )
