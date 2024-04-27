@@ -4,7 +4,6 @@ import { up } from './up'
 import { JsonifiableArray, JsonifiableObject, ComputedOptions } from './types'
 import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'
-import { DistributiveOmit } from './utils'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
