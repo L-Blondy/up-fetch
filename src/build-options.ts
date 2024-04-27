@@ -5,6 +5,7 @@ import {
    JsonifiableObject,
    FetcherOptions,
    DefaultOptions,
+   BaseFetchFn,
 } from './types'
 import { fallbackOptions } from './fallback-options'
 import {
@@ -25,18 +26,14 @@ export let eventListeners = [
    'onRequestError',
 ] as const satisfies (keyof DefaultOptions & keyof FetcherOptions)[]
 
-export let buildOptions = <
-   TFetchFn extends typeof fetch,
-   TData,
-   TResponseError,
->(
+export let buildOptions = <TFetchFn extends BaseFetchFn, TData, TResponseError>(
    input: RequestInfo | URL, // fetch 1st arg
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
    fetcherOpts: FetcherOptions<TData, TResponseError, TFetchFn> = emptyOptions,
 ): ComputedOptions<TData, TResponseError, TFetchFn> => {
    let mergedOptions = {
       // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
-      ...({} satisfies BaseOptions<typeof fetch> as BaseOptions<TFetchFn>),
+      ...({} satisfies BaseOptions<BaseFetchFn> as BaseOptions<TFetchFn>),
       ...fallbackOptions,
       ...strip(defaultOptions, eventListeners),
       ...strip(fetcherOpts, eventListeners),

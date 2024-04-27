@@ -16,7 +16,9 @@ export type JsonifiableArray = readonly (
 
 type JsonPrimitive = string | number | boolean | null
 
-export type BaseOptions<TFetch extends typeof fetch> = DistributiveOmit<
+export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
+
+export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    NonNullable<Parameters<TFetch>[1]>,
    'body' | 'headers' | 'method'
 > & {
@@ -61,7 +63,7 @@ export type RawHeaders =
 export type ComputedOptions<
    TData = any,
    TResponseError = any,
-   TFetchFn extends typeof fetch = typeof fetch,
+   TFetchFn extends BaseFetchFn = typeof fetch,
 > = BaseOptions<TFetchFn> & {
    readonly body?: BodyInit | null
    headers: Record<string, string>
@@ -76,7 +78,7 @@ export type ComputedOptions<
 }
 
 export type DefaultOptions<
-   TFetchFn extends typeof fetch = typeof fetch,
+   TFetchFn extends BaseFetchFn = typeof fetch,
    TResponseError = any,
 > = BaseOptions<TFetchFn> & {
    headers?: RawHeaders
@@ -96,7 +98,7 @@ export type DefaultOptions<
 export type FetcherOptions<
    TData = any,
    TResponseError = any,
-   TFetchFn extends typeof fetch = typeof fetch,
+   TFetchFn extends BaseFetchFn = typeof fetch,
 > = BaseOptions<TFetchFn> & {
    body?: RawBody
    headers?: RawHeaders
