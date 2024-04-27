@@ -10,7 +10,6 @@ import {
 import { fallbackOptions } from './fallback-options'
 import {
    buildParams,
-   isRequest,
    isJsonifiableObjectOrArray,
    mergeHeaders,
    strip,
@@ -27,7 +26,7 @@ export let eventListeners = [
 ] as const satisfies (keyof DefaultOptions & keyof FetcherOptions)[]
 
 export let buildOptions = <TFetchFn extends BaseFetchFn, TData, TResponseError>(
-   input: RequestInfo | URL, // fetch 1st arg
+   input: Parameters<TFetchFn>[0], // fetch 1st arg
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
    fetcherOpts: FetcherOptions<TData, TResponseError, TFetchFn> = emptyOptions,
 ): ComputedOptions<TData, TResponseError, TFetchFn> => {

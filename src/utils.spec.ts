@@ -2,7 +2,6 @@ import { describe, expect, test } from 'vitest'
 import {
    isJsonifiableObjectOrArray,
    mergeHeaders,
-   isRequest,
    strip,
    withPrefix,
    buildParams,
@@ -99,16 +98,5 @@ describe('strip', () => {
       Object.values(stripped).forEach((value) =>
          expect(value).not.toBeUndefined(),
       )
-   })
-})
-
-describe('isInputRequest', () => {
-   test.each`
-      input                          | output
-      ${new Request('http://a.b.c')} | ${true}
-      ${new URL('http://a.b.c')}     | ${false}
-      ${'http://a.b.c'}              | ${false}
-   `('Input: $object', ({ input, baseUrl, output }) => {
-      expect(isRequest(input)).toEqual(output)
    })
 })
