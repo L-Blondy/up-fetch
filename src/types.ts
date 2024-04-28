@@ -16,7 +16,7 @@ export type JsonifiableArray = readonly (
 
 type JsonPrimitive = string | number | boolean | null
 
-export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
+export type BaseFetchFn = (input: unknown, options?: unknown, ctx?: unknown) => Promise<any>
 
 export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    NonNullable<Parameters<TFetch>[1]>,
