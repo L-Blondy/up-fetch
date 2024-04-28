@@ -79,7 +79,7 @@ export function getUrl(
    queryString: string,
 ) {
    if (typeof input !== 'string') return input
-   let url = /https?:\/\//.test(input)
+   let url = /^https?:\/\//.test(input)
       ? input
       : !base || !input
       ? base + input
