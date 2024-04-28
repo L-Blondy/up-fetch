@@ -73,23 +73,23 @@ export let isJsonifiableObjectOrArray = (
 
 export let emptyOptions: any = {}
 
-let joinBaseAndPath = (base: string, input: string) => {
+export function getUrl(
+   baseUrl: string | undefined = '',
+   input: unknown,
+   queryString: string,
+) {
+   if (typeof input !== 'string' || /https?:\/\//.test(input)) return input
    let slashCount = +base.endsWith('/') + +input.startsWith('/')
-   return !base || !input || slashCount === 1
+   let url = !base || !input || slashCount === 1
       ? base + input
       : slashCount // 2
       ? base + input.slice(1)
       : base + '/' + input
-}
-
-export function getUrl(
-   baseUrl: string | undefined = '',
-   input: string,
-   queryString: string,
-) {
-   if (typeof input !== 'string') return input
-   let url = /https?:\/\//.test(input) ? input : joinBaseAndPath(baseUrl, input)
    return queryString
-      ? `${url}${input.includes('?') ? '&' : '?'}${queryString}`
+      ? `${url}${input.includes('?') 
+        ? '&' 
+        : queryString[0] === '?' 
+        ? '' 
+        : '?'}${queryString}`
       : url
 }
