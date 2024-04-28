@@ -78,7 +78,6 @@ export function getUrl(
    input: unknown,
    queryString: string,
 ) {
-   if (input?.href) input = input.href
    if (typeof input !== 'string') return input
    let url = new URL(/^https?:\/\//.test(input)
       ? input
