@@ -25,7 +25,7 @@ export let buildParams = (
    defaultParams: Params | undefined,
    input: unknown,
    fetcherParams: Params | undefined,
-) =>
+): Params =>
    typeof input !== 'string'
       ? {} // an input of type Request cannot use the "params" option
       : strip({
@@ -71,7 +71,25 @@ export let isJsonifiableObjectOrArray = (
    )
 }
 
-// faster than input instanceof Request
-export let isRequest = (input: any): input is Request => !!input.url
-
 export let emptyOptions: any = {}
+
+let joinBaseAndPath = (base: string, input: string) => {
+   let slashCount = +base.endsWith('/') + +input.startsWith('/')
+   return !base || !input || slashCount === 1
+      ? base + input
+      : slashCount // 2
+      ? base + input.slice(1)
+      : base + '/' + input
+}
+
+export function getUrl(
+   baseUrl: string | undefined = '',
+   input: string,
+   queryString: string,
+) {
+   if (typeof input !== 'string') return input
+   let url = /https?:\/\//.test(input) ? input : joinBaseAndPath(baseUrl, input)
+   return queryString
+      ? `${url}${input.includes('?') ? '&' : '?'}${queryString}`
+      : url
+}

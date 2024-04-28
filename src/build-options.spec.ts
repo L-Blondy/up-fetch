@@ -5,6 +5,16 @@ import { bodyMock } from './_mocks'
 describe('buildOptions input', () => {
    test.each`
       input                                 | defaultOptions                    | fetcherOpts                   | output
+      ${'/'}                                | ${{ baseUrl: 'http://a.b.c' }}    | ${{}}                         | ${'http://a.b.c/'}
+      ${''}                                 | ${{ baseUrl: 'http://a.b.c' }}    | ${{}}                         | ${'http://a.b.c'}
+      ${''}                                 | ${{ baseUrl: 'http://a.b.c/' }}   | ${{}}                         | ${'http://a.b.c/'}
+      ${''}                                 | ${{ baseUrl: '/' }}               | ${{}}                         | ${'/'}
+      ${'/'}                                | ${{ baseUrl: '/' }}               | ${{}}                         | ${'/'}
+      ${''}                                 | ${{ baseUrl: '' }}                | ${{}}                         | ${''}
+      ${'d/e/f'}                            | ${{ baseUrl: 'http://a.b.c' }}    | ${{}}                         | ${'http://a.b.c/d/e/f'}
+      ${'/'}                                | ${{ baseUrl: 'http://a.b.c/' }}   | ${{}}                         | ${'http://a.b.c/'}
+      ${'/'}                                | ${{ baseUrl: 'http://a.b.c/d' }}  | ${{}}                         | ${'http://a.b.c/d/'}
+      ${'/'}                                | ${{ baseUrl: 'http://a.b.c/d/' }} | ${{}}                         | ${'http://a.b.c/d/'}
       ${'b'}                                | ${{ baseUrl: 'http://a' }}        | ${{}}                         | ${'http://a/b'}
       ${'c'}                                | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://a/b/c'}
       ${'http://d/e'}                       | ${{ baseUrl: 'http://a/b' }}      | ${{}}                         | ${'http://d/e'}

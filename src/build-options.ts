@@ -14,6 +14,7 @@ import {
    mergeHeaders,
    strip,
    emptyOptions,
+   getUrl,
 } from './utils'
 
 export let eventListeners = [
@@ -38,7 +39,6 @@ export let buildOptions = <TFetchFn extends BaseFetchFn, TData, TResponseError>(
    }
    let rawBody = fetcherOpts.body
    let params = buildParams(defaultOptions.params, input, fetcherOpts.params)
-   let queryString = mergedOptions.serializeParams(params)
    let isJsonifiable: boolean
    // assign isJsonifiable value while making use of the type guard
    let body = (isJsonifiable = isJsonifiableObjectOrArray(rawBody))
@@ -46,32 +46,24 @@ export let buildOptions = <TFetchFn extends BaseFetchFn, TData, TResponseError>(
            rawBody as JsonifiableObject | JsonifiableArray,
         )
       : rawBody
-   let headers = mergeHeaders(
-      isJsonifiable && typeof body === 'string'
-         ? { 'content-type': 'application/json' }
-         : {},
-      defaultOptions.headers,
-      fetcherOpts.headers,
-   )
+
    return {
       ...mergedOptions,
-      headers,
+      headers: mergeHeaders(
+         isJsonifiable && typeof body === 'string'
+            ? { 'content-type': 'application/json' }
+            : {},
+         defaultOptions.headers,
+         fetcherOpts.headers,
+      ),
       params,
       rawBody,
       body,
       // convenience getter, usefull if the user wants to modify the url in onBeforeFetch
-      get input() {
-         if (typeof input !== 'string') return input
-         // assume the url contains no hash, password or username
-         let url = /^https?:\/\//.test(input)
-            ? input
-            : [mergedOptions.baseUrl, input]
-                 .map((str) => (str?.startsWith('/') ? str.slice(1) : str))
-                 .filter(Boolean)
-                 .join('/')
-         return [url, queryString]
-            .filter(Boolean)
-            .join(input.includes('?') ? '&' : '?')
-      },
+      input: getUrl(
+         mergedOptions.baseUrl,
+         input,
+         mergedOptions.serializeParams(params),
+      ),
    }
 }

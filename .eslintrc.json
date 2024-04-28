@@ -32,7 +32,7 @@
       "no-multi-str": "error",
       "no-template-curly-in-string": "warn",
       "no-unused-vars": "off",
-      "prefer-template": "error",
+      "prefer-template": 0,
       "prefer-const": 0,
       "no-ex-assign": "error",
       "spaced-comment": [
