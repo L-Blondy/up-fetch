@@ -23,6 +23,7 @@ describe('buildOptions input', () => {
       ${'http://c/d?q=search'}              | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c/d?q=search'}
       ${'http://c'}                         | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c/?q=query'}
       ${'http://c'}                         | ${{}}                             | ${{ params: { q: 'query' } }} | ${'http://c/?q=query'}
+      ${'http://c?d=e'}                         | ${{}}                             | ${{ params: { q: 'query' } }} | ${'http://c/?d=e&q=query'}
    `('Input: $body', ({ input, defaultOptions, fetcherOpts, output }) => {
       if (input instanceof Request) {
          expect(buildOptions(input, defaultOptions, fetcherOpts).input).toBe(
