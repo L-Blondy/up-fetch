@@ -1128,6 +1128,7 @@ const upfetch = up(fetch, () => ({
 -  ✅ All modern browsers
 -  ✅ Bun
 -  ✅ Node 18+
+-  ✅ Cloudflare Workers
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
 
