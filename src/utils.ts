@@ -78,18 +78,13 @@ export function getUrl(
    input: unknown,
    queryString: string,
 ) {
-   if (typeof input !== 'string' || /https?:\/\//.test(input)) return input
-   let slashCount = +base.endsWith('/') + +input.startsWith('/')
-   let url = !base || !input || slashCount === 1
+   if (typeof input !== 'string') return input
+   let url = /https?:\/\//.test(input)
+      ? input
+      : !base || !input
       ? base + input
-      : slashCount // 2
-      ? base + input.slice(1)
-      : base + '/' + input
-   return queryString
-      ? `${url}${input.includes('?') 
-        ? '&' 
-        : queryString[0] === '?' 
-        ? '' 
-        : '?'}${queryString}`
-      : url
+      : base.replace(/\/$/, '') + '/' + input.replace(/^\//, '')
+   return !queryString
+      ? url
+      : url + (url.includes('?') ? '&' : '?') + queryString.replace(/^\?/, '')
 }
