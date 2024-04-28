@@ -33,6 +33,8 @@ describe('buildOptions input', () => {
       ${'http://c/d?q=search'}              | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c/d?q=search'}
       ${'http://c'}                         | ${{ params: { q: 'query' } }}     | ${{}}                         | ${'http://c?q=query'}
       ${'http://c'}                         | ${{}}                             | ${{ params: { q: 'query' } }} | ${'http://c?q=query'}
+      ${'http://c'}                         | ${{ serializeParams : () => '?q=search' }}                             | ${{ params: { q: 'will be ignored' } }} | ${'http://c?q=search'}
+      ${'http://c/d'}                         | ${{ serializeParams : () => '?q=search' }}                             | ${{ params: { q: 'will be ignored' } }} | ${'http://c/d?q=search'}
    `('Input: $body', ({ input, defaultOptions, fetcherOpts, output }) => {
       if (input instanceof Request || input instanceof URL) {
          expect(buildOptions(input, defaultOptions, fetcherOpts).input).toBe(
