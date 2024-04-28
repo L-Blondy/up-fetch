@@ -79,12 +79,13 @@ export function getUrl(
    queryString: string,
 ) {
    if (typeof input !== 'string') return input
-   let url = /^https?:\/\//.test(input)
+   let url = new URL(/^https?:\/\//.test(input)
       ? input
       : !base || !input
       ? base + input
-      : base.replace(/\/$/, '') + '/' + input.replace(/^\//, '')
-   return !queryString
-      ? url
-      : url + (url.includes('?') ? '&' : '?') + queryString.replace(/^\?/, '')
+      : base.replace(/\/$/, '') + '/' + input.replace(/^\//, ''))
+   if(queryString) {
+      url.search += (url.search ? '&' : '') + queryString.replace(/^\?/, '')
+   }
+   return url.toString()
 }
