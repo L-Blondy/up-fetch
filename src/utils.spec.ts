@@ -2,9 +2,7 @@ import { describe, expect, test } from 'vitest'
 import {
    isJsonifiableObjectOrArray,
    mergeHeaders,
-   isRequest,
    strip,
-   withPrefix,
    buildParams,
 } from './utils'
 import { bodyMock } from './_mocks'
@@ -66,6 +64,7 @@ describe('buildParams', () => {
       ${{ a: 1 }}   | ${'url?a=2'}               | ${{ a: 2 }}   | ${{ a: 2 }}
       ${{ a: 1 }}   | ${'url?b=2'}               | ${{}}         | ${{ a: 1 }}
       ${{ a: 1 }}   | ${new Request('http://a')} | ${{ a: 2 }}   | ${{}}
+      ${{ a: 1 }}   | ${new URL('http://a')}     | ${{ a: 2 }}   | ${{}}
    `(
       'Input: $defaultHeaders, $fetcherHeaders',
       ({ defaultParams, input, fetcherParams, output }) => {
@@ -74,18 +73,6 @@ describe('buildParams', () => {
          )
       },
    )
-})
-
-describe('withPrefix', () => {
-   test.each`
-      str          | output
-      ${'a=b'}     | ${'?a=b'}
-      ${'?a=b'}    | ${'?a=b'}
-      ${''}        | ${''}
-      ${undefined} | ${''}
-   `('Input: $str', ({ str, output }) => {
-      expect(withPrefix('?', str)).toEqual(output)
-   })
 })
 
 describe('strip', () => {
@@ -99,16 +86,5 @@ describe('strip', () => {
       Object.values(stripped).forEach((value) =>
          expect(value).not.toBeUndefined(),
       )
-   })
-})
-
-describe('isInputRequest', () => {
-   test.each`
-      input                          | output
-      ${new Request('http://a.b.c')} | ${true}
-      ${new URL('http://a.b.c')}     | ${false}
-      ${'http://a.b.c'}              | ${false}
-   `('Input: $object', ({ input, baseUrl, output }) => {
-      expect(isRequest(input)).toEqual(output)
    })
 })

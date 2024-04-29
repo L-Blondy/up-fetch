@@ -84,8 +84,7 @@ export class ResponseError extends Error {
       this.data = data
       this.name = 'ResponseError'
       this.response = response
-      // don't need to expose the status at the top level,
-      // it will be available with `error.response.status`
+      this.status = response.status
    }
 }
 ```
@@ -178,6 +177,7 @@ This behavior can be customized using the [throwResponseErrorWhen](#throwrespons
 
 The parsed error body is available with `error.data`. \
 The raw Response can be accessed with `error.response`. \
+The raw status can be accessed with `error.status`. \
 The options used make the api call are available with `error.options`.
 
 ```ts
@@ -189,7 +189,7 @@ try {
 } catch (error) {
    if (isResponseError(error)) {
       console.log(error.data)
-      console.log(error.response.status)
+      console.log(error.status)
    } else {
       console.log('Request error')
    }
@@ -348,7 +348,8 @@ You can decide **what** to throw using the [parseResponseError](#parseresponseer
 On the default `ResponseError`:
 
 -  The parsed response body is available with `error.data`. \
--  The response status is available with `error.response.status`. \
+-  The raw Response is available with `error.response`. \
+-  The response status is available with `error.status`. \
 -  The options used the make the request are available with `error.options`.
 
 The [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` can be used to check if an error is a `ResponseError`
@@ -365,7 +366,7 @@ try {
       console.log(error.name)
       console.log(error.message)
       console.log(error.data)
-      console.log(error.response.status)
+      console.log(error.status)
       console.log(error.options)
    } else {
       console.log(error.name)
@@ -379,7 +380,7 @@ upfetch('https://a.b.c').catch((error) => {
       console.log(error.name)
       console.log(error.message)
       console.log(error.data)
-      console.log(error.response.status)
+      console.log(error.status)
       console.log(error.options)
    } else {
       console.log(error.name)
@@ -1128,6 +1129,7 @@ const upfetch = up(fetch, () => ({
 -  ✅ All modern browsers
 -  ✅ Bun
 -  ✅ Node 18+
+-  ✅ Cloudflare Workers
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
 

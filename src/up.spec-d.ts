@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { expectTypeOf, test } from 'vitest'
+import { describe, expectTypeOf, test } from 'vitest'
 import { up } from './up'
 import { JsonifiableArray, JsonifiableObject, ComputedOptions } from './types'
 import { fallbackOptions } from './fallback-options'
@@ -301,13 +301,32 @@ test('callback types', async () => {
    }))
 })
 
+test('When the fetcher options are functional, They should receive the fully infered defaultOptions as argument', async () => {
+   const defaultOptions = {
+      parseResponse: () => Promise.resolve(1),
+      parseResponseError: () => Promise.resolve(''),
+      params: { a: 1, b: true },
+      headers: { c: 2, d: 'false' },
+   } as const
+
+   const upfetch = up(fetch, () => defaultOptions)
+
+   // @ts-expect-error type check dhould still work on the return type
+   upfetch('', (defaultOptions) => {
+      expectTypeOf(defaultOptions).toEqualTypeOf<typeof defaultOptions>()
+
+      return { headers: '' } // This incorrect return type produces the error
+   })
+})
+
 test('base fetch type should be extended', async () => {
    type CustomFetchType = (
       input: RequestInfo | URL,
       init?: RequestInit & { additionalOption: string },
    ) => Promise<Response>
+   const fetchFn: CustomFetchType = (() => {}) as any
 
-   const upfetch = up(fetch as CustomFetchType, () => ({
+   const upfetch = up(fetchFn, () => ({
       additionalOption: '1',
    }))
 
@@ -326,20 +345,72 @@ test('base fetch type should be extended', async () => {
    }))
 })
 
-test('When the fetcher options are functional, They should receive the fully infered defaultOptions as argument', async () => {
-   const defaultOptions = {
-      parseResponse: () => Promise.resolve(1),
-      parseResponseError: () => Promise.resolve(''),
-      params: { a: 1, b: true },
-      headers: { c: 2, d: 'false' },
-   } as const
-
-   const upfetch = up(fetch, () => defaultOptions)
-
-   // @ts-expect-error type check dhould still work on the return type
-   upfetch('', (defaultOptions) => {
-      expectTypeOf(defaultOptions).toEqualTypeOf<typeof defaultOptions>()
-
-      return { headers: '' } // This incorrect return type produces the error
+describe('up should accept a fetcher with', () => {
+   test('< input', async () => {
+      type FetchFn = (
+         input: string,
+         options: Parameters<typeof fetch>[1],
+      ) => Promise<Response>
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
+      upfetch('')
+      // @ts-expect-error accept string only
+      upfetch(new URL(''))
+   })
+   test('> input', async () => {
+      type FetchFn = (
+         input: string | URL | Request | number,
+         options: Parameters<typeof fetch>[1],
+      ) => Promise<Response>
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
+      upfetch('')
+      upfetch(new Request(''))
+      upfetch(new URL(''))
+      upfetch(1)
+   })
+   test('< options', async () => {
+      type FetchFn = (
+         input: Parameters<typeof fetch>[0],
+         options: Omit<NonNullable<Parameters<typeof fetch>[1]>, 'cache'>,
+      ) => Promise<Response>
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
+      upfetch('', { keepalive: true })
+      // @ts-expect-error cache is not an option
+      upfetch('', { cache: 'no-store' })
+   })
+   test('> options', async () => {
+      type FetchFn = (
+         input: Parameters<typeof fetch>[0],
+         options: Parameters<typeof fetch>[1] & { newOption: string },
+      ) => Promise<Response>
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
+      upfetch('', { baseUrl: '', keepalive: true, newOption: '' })
+      // @ts-expect-error newOption is required
+      upfetch('', { baseUrl: '', keepalive: true })
+   })
+   test('< args', async () => {
+      type FetchFn = (input: Parameters<typeof fetch>[0]) => Promise<Response>
+      const fetchFn: FetchFn = (() => {}) as any
+      fetchFn('')
+      // @ts-expect-error accept one arg only
+      fetchFn('', {})
+   })
+   test('> args', async () => {
+      type FetchFn = (
+         input: Parameters<typeof fetch>[0],
+         options: Parameters<typeof fetch>[1],
+         ctx: Record<string, string>,
+      ) => Promise<Response>
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
+      upfetch('', {}, {})
+      upfetch('', {})
+      // @ts-expect-error invalid 3rd arg
+      upfetch('', {}, '')
+      // @ts-expect-error 3 args max
+      upfetch('', {}, {}, '')
    })
 })

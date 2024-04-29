@@ -34,6 +34,7 @@ export let fallbackOptions: FallbackOptions = {
          options,
       ),
 
+   // TODO: find a lighter way to do this with about the same amount of code
    serializeParams: (params: ComputedOptions['params']) =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),

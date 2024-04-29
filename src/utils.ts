@@ -23,10 +23,10 @@ export let mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
 
 export let buildParams = (
    defaultParams: Params | undefined,
-   input: URL | Request | string,
+   input: unknown,
    fetcherParams: Params | undefined,
-) =>
-   isRequest(input)
+): Params =>
+   typeof input !== 'string'
       ? {} // an input of type Request cannot use the "params" option
       : strip({
            // Removing the 'url.searchParams.keys()' from the defaultParams
@@ -71,10 +71,22 @@ export let isJsonifiableObjectOrArray = (
    )
 }
 
-export let withPrefix = (prefix: string, str?: string) =>
-   !str ? '' : str.startsWith(prefix) ? str : `${prefix}${str}`
-
-// faster than input instanceof Request
-export let isRequest = (input: any): input is Request => !!input.url
-
 export let emptyOptions: any = {}
+
+export function getUrl(
+   base: string | undefined = '',
+   input: unknown,
+   queryString: string,
+): any {
+   if (typeof input !== 'string') return input
+   let url = /^https?:\/\//.test(input)
+      ? input
+      : !base || !input
+      ? base + input
+      : base.replace(/\/$/, '') + '/' + input.replace(/^\//, '')
+
+   if (queryString) {
+      url += (url.includes('?') ? '&' : '?') + queryString.replace(/^\?/, '')
+   }
+   return url.toString()
+}

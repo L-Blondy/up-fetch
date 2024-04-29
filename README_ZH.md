@@ -86,8 +86,7 @@ export class ResponseError extends Error {
       this.data = data
       this.name = 'ResponseError'
       this.response = response
-      // don't need to expose the status at the top level,
-      // it will be available with `error.response.status`
+      this.status = response.status
    }
 }
 ```
@@ -187,7 +186,7 @@ try {
 } catch (error) {
    if (isResponseError(error)) {
       console.log(error.data)
-      console.log(error.response.status)
+      console.log(error.status)
    } else {
       console.log('Request error')
    }
@@ -400,7 +399,7 @@ const data = await upfetch('https://a.b.c')
 当 `response.ok` 为 `false` 时，**up-fetch** 抛出 [ResponseError](#%EF%B8%8F-throws-by-default) 异常。
 
 解析后的异常信息可以通过 `error.data`获取。 \
-原始的 response status 可以通过 `error.response.status` 获取。 \
+原始的 response status 可以通过 `error.status` 获取。 \
 用于 api 调用的选项可通过`error.options`获取。
 
 [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` 可以用于判断当前 error 是否是 `ResponseError`
@@ -417,7 +416,7 @@ try {
       console.log(error.name)
       console.log(error.message)
       console.log(error.data)
-      console.log(error.response.status)
+      console.log(error.status)
       console.log(error.options)
    } else {
       console.log(error.name)
@@ -431,7 +430,7 @@ upfetch('https://a.b.c').catch((error) => {
       console.log(error.name)
       console.log(error.message)
       console.log(error.data)
-      console.log(error.response.status)
+      console.log(error.status)
       console.log(error.options)
    } else {
       console.log(error.name)
