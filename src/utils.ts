@@ -74,18 +74,19 @@ export let isJsonifiableObjectOrArray = (
 export let emptyOptions: any = {}
 
 export function getUrl(
-   baseUrl: string | undefined = '',
+   base: string | undefined = '',
    input: unknown,
    queryString: string,
-) {
+): any {
    if (typeof input !== 'string') return input
-   let url = new URL(/^https?:\/\//.test(input)
+   let url = /^https?:\/\//.test(input)
       ? input
       : !base || !input
       ? base + input
-      : base.replace(/\/$/, '') + '/' + input.replace(/^\//, ''))
-   if(queryString) {
-      url.search += (url.search ? '&' : '') + queryString.replace(/^\?/, '')
+      : base.replace(/\/$/, '') + '/' + input.replace(/^\//, '')
+
+   if (queryString) {
+      url += (url.includes('?') ? '&' : '?') + queryString.replace(/^\?/, '')
    }
    return url.toString()
 }

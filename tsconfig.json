@@ -1,4 +1,3 @@
-// credits @sindresorhus/tsconfig https://github.com/sindresorhus/tsconfig
 {
    "compilerOptions": {
       "allowSyntheticDefaultImports": true, // To provide backwards compatibility, Node.js allows you to import most CommonJS packages with a default import. This flag tells TypeScript that it's okay to use import on CommonJS modules. (credits @sindresorhus/tsconfig https://github.com/sindresorhus/tsconfig)

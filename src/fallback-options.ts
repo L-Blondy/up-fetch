@@ -33,7 +33,7 @@ export let fallbackOptions: FallbackOptions = {
          await fallbackOptions.parseResponse(res, {} as any), // the second arg is not used but required by the parseResponse type
          options,
       ),
-   
+
    // TODO: find a lighter way to do this with about the same amount of code
    serializeParams: (params: ComputedOptions['params']) =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined

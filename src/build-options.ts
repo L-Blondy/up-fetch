@@ -59,7 +59,6 @@ export let buildOptions = <TFetchFn extends BaseFetchFn, TData, TResponseError>(
       params,
       rawBody,
       body,
-      // convenience getter, usefull if the user wants to modify the url in onBeforeFetch
       input: getUrl(
          mergedOptions.baseUrl,
          input,
