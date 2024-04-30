@@ -30,6 +30,8 @@ export let buildOptions = <TFetchFn extends BaseFetchFn, TData, TResponseError>(
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
    fetcherOpts: FetcherOptions<TData, TResponseError, TFetchFn> = emptyOptions,
 ): ComputedOptions<TData, TResponseError, TFetchFn> => {
+   // transform URL to string right away
+   input = input?.href ?? input
    let mergedOptions = {
       // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
       ...({} satisfies BaseOptions<BaseFetchFn> as BaseOptions<TFetchFn>),
