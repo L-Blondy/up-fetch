@@ -44,7 +44,7 @@ test('infer TData', async () => {
    expectTypeOf(data4).toEqualTypeOf<number>()
 })
 
-test('infer TResponseError', async () => {
+test('infer TError', async () => {
    up(fetch)('', {
       onResponseError(error, options) {
          expectTypeOf(error).toEqualTypeOf<ResponseError>()

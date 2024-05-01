@@ -14,19 +14,25 @@ export function up<
    getDefaultOptions: () => TDefaultOptions = () => emptyOptions,
 ) {
    return <
-      TData = Awaited<
+      TParsedData = Awaited<
          ReturnType<NonNullable<TDefaultOptions['parseResponse']>>
       >,
-      TResponseError = Awaited<
+      TData = TParsedData,
+      TError = Awaited<
          ReturnType<NonNullable<TDefaultOptions['parseResponseError']>>
       >,
    >(
       input: Parameters<TFetchFn>[0],
       fetcherOptions:
-         | FetcherOptions<TData, TResponseError, TFetchFn>
+         | FetcherOptions<TData, TError, TParsedData, TFetchFn>
          | ((
               defaultOptions: TDefaultOptions,
-           ) => FetcherOptions<TData, TResponseError, TFetchFn>) = emptyOptions,
+           ) => FetcherOptions<
+              TData,
+              TError,
+              TParsedData,
+              TFetchFn
+           >) = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
       let defaultOpts = getDefaultOptions()
@@ -46,19 +52,20 @@ export function up<
          })
          .then(async (response) => {
             if (!(await options.throwResponseErrorWhen(response))) {
-               let data: Awaited<TData>
+               let parsed: Awaited<TParsedData>
                try {
-                  data = await options.parseResponse(response, options)
+                  parsed = await options.parseResponse(response, options)
                } catch (error: any) {
                   fetcherOpts.onParsingError?.(error, options)
                   defaultOpts.onParsingError?.(error, options)
                   throw error
                }
+               let data = await options.transform(parsed, options)
                fetcherOpts.onSuccess?.(data, options)
                defaultOpts.onSuccess?.(data, options)
                return data
             } else {
-               let respError: Awaited<TResponseError>
+               let respError: Awaited<TError>
                try {
                   respError = await options.parseResponseError(
                      response,

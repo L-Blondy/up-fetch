@@ -1002,7 +1002,7 @@ upfetch('https://a.b.c', {
 
 ## <samp>\<onResponseError\></samp>
 
-**Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
+**Type:** `<TError>(error: TError, options: ComputedOptions) => void`
 
 Called when a response error was thrown, by default when `response.ok` is `false`, customizable with the [throwResponseErrorWhen](#throwresponseerrorwhen) option
 

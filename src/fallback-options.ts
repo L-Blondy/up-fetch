@@ -1,5 +1,6 @@
 import { ResponseError } from './response-error'
 import {
+   BaseFetchFn,
    ComputedOptions,
    ParseResponse,
    ParseResponseError,
@@ -8,11 +9,15 @@ import {
 } from './types.js'
 import { MaybePromise } from './utils'
 
-export type FallbackOptions = {
-   parseResponse: ParseResponse<any>
-   parseResponseError: ParseResponseError<any>
+export type FallbackOptions<TFetchFn extends BaseFetchFn = typeof fetch> = {
+   parseResponse: ParseResponse<any, TFetchFn>
+   parseResponseError: ParseResponseError<any, TFetchFn>
    serializeParams: SerializeParams
    serializeBody: SerializeBody
+   transform: (
+      data: any,
+      options: ComputedOptions<any, any, any, TFetchFn>,
+   ) => MaybePromise<any>
    throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
 }
 
@@ -40,6 +45,8 @@ export let fallbackOptions: FallbackOptions = {
       new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
 
    serializeBody: (val: any) => JSON.stringify(val),
+
+   transform: (x) => x,
 
    throwResponseErrorWhen: (response: Response) => !response.ok,
 }

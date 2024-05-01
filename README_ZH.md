@@ -814,7 +814,7 @@ upfetch('https://a.b.c', {
 
 ## <samp>\<onResponseError\></samp>
 
-**Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
+**Type:** `<TError>(error: TError, options: ComputedOptions) => void`
 
 当响应异常抛出时调用 (`response.ok` 为 `false`).
 

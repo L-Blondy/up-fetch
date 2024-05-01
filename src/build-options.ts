@@ -7,7 +7,7 @@ import {
    DefaultOptions,
    BaseFetchFn,
 } from './types'
-import { fallbackOptions } from './fallback-options'
+import { FallbackOptions, fallbackOptions } from './fallback-options'
 import {
    buildParams,
    isJsonifiableObjectOrArray,
@@ -25,11 +25,21 @@ export let eventListeners = [
    'onRequestError',
 ] as const satisfies (keyof DefaultOptions & keyof FetcherOptions)[]
 
-export let buildOptions = <TFetchFn extends BaseFetchFn, TData, TResponseError>(
+export let buildOptions = <
+   TFetchFn extends BaseFetchFn,
+   TParsedData,
+   TData = TParsedData,
+   TError = any,
+>(
    input: Parameters<TFetchFn>[0], // fetch 1st arg
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
-   fetcherOpts: FetcherOptions<TData, TResponseError, TFetchFn> = emptyOptions,
-): ComputedOptions<TData, TResponseError, TFetchFn> => {
+   fetcherOpts: FetcherOptions<
+      TData,
+      TError,
+      TParsedData,
+      TFetchFn
+   > = emptyOptions,
+): ComputedOptions<TData, TError, TParsedData, TFetchFn> => {
    // transform URL to string right away
    input = input?.href ?? input
    let mergedOptions = {
