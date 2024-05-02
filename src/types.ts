@@ -39,12 +39,12 @@ export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
 export type ParseResponse<TFetchFn extends BaseFetchFn, TParsedData> = (
    response: Response,
    options: ComputedOptions<TFetchFn, any, any, any>,
-) => Promise<TParsedData>
+) => MaybePromise<TParsedData>
 
 export type ParseResponseError<TFetchFn extends BaseFetchFn, TError> = (
    res: Response,
    options: ComputedOptions<TFetchFn, any, any, any>,
-) => Promise<TError>
+) => MaybePromise<TError>
 
 export type SerializeBody = (
    body: Exclude<RawBody, BodyInit | null>,

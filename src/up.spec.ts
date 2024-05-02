@@ -787,7 +787,7 @@ describe('up', () => {
          expect(count).toBe(3)
       })
 
-      test('Should receive the parsedResponse and the options', async () => {
+      test('Should receive the transformed data and the options', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -796,15 +796,19 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
+            transform: (data: any) => {
+               data['hello'] += '!'
+               return data
+            },
             onSuccess(data, options) {
-               expect(data).toEqual({ hello: 'world' })
+               expect(data).toEqual({ hello: 'world!' })
                expect(options.input).toEqual('https://example.com')
             },
          }))
 
          await upfetch('', {
             onSuccess(data, options) {
-               expect(data).toEqual({ hello: 'world' })
+               expect(data).toEqual({ hello: 'world!' })
                expect(options.input).toEqual('https://example.com')
             },
          })
