@@ -23,29 +23,30 @@ export let eventListeners = [
    'onParsingError',
    'onResponseError',
    'onRequestError',
-] as const satisfies (keyof DefaultOptions & keyof FetcherOptions)[]
+] as const satisfies (keyof DefaultOptions<typeof fetch> &
+   keyof FetcherOptions<typeof fetch>)[]
 
 export let buildOptions = <
    TFetchFn extends BaseFetchFn,
-   TParsedData,
+   TParsedData = any,
    TData = TParsedData,
    TError = any,
 >(
    input: Parameters<TFetchFn>[0], // fetch 1st arg
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
    fetcherOpts: FetcherOptions<
+      TFetchFn,
       TData,
       TError,
-      TParsedData,
-      TFetchFn
+      TParsedData
    > = emptyOptions,
-): ComputedOptions<TData, TError, TParsedData, TFetchFn> => {
+): ComputedOptions<TFetchFn, TData, TError, TParsedData> => {
    // transform URL to string right away
    input = input?.href ?? input
    let mergedOptions = {
       // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
       ...({} satisfies BaseOptions<BaseFetchFn> as BaseOptions<TFetchFn>),
-      ...fallbackOptions,
+      ...(fallbackOptions as FallbackOptions<TFetchFn, TError>),
       ...strip(defaultOptions, eventListeners),
       ...strip(fetcherOpts, eventListeners),
    }

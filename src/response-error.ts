@@ -1,13 +1,22 @@
-import { ComputedOptions } from './types'
+import { BaseFetchFn, ComputedOptions } from './types'
 
-export class ResponseError<TData = any> extends Error {
+export class ResponseError<
+   TFetchFn extends BaseFetchFn = typeof fetch,
+   TData = any,
+   TError = any,
+   TParsedData = any,
+> extends Error {
    override name: 'ResponseError'
    response: Response
-   options: ComputedOptions<TData>
+   options: ComputedOptions<TFetchFn, TData, TError, TParsedData>
    data: TData
    status: number
 
-   constructor(res: Response, data: TData, options: ComputedOptions<TData>) {
+   constructor(
+      res: Response,
+      data: TData,
+      options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
+   ) {
       super(`Request failed with status ${res.status}`)
       this.data = data
       this.name = 'ResponseError'
@@ -17,6 +26,12 @@ export class ResponseError<TData = any> extends Error {
    }
 }
 
-export let isResponseError = <TData>(
+export let isResponseError = <
+   TFetchFn extends BaseFetchFn = typeof fetch,
+   TData = any,
+   TError = any,
+   TParsedData = any,
+>(
    error: any,
-): error is ResponseError<TData> => error instanceof ResponseError
+): error is ResponseError<TFetchFn, TData, TError, TParsedData> =>
+   error instanceof ResponseError

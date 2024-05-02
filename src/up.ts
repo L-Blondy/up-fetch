@@ -24,14 +24,14 @@ export function up<
    >(
       input: Parameters<TFetchFn>[0],
       fetcherOptions:
-         | FetcherOptions<TData, TError, TParsedData, TFetchFn>
+         | FetcherOptions<TFetchFn, TData, TError, TParsedData>
          | ((
               defaultOptions: TDefaultOptions,
            ) => FetcherOptions<
+              TFetchFn,
               TData,
               TError,
-              TParsedData,
-              TFetchFn
+              TParsedData
            >) = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
