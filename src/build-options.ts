@@ -23,6 +23,7 @@ export let eventListeners = [
    'onParsingError',
    'onResponseError',
    'onRequestError',
+   'onTransformError',
 ] as const satisfies (keyof DefaultOptions<typeof fetch> &
    keyof FetcherOptions<typeof fetch>)[]
 
