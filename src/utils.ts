@@ -88,5 +88,5 @@ export function getUrl(
    if (queryString) {
       url += (url.includes('?') ? '&' : '?') + queryString.replace(/^\?/, '')
    }
-   return url.toString()
+   return url
 }
