@@ -60,7 +60,14 @@ export function up<
                   defaultOpts.onParsingError?.(error, options)
                   throw error
                }
-               let data = await options.transform(parsed, options)
+               let data: Awaited<TData>
+               try {
+                  data = await options.transform(parsed, options)
+               } catch (error: any) {
+                  fetcherOpts.onTransformError?.(error, options)
+                  defaultOpts.onTransformError?.(error, options)
+                  throw error
+               }
                fetcherOpts.onSuccess?.(data, options)
                defaultOpts.onSuccess?.(data, options)
                return data

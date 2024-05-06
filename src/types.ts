@@ -94,6 +94,7 @@ export type DefaultOptions<
    onResponseError?: (error: any, options: ComputedOptions<TFetchFn>) => void
    onRequestError?: (error: Error, options: ComputedOptions<TFetchFn>) => void
    onSuccess?: (data: any, options: ComputedOptions<TFetchFn>) => void
+   onTransformError?: (error: Error, options: ComputedOptions<TFetchFn>) => void
    params?: Params
    parseResponse?: ParseResponse<TFetchFn, any>
    parseResponseError?: ParseResponseError<TFetchFn, TError>
@@ -129,6 +130,11 @@ export type FetcherOptions<
       data: TData,
       options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
    ) => void
+   onTransformError?: (
+      error: Error,
+      options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
+   ) => void
+
    params?: Params
    parseResponse?: ParseResponse<TFetchFn, TParsedData>
    parseResponseError?: ParseResponseError<TFetchFn, TError>

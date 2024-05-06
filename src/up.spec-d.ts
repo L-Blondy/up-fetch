@@ -55,8 +55,8 @@ test('infer TData', async () => {
    })
    expectTypeOf(data6).toEqualTypeOf<Response>()
    const data7 = await upfetch2('', {
-      parseResponse: (res) => res,
-      transform: (res) => res.text(),
+      parseResponse: (res) => ({ res }),
+      transform: ({ res }) => res.text(),
       onSuccess(data) {
          expectTypeOf(data).toEqualTypeOf<string>()
       },
@@ -195,6 +195,11 @@ test('callback types', async () => {
          expectTypeOf(data).toEqualTypeOf<any>()
          expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
       },
+      onTransformError(error, options) {
+         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
+         expectTypeOf(error).toEqualTypeOf<Error>()
+         expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
+      },
       parseResponse(res, options) {
          expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(res).toEqualTypeOf<Response>()
@@ -255,6 +260,13 @@ test('callback types', async () => {
             ComputedOptions<typeof fetcher, string, boolean, number>
          >()
       },
+      onTransformError(error, options) {
+         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
+         expectTypeOf(error).toEqualTypeOf<Error>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<typeof fetcher, string, boolean, number>
+         >()
+      },
       parseResponse(res, options) {
          expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(res).toEqualTypeOf<Response>()
@@ -300,6 +312,12 @@ test('callback types', async () => {
       },
       onSuccess(data, options) {
          expectTypeOf(data).toEqualTypeOf<string>()
+         expectTypeOf(options).toEqualTypeOf<
+            ComputedOptions<typeof fetcher, string, boolean, number>
+         >()
+      },
+      onTransformError(error, options) {
+         expectTypeOf(error).toEqualTypeOf<Error>()
          expectTypeOf(options).toEqualTypeOf<
             ComputedOptions<typeof fetcher, string, boolean, number>
          >()
