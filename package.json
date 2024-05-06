@@ -38,16 +38,6 @@
             "default": "./dist/with-zod.cjs"
          }
       },
-      "./with-transform": {
-         "import": {
-            "types": "./dist/with-transform.d.ts",
-            "default": "./dist/with-transform.js"
-         },
-         "require": {
-            "types": "./dist/with-transform.d.cts",
-            "default": "./dist/with-transform.cjs"
-         }
-      },
       "./package.json": "./package.json"
    },
    "scripts": {
