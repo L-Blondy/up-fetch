@@ -37,7 +37,7 @@ const todo = await upfetch('https://a.b.c', {
 })
 ```
 
-You can set some defaults for all requests. They are **evaluated before each request** to avoid using stale values
+You can set some defaults for all requests. They are **evaluated before each request** to avoid sending stale values
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -486,59 +486,6 @@ upfetch('/posts', {
 </details>
 
 ## ➡️ Adapters & Recipies
-
-<details><summary>💡 <b>transform</b></summary>
-
-You can transform the data directly in `parseResponse` or `parseResponseError` using the `withTransform` adapter. It provides a simple interface to work with the already parsed data (`json` or `text`)
-
-Note that using this adapter will not reuse the result of the default parsing methods defined in `up`
-
-```ts
-import { withTransform } from 'up-fetch/with-transform'
-import { upfetch } from './abc'
-
-const todo1 = await upfetch('/todo/1', {
-   parseResponse: withTransform((data) => ({ result: data })),
-})
-// todo is typed: { result: any }
-
-const todo2 = await upfetch('/todo/1', {
-   parseResponse: withTransform((data, response) => ({
-      result: data,
-      status: response.status,
-   })),
-})
-// todo is typed: { result: any, status: number }
-
-// Same with errors
-await upfetch('/todo/1', {
-   parseResponseError: withTransform((data, response) =>
-      createError({
-         result: data,
-         status: response.status,
-      }),
-   ),
-})
-```
-
-You might also apply it by default
-
-```ts
-const upfetch = up(fetch, () => ({
-   parseResponse: withTransform((data, response) => ({
-      result: data,
-      status: response.status,
-   })),
-   parseResponseError: withTransform((data, response) =>
-      createError({
-         result: data,
-         status: response.status,
-      }),
-   ),
-}))
-```
-
-</details>
 
 <details><summary>💡 <b>zod</b></summary>
 
