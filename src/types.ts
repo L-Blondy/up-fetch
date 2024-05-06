@@ -140,9 +140,6 @@ export type FetcherOptions<
    parseResponseError?: ParseResponseError<TFetchFn, TError>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
-   transform?: (
-      parsedData: TParsedData,
-      options: ComputedOptions<TFetchFn, any, TError, TParsedData>,
-   ) => MaybePromise<TData>
+   transform?: Transform<TFetchFn, TData, TParsedData>
    throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
 }
