@@ -971,6 +971,8 @@ upfetch('/todos', {
    transform: (data) => {
       console.log(data.json)
       console.log(data.status)
+      // do whatever you like
+      return data
    },
 })
 ```
