@@ -14,7 +14,7 @@ export type JsonifiableArray = readonly (
    | JsonifiableArray
 )[]
 
-type JsonPrimitive = string | number | boolean | null
+type JsonPrimitive = string | number | boolean | null | undefined
 
 export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
 
