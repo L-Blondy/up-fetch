@@ -4,6 +4,8 @@ import { up } from './up'
 import { JsonifiableArray, JsonifiableObject, ComputedOptions } from './types'
 import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'
+import { withZod } from './parsers/zod'
+import { z } from 'zod'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
@@ -69,6 +71,53 @@ test('infer TData', async () => {
       },
    })
    expectTypeOf(data8).toEqualTypeOf<number>()
+
+   // Using currying
+   const curried = () => (res: Response) => res.text()
+   const data9 = await upfetch2('', {
+      parseResponse: curried(),
+      transform: (data) => data,
+      onSuccess(data) {
+         expectTypeOf(data).toEqualTypeOf<string>()
+      },
+   })
+   expectTypeOf(data9).toEqualTypeOf<string>()
+
+   // using currying with generic
+   const data10a = await upfetch2('', {
+      parseResponse: withZod(z.object({ a: z.string() })),
+      onSuccess(data) {
+         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
+      },
+   })
+   expectTypeOf(data10a).toEqualTypeOf<{ a: string }>()
+
+   const data10b = await upfetch2('', () => ({
+      parseResponse: withZod(z.object({ a: z.string() })),
+      onSuccess(data) {
+         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
+      },
+   }))
+   expectTypeOf(data10b).toEqualTypeOf<{ a: string }>()
+
+   // using currying with generic + transform
+   const data11a = await upfetch2('', {
+      parseResponse: withZod(z.object({ a: z.string() })),
+      transform: (data) => data,
+      // onSuccess(data) {
+      //    expectTypeOf(data).toEqualTypeOf<{ a: string }>()
+      // },
+   })
+   expectTypeOf(data11a).toEqualTypeOf<{ a: string }>()
+
+   const data11b = await upfetch2('', () => ({
+      parseResponse: withZod(z.object({ a: z.string() })),
+      transform: (data) => data,
+      onSuccess(data) {
+         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
+      },
+   }))
+   expectTypeOf(data11b).toEqualTypeOf<{ a: string }>()
 })
 
 test('infer TError', async () => {
