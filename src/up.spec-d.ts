@@ -104,9 +104,9 @@ test('infer TData', async () => {
    const data11a = await upfetch2('', {
       parseResponse: withZod(z.object({ a: z.string() })),
       transform: (data) => data,
-      // onSuccess(data) {
-      //    expectTypeOf(data).toEqualTypeOf<{ a: string }>()
-      // },
+      onSuccess(data) {
+         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
+      },
    })
    expectTypeOf(data11a).toEqualTypeOf<{ a: string }>()
 
@@ -118,6 +118,25 @@ test('infer TData', async () => {
       },
    }))
    expectTypeOf(data11b).toEqualTypeOf<{ a: string }>()
+
+   // transform from default parseResponse
+   const upfetch3 = up(fetch, () => ({
+      parseResponse: async (res) => ({
+         json: await res.json(),
+         status: res.status,
+      }),
+   }))
+
+   const data12 = await upfetch3('/todos', {
+      transform: (data, options) => {
+         expectTypeOf(data).toEqualTypeOf<{ json: any; status: number }>()
+         return 1
+      },
+      onSuccess(data, options) {
+         expectTypeOf(data).toEqualTypeOf<number>()
+      },
+   })
+   expectTypeOf(data12).toEqualTypeOf<number>()
 })
 
 test('infer TError', async () => {
