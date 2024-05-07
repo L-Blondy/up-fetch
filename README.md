@@ -37,7 +37,7 @@ const todo = await upfetch('https://a.b.c', {
 })
 ```
 
-You can set some defaults for all requests. They are **evaluated before each request** to avoid using stale values
+You can set some defaults for all requests. They are **evaluated before each request** to avoid sending stale values
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -172,7 +172,7 @@ const todos = await upfetch('https://a.b.c')
 
 ### ✔️ throws by default
 
-Throws a `ResponseError` when `response.ok` is `false`. \
+**up-fetch** throws a `ResponseError` when `response.ok` is `false`. \
 This behavior can be customized using the [throwResponseErrorWhen](#throwresponseerrorwhen) option
 
 The parsed error body is available with `error.data`. \
@@ -247,6 +247,18 @@ Using an adapter ensures that data flows properly through the [onParsingError](#
 
 In case of error the validation adapters will throw.
 
+### ✔️ Transform
+
+The parsed response data can be transformed before being passed to `.then`
+
+```ts
+const todos = await upfetch('https://a.b.c', {
+   // Transform the data as you like
+   // the type of `data` is inferred from `parseResponse`
+   transform: (todos) => todos.map((todo) => new Todo(todo)),
+})
+```
+
 ### ✔️ Interceptors
 
 You can setup the interceptors for all requests
@@ -258,6 +270,7 @@ const upfetch = up(fetch, () => ({
    onResponseError: (error, options) => console.log(error),
    onRequestError: (error, options) => console.log(error),
    onParsingError: (error, options) => console.log(error),
+   onTransformError: (error, options) => console.log(error),
 }))
 ```
 
@@ -270,6 +283,7 @@ upfetch('/todos', {
    onResponseError: (error, options) => console.log(error),
    onRequestError: (error, options) => console.log(error),
    onParsingError: (error, options) => console.log(error),
+   onTransformError: (error, options) => console.log(error),
 })
 ```
 
@@ -486,59 +500,6 @@ upfetch('/posts', {
 </details>
 
 ## ➡️ Adapters & Recipies
-
-<details><summary>💡 <b>transform</b></summary>
-
-You can transform the data directly in `parseResponse` or `parseResponseError` using the `withTransform` adapter. It provides a simple interface to work with the already parsed data (`json` or `text`)
-
-Note that using this adapter will not reuse the result of the default parsing methods defined in `up`
-
-```ts
-import { withTransform } from 'up-fetch/with-transform'
-import { upfetch } from './abc'
-
-const todo1 = await upfetch('/todo/1', {
-   parseResponse: withTransform((data) => ({ result: data })),
-})
-// todo is typed: { result: any }
-
-const todo2 = await upfetch('/todo/1', {
-   parseResponse: withTransform((data, response) => ({
-      result: data,
-      status: response.status,
-   })),
-})
-// todo is typed: { result: any, status: number }
-
-// Same with errors
-await upfetch('/todo/1', {
-   parseResponseError: withTransform((data, response) =>
-      createError({
-         result: data,
-         status: response.status,
-      }),
-   ),
-})
-```
-
-You might also apply it by default
-
-```ts
-const upfetch = up(fetch, () => ({
-   parseResponse: withTransform((data, response) => ({
-      result: data,
-      status: response.status,
-   })),
-   parseResponseError: withTransform((data, response) =>
-      createError({
-         result: data,
-         status: response.status,
-      }),
-   ),
-}))
-```
-
-</details>
 
 <details><summary>💡 <b>zod</b></summary>
 
@@ -920,7 +881,7 @@ upfetch('https://a.b.c', {
 
 ## <samp>\<parseResponse\></samp>
 
-**Type:** `ParseResponse<TData> = (response: Response, options: ComputedOptions) => Promise<TData>`
+**Type:** `<TData> (response: Response, options: ComputedOptions) => Promise<TData>`
 
 Customize the fetch response parsing. \
 By default `json` and `text` responses are parsed
@@ -963,7 +924,7 @@ const todo = await upfetch('/todo/1', {
 
 ## <samp>\<parseResponseError\></samp>
 
-**Type:** `ParseResponseError<TError> = (response: Response, options: ComputedOptions) => Promise<TError>`
+**Type:** `<TError> (response: Response, options: ComputedOptions) => Promise<TError>`
 
 Customize the parsing of a thrown fetch response. \
 By default the response is thrown when `response.ok` is `false`, it is customizable with [throwResponseErrorWhen](#throwresponseerrorwhen). \
@@ -980,11 +941,48 @@ const upfetch = up(fetch, () => ({
 
 `parseResponse` can also be used with a [validation adapter](#%EF%B8%8F-data-validation)
 
+## <samp>\<transform\></samp>
+
+**Type:** `<TData, TParsedData> = (parsedData: TParsedData, options: ComputedOptions) => MaybePromise<TData>`
+
+Transform the data after `parseResponse` is done, errors will trigger the [onTransformError](#ontransformerror) interceptors.
+
+**Example:**
+
+```ts
+// Instanciate some class
+upfetch('/todos', {
+   transform: (todos) => todos.map((todo) => new Todo(todo)),
+})
+```
+
+The data is inferred from `parseResponse`.
+
+```ts
+const upfetch = up(fetch, () => ({
+   parseResponse: async (res) => ({
+      json: await res.json(),
+      status: res.status,
+   }),
+}))
+
+// the data is properly typed
+upfetch('/todos', {
+   transform: (data) => {
+      console.log(data.json)
+      console.log(data.status)
+      // do whatever you like
+      return data
+   },
+})
+```
+
 ## <samp>\<onSuccess\></samp>
 
 **Type:** `<TData>(data: TData, options: ComputedOptions) => void`
 
-Called when `response.ok` is `true`
+Called when `response.ok` is `true`. \
+Receives the data from `transform` if defined, otherwise from `parseResponse`.
 
 **Example:**
 
@@ -1002,7 +1000,7 @@ upfetch('https://a.b.c', {
 
 ## <samp>\<onResponseError\></samp>
 
-**Type:** `<TResponseError>(error: TResponseError, options: ComputedOptions) => void`
+**Type:** `<TError>(error: TError, options: ComputedOptions) => void`
 
 Called when a response error was thrown, by default when `response.ok` is `false`, customizable with the [throwResponseErrorWhen](#throwresponseerrorwhen) option
 
@@ -1069,6 +1067,30 @@ upfetch('https://a.b.c', {
          createdOn: z.string(),
       }),
    ),
+})
+```
+
+## <samp>\<onTransformError\></samp>
+
+**Type:** `(error: Error, options: ComputedOptions) => void`
+
+Called when either `transform` throws. \
+
+**Example:**
+
+```ts
+import { z } from 'zod'
+import { withZod } from 'up-fetch/with-zod'
+
+// listen to all requests
+const upfetch = up(fetch, () => ({
+   onTransformError: (error, options) => console.log('Transform error', error),
+}))
+
+// listen to one requests
+upfetch('https://a.b.c', {
+   onTransformError: (error, options) => console.log('Transform error', error),
+   transform: (data) => /* throw some error */
 })
 ```
 

@@ -1,12 +1,16 @@
 {
    "name": "up-fetch",
-   "version": "0.6.0",
+   "version": "0.7.0",
    "description": "Slim and flexible HTTP client based on the Fetch API.",
    "type": "module",
    "main": "dist/index.cjs",
    "module": "dist/index.js",
    "types": "dist/index.d.ts",
    "sideEffects": false,
+   "files": [
+      "dist",
+      "src"
+   ],
    "exports": {
       ".": {
          "import": {
@@ -38,16 +42,6 @@
             "default": "./dist/with-zod.cjs"
          }
       },
-      "./with-transform": {
-         "import": {
-            "types": "./dist/with-transform.d.ts",
-            "default": "./dist/with-transform.js"
-         },
-         "require": {
-            "types": "./dist/with-transform.d.cts",
-            "default": "./dist/with-transform.cjs"
-         }
-      },
       "./package.json": "./package.json"
    },
    "scripts": {
@@ -55,6 +49,7 @@
       "build": "tsup",
       "dev": "vitest",
       "test": "vitest run && tsc --noEmit",
+      "prepack": "npm run build",
       "prepublish": "npm run test && npm run build",
       "postpublish": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
       "pub:beta": "npm publish --tag beta",
