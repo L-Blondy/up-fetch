@@ -46,7 +46,7 @@ export let buildOptions = <
    input = input?.href ?? input
    let mergedOptions = {
       // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
-      ...({} satisfies BaseOptions<BaseFetchFn> as BaseOptions<TFetchFn>),
+      ...(emptyOptions as BaseOptions<TFetchFn>),
       ...(fallbackOptions as FallbackOptions<TFetchFn, TError>),
       ...strip(defaultOptions, eventListeners),
       ...strip(fetcherOpts, eventListeners),
