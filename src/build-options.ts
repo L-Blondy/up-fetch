@@ -6,6 +6,7 @@ import {
    FetcherOptions,
    DefaultOptions,
    BaseFetchFn,
+   Interceptor,
 } from './types'
 import { FallbackOptions, fallbackOptions } from './fallback-options'
 import {
@@ -17,15 +18,14 @@ import {
    getUrl,
 } from './utils'
 
-export let eventListeners = [
+export let interceptors = [
    'onSuccess',
    'onBeforeFetch',
    'onParsingError',
    'onResponseError',
    'onRequestError',
    'onTransformError',
-] as const satisfies (keyof DefaultOptions<typeof fetch> &
-   keyof FetcherOptions<typeof fetch>)[]
+] as const satisfies Interceptor[]
 
 export let buildOptions = <
    TFetchFn extends BaseFetchFn,
@@ -48,8 +48,8 @@ export let buildOptions = <
       // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
       ...(emptyOptions as BaseOptions<TFetchFn>),
       ...(fallbackOptions as FallbackOptions<TFetchFn, TError>),
-      ...strip(defaultOptions, eventListeners),
-      ...strip(fetcherOpts, eventListeners),
+      ...strip(defaultOptions, interceptors),
+      ...strip(fetcherOpts, interceptors),
    }
    let rawBody = fetcherOpts.body
    let params = buildParams(defaultOptions.params, input, fetcherOpts.params)

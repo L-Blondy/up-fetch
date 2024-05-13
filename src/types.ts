@@ -16,6 +16,14 @@ export type JsonifiableArray = readonly (
 
 type JsonPrimitive = string | number | boolean | null | undefined
 
+export type Interceptor =
+   | keyof DefaultOptions<any>
+   | keyof FetcherOptions<any> extends infer U
+   ? U extends `on${infer V}`
+      ? `on${V}`
+      : never
+   : never
+
 export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
 
 export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
