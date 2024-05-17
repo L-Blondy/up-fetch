@@ -16,13 +16,21 @@ export type JsonifiableArray = readonly (
 
 type JsonPrimitive = string | number | boolean | null | undefined
 
-export type Interceptor =
+type Interceptor =
    | keyof DefaultOptions<any>
    | keyof FetcherOptions<any> extends infer U
    ? U extends `on${infer V}`
       ? `on${V}`
       : never
    : never
+
+type TupleToUnion<U extends string, R extends any[] = []> = {
+   [S in U]: Exclude<U, S> extends never
+      ? [...R, S]
+      : TupleToUnion<Exclude<U, S>, [...R, S]>
+}[U]
+
+export type Interceptors = TupleToUnion<Interceptor>
 
 export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
 

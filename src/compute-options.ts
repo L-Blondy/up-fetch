@@ -6,7 +6,7 @@ import {
    FetcherOptions,
    DefaultOptions,
    BaseFetchFn,
-   Interceptor,
+   Interceptors,
 } from './types'
 import { FallbackOptions, fallbackOptions } from './fallback-options'
 import {
@@ -18,14 +18,14 @@ import {
    getUrl,
 } from './utils'
 
-export let interceptors = [
-   'onSuccess',
+export let interceptors: Interceptors = [
    'onBeforeFetch',
    'onParsingError',
-   'onResponseError',
    'onRequestError',
+   'onResponseError',
+   'onSuccess',
    'onTransformError',
-] as const satisfies Interceptor[]
+]
 
 export let computeOptions = <
    TFetchFn extends BaseFetchFn,
