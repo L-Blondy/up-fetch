@@ -10,7 +10,7 @@ import {
 } from './types'
 import { FallbackOptions, fallbackOptions } from './fallback-options'
 import {
-   buildParams,
+   computeParams,
    isJsonifiableObjectOrArray,
    mergeHeaders,
    strip,
@@ -27,7 +27,7 @@ export let interceptors = [
    'onTransformError',
 ] as const satisfies Interceptor[]
 
-export let buildOptions = <
+export let computeOptions = <
    TFetchFn extends BaseFetchFn,
    TParsedData = any,
    TData = TParsedData,
@@ -52,7 +52,7 @@ export let buildOptions = <
       ...strip(fetcherOpts, interceptors),
    }
    let rawBody = fetcherOpts.body
-   let params = buildParams(defaultOptions.params, input, fetcherOpts.params)
+   let params = computeParams(defaultOptions.params, input, fetcherOpts.params)
    let isJsonifiable: boolean
    // assign isJsonifiable value while making use of the type guard
    let body = (isJsonifiable = isJsonifiableObjectOrArray(rawBody))

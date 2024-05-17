@@ -1,4 +1,4 @@
-import { buildOptions } from './build-options'
+import { computeOptions } from './compute-options'
 import { ResponseError } from './response-error'
 import { FetcherOptions, DefaultOptions, BaseFetchFn } from './types'
 import { emptyOptions } from './utils'
@@ -40,7 +40,7 @@ export function up<
          typeof fetcherOptions === 'function'
             ? fetcherOptions(defaultOpts)
             : fetcherOptions
-      let options = buildOptions(input, defaultOpts, fetcherOpts)
+      let options = computeOptions(input, defaultOpts, fetcherOpts)
       fetcherOpts.onBeforeFetch?.(options)
       defaultOpts.onBeforeFetch?.(options)
 

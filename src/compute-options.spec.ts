@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest'
-import { buildOptions } from './build-options'
+import { computeOptions } from './compute-options'
 import { bodyMock } from './_mocks'
 
-describe('buildOptions input', () => {
+describe('computeOptions input', () => {
    test.each`
       input                                 | defaultOptions                                 | fetcherOpts                             | output
       ${'/'}                                | ${{ baseUrl: 'http://a.b.c' }}                 | ${{}}                                   | ${'http://a.b.c/'}
@@ -38,18 +38,18 @@ describe('buildOptions input', () => {
       ${'http://c/d?e=f'}                   | ${{ serializeParams: () => '?q=search' }}      | ${{ params: { q: 'will be ignored' } }} | ${'http://c/d?e=f&q=search'}
    `('Input: $body', ({ input, defaultOptions, fetcherOpts, output }) => {
       if (input instanceof Request) {
-         expect(buildOptions(input, defaultOptions, fetcherOpts).input).toBe(
+         expect(computeOptions(input, defaultOptions, fetcherOpts).input).toBe(
             input,
          )
       } else {
-         expect(buildOptions(input, defaultOptions, fetcherOpts).input).toEqual(
-            output,
-         )
+         expect(
+            computeOptions(input, defaultOptions, fetcherOpts).input,
+         ).toEqual(output)
       }
    })
 })
 
-describe('buildOptions body', () => {
+describe('computeOptions body', () => {
    test.each`
       defaultOptions        | fetcherOpts                               | output
       ${{ body: { a: 1 } }} | ${{}}                                     | ${undefined}
@@ -71,7 +71,7 @@ describe('buildOptions body', () => {
    `('Input: $body', ({ defaultOptions, fetcherOpts, output }) => {
       const input = 'http://a'
 
-      expect(buildOptions(input, defaultOptions, fetcherOpts).body).toEqual(
+      expect(computeOptions(input, defaultOptions, fetcherOpts).body).toEqual(
          output,
       )
    })

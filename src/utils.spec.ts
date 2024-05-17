@@ -3,7 +3,7 @@ import {
    isJsonifiableObjectOrArray,
    mergeHeaders,
    strip,
-   buildParams,
+   computeParams,
 } from './utils'
 import { bodyMock } from './_mocks'
 
@@ -56,7 +56,7 @@ describe('mergeHeaders', () => {
    )
 })
 
-describe('buildParams', () => {
+describe('computeParams', () => {
    test.each`
       defaultParams | input                      | fetcherParams | output
       ${{ a: 1 }}   | ${''}                      | ${{ a: 2 }}   | ${{ a: 2 }}
@@ -68,7 +68,7 @@ describe('buildParams', () => {
    `(
       'Input: $defaultHeaders, $fetcherHeaders',
       ({ defaultParams, input, fetcherParams, output }) => {
-         expect(buildParams(defaultParams, input, fetcherParams)).toEqual(
+         expect(computeParams(defaultParams, input, fetcherParams)).toEqual(
             output,
          )
       },
