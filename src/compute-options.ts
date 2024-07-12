@@ -13,9 +13,10 @@ import {
    computeParams,
    isJsonifiableObjectOrArray,
    mergeHeaders,
-   strip,
+   omit,
    emptyOptions,
    getUrl,
+   stripUndefined,
 } from './utils'
 
 export let interceptors: Interceptors = [
@@ -48,8 +49,8 @@ export let computeOptions = <
       // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
       ...(emptyOptions as BaseOptions<TFetchFn>),
       ...(fallbackOptions as FallbackOptions<TFetchFn, TError>),
-      ...strip(defaultOptions, interceptors),
-      ...strip(fetcherOpts, interceptors),
+      ...omit(defaultOptions, interceptors),
+      ...omit(fetcherOpts, interceptors),
    }
    let rawBody = fetcherOpts.body
    let params = computeParams(defaultOptions.params, input, fetcherOpts.params)
@@ -61,7 +62,7 @@ export let computeOptions = <
         )
       : rawBody
 
-   return {
+   return stripUndefined({
       ...mergedOptions,
       headers: mergeHeaders(
          isJsonifiable && typeof body === 'string'
@@ -78,5 +79,5 @@ export let computeOptions = <
          input,
          mergedOptions.serializeParams(params),
       ),
-   }
+   })
 }

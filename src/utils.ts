@@ -28,11 +28,11 @@ export let computeParams = (
 ): Params =>
    typeof input !== 'string'
       ? {} // an input of type Request cannot use the "params" option
-      : strip({
+      : stripUndefined({
            // Removing the 'url.searchParams.keys()' from the defaultParams
            // but not from the 'fetcherParams'. The user is responsible for not
            // specifying the params in both the "input" and the fetcher "params" option.
-           ...strip(defaultParams, [
+           ...omit(defaultParams, [
               ...new URL(input, 'http://a').searchParams.keys(),
            ]),
            ...fetcherParams,
@@ -49,13 +49,21 @@ export type DistributiveOmit<
 
 export type MaybePromise<T> = T | Promise<T>
 
-export let strip = <O extends object, K extends KeysOfUnion<O> | (string & {})>(
+export let omit = <O extends object, K extends KeysOfUnion<O> | (string & {})>(
    obj?: O,
    keys: K[] | readonly K[] = [],
 ): DistributiveOmit<O, K> => {
    let copy = { ...obj } as DistributiveOmit<O, K>
    for (let key in copy) {
-      if (keys.includes(key as any) || copy[key] === undefined) delete copy[key]
+      if (keys.includes(key as any)) delete copy[key]
+   }
+   return copy
+}
+
+export let stripUndefined = <O extends object>(obj?: O): O => {
+   let copy = { ...obj } as O
+   for (let key in copy) {
+      if (copy[key] === undefined) delete copy[key]
    }
    return copy
 }

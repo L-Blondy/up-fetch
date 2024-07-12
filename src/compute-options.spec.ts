@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { computeOptions } from './compute-options'
 import { bodyMock } from './_mocks'
+import { DefaultOptions, FetcherOptions } from './types'
 
 describe('computeOptions input', () => {
    test.each`
@@ -75,4 +76,57 @@ describe('computeOptions body', () => {
          output,
       )
    })
+})
+
+test('options overrides', () => {
+   const defaultOptions: DefaultOptions<typeof fetch> = {
+      baseUrl: 'https://a.b.c',
+      cache: 'force-cache',
+      credentials: 'include',
+      headers: { a: 'b' },
+      integrity: 'yeye',
+      keepalive: true,
+      method: 'PATCH',
+      mode: 'navigate',
+      params: { c: 'd' },
+      parseResponse: () => {},
+      parseResponseError: () => {},
+      priority: 'high',
+      redirect: 'follow',
+      referrer: 'https://a.b.c',
+      referrerPolicy: 'no-referrer-when-downgrade',
+      signal: new AbortController().signal,
+      throwResponseErrorWhen: () => true,
+      window: null,
+   }
+   const fetcherOptions: FetcherOptions<typeof fetch> = {
+      baseUrl: undefined,
+      cache: undefined,
+      credentials: undefined,
+      integrity: undefined,
+      keepalive: undefined,
+      method: undefined,
+      mode: undefined,
+      priority: undefined,
+      redirect: undefined,
+      referrer: undefined,
+      referrerPolicy: undefined,
+      signal: undefined,
+      window: undefined,
+   }
+   const computed = computeOptions('', defaultOptions, fetcherOptions)
+
+   expect('baseUrl' in computed).toBeFalsy()
+   expect('cache' in computed).toBeFalsy()
+   expect('credentials' in computed).toBeFalsy()
+   expect('integrity' in computed).toBeFalsy()
+   expect('keepalive' in computed).toBeFalsy()
+   expect('method' in computed).toBeFalsy()
+   expect('mode' in computed).toBeFalsy()
+   expect('priority' in computed).toBeFalsy()
+   expect('redirect' in computed).toBeFalsy()
+   expect('referrer' in computed).toBeFalsy()
+   expect('referrerPolicy' in computed).toBeFalsy()
+   expect('signal' in computed).toBeFalsy()
+   expect('window' in computed).toBeFalsy()
 })

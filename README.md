@@ -484,7 +484,11 @@ _Choose a default caching strategy_
 ```ts
 import { up } from 'up-fetch'
 
-const upfetch = up(fetch, () => ({
+// Because Next.js patches the global fetch API
+// we need to access it dynamically on every request
+const dynamicFetch: typeof fetch = (...args) => fetch(...args)
+
+const upfetch = up(dynamicFetch, () => ({
    next: { revalidate: false },
 }))
 ```
