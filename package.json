@@ -49,11 +49,11 @@
       "build": "tsup",
       "dev": "vitest",
       "test": "vitest run && tsc --noEmit",
-      "prepack": "npm run build",
-      "prepublish": "npm run test && npm run build",
-      "postpublish": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
-      "pub:beta": "npm publish --tag beta",
-      "pub:stable": "npm publish"
+      "release:pre:beta": "git pull && node scripts/check-beta-version.js && npm run test && npm run build",
+      "release:pre:stable": "git pull && node scripts/check-stable-version.js && npm run test && npm run build",
+      "release:stable": "npm run release:pre:stable && npm publish && npm run release:post",
+      "release:beta": "npm run release:pre:beta && npm publish --tag beta && npm run release:post",
+      "release:post": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"
    },
    "keywords": [
       "fetch",
