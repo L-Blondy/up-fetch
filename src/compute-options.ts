@@ -1,4 +1,4 @@
-import {
+import type {
    BaseOptions,
    ComputedOptions,
    JsonifiableArray,
@@ -8,7 +8,7 @@ import {
    BaseFetchFn,
    Interceptors,
 } from './types'
-import { FallbackOptions, fallbackOptions } from './fallback-options'
+import { type FallbackOptions, fallbackOptions } from './fallback-options'
 import {
    computeParams,
    isJsonifiableObjectOrArray,

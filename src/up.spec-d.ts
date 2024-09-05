@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, expectTypeOf, test } from 'vitest'
 import { up } from './up'
-import { JsonifiableArray, JsonifiableObject, ComputedOptions } from './types'
+import type {
+   JsonifiableArray,
+   JsonifiableObject,
+   ComputedOptions,
+} from './types'
 import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'
 import { withZod } from './parsers/zod'

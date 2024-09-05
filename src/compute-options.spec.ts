@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { computeOptions } from './compute-options'
 import { bodyMock } from './_mocks'
-import { DefaultOptions, FetcherOptions } from './types'
+import type { DefaultOptions, FetcherOptions } from './types'
 
 describe('computeOptions input', () => {
    test.each`

@@ -1,5 +1,5 @@
 import { ResponseError } from './response-error'
-import {
+import type {
    BaseFetchFn,
    ParseResponse,
    ParseResponseError,
@@ -7,7 +7,7 @@ import {
    SerializeParams,
    Transform,
 } from './types'
-import { MaybePromise } from './utils'
+import { type MaybePromise } from './utils'
 
 export type FallbackOptions<TFetchFn extends BaseFetchFn, TError> = {
    parseResponse: ParseResponse<TFetchFn, any>

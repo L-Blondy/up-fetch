@@ -1,4 +1,4 @@
-import { BaseFetchFn, ComputedOptions } from './types'
+import type { BaseFetchFn, ComputedOptions } from './types'
 
 export class ResponseError<
    TFetchFn extends BaseFetchFn = typeof fetch,

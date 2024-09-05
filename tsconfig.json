@@ -26,7 +26,8 @@
       "stripInternal": true,
       "target": "ES2020",
       "rootDir": "./src",
-      "outDir": "./dist"
+      "outDir": "./dist",
+      "verbatimModuleSyntax": true
    },
    "include": ["./src", "./app"]
 }

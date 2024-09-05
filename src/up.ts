@@ -1,6 +1,6 @@
 import { computeOptions } from './compute-options'
 import { ResponseError } from './response-error'
-import { FetcherOptions, DefaultOptions, BaseFetchFn } from './types'
+import type { FetcherOptions, DefaultOptions, BaseFetchFn } from './types'
 import { emptyOptions } from './utils'
 
 export function up<

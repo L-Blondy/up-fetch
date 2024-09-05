@@ -1,4 +1,4 @@
-import { DistributiveOmit, MaybePromise } from './utils'
+import type { DistributiveOmit, MaybePromise } from './utils'
 
 export type JsonifiableObject =
    | {
