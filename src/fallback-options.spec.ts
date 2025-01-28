@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
 import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'
@@ -46,16 +47,19 @@ describe('parseResponseError', () => {
       ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseResponseError: $response', async ({ response, output }) => {
-      const responseError = await fallbackOptions.parseResponseError(response, {
-         href: 'my-options',
-      } as any)
+      const responseError: ResponseError =
+         await fallbackOptions.parseResponseError(response, {
+            href: 'my-options',
+         } as any)
       expect(responseError instanceof ResponseError).toBeTruthy()
       expect(responseError.data).toStrictEqual(output)
       expect(responseError.response).toStrictEqual(response)
       expect(responseError.message).toStrictEqual(
          'Request failed with status 200',
       )
-      expect(responseError.options).toStrictEqual({ href: 'my-options' })
+      expect(responseError.options).toStrictEqual({
+         href: 'my-options',
+      })
       expect(responseError.name).toStrictEqual('ResponseError')
    })
 })

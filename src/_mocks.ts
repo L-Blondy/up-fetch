@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 class NonJsonifiable {
    a: number
    constructor() {

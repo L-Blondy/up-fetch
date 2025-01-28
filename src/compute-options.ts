@@ -1,8 +1,6 @@
 import type {
    BaseOptions,
    ComputedOptions,
-   JsonifiableArray,
-   JsonifiableObject,
    FetcherOptions,
    DefaultOptions,
    BaseFetchFn,
@@ -18,37 +16,29 @@ import {
    getUrl,
    stripUndefined,
 } from './utils'
+import type { StandardSchemaV1 } from '@standard-schema/spec'
 
 export let interceptors: Interceptors = [
    'onBeforeFetch',
-   'onParsingError',
-   'onRequestError',
-   'onResponseError',
    'onSuccess',
-   'onTransformError',
+   'onError',
 ]
 
 export let computeOptions = <
    TFetchFn extends BaseFetchFn,
    TParsedData = any,
-   TData = TParsedData,
-   TError = any,
+   TSchema extends StandardSchemaV1 = any,
 >(
    input: Parameters<TFetchFn>[0], // fetch 1st arg
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
-   fetcherOpts: FetcherOptions<
-      TFetchFn,
-      TData,
-      TError,
-      TParsedData
-   > = emptyOptions,
-): ComputedOptions<TFetchFn, TData, TError, TParsedData> => {
+   fetcherOpts: FetcherOptions<TFetchFn, TSchema, TParsedData> = emptyOptions,
+): ComputedOptions<TFetchFn, TSchema, TParsedData> => {
    // transform URL to string right away
    input = input?.href ?? input
    let mergedOptions = {
       // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
       ...(emptyOptions as BaseOptions<TFetchFn>),
-      ...(fallbackOptions as FallbackOptions<TFetchFn, TError>),
+      ...(fallbackOptions as FallbackOptions<TFetchFn>),
       ...omit(defaultOptions, interceptors),
       ...omit(fetcherOpts, interceptors),
    }
@@ -57,9 +47,7 @@ export let computeOptions = <
    let isJsonifiable: boolean
    // assign isJsonifiable value while making use of the type guard
    let body = (isJsonifiable = isJsonifiableObjectOrArray(rawBody))
-      ? mergedOptions.serializeBody(
-           rawBody as JsonifiableObject | JsonifiableArray,
-        )
+      ? mergedOptions.serializeBody(rawBody)
       : rawBody
 
    return stripUndefined({

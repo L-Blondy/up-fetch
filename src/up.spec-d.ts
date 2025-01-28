@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, expectTypeOf, test } from 'vitest'
 import { up } from './up'
@@ -7,9 +8,8 @@ import type {
    ComputedOptions,
 } from './types'
 import { fallbackOptions } from './fallback-options'
-import { ResponseError } from './response-error'
-import { withZod } from './parsers/zod'
 import { z } from 'zod'
+import * as v from 'valibot'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
@@ -18,34 +18,21 @@ test('infer TData', async () => {
          expectTypeOf(data).toEqualTypeOf<any>()
       },
    }))
-   const data1 = await upfetch('', {
-      onSuccess(data, options) {
-         expectTypeOf(data).toEqualTypeOf<number>()
-      },
-   })
+   const data1 = await upfetch('')
    expectTypeOf(data1).toEqualTypeOf<number>()
 
    const data2 = await upfetch('', {
       parseResponse: (res, options) => Promise.resolve(''),
-      onSuccess(data, options) {
-         expectTypeOf(data).toEqualTypeOf<string>()
-      },
    })
    expectTypeOf(data2).toEqualTypeOf<string>()
 
    const data3 = await upfetch('', () => ({
       parseResponse: (res, options) => Promise.resolve(''),
-      onSuccess(data, options) {
-         expectTypeOf(data).toEqualTypeOf<string>()
-      },
    }))
    expectTypeOf(data3).toEqualTypeOf<string>()
 
    const data4 = await upfetch('', (defaultOptions) => ({
       parseResponse: defaultOptions.parseResponse,
-      onSuccess(data, options) {
-         expectTypeOf(data).toEqualTypeOf<number>()
-      },
    }))
    expectTypeOf(data4).toEqualTypeOf<number>()
 
@@ -53,26 +40,22 @@ test('infer TData', async () => {
 
    const data5 = await upfetch2('')
    expectTypeOf(data5).toEqualTypeOf<any>()
+
    const data6 = await upfetch2('', {
       parseResponse: (res) => res,
-      onSuccess(data) {
-         expectTypeOf(data).toEqualTypeOf<Response>()
-      },
    })
    expectTypeOf(data6).toEqualTypeOf<Response>()
+
    const data7 = await upfetch2('', {
-      parseResponse: (res) => ({ res }),
-      transform: ({ res }) => res.text(),
-      onSuccess(data) {
-         expectTypeOf(data).toEqualTypeOf<string>()
-      },
+      parseResponse: (res: any) => ({ res }),
+      schema: v.object({
+         res: v.string(),
+      }),
    })
-   expectTypeOf(data7).toEqualTypeOf<string>()
+   expectTypeOf(data7).toEqualTypeOf<{ res: string }>()
+
    const data8 = await upfetch2('', {
-      transform: () => 1,
-      onSuccess(data) {
-         expectTypeOf(data).toEqualTypeOf<number>()
-      },
+      schema: z.number(),
    })
    expectTypeOf(data8).toEqualTypeOf<number>()
 
@@ -84,119 +67,12 @@ test('infer TData', async () => {
    const curried = () => (res: Response) => res.text()
    const data9 = await upfetch3('', {
       parseResponse: curried(),
-      transform: (data) => {
-         expectTypeOf(data).toEqualTypeOf<string>()
-         return data
-      },
-      onSuccess(data) {
-         expectTypeOf(data).toEqualTypeOf<string>()
-      },
+      schema: v.pipe(
+         v.string(),
+         v.transform(() => '!' as const),
+      ),
    })
-   expectTypeOf(data9).toEqualTypeOf<string>()
-
-   // using currying with generic
-   const data10a = await upfetch3('', {
-      parseResponse: withZod(z.object({ a: z.string() })),
-      onSuccess(data) {
-         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
-      },
-   })
-   expectTypeOf(data10a).toEqualTypeOf<{ a: string }>()
-
-   const data10b = await upfetch3('', () => ({
-      parseResponse: withZod(z.object({ a: z.string() })),
-      onSuccess(data) {
-         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
-      },
-   }))
-   expectTypeOf(data10b).toEqualTypeOf<{ a: string }>()
-
-   // using currying with generic + transform
-   const data11a = await upfetch3('', {
-      parseResponse: withZod(z.object({ a: z.string() })),
-      transform: (data) => {
-         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
-         return data
-      },
-      onSuccess(data) {
-         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
-      },
-   })
-   expectTypeOf(data11a).toEqualTypeOf<{ a: string }>()
-
-   const data11b = await upfetch3('', () => ({
-      parseResponse: withZod(z.object({ a: z.string() })),
-      transform: (data) => {
-         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
-         return data
-      },
-      onSuccess(data) {
-         expectTypeOf(data).toEqualTypeOf<{ a: string }>()
-      },
-   }))
-   expectTypeOf(data11b).toEqualTypeOf<{ a: string }>()
-
-   // transform from default parseResponse
-   const upfetch4 = up(fetch, () => ({
-      parseResponse: async (res) => ({
-         json: await res.json(),
-         status: res.status,
-      }),
-   }))
-
-   const data12 = await upfetch4('/todos', {
-      transform: (data, options) => {
-         expectTypeOf(data).toEqualTypeOf<{ json: any; status: number }>()
-         return 1
-      },
-      onSuccess(data, options) {
-         expectTypeOf(data).toEqualTypeOf<number>()
-      },
-   })
-   expectTypeOf(data12).toEqualTypeOf<number>()
-})
-
-test('infer TError', async () => {
-   up(fetch)('', {
-      onResponseError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<ResponseError>()
-      },
-   })
-
-   const upfetch = up(fetch, () => ({
-      parseResponseError: (_) => Promise.resolve(1),
-      onResponseError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<any>()
-      },
-   }))
-   await upfetch('', {
-      onResponseError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<number>()
-      },
-   })
-   await upfetch('', {
-      parseResponseError: (res, options) => Promise.resolve(''),
-      onResponseError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<string>()
-      },
-   })
-   await upfetch('', (defaultOptions) => ({
-      onResponseError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<number>()
-      },
-   }))
-   await upfetch('', (defaultOptions) => ({
-      parseResponseError: (res, options) => Promise.resolve(''),
-      onResponseError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<string>()
-      },
-   }))
-   await upfetch('', (defaultOptions) => ({
-      parseResponseError: defaultOptions.parseResponseError,
-      onResponseError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<number>()
-      },
-   }))
+   expectTypeOf(data9).toEqualTypeOf<'!'>()
 })
 
 test('The defaultSerializer of params should expect 1 arg only (the params)', async () => {
@@ -260,29 +136,14 @@ test('callback types', async () => {
          expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
       },
-      onParsingError(error, options) {
+      onError(error, options) {
          expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
-      },
-      onResponseError(error, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
-      },
-      onRequestError(error, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(error).toEqualTypeOf<Error>()
          expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
       },
       onSuccess(data, options) {
          expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(data).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
-      },
-      onTransformError(error, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(error).toEqualTypeOf<Error>()
          expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
       },
       parseResponse(res, options) {
@@ -310,48 +171,10 @@ test('callback types', async () => {
    }))
 
    await upfetch('', {
-      transform: (n) => n.toString(),
-      onBeforeFetch(options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onParsingError(error, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onResponseError(error, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(error).toEqualTypeOf<boolean>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onRequestError(error, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(error).toEqualTypeOf<Error>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onSuccess(data, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(data).toEqualTypeOf<string>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onTransformError(error, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(error).toEqualTypeOf<Error>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
+      schema: v.pipe(
+         v.number(),
+         v.transform((n) => String(n)),
+      ),
       parseResponse(res, options) {
          expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(res).toEqualTypeOf<Response>()
@@ -377,42 +200,18 @@ test('callback types', async () => {
    })
 
    await upfetch('', (defaultOptions) => ({
-      transform: (n) => n.toString(),
-      onBeforeFetch(options) {
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onResponseError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<boolean>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onRequestError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<Error>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onSuccess(data, options) {
-         expectTypeOf(data).toEqualTypeOf<string>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
-      onTransformError(error, options) {
-         expectTypeOf(error).toEqualTypeOf<Error>()
-         expectTypeOf(options).toEqualTypeOf<
-            ComputedOptions<typeof fetcher, string, boolean, number>
-         >()
-      },
+      schema: v.pipe(
+         v.number(),
+         v.transform((n) => String(n)),
+      ),
       parseResponse(res, options) {
+         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(res).toEqualTypeOf<Response>()
          expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
          return Promise.resolve(1)
       },
       parseResponseError(res, options) {
+         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(res).toEqualTypeOf<Response>()
          expectTypeOf(options).toEqualTypeOf<ComputedOptions<typeof fetcher>>()
          return Promise.resolve(true)
@@ -430,7 +229,7 @@ test('callback types', async () => {
    }))
 })
 
-test('When the fetcher options are functional, They should receive the fully infered defaultOptions as argument', async () => {
+test('When the fetcher options are functional, They should receive the fully infered defaultOptions as argument', () => {
    const defaultOptions = {
       parseResponse: () => Promise.resolve(1),
       parseResponseError: () => Promise.resolve(''),
@@ -448,7 +247,7 @@ test('When the fetcher options are functional, They should receive the fully inf
    })
 })
 
-test('base fetch type should be extended', async () => {
+test('base fetch type should be extended', () => {
    type CustomFetchType = (
       input: RequestInfo | URL,
       init?: RequestInit & { additionalOption: string },
@@ -459,23 +258,17 @@ test('base fetch type should be extended', async () => {
       additionalOption: '1',
    }))
 
-   upfetch('', {
-      additionalOption: '',
-      onBeforeFetch(options) {
-         options.additionalOption
-      },
-   })
+   upfetch('', { additionalOption: '' })
+   // @ts-expect-error invalid type
+   upfetch('', { additionalOption: 1 })
 
-   upfetch('', (defaultOptions) => ({
-      additionalOption: '',
-      onBeforeFetch(options) {
-         options.additionalOption
-      },
-   }))
+   upfetch('', (d) => ({ additionalOption: '' }))
+   // @ts-expect-error invalid type
+   upfetch('', (d) => ({ additionalOption: 1 }))
 })
 
 describe('up should accept a fetcher with', () => {
-   test('< input', async () => {
+   test('narrower input', () => {
       type FetchFn = (
          input: string,
          options: Parameters<typeof fetch>[1],
@@ -486,7 +279,8 @@ describe('up should accept a fetcher with', () => {
       // @ts-expect-error accept string only
       upfetch(new URL(''))
    })
-   test('> input', async () => {
+
+   test('wider input', () => {
       type FetchFn = (
          input: string | URL | Request | number,
          options: Parameters<typeof fetch>[1],
@@ -498,7 +292,8 @@ describe('up should accept a fetcher with', () => {
       upfetch(new URL(''))
       upfetch(1)
    })
-   test('< options', async () => {
+
+   test('narrower options', () => {
       type FetchFn = (
          input: Parameters<typeof fetch>[0],
          options: Omit<NonNullable<Parameters<typeof fetch>[1]>, 'cache'>,
@@ -509,7 +304,8 @@ describe('up should accept a fetcher with', () => {
       // @ts-expect-error cache is not an option
       upfetch('', { cache: 'no-store' })
    })
-   test('> options', async () => {
+
+   test('wider options', () => {
       type FetchFn = (
          input: Parameters<typeof fetch>[0],
          options: Parameters<typeof fetch>[1] & { newOption: string },
@@ -520,14 +316,16 @@ describe('up should accept a fetcher with', () => {
       // @ts-expect-error newOption is required
       upfetch('', { baseUrl: '', keepalive: true })
    })
-   test('< args', async () => {
+
+   test('narrower args', () => {
       type FetchFn = (input: Parameters<typeof fetch>[0]) => Promise<Response>
       const fetchFn: FetchFn = (() => {}) as any
       fetchFn('')
       // @ts-expect-error accept one arg only
       fetchFn('', {})
    })
-   test('> args', async () => {
+
+   test('wider args', () => {
       type FetchFn = (
          input: Parameters<typeof fetch>[0],
          options: Parameters<typeof fetch>[1],
