@@ -97,19 +97,30 @@ upfetch('/todos', {
 
 Built-in support for [standard-schema](https://github.com/standard-schema/standard-schema) ensures type-safe API responses:
 
+With **zod**
+
 ```ts
-import { s } from 'standard-schema'
+import { z } from 'zod'
 
-const todoSchema = s.object({
-   id: s.number(),
-   title: s.string(),
-   completed: s.boolean(),
+const posts = await upfetch('/posts/1', {
+   schema: z.object({
+      id: z.number(),
+      title: z.string(),
+   }),
 })
+```
 
-const todo = await upfetch('/todos/1', {
-   schema: todoSchema,
+With **valibot**
+
+```ts
+import { object, string, number } from 'valibot'
+
+const posts = await upfetch('/posts/1', {
+   schema: object({
+      id: number(),
+      title: string(),
+   }),
 })
-// todo is typed as { id: number; title: string; completed: boolean }
 ```
 
 ### ✔️ Error Handling
