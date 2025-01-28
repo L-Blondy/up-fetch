@@ -76,7 +76,6 @@ upfetch('/todos', {
 👎 With raw fetch:
 
 ```ts
-// Before with fetch
 fetch('https://api.example.com/todos', {
    method: 'POST',
    headers: { 'Content-Type': 'application/json' },
