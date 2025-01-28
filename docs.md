@@ -74,7 +74,7 @@ upfetch('/todos', {
 
 ### ✔️ Automatic Body Handling
 
-JSON bodies are automatically handled:
+👎 With raw fetch:
 
 ```ts
 // Before with fetch
@@ -83,8 +83,11 @@ fetch('https://api.example.com/todos', {
    headers: { 'Content-Type': 'application/json' },
    body: JSON.stringify({ title: 'New Todo' }),
 })
+```
 
-// After with up-fetch
+👍 With up-fetch:
+
+```ts
 upfetch('/todos', {
    method: 'POST',
    body: { title: 'New Todo' },
