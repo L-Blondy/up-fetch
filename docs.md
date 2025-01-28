@@ -50,7 +50,6 @@ Set defaults for all requests when creating an instance:
 ```ts
 const upfetch = up(fetch, () => ({
    baseUrl: 'https://a.b.c',
-   headers: { 'x-api-key': '123' },
 }))
 ```
 
