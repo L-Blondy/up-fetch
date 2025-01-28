@@ -63,7 +63,7 @@ fetch(
 )
 ```
 
-👍 With up-fetch:
+👍 With _up-fetch_:
 
 ```ts
 upfetch('/todos', {
@@ -84,7 +84,7 @@ fetch('https://api.example.com/todos', {
 })
 ```
 
-👍 With up-fetch:
+👍 With _up-fetch_:
 
 ```ts
 upfetch('/todos', {
@@ -95,7 +95,7 @@ upfetch('/todos', {
 
 ### ✔️ Schema Validation
 
-Built-in support for [standard-schema]() ensures type-safe API responses:
+Since _up-fetch_ follows the [Standard Schema Specification](standard-schema) it can be used with any schema library that implements the spec.
 
 👉 With **zod**
 
@@ -143,7 +143,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Error Handling
 
-By default, up-fetch throws a `ResponseError` when `response.ok` is `false`. The error includes:
+By default, _up-fetch_ throws a `ResponseError` when `response.ok` is `false`. The error includes:
 
 - `status`: The HTTP status code
 - `data`: The parsed error body
@@ -167,7 +167,7 @@ try {
 
 ### ✔️ Timeouts
 
-While up-fetch doesn't provide a timeout option, you can easily implement one using the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout) method:
+While _up-fetch_ doesn't provide a timeout option, you can easily implement one using the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout) method:
 
 Set a default timeout for all requests:
 
@@ -247,7 +247,7 @@ upfetch('https://a.b.c', {
 
 ### ✔️ HTTP Agent (node only)
 
-Since up-fetch is _fetch_ agnostic, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
+Since _up-fetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
 
 On a single request:
 
