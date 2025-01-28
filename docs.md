@@ -197,6 +197,26 @@ const upfetch = up(fetch, () => ({
 
 The bearer token will be retrieved from `localStorage` before each request.
 
+### ✔️ Delete a default option
+
+Simply pass `undefined`:
+
+```ts
+upfetch('/todos', (defaultOptions) => ({
+   signal: undefined,
+}))
+```
+
+### ✔️ Override a default option conditionally
+
+You can override default options for a specific request by passing a function as the 2nd argument:
+
+```ts
+upfetch('/todos', (defaultOptions) => ({
+   signal: condition ? AbortSignal.timeout(5000) : defaultOptions.signal,
+}))
+```
+
 ## ➡️ API Reference
 
 ### Options
