@@ -349,7 +349,7 @@ Options:
 
 - ✅ Browsers (Chrome, Firefox, Safari, Edge)
 - ✅ Node.js (18+)
-- ✅ Deno
+- ✅ Bun
 - ✅ Cloudflare Workers
 - ✅ Vercel Edge Functions
 
