@@ -5,10 +5,10 @@ Tiny & Composable fetch configuration tool with sensible defaults and built-in s
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1kB gzipped, no dependency
-- 🔒 **Type-Safe** - Built-in schema validation using [standard-schema](https://github.com/standard-schema/standard-schema)
+- 🔒 **Type-Safe** - Built-in schema validation using [standard-schema](https://github.com/standard-schema/standard-schema) compatibile with **zod**, **valibot** and **arktype**
 - 🤩 **Familiar** - same API as fetch with additional options and sensible defaults
 - 🎯 **Intuitive** - define `params` and `body` as plain objects, `Response` parsed out of the box
-- 🔥 **Composable** - bring your own serialization and parsing strategies
+- 🔥 **Composable** - bring your own validation, serialization and parsing strategies
 - 💫 **Reusable** - create instances with custom defaults
 
 ## ➡️ QuickStart
@@ -28,7 +28,7 @@ const upfetch = up(fetch)
 Make a fetch request with schema validation:
 
 ```ts
-import { s } from 'standard-schema'
+import { z } from 'zod'
 
 const data = await upfetch('https://api.example.com/todos/1', {
    schema: s.object({
@@ -42,25 +42,6 @@ const data = await upfetch('https://api.example.com/todos/1', {
 `data` is properly typed based on the schema.
 
 ## ➡️ Key Features
-
-### ✔️ Schema Validation
-
-Built-in support for [standard-schema](https://github.com/standard-schema/standard-schema) ensures type-safe API responses:
-
-```ts
-import { s } from 'standard-schema'
-
-const todoSchema = s.object({
-   id: s.number(),
-   title: s.string(),
-   completed: s.boolean(),
-})
-
-const todo = await upfetch('/todos/1', {
-   schema: todoSchema,
-})
-// todo is typed as { id: number; title: string; completed: boolean }
-```
 
 ### ✔️ Request Configuration
 
@@ -104,6 +85,25 @@ upfetch('/todos', {
    method: 'POST',
    body: { title: 'New Todo' },
 })
+```
+
+### ✔️ Schema Validation
+
+Built-in support for [standard-schema](https://github.com/standard-schema/standard-schema) ensures type-safe API responses:
+
+```ts
+import { s } from 'standard-schema'
+
+const todoSchema = s.object({
+   id: s.number(),
+   title: s.string(),
+   completed: s.boolean(),
+})
+
+const todo = await upfetch('/todos/1', {
+   schema: todoSchema,
+})
+// todo is typed as { id: number; title: string; completed: boolean }
 ```
 
 ### ✔️ Error Handling
