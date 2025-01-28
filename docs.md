@@ -97,7 +97,7 @@ upfetch('/todos', {
 
 Built-in support for [standard-schema](https://github.com/standard-schema/standard-schema) ensures type-safe API responses:
 
-With **zod**
+👉 With **zod**
 
 ```ts
 import { z } from 'zod'
@@ -110,7 +110,7 @@ const posts = await upfetch('/posts/1', {
 })
 ```
 
-With **valibot**
+👉 With **valibot**
 
 ```ts
 import { object, string, number } from 'valibot'
@@ -123,14 +123,32 @@ const posts = await upfetch('/posts/1', {
 })
 ```
 
+### ✔️ Lifecycle Hooks
+
+Control request/response lifecycle with simple hooks:
+
+```ts
+const upfetch = up(fetch, () => ({
+   onBeforeFetch: (options) => {
+      // ...
+   },
+   onSuccess: (response, data) => {
+      // ...
+   },
+   onError: (error) => {
+      // ...
+   },
+}))
+```
+
 ### ✔️ Error Handling
 
-up-fetch throws a `ResponseError` when `response.ok` is `false`. The error includes:
+By default, up-fetch throws a `ResponseError` when `response.ok` is `false`. The error includes:
 
-- `error.data`: The parsed error body
-- `error.response`: The raw Response
-- `error.status`: The HTTP status code
-- `error.options`: The options used for the request
+- `status`: The HTTP status code
+- `data`: The parsed error body
+- `options`: The options used for the request
+- `response`: The raw Response
 
 ```ts
 import { isResponseError } from 'up-fetch'
@@ -143,27 +161,6 @@ try {
       console.log(error.status)
    }
 }
-```
-
-### ✔️ Lifecycle Hooks
-
-Control request/response lifecycle with simple hooks:
-
-```ts
-const upfetch = up(fetch, () => ({
-   onBeforeFetch: (options) => {
-      // Modify options before the request
-      return options
-   },
-   onSuccess: (response, data) => {
-      // Handle successful responses
-      return data
-   },
-   onError: (error) => {
-      // Handle errors
-      throw error
-   },
-}))
 ```
 
 ## ➡️ API Reference
