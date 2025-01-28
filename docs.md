@@ -245,6 +245,23 @@ upfetch('https://a.b.c', {
 })
 ```
 
+### ✔️ HTTP Agent (node only)
+
+Since up-fetch is _fetch_ agnostic, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation:
+
+```ts
+import { fetch, Agent } from 'undici'
+
+const upfetch = up(fetch)
+
+const data = await upfetch('https://a.b.c', {
+   dispatcher: new Agent({
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10,
+   }),
+})
+```
+
 ## ➡️ API Reference
 
 ### Options
