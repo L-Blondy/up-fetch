@@ -132,10 +132,10 @@ const upfetch = up(fetch, () => ({
    onBeforeFetch: (options) => {
       // ...
    },
-   onSuccess: (response, data) => {
+   onSuccess: (data, options) => {
       // ...
    },
-   onError: (error) => {
+   onError: (error, options) => {
       // ...
    },
 }))
