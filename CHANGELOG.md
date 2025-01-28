@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0-beta.0](https://github.com/L-Blondy/tw-colors/compare/v1.0.0-beta.0...v0.7.0) - 2025.01-28
+## [1.0.0-beta.0](https://github.com/L-Blondy/up-fetch/compare/v1.0.0-beta.0...v0.7.0) - 2025.01-28
 
 ### Added
 
@@ -10,10 +10,10 @@
 ### Removed
 
 - removed all `upfetch` hooks (on\*\*\*)
-- remove all `up` error hooks (on\*\*\*Error) in fvor of `onError`
+- remove all `up` error hooks (on\*\*\*Error) in favor of `onError`
 - removed the `transform` option
 
-## [0.7.0](https://github.com/L-Blondy/tw-colors/compare/v0.7.0...v0.6.0) - 2024-05-06
+## [0.7.0](https://github.com/L-Blondy/up-fetch/compare/v0.7.0...v0.6.0) - 2024-05-06
 
 ### Added
 
