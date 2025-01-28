@@ -277,6 +277,22 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+### ✔️ Multiple fetch clients
+
+You can create multiple upfetch instances with different defaults:
+
+```ts
+const fetchJson = up(fetch)
+
+const fetchBlob = up(fetch, () => ({
+   parseResponse: (res) => res.blob(),
+}))
+
+const fetchText = up(fetch, () => ({
+   parseResponse: (res) => res.text(),
+}))
+```
+
 ## ➡️ API Reference
 
 ### Options
