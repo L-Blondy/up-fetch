@@ -326,7 +326,7 @@ Makes a fetch request with the given options.
 
 ```ts
 function upfetch(
-   url: string | URL,
+   url: string | URL | Request,
    options?: FetcherOptions | ((defaultOptions: UpOptions) => FetcherOptions),
 ): Promise<any>
 ```
