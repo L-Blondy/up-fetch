@@ -22,26 +22,6 @@
             "default": "./dist/index.cjs"
          }
       },
-      "./with-valibot": {
-         "import": {
-            "types": "./dist/with-valibot.d.ts",
-            "default": "./dist/with-valibot.js"
-         },
-         "require": {
-            "types": "./dist/with-valibot.d.cts",
-            "default": "./dist/with-valibot.cjs"
-         }
-      },
-      "./with-zod": {
-         "import": {
-            "types": "./dist/with-zod.d.ts",
-            "default": "./dist/with-zod.js"
-         },
-         "require": {
-            "types": "./dist/with-zod.d.cts",
-            "default": "./dist/with-zod.cjs"
-         }
-      },
       "./package.json": "./package.json"
    },
    "scripts": {
