@@ -297,9 +297,9 @@ const fetchText = up(fetch, () => ({
 
 ### <samp>up</samp>
 
-| Option                          | Type                           | Description                                       |
+| Option                          | Signature                      | Description                                       |
 | ------------------------------- | ------------------------------ | ------------------------------------------------- |
-| `baseUrl`                       | `string`                       | Base URL for all requests                         |
+| `baseUrl`                       | `string`                       | Base URL for all requests.                        |
 | `params`                        | `object`                       | The default query parameters.                     |
 | `onBeforeFetch`                 | `(options) => void`            | Executes before the request is made.              |
 | `onError`                       | `(error, options) => void`     | Executes on error.                                |
@@ -310,6 +310,20 @@ const fetchText = up(fetch, () => ({
 | `serializeParams`               | `(params) => string`           | The default query parameter serializer.           |
 | `throwResponseErrorWhen`        | `(response) => boolean`        | Decides if the request should throw an error.     |
 | ...and all native fetch options |                                |                                                   |
+
+### <samp>upfetch</samp>
+
+| Option                          | Signature                      | Description                                                                                                                                                                 |
+| ------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `baseUrl`                       | `string`                       | Base URL for the request.                                                                                                                                                   |
+| `params`                        | `object`                       | The query parameters.                                                                                                                                                       |
+| `parseResponse`                 | `(response, options) => data`  | The success response parser.                                                                                                                                                |
+| `parseResponseError`            | `(response, options) => error` | The error response parser.                                                                                                                                                  |
+| `schema`                        | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema library must implement the [Standard Schema Specification](https://github.com/standard-schema/standard-schema). |
+| `serializeBody`                 | `(body) => BodyInit`           | The body serializer.                                                                                                                                                        |
+| `serializeParams`               | `(params) => string`           | The query parameter serializer.                                                                                                                                             |
+| `throwResponseErrorWhen`        | `(response) => boolean`        | Decides if the request should throw an error.                                                                                                                               |
+| ...and all native fetch options |                                |                                                                                                                                                                             |
 
 <!-- body
 headers
