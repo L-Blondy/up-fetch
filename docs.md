@@ -219,7 +219,7 @@ upfetch('/todos', (defaultOptions) => ({
 
 ### ✔️ FormData
 
-If you grab the FormData from a form, you dont need any adapter.
+Grab the FormData from a `form`.
 
 ```ts
 const form = document.querySelector('#my-form')
@@ -227,6 +227,21 @@ const form = document.querySelector('#my-form')
 upfetch('/todos', {
    method: 'POST',
    body: new FormData(form),
+})
+```
+
+Or create FormData from an object:
+
+```ts
+import { serialize } from 'object-to-formdata'
+
+const upfetch = up(fetch, () => ({
+   serializeBody: (body) => serialize(body),
+}))
+
+upfetch('https://a.b.c', {
+   method: 'POST',
+   body: { file: new File(['foo'], 'foo.txt') },
 })
 ```
 
