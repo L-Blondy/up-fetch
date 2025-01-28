@@ -81,7 +81,7 @@
       "tsup": "^8.3.6",
       "typescript": "^5.7.3",
       "typescript-eslint": "^8.22.0",
-      "valibot": ">=0.1.0",
+      "valibot": ">=1.0.0-beta.14",
       "vitest": "^3.0.4",
       "zod": "3.24.1"
    },
@@ -101,5 +101,8 @@
    },
    "engines": {
       "node": ">=18"
+   },
+   "dependencies": {
+      "@standard-schema/spec": "^1.0.0"
    }
 }

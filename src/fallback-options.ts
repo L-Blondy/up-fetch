@@ -5,7 +5,6 @@ import type {
    ParseResponseError,
    SerializeBody,
    SerializeParams,
-   Transform,
 } from './types'
 import { type MaybePromise } from './utils'
 
@@ -14,7 +13,6 @@ export type FallbackOptions<TFetchFn extends BaseFetchFn, TError> = {
    parseResponseError: ParseResponseError<TFetchFn, TError>
    serializeParams: SerializeParams
    serializeBody: SerializeBody
-   transform: Transform<TFetchFn, any, any>
    throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
 }
 
@@ -36,11 +34,11 @@ export let fallbackOptions: FallbackOptions<any, any> = {
    // TODO: find a lighter way to do this with about the same amount of code
    serializeParams: (params) =>
       // JSON.parse(JSON.stringify(params)) recursively transforms Dates to ISO strings and strips undefined
-      new URLSearchParams(JSON.parse(JSON.stringify(params))).toString(),
+      new URLSearchParams(
+         JSON.parse(JSON.stringify(params)) as Record<string, string>,
+      ).toString(),
 
    serializeBody: (val: any) => JSON.stringify(val),
-
-   transform: (x) => x,
 
    throwResponseErrorWhen: (response) => !response.ok,
 }

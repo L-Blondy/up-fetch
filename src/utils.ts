@@ -1,3 +1,4 @@
+import type { StandardSchemaV1 } from '@standard-schema/spec'
 import type {
    Params,
    RawHeaders,
@@ -99,4 +100,19 @@ export function getUrl(
       url += (url.includes('?') ? '&' : '?') + queryString.replace(/^\?/, '')
    }
    return url
+}
+
+export async function parseStandardSchema<TSchema extends StandardSchemaV1>(
+   schema: TSchema,
+   input: StandardSchemaV1.InferInput<TSchema>,
+): Promise<StandardSchemaV1.InferOutput<TSchema>> {
+   let result = schema['~standard'].validate(input)
+   if (result instanceof Promise) result = await result
+
+   // if the `issues` field exists, the validation failed
+   if (result.issues) {
+      throw new Error(JSON.stringify(result.issues, null, 2))
+   }
+
+   return result.value
 }

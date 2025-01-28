@@ -1,8 +1,6 @@
 import type {
    BaseOptions,
    ComputedOptions,
-   JsonifiableArray,
-   JsonifiableObject,
    FetcherOptions,
    DefaultOptions,
    BaseFetchFn,
@@ -18,6 +16,7 @@ import {
    getUrl,
    stripUndefined,
 } from './utils'
+import type { StandardSchemaV1 } from '@standard-schema/spec'
 
 export let interceptors: Interceptors = [
    'onBeforeFetch',
@@ -28,18 +27,18 @@ export let interceptors: Interceptors = [
 export let computeOptions = <
    TFetchFn extends BaseFetchFn,
    TParsedData = any,
-   TData = TParsedData,
+   TSchema extends StandardSchemaV1 = any,
    TError = any,
 >(
    input: Parameters<TFetchFn>[0], // fetch 1st arg
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
    fetcherOpts: FetcherOptions<
       TFetchFn,
-      TData,
+      TSchema,
       TError,
       TParsedData
    > = emptyOptions,
-): ComputedOptions<TFetchFn, TData, TError, TParsedData> => {
+): ComputedOptions<TFetchFn, TSchema, TError, TParsedData> => {
    // transform URL to string right away
    input = input?.href ?? input
    let mergedOptions = {
@@ -54,9 +53,7 @@ export let computeOptions = <
    let isJsonifiable: boolean
    // assign isJsonifiable value while making use of the type guard
    let body = (isJsonifiable = isJsonifiableObjectOrArray(rawBody))
-      ? mergedOptions.serializeBody(
-           rawBody as JsonifiableObject | JsonifiableArray,
-        )
+      ? mergedOptions.serializeBody(rawBody)
       : rawBody
 
    return stripUndefined({

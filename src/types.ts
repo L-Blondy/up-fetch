@@ -1,4 +1,5 @@
 import type { DistributiveOmit, MaybePromise } from './utils'
+import type { StandardSchemaV1 } from '@standard-schema/spec'
 
 export type JsonifiableObject =
    | {
@@ -66,11 +67,6 @@ export type SerializeBody = (
    body: Exclude<RawBody, BodyInit | null>,
 ) => BodyInit | null | undefined
 
-export type Validate<TFetchFn extends BaseFetchFn, TData, TParsedData> = (
-   parsedData: TParsedData,
-   options: ComputedOptions<TFetchFn>,
-) => MaybePromise<TData>
-
 export type SerializeParams = (params: Params) => string
 
 export type Params = Record<string, any>
@@ -83,7 +79,7 @@ export type RawHeaders =
 
 export type ComputedOptions<
    TFetchFn extends BaseFetchFn,
-   TData = any,
+   TSchema extends StandardSchemaV1 = any,
    TError = any,
    TParsedData = any,
 > = BaseOptions<TFetchFn> & {
@@ -97,7 +93,7 @@ export type ComputedOptions<
    serializeBody: SerializeBody
    serializeParams: SerializeParams
    throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
-   validate: Validate<TFetchFn, TData, TParsedData>
+   schema?: TSchema
 }
 
 export type DefaultOptions<
@@ -118,7 +114,7 @@ export type DefaultOptions<
 
 export type FetcherOptions<
    TFetchFn extends BaseFetchFn,
-   TData = any,
+   TSchema extends StandardSchemaV1 = any,
    TError = any,
    TParsedData = any,
 > = BaseOptions<TFetchFn> & {
@@ -130,5 +126,5 @@ export type FetcherOptions<
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
    throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
-   validate?: Validate<TFetchFn, TData, TParsedData>
+   schema?: TSchema
 }

@@ -1,7 +1,8 @@
+import type { StandardSchemaV1 } from '@standard-schema/spec'
 import { computeOptions } from './compute-options'
 import { ResponseError } from './response-error'
 import type { FetcherOptions, DefaultOptions, BaseFetchFn } from './types'
-import { emptyOptions } from './utils'
+import { emptyOptions, parseStandardSchema } from './utils'
 
 export function up<
    TFetchFn extends BaseFetchFn,
@@ -17,19 +18,20 @@ export function up<
       TParsedData = Awaited<
          ReturnType<NonNullable<TDefaultOptions['parseResponse']>>
       >,
-      TData = TParsedData,
+      TSchema extends
+         StandardSchemaV1<TParsedData> = StandardSchemaV1<TParsedData>,
       TError = Awaited<
          ReturnType<NonNullable<TDefaultOptions['parseResponseError']>>
       >,
    >(
       input: Parameters<TFetchFn>[0],
       fetcherOptions:
-         | FetcherOptions<TFetchFn, TData, TError, TParsedData>
+         | FetcherOptions<TFetchFn, TSchema, TError, TParsedData>
          | ((
               defaultOptions: TDefaultOptions,
            ) => FetcherOptions<
               TFetchFn,
-              TData,
+              TSchema,
               TError,
               TParsedData
            >) = emptyOptions,
@@ -57,9 +59,11 @@ export function up<
                   defaultOpts.onError?.(error, options)
                   throw error
                }
-               let data: Awaited<TData>
+               let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
                try {
-                  data = await options.validate(parsed, options)
+                  data = options.schema
+                     ? await parseStandardSchema(options.schema, parsed)
+                     : parsed
                } catch (error: any) {
                   defaultOpts.onError?.(error, options)
                   throw error
