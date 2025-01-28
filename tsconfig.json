@@ -25,9 +25,13 @@
       "strict": true,
       "stripInternal": true,
       "target": "ES2020",
-      "rootDir": "./src",
-      "outDir": "./dist",
       "verbatimModuleSyntax": true
    },
-   "include": ["./src", "./app", "./eslint.config.js"]
+   "include": [
+      "./src",
+      "./app",
+      "./eslint.config.js",
+      "./vitest.config.ts",
+      "./tsup.config.ts"
+   ]
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
 import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'

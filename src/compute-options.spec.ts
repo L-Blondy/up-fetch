@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
 import { computeOptions } from './compute-options'
 import { bodyMock } from './_mocks'
