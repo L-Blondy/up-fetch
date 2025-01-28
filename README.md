@@ -1,26 +1,23 @@
 # up-fetch
 
-Tiny & Composable fetch configuration tool with sensible defaults.
+Tiny & Composable fetch configuration tool with sensible defaults and built-in schema validation.
 
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1kB gzipped, no dependency
-- 🤩 **Familiar** - same API as [fetch][MDN] with additional options and sensible defaults
-- 🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
-- 🔥 **Composable** - bring your own `serialization`, `parsing` and `throwing` strategies when needed
-- 👁️ **observable** - thanks to the built in `interceptors`
+- 💪 **Safe** - Built-in validation with **[[zod]]**, **[[valibot]]** or **[[arktype]]**. _Full list [here][standard-schema-libs]_
+- 🤩 **Familiar** - same API as fetch with additional options and sensible defaults
+- 🎯 **Intuitive** - define `params` and `body` as plain objects, `Response` parsed out of the box
+- 🔥 **Composable** - bring your own validation, serialization and parsing strategies
 - 💫 **Reusable** - create instances with custom defaults
-- 💪 **Strongly typed** - best in class type inferrence and autocomplete
-- 🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
-- 📦 **Tree Shakable** - You only get what you use
 
 ## ➡️ QuickStart
 
 ```bash
-npm i up-fetch # or bun i up-fetch
+npm i up-fetch
 ```
 
-Create a new upfetch instance
+Create a new upfetch instance:
 
 ```ts
 import { up } from 'up-fetch'
@@ -28,272 +25,152 @@ import { up } from 'up-fetch'
 const upfetch = up(fetch)
 ```
 
-Make a fetch request
+Make a fetch request with schema validation:
 
 ```ts
-const todo = await upfetch('https://a.b.c', {
-   method: 'POST',
-   body: { hello: 'world' },
+import { z } from 'zod'
+
+const data = await upfetch('https://a.b.c/todos/1', {
+   schema: z.object({
+      id: z.number(),
+      title: z.string(),
+      completed: z.boolean(),
+   }),
 })
 ```
 
-You can set some defaults for all requests. They are **evaluated before each request** to avoid sending stale values
+`data` is properly typed based on the schema.
+
+## ➡️ Key Features
+
+### ✔️ Request Configuration
+
+Set defaults for all requests when creating an instance:
 
 ```ts
 const upfetch = up(fetch, () => ({
    baseUrl: 'https://a.b.c',
-   headers: { Authorization: localStorage.getItem('bearer-token') },
 }))
 ```
 
-Since **`up` extends the provided fetch API options**, anything that can be done with fetch can also be done with upfetch.
+### ✔️ Simple Query Parameters
+
+👎 With raw fetch:
 
 ```ts
-// the baseUrl and Authorization header can be omitted
-const todo = await upfetch('/todos', {
-   method: 'POST',
-   body: { title: 'Hello World' },
-   params: { some: 'query params' },
-   headers: { 'X-Header': 'Another header' },
-   signal: AbortSignal.timeout(5000),
-   keepalive: true,
-   cache: 'no-store',
-})
+fetch(
+   `https://api.example.com/todos?search=${search}&skip=${skip}&take=${take}`,
+)
 ```
 
-Any fetch API implementation can be used, like [undici](https://github.com/nodejs/undici) or [node-fetch](https://github.com/node-fetch/node-fetch)
+👍 With _up-fetch_:
 
 ```ts
-import { fetch } from 'undici'
-
-const upfetch = up(fetch)
-```
-
-### Raw fetch vs upfetch
-
-#### fetch that throws when response.ok is false:
-
-You should first create a custom ResponseError class that extends the built in Error class in order to expose the response and the parsed response data.
-
-A naive implementation might look like this
-
-```ts
-export class ResponseError extends Error {
-   constructor(response, data) {
-      super(`Request failed with status ${res.status}`)
-      this.data = data
-      this.name = 'ResponseError'
-      this.response = response
-      this.status = response.status
-   }
-}
-```
-
-Then proceed with the definition of the fetcher itself. The following is a simplified example
-
-```ts
-const fetchTodos = async ({ search, take, skip }) => {
-   const response = await fetch(
-      `https://a.b.c/?search=${search}&skip=${skip}&take=${take}`,
-   )
-   const data = await response.json()
-   if (response.ok) {
-      return data
-   }
-   throw new ResponseError(response, data)
-}
-```
-
-#### Same example using **up-fetch**:
-
-Granted that you've already created an `up(fetch)` instance the previous example can be written like this:
-
-```ts
-const fetchData = (params) => upfetch('https://a.b.c', { params })
-```
-
-## ➡️ Features
-
-### ✔️ Set defaults for an upfetch instance
-
-**up-fetch** default behaviour can be entirely customized
-
-```ts
-const upfetch = up(fetch, () => ({
-   baseUrl: 'https://a.b.c',
-   headers: { 'X-Header': 'hello world' },
-}))
-```
-
-See the full [options](#%EF%B8%8F-api) list for more details.
-
-### ✔️ Set the url `params` as object
-
-```ts
-// before
-fetch(`https://a.b.c/?search=${search}&skip=${skip}&take=${take}`)
-
-// after
-upfetch('https://a.b.c', {
+upfetch('/todos', {
    params: { search, skip, take },
 })
 ```
 
-### ✔️ `baseUrl` option
+### ✔️ Automatic Body Handling
 
-Set the baseUrl when you create the instance
+👎 With raw fetch:
 
 ```ts
-export const upfetch = up(fetch, () => ({
-   baseUrl: 'https://a.b.c',
+// Before with fetch
+fetch('https://api.example.com/todos', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({ title: 'New Todo' }),
+})
+```
+
+👍 With _up-fetch_:
+
+```ts
+upfetch('/todos', {
+   method: 'POST',
+   body: { title: 'New Todo' },
+})
+```
+
+### ✔️ Schema Validation
+
+Since _up-fetch_ follows the [Standard Schema Specification](standard-schema) it can be used with any schema library that implements the spec. \
+See the full list [here][standard-schema-libs].
+
+👉 With **zod**
+
+```ts
+import { z } from 'zod'
+
+const posts = await upfetch('/posts/1', {
+   schema: z.object({
+      id: z.number(),
+      title: z.string(),
+   }),
+})
+```
+
+👉 With **valibot**
+
+```ts
+import { object, string, number } from 'valibot'
+
+const posts = await upfetch('/posts/1', {
+   schema: object({
+      id: number(),
+      title: string(),
+   }),
+})
+```
+
+### ✔️ Lifecycle Hooks
+
+Control request/response lifecycle with simple hooks:
+
+```ts
+const upfetch = up(fetch, () => ({
+   onBeforeFetch: (options) => {
+      // ...
+   },
+   onSuccess: (response, data) => {
+      // ...
+   },
+   onError: (error) => {
+      // ...
+   },
 }))
 ```
 
-You can then omit it on all requests
+### ✔️ Error Handling
 
-```ts
-const todos = await upfetch('/todos')
-```
+By default, _up-fetch_ throws a `ResponseError` when `response.ok` is `false`. The error includes:
 
-### ✔️ Automatic `Response` parsing
-
-The response is automatically parsed to `json` with a fallback to `text` in case of invalid json.
-
-The parsing method is customizable via the [parseResponse](#parseresponse) option
-
-```ts
-// before
-const response = await fetch('https://a.b.c')
-const todos = await response.json()
-
-// after
-const todos = await upfetch('https://a.b.c')
-```
-
-### ✔️ throws by default
-
-**up-fetch** throws a `ResponseError` when `response.ok` is `false`. \
-This behavior can be customized using the [throwResponseErrorWhen](#throwresponseerrorwhen) option
-
-The parsed error body is available with `error.data`. \
-The raw Response can be accessed with `error.response`. \
-The raw status can be accessed with `error.status`. \
-The options used make the api call are available with `error.options`.
+- `status`: The HTTP status code
+- `data`: The parsed error body
+- `options`: The options used for the request
+- `response`: The raw Response
 
 ```ts
 import { isResponseError } from 'up-fetch'
-import { upfetch } from '...'
 
 try {
-   await upfetch('https://a.b.c')
+   await upfetch('/todos/1')
 } catch (error) {
    if (isResponseError(error)) {
       console.log(error.data)
       console.log(error.status)
-   } else {
-      console.log('Request error')
    }
 }
 ```
 
-### ✔️ Set the `body` as object
+## Usage
 
-The `'Content-Type': 'application/json'` header is automatically set when the body is a Jsonifiable object or array. Plain objects, arrays and classes with a `toJSON` method are Jsonifiable.
+### ✔️ Timeouts
 
-```ts
-// before
-fetch('https://a.b.c', {
-   method: 'POST',
-   headers: { 'Content-Type': 'application/json' },
-   body: JSON.stringify({ post: 'Hello World' }),
-})
+While _up-fetch_ doesn't provide a timeout option, you can easily implement one using the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout) method:
 
-// after
-upfetch('https://a.b.c', {
-   method: 'POST',
-   body: { post: 'Hello World' },
-})
-```
-
-### ✔️ Data Validation
-
-**up-fetch** has built-in validation adapters for **zod** and **valibot**, see the [adapters list](#%EF%B8%8F-adapters--recipies) below.
-
-**Example: with zod**
-
-```bash
-npm i zod
-```
-
-```ts
-import { z } from 'zod'
-import { withZod } from 'up-fetch/with-zod'
-import { upfetch } from './abc'
-
-const todo = await upfetch('/todo/1', {
-   parseResponse: withZod(
-      z.object({
-         id: z.number(),
-         title: z.string(),
-         description: z.string(),
-         createdOn: z.string(),
-      }),
-   ),
-})
-// todo is properly typed in case of validation success
-```
-
-Using an adapter ensures that data flows properly through the [onParsingError](#onparsingerror) and [onSuccess](#onsuccess) interceptors
-
-In case of error the validation adapters will throw.
-
-### ✔️ Transform
-
-The parsed response data can be transformed before being passed to `.then`
-
-```ts
-const todos = await upfetch('https://a.b.c', {
-   // Transform the data as you like
-   // the type of `data` is inferred from `parseResponse`
-   transform: (todos) => todos.map((todo) => new Todo(todo)),
-})
-```
-
-### ✔️ Interceptors
-
-You can setup the interceptors for all requests
-
-```ts
-const upfetch = up(fetch, () => ({
-   onBeforeFetch: (options) => console.log('Before fetch'),
-   onSuccess: (data, options) => console.log(data),
-   onResponseError: (error, options) => console.log(error),
-   onRequestError: (error, options) => console.log(error),
-   onParsingError: (error, options) => console.log(error),
-   onTransformError: (error, options) => console.log(error),
-}))
-```
-
-Or for single requests
-
-```ts
-upfetch('/todos', {
-   onBeforeFetch: (options) => console.log('Before fetch'),
-   onSuccess: (todos, options) => console.log(todos),
-   onResponseError: (error, options) => console.log(error),
-   onRequestError: (error, options) => console.log(error),
-   onParsingError: (error, options) => console.log(error),
-   onTransformError: (error, options) => console.log(error),
-})
-```
-
-Learn more [here](#onbeforefetch).
-
-### ✔️ Timeout
-
-Worth mentionning that while **up-fetch** does not provide any `timeout` option since the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static) static method is now supported everywhere, you can still leverage **up-fetch** to apply a default timeout.
-
-_Set a default `timeout` for all requests:_
+Set a default timeout for all requests:
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -301,7 +178,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-_Use a different `timeout` for a specific request:_
+Use a different timeout for a specific request:
 
 ```ts
 upfetch('/todos', {
@@ -309,303 +186,41 @@ upfetch('/todos', {
 })
 ```
 
-## ➡️ How to
+### ✔️ Authentication
 
-<details><summary>❓ handle <b>Authentication</b></summary><br />
-
-Since the defaults are evaluated at request time, the Authentication header can be defined in `up`
+You can easily add authentication to all requests by setting a default header:
 
 ```ts
-import { up } from 'up-fetch'
-
 const upfetch = up(fetch, () => ({
-   headers: { Authentication: localStorage.getItem('bearer-token') },
-}))
-
-localStorage.setItem('bearer-token', 'Bearer abcdef123456')
-upfetch('/profile') // Authenticated request
-
-localStorage.removeItem('bearer-token')
-upfetch('/profile') // Non authenticated request
-```
-
-```ts
-// ❌ Don't read the storage / cookies outside of `up`
-
-// This value will never change
-const bearerToken = localStorage.getItem('bearer-token')
-
-const upfetch = up(fetch, () => ({
-   headers: { Authentication: bearerToken },
-}))
-```
-
-```ts
-// ✅ Keep it inside the function call
-
-// Checks the localStorage on each request
-const upfetch = up(fetch, () => ({
-   headers: { Authentication: localStorage.getItem('bearer-token') },
-}))
-```
-
-The same approach can be used with `cookies`
-
-</details>
-
-<details><summary>❓ handle <b>errors</b></summary><br />
-
-**up-fetch** throws a [ResponseError](#%EF%B8%8F-throws-by-default) when `response.ok` is `false`. \
-You can decide **when** to throw using the [throwResponseErrorWhen](#throwresponseerrorwhen) option. \
-You can decide **what** to throw using the [parseResponseError](#parseresponseerror) option.
-
-On the default `ResponseError`:
-
-- The parsed response body is available with `error.data`. \
-- The raw Response is available with `error.response`. \
-- The response status is available with `error.status`. \
-- The options used the make the request are available with `error.options`.
-
-The [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` can be used to check if an error is a `ResponseError`
-
-```ts
-import { upfetch } from '...'
-import { isResponseError } from 'up-fetch'
-
-// with try/catch
-try {
-   return await upfetch('https://a.b.c')
-} catch (error) {
-   if (isResponseError(error)) {
-      console.log(error.name)
-      console.log(error.message)
-      console.log(error.data)
-      console.log(error.status)
-      console.log(error.options)
-   } else {
-      console.log(error.name)
-      console.log(error.message)
-   }
-}
-
-// with Promise.catch
-upfetch('https://a.b.c').catch((error) => {
-   if (isResponseError(error)) {
-      console.log(error.name)
-      console.log(error.message)
-      console.log(error.data)
-      console.log(error.status)
-      console.log(error.options)
-   } else {
-      console.log(error.name)
-      console.log(error.message)
-   }
-})
-```
-
-**up-fetch** also exports some listeners, useful for logging
-
-```ts
-import { up } from 'up-fetch'
-import { log } from './my-logging-service'
-
-const upfetch = up(fetch, () => ({
-   onResponseError(error) {
-      log.responseError(error)
-   },
-   onRequestError(error) {
-      log.requestError(error)
-   },
-}))
-
-upfetch('/fail-to-fetch')
-```
-
-</details>
-
-<details><summary>❓ <b>Delete</b> a default option</summary><br />
-
-Simply pass `undefined`
-
-```ts
-import { up } from 'up-fetch'
-
-const upfetch = up(fetch, () => ({
-   cache: 'no-store',
-   params: { expand: true, count: 1 },
    headers: { Authorization: localStorage.getItem('bearer-token') },
 }))
-
-upfetch('https://a.b.c', {
-   cache: undefined, // remove cache
-   params: { expand: undefined }, // only remove `expand` from the params
-   headers: undefined, // remove all headers
-})
 ```
 
-</details>
+The bearer token will be retrieved from `localStorage` before each request.
 
-<details><summary>❓ <b>Override</b> a default conditionally</summary><br />
+### ✔️ Delete a default option
 
-You may sometimes need to conditionally override the default options provided in `up`. Javascript makes it a bit tricky:
-
-```ts
-import { up } from 'up-fetch'
-
-const upfetch = up(fetch, () => ({
-   headers: { 'X-Header': 'value' }
-}))
-
-❌ Don't
-// if `condition` is false, the header will be deleted
-upfetch('https://a.b.c', {
-   headers: { 'X-Header': condition ? 'newValue' : undefined }
-})
-```
-
-In order to solve this problem, upfetch exposes the `defaultOptions` when the options (2nd arg) are defined as a function. \
-`defaultOptions` are stricly typed (const generic)
+Simply pass `undefined`:
 
 ```ts
-✅ Do
-upfetch('https://a.b.c', (defaultOptions) => ({
-   headers: { 'X-Header': condition ? 'newValue' : defaultOptions.headers['X-Header'] }
+upfetch('/todos', (defaultOptions) => ({
+   signal: undefined,
 }))
 ```
 
-</details>
+### ✔️ Override a default option conditionally
 
-<details><summary>❓ use with <b>Next.js</b> App Router</summary><br />
-
-Since **up-fetch** extends the fetch API, **Next.js** specific [fetch options](https://nextjs.org/docs/app/api-reference/functions/fetch) also work with **up-fetch**.
-
-_Choose a default caching strategy_
+You can override default options for a specific request by passing a function as the 2nd argument:
 
 ```ts
-import { up } from 'up-fetch'
-
-// Because Next.js patches the global fetch API
-// we need to access it dynamically on every request
-const dynamicFetch: typeof fetch = (...args) => fetch(...args)
-
-const upfetch = up(dynamicFetch, () => ({
-   next: { revalidate: false },
+upfetch('/todos', (defaultOptions) => ({
+   signal: condition ? AbortSignal.timeout(5000) : defaultOptions.signal,
 }))
 ```
 
-_Override it for a specific request_
+### ✔️ FormData
 
-```ts
-upfetch('/posts', {
-   next: { revalidate: 60 },
-})
-```
-
-</details>
-
-## ➡️ Adapters & Recipies
-
-<details><summary>💡 <b>zod</b></summary>
-
-You can use the [zod](https://github.com/colinhacks/zod) validation adapter to guarantee the type safety of the data.
-
-```ts
-import { z } from 'zod'
-import { withZod } from 'up-fetch/with-zod'
-import { upfetch } from './abc'
-
-const todo = await upfetch('/todo/1', {
-   parseResponse: withZod(
-      z.object({
-         id: z.number(),
-         title: z.string(),
-         description: z.string(),
-         createdOn: z.string(),
-      }),
-   ),
-})
-// todo is properly typed in case of validation success
-```
-
-Using an adapter ensures the data properly flows through the interceptors
-
-```ts
-import { z } from 'zod'
-import { withZod } from 'up-fetch/with-zod'
-
-const upfetch = up(fetch, () => ({
-   onParsingError: (error) => console.log(error),
-   onSuccess: (data) => console.log(data),
-}))
-
-const todo = await upfetch('/todo/1', {
-   onParsingError: (error) => console.log(error),
-   onSuccess: (data) => console.log(data),
-   parseResponse: withZod(
-      z.object({
-         id: z.number(),
-         title: z.string(),
-         description: z.string(),
-         createdOn: z.string(),
-      }),
-   ),
-})
-```
-
-</details>
-
-<details><summary>💡 <b>valibot</b></summary>
-
-You can use the [valibot](https://github.com/fabian-hiller/valibot) validation adapter to guarantee the type safety of the data.
-
-```ts
-import { object, number, string } from 'valibot'
-import { withValibot } from 'up-fetch/with-valibot'
-import { upfetch } from './abc'
-
-const todo = await upfetch('/todo/1', {
-   parseResponse: withValibot(
-      object({
-         id: number(),
-         title: string(),
-         description: string(),
-         createdOn: string(),
-      }),
-   ),
-})
-// todo is properly typed in case of validation success
-```
-
-Using an adapter ensures the data properly flows through the interceptors
-
-```ts
-import { object, number, string } from 'valibot'
-import { withValibot } from 'up-fetch/with-valibot'
-
-const upfetch = up(fetch, () => ({
-   onParsingError: (error) => console.log(error),
-   onSuccess: (data) => console.log(data),
-}))
-
-const todo = await upfetch('/todo/1', {
-   onParsingError: (error) => console.log(error),
-   onSuccess: (data) => console.log(data),
-   parseResponse: withValibot(
-      object({
-         id: number(),
-         title: string(),
-         description: string(),
-         createdOn: string(),
-      }),
-   ),
-})
-```
-
-</details>
-
-<details><summary>💡 <b>FormData</b></summary>
-
-If you grab the `FormData` from a `form`, you dont need any adapter.
+Grab the FormData from a `form`.
 
 ```ts
 const form = document.querySelector('#my-form')
@@ -616,9 +231,7 @@ upfetch('/todos', {
 })
 ```
 
-However if you need to transform an `object` to `FormData` you might use [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)
-
-_Note: when sending FormData the fetch API automatically adds the correct header. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
+Or create FormData from an object:
 
 ```ts
 import { serialize } from 'object-to-formdata'
@@ -633,23 +246,11 @@ upfetch('https://a.b.c', {
 })
 ```
 
-</details>
+### ✔️ HTTP Agent (node only)
 
-<details><summary>💡 <b>progress</b> (upload / download) <i>	&lt;coming soon&gt;</i></summary>
+Since _up-fetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
 
-Coming soon
-
-</details>
-
-<details><summary>💡 <b>HTTP Agent</b> (node only)</summary><br />
-
-_April 2024_
-
-Node, bun and browsers implementation of the fetch API do not support HTTP agents.
-
-In order to use http agents you'll have to use [undici](https://github.com/nodejs/undici) (node only)
-
-_Add an HTTP Agent on a single request_
+On a single request:
 
 ```ts
 import { fetch, Agent } from 'undici'
@@ -664,7 +265,7 @@ const data = await upfetch('https://a.b.c', {
 })
 ```
 
-_Dynamically add an HTTP Agent on each request request_
+On all requests:
 
 ```ts
 import { fetch, Agent } from 'undici'
@@ -675,490 +276,86 @@ const upfetch = up(fetch, () => ({
       keepAliveMaxTimeout: 10,
    }),
 }))
-
-const data = await upfetch('https://a.b.c')
 ```
 
-</details>
+### ✔️ Multiple fetch clients
 
-## ➡️ Types
-
-See the [type definitions](https://github.com/L-Blondy/up-fetch/blob/master/src/types.ts) file for more details
-
-## ➡️ Options
-
-All options can be set either on **up** or on an **upfetch** instance except for the [body](#body)
+You can create multiple upfetch instances with different defaults:
 
 ```ts
-// set defaults for the instance
-const upfetch = up(fetch, () => ({
-   baseUrl: 'https://a.b.c',
-   cache: 'no-store',
-   headers: { Authorization: `Bearer ${token}` },
-}))
+const fetchJson = up(fetch)
 
-// override the defaults for a specific call
-upfetch('/todos', {
-   baseUrl: 'https://x.y.z',
-   cache: 'force-cache',
-})
-```
-
-**upfetch** adds the following options to the [fetch API][MDN].
-
-<!--  -->
-
-## <samp>\<baseUrl\></samp>
-
-**Type:** `string`
-
-Sets the base url for the requests
-
-**Example:**
-
-```ts
-const upfetch = up(fetch, () => ({
-   baseUrl: 'https://a.b.c',
-}))
-
-// make a GET request to 'https://a.b.c/id'
-upfetch('/id')
-
-// change the baseUrl for a single request
-upfetch('/id', { baseUrl: 'https://x.y.z' })
-```
-
-<!--  -->
-
-## <samp>\<params\></samp>
-
-**Type:** `{ [key: string]: any }`
-
-The url search params. \
-The params defined in `up` and the params defined in `upfetch` are **shallowly merged**. \
-Only non-nested objects are supported by default. See the [serializeParams](#serializeparams) option for nested objects.
-
-**Example:**
-
-```ts
-const upfetch = up(fetch, () => ({
-   params: { expand: true },
-}))
-
-// `expand` can be omitted
-// ?expand=true&page=2&limit=10
-upfetch('https://a.b.c', {
-   params: { page: 2, limit: 10 },
-})
-
-// override the `expand` param
-// ?expand=false&page=2&limit=10
-upfetch('https://a.b.c', {
-   params: { page: 2, limit: 10, expand: false },
-})
-
-// delete `expand` param
-// ?expand=false&page=2&limit=10
-upfetch('https://a.b.c', {
-   params: { expand: undefined },
-})
-
-// conditionally override the expand param `expand` param
-// ?expand=false&page=2&limit=10
-upfetch('https://a.b.c', (defaultOptions) => ({
-   params: { expand: isTruthy ? true : defaultOptions.params.expand },
-}))
-```
-
-<!--  -->
-
-## <samp>\<headers\></samp>
-
-**Type:** `HeadersInit | Record<string, string | number | null | undefined>`
-
-Same as the fetch API headers with widened types. \
-The headers defined in `up` and the headers defined in `upfetch` are **shallowly merged**. \
-
-**Example:**
-
-```ts
-const upfetch = up(fetch, () => ({
-   headers: { Authorization: 'Bearer ...' },
-}))
-
-// the request will have both the `Authorization` and the `Test-Header` headers
-upfetch('https://a.b.c', {
-   headers: { 'Test-Header': 'test value' },
-})
-
-// override the `Authorization` header
-upfetch('https://a.b.c', {
-   headers: { Authorization: 'Bearer ...2' },
-})
-
-// delete the `Authorization` header
-upfetch('https://a.b.c', {
-   headers: { Authorization: null }, // undefined also works
-})
-
-// conditionally override the `Authorization` header
-upfetch('https://a.b.c', (defaultOptions) => ({
-   headers: {
-      Authorization: isTruthy ? 'Bearer ...3' : defaultOptions.headers.val,
-   },
-}))
-```
-
-<!--  -->
-
-## <samp>\<body\></samp>
-
-**Type:** `BodyInit | JsonifiableObject | JsonifiableArray | null`
-
-Note that this option is not available on **up**
-
-The body of the request.\
-Can be pretty much anything. \
-See the [serializeBody](#serializebody) for more details.
-
-**Example:**
-
-```ts
-upfetch('/todos', {
-   method: 'POST',
-   body: { hello: 'world' },
-})
-```
-
-<!--  -->
-
-## <samp>\<serializeParams\></samp>
-
-**Type:** `(params: { [key: string]: any } ) => string`
-
-Customize the [params](#params) serialization into a query string. \
-The default implementation only supports **non-nested objects**.
-
-**Example:**
-
-```ts
-import qs from 'qs'
-
-// add support for nested objects using the 'qs' library
-const upfetch = up(fetch, () => ({
-   serializeParams: (params) => qs.stringify(params),
-}))
-
-// ?a[b]=c
-upfetch('https://a.b.c', {
-   params: { a: { b: 'c' } },
-})
-```
-
-## <samp>\<serializeBody\></samp>
-
-**Type:** `(body: JsonifiableObject | JsonifiableArray) => BodyInit | null | undefined`
-
-**Default:** `JSON.stringify`
-
-Customize the [body](#body) serialization into a valid `BodyInit`, a `string` in most cases\
-The body is passed to `serializeBody` when it is a plain object, an array or a class instance with a `toJSON` method. The other body types remain untouched
-
-**Example: serialize `objects` to `FormData`**
-
-This example uses [object-to-formdata](https://github.com/therealparmesh/object-to-formdata) (<1kb)
-
-_Note: when sending FormData the fetch API automatically adds the correct header. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects#sect4) docs_
-
-```ts
-import { serialize } from 'object-to-formdata'
-
-const upfetch = up(fetch, () => ({
-   serializeBody: (body) => serialize(body),
-}))
-
-upfetch('https://a.b.c', {
-   method: 'POST',
-   body: { file: new File(['foo'], 'foo.txt') },
-})
-```
-
-## <samp>\<parseResponse\></samp>
-
-**Type:** `<TData> (response: Response, options: ComputedOptions) => Promise<TData>`
-
-Customize the fetch response parsing. \
-By default `json` and `text` responses are parsed
-
-This option is best used with a [validation adapter](#%EF%B8%8F-data-validation)
-
-**Example:**
-
-```ts
-// create a fetcher for blobs
 const fetchBlob = up(fetch, () => ({
    parseResponse: (res) => res.blob(),
 }))
 
-// disable the default parsing
-const upfetch = up(fetch, () => ({
-   parseResponse: (res) => res,
+const fetchText = up(fetch, () => ({
+   parseResponse: (res) => res.text(),
 }))
 ```
 
-**Example: with the [zod](https://zod.dev/) adapter**
+## ➡️ API Reference
+
+### <samp>up(fetch, getDefaultOptions?)</samp>
+
+Creates a new upfetch instance with optional default options.
 
 ```ts
-import { z } from 'zod'
-import { withZod } from 'up-fetch/with-zod'
-
-// ...create or import your upfetch instance
-
-const todo = await upfetch('/todo/1', {
-   parseResponse: withZod(
-      z.object({
-         id: z.number(),
-         title: z.string(),
-         description: z.string(),
-         createdOn: z.string(),
-      }),
-   ),
-})
+function up(
+   fetchFn: typeof globalThis.fetch,
+   getDefaultOptions?: () => DefaultOptions,
+): UpFetch
 ```
 
-## <samp>\<parseResponseError\></samp>
+| Option                           | Signature                      | Description                                       |
+| -------------------------------- | ------------------------------ | ------------------------------------------------- |
+| `baseUrl`                        | `string`                       | Base URL for all requests.                        |
+| `params`                         | `object`                       | The default query parameters.                     |
+| `onBeforeFetch`                  | `(options) => void`            | Executes before the request is made.              |
+| `onError`                        | `(error, options) => void`     | Executes on error.                                |
+| `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes. |
+| `parseResponse`                  | `(response, options) => data`  | The default success response parser.              |
+| `parseResponseError`             | `(response, options) => error` | The default error response parser.                |
+| `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                      |
+| `serializeParams`                | `(params) => string`           | The default query parameter serializer.           |
+| `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.     |
+| _...and all other fetch options_ |                                |                                                   |
 
-**Type:** `<TError> (response: Response, options: ComputedOptions) => Promise<TError>`
+### <samp>upfetch(url, options?)</samp>
 
-Customize the parsing of a thrown fetch response. \
-By default the response is thrown when `response.ok` is `false`, it is customizable with [throwResponseErrorWhen](#throwresponseerrorwhen). \
-By default a [ResponseError](#%EF%B8%8F-throws-by-default) is thrown
-
-**Example:**
+Makes a fetch request with the given options.
 
 ```ts
-// throw a `CustomResponseError` when `response.ok` is `false`
-const upfetch = up(fetch, () => ({
-   parseResponseError: (res) => new CustomResponseError(res),
-}))
+function upfetch(
+   url: string | URL | Request,
+   options?: FetcherOptions | ((defaultOptions: UpOptions) => FetcherOptions),
+): Promise<any>
 ```
 
-`parseResponse` can also be used with a [validation adapter](#%EF%B8%8F-data-validation)
+Options:
 
-## <samp>\<transform\></samp>
+| Option                           | Signature                      | Description                                                                                                                                                      |
+| -------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                                                        |
+| `params`                         | `object`                       | The query parameters.                                                                                                                                            |
+| `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                                                     |
+| `parseResponseError`             | `(response, options) => error` | The error response parser.                                                                                                                                       |
+| `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification](https://github.com/standard-schema/standard-schema). |
+| `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                                                             |
+| `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                                                                  |
+| `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.                                                                                                                    |
+| _...and all other fetch options_ |                                |                                                                                                                                                                  |
 
-**Type:** `<TData, TParsedData> = (parsedData: TParsedData, options: ComputedOptions) => MaybePromise<TData>`
+## ➡️ Environment Support
 
-Transform the data after `parseResponse` is done, errors will trigger the [onTransformError](#ontransformerror) interceptors.
-
-**Example:**
-
-```ts
-// Instanciate some class
-upfetch('/todos', {
-   transform: (todos) => todos.map((todo) => new Todo(todo)),
-})
-```
-
-The data is inferred from `parseResponse`.
-
-```ts
-const upfetch = up(fetch, () => ({
-   parseResponse: async (res) => ({
-      json: await res.json(),
-      status: res.status,
-   }),
-}))
-
-// the data is properly typed
-upfetch('/todos', {
-   transform: (data) => {
-      console.log(data.json)
-      console.log(data.status)
-      // do whatever you like
-      return data
-   },
-})
-```
-
-## <samp>\<onSuccess\></samp>
-
-**Type:** `<TData>(data: TData, options: ComputedOptions) => void`
-
-Called when `response.ok` is `true`. \
-Receives the data from `transform` if defined, otherwise from `parseResponse`.
-
-**Example:**
-
-```ts
-// listen to all requests
-const upfetch = up(fetch, () => ({
-   onSuccess: (data, options) => console.log('2nd'),
-}))
-
-// listen to  requests
-upfetch('https://a.b.c', {
-   onSuccess: (data, options) => console.log('1st'),
-})
-```
-
-## <samp>\<onResponseError\></samp>
-
-**Type:** `<TError>(error: TError, options: ComputedOptions) => void`
-
-Called when a response error was thrown, by default when `response.ok` is `false`, customizable with the [throwResponseErrorWhen](#throwresponseerrorwhen) option
-
-**Example:**
-
-```ts
-// listen to all requests
-const upfetch = up(fetch, () => ({
-   onResponseError: (error, options) => console.log('Response error', error),
-}))
-
-// listen to one requests
-upfetch('https://a.b.c', {
-   onResponseError: (error, options) => console.log('Response error', error),
-})
-```
-
-## <samp>\<onRequestError\></samp>
-
-**Type:** `(error: Error, options: ComputedOptions) => void`
-
-Called when the fetch request fails (no response from the server).
-
-**Example:**
-
-```ts
-// listen to all requests
-const upfetch = up(fetch, () => ({
-   onRequestError: (error, options) => console.log('Request error', error),
-}))
-
-// listen to one requests
-upfetch('https://a.b.c', {
-   onRequestError: (error, options) => console.log('Request error', error),
-})
-```
-
-## <samp>\<onParsingError\></samp>
-
-**Type:** `(error: any, options: ComputedOptions) => void`
-
-Called when either `parseResponse` or `parseResponseError` throw. \
-Usefull when using a [validation adapter](#%EF%B8%8F-data-validation)
-
-**Example:**
-
-```ts
-import { z } from 'zod'
-import { withZod } from 'up-fetch/with-zod'
-
-// listen to all requests
-const upfetch = up(fetch, () => ({
-   onParsingError: (error, options) => console.log('Validation error', error),
-}))
-
-// listen to one requests
-upfetch('https://a.b.c', {
-   onParsingError: (error, options) => console.log('Validation error', error),
-   parseResponse: withZod(
-      z.object({
-         id: z.number(),
-         title: z.string(),
-         description: z.string(),
-         createdOn: z.string(),
-      }),
-   ),
-})
-```
-
-## <samp>\<onTransformError\></samp>
-
-**Type:** `(error: Error, options: ComputedOptions) => void`
-
-Called when either `transform` throws. \
-
-**Example:**
-
-```ts
-import { z } from 'zod'
-import { withZod } from 'up-fetch/with-zod'
-
-// listen to all requests
-const upfetch = up(fetch, () => ({
-   onTransformError: (error, options) => console.log('Transform error', error),
-}))
-
-// listen to one requests
-upfetch('https://a.b.c', {
-   onTransformError: (error, options) => console.log('Transform error', error),
-   transform: (data) => /* throw some error */
-})
-```
-
-## <samp>\<onBeforeFetch\></samp>
-
-**Type:** `(options: ComputedOptions) => void`
-
-Called before the request is sent.
-
-**Example:**
-
-```ts
-// listen to all requests
-const upfetch = up(fetch, () => ({
-   onBeforeFetch: (options) => console.log('2nd'),
-}))
-
-// listen to one requests
-upfetch('https://a.b.c', {
-   onBeforeFetch: (options) => console.log('1st'),
-})
-```
-
-## <samp>\<throwResponseErrorWhen\></samp>
-
-**Type:** `(response: Response) => MaybePromise<boolean>`
-
-**Default:** `(response: Response) => !response.ok`
-
-Decide when to trigger [parseResponseError](#parseresponseerror) and throw an error. \
-It can be an async function.
-
-**Example: never throw upon response**
-
-```ts
-// for all requests
-const upfetch = up(fetch, () => ({
-   throwResponseErrorWhen: () => false,
-}))
-
-// for one requests
-upfetch('https://a.b.c', {
-   throwResponseErrorWhen: () => false,
-})
-```
-
-**Example: throw for specific statuses**
-
-```ts
-// for all requests
-const upfetch = up(fetch, () => ({
-   throwResponseErrorWhen: (response) => [ 400, 404, ... ].includes(response.status),
-}))
-```
-
-## ➡️ Compatibility
-
-- ✅ All modern browsers
-- ✅ Bun
-- ✅ Node 18+
+- ✅ Browsers (Chrome, Firefox, Safari, Edge)
+- ✅ Node.js (18+)
+- ✅ Deno
 - ✅ Cloudflare Workers
+- ✅ Vercel Edge Functions
 
-[MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
-
-## From the same author
-
-- [tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to easily add multiple color themes to your projects.
+[zod]: https://zod.dev/
+[valibot]: https://valibot.dev/
+[arktype]: https://arktype.dev/
+[standard-schema]: https://github.com/standard-schema/standard-schema
+[standard-schema-libs]: https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec
