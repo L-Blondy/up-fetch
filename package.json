@@ -73,29 +73,21 @@
    "author": "Laurent Blondy",
    "license": "MIT",
    "devDependencies": {
-      "@typescript-eslint/eslint-plugin": "^5.57.0",
-      "@typescript-eslint/parser": "^5.57.0",
-      "eslint": "^8.37.0",
-      "jsdom": "^21.1.1",
+      "@eslint/js": "^9.19.0",
+      "eslint": "^9.19.0",
+      "jsdom": "^26.0.0",
       "msw": "^2.2.3",
-      "prettier": "^2.8.7",
-      "tsup": "^8.0.2",
-      "typescript": "^5.3.3",
+      "prettier": "^3.4.2",
+      "tsup": "^8.3.6",
+      "typescript": "^5.7.3",
+      "typescript-eslint": "^8.22.0",
       "valibot": ">=0.1.0",
-      "vitest": "^0.29.8",
-      "zod": ">=3"
+      "vitest": "^3.0.4",
+      "zod": "3.24.1"
    },
    "peerDependencies": {
-      "zod": ">=3",
-      "valibot": ">=0.1.0"
-   },
-   "peerDependenciesMeta": {
-      "zod": {
-         "optional": true
-      },
-      "valibot": {
-         "optional": true
-      }
+      "valibot": ">=1.0.0-beta.14",
+      "zod": ">=3"
    },
    "publishConfig": {
       "access": "public",

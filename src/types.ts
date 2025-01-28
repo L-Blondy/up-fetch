@@ -96,7 +96,6 @@ export type ComputedOptions<
    rawBody?: RawBody
    serializeBody: SerializeBody
    serializeParams: SerializeParams
-   transform: Transform<TFetchFn, TData, TParsedData>
    throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
 }
 
@@ -106,11 +105,8 @@ export type DefaultOptions<
 > = BaseOptions<TFetchFn> & {
    headers?: RawHeaders
    onBeforeFetch?: (options: ComputedOptions<TFetchFn>) => void
-   onParsingError?: (error: any, options: ComputedOptions<TFetchFn>) => void
-   onResponseError?: (error: any, options: ComputedOptions<TFetchFn>) => void
-   onRequestError?: (error: Error, options: ComputedOptions<TFetchFn>) => void
+   onError?: (error: any, options: ComputedOptions<TFetchFn>) => void
    onSuccess?: (data: any, options: ComputedOptions<TFetchFn>) => void
-   onTransformError?: (error: Error, options: ComputedOptions<TFetchFn>) => void
    params?: Params
    parseResponse?: ParseResponse<TFetchFn, any>
    parseResponseError?: ParseResponseError<TFetchFn, TError>
@@ -127,35 +123,10 @@ export type FetcherOptions<
 > = BaseOptions<TFetchFn> & {
    body?: RawBody
    headers?: RawHeaders
-   onBeforeFetch?: (
-      options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
-   ) => void
-   onParsingError?: (
-      error: any,
-      options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
-   ) => void
-   onResponseError?: (
-      error: TError,
-      options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
-   ) => void
-   onRequestError?: (
-      error: Error,
-      options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
-   ) => void
-   onSuccess?: (
-      data: TData,
-      options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
-   ) => void
-   onTransformError?: (
-      error: Error,
-      options: ComputedOptions<TFetchFn, TData, TError, TParsedData>,
-   ) => void
-
    params?: Params
    parseResponse?: ParseResponse<TFetchFn, TParsedData>
    parseResponseError?: ParseResponseError<TFetchFn, TError>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
-   transform?: Transform<TFetchFn, TData, TParsedData>
    throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
 }
