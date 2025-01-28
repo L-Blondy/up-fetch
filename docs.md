@@ -10,13 +10,11 @@ Tiny & Composable fetch configuration tool with sensible defaults and built-in s
 - 🎯 **Intuitive** - define `params` and `body` as plain objects, `Response` parsed out of the box
 - 🔥 **Composable** - bring your own serialization and parsing strategies
 - 💫 **Reusable** - create instances with custom defaults
-- 💪 **Strongly typed** - best in class type inference and autocomplete
-- 📦 **Tree Shakable** - You only get what you use
 
 ## ➡️ QuickStart
 
 ```bash
-npm i up-fetch # or bun i up-fetch
+npm i up-fetch
 ```
 
 Create a new upfetch instance:
@@ -32,15 +30,16 @@ Make a fetch request with schema validation:
 ```ts
 import { s } from 'standard-schema'
 
-const todo = await upfetch('https://api.example.com/todos/1', {
+const data = await upfetch('https://api.example.com/todos/1', {
    schema: s.object({
       id: s.number(),
       title: s.string(),
       completed: s.boolean(),
    }),
 })
-// todo is properly typed based on the schema
 ```
+
+`data` is properly typed based on the schema.
 
 ## ➡️ Key Features
 
