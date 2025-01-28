@@ -295,7 +295,16 @@ const fetchText = up(fetch, () => ({
 
 ## ➡️ API Reference
 
-### <samp>up</samp>
+### <samp>up(fetch, getDefaultOptions?)</samp>
+
+Creates a new upfetch instance with optional default options.
+
+```ts
+function up(
+   fetchFn: typeof globalThis.fetch,
+   getDefaultOptions?: () => DefaultOptions,
+): UpFetch
+```
 
 | Option                           | Signature                      | Description                                       |
 | -------------------------------- | ------------------------------ | ------------------------------------------------- |
@@ -311,7 +320,18 @@ const fetchText = up(fetch, () => ({
 | `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.     |
 | _...and all other fetch options_ |                                |                                                   |
 
-### <samp>upfetch</samp>
+### <samp>upfetch(url, options?)</samp>
+
+Makes a fetch request with the given options.
+
+```ts
+function upfetch(
+   url: string | URL,
+   options?: FetcherOptions | ((defaultOptions: UpOptions) => FetcherOptions),
+): Promise<any>
+```
+
+Options:
 
 | Option                           | Signature                      | Description                                                                                                                                                      |
 | -------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -324,3 +344,11 @@ const fetchText = up(fetch, () => ({
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                                                                  |
 | `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.                                                                                                                    |
 | _...and all other fetch options_ |                                |                                                                                                                                                                  |
+
+## ➡️ Environment Support
+
+- ✅ Browsers (Chrome, Firefox, Safari, Edge)
+- ✅ Node.js (18+)
+- ✅ Deno
+- ✅ Cloudflare Workers
+- ✅ Vercel Edge Functions
