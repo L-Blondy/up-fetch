@@ -217,6 +217,19 @@ upfetch('/todos', (defaultOptions) => ({
 }))
 ```
 
+### ✔️ FormData
+
+If you grab the FormData from a form, you dont need any adapter.
+
+```ts
+const form = document.querySelector('#my-form')
+
+upfetch('/todos', {
+   method: 'POST',
+   body: new FormData(form),
+})
+```
+
 ## ➡️ API Reference
 
 ### Options
