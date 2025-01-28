@@ -95,7 +95,8 @@ upfetch('/todos', {
 
 ### ✔️ Schema Validation
 
-Since _up-fetch_ follows the [Standard Schema Specification](standard-schema) it can be used with any schema library that implements the spec.
+Since _up-fetch_ follows the [Standard Schema Specification](standard-schema) it can be used with any schema library that implements the spec. \
+See the full list [here][standard-schema-libs].
 
 👉 With **zod**
 
