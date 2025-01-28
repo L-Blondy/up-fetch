@@ -5,7 +5,7 @@ Tiny & Composable fetch configuration tool with sensible defaults and built-in s
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1kB gzipped, no dependency
-- 💪 **Safe** - Built-in validation with **[[zod]]**, **[[valibot]]** or **[[arktype]]**. _Full list [here][standard-schema-libs]_
+- 💪 **Safe** - Built-in validation with **[zod]**, **[valibot]** or **[arktype]**. _Full list [here][standard-schema-libs]_
 - 🤩 **Familiar** - same API as fetch with additional options and sensible defaults
 - 🎯 **Intuitive** - define `params` and `body` as plain objects, `Response` parsed out of the box
 - 🔥 **Composable** - bring your own validation, serialization and parsing strategies
