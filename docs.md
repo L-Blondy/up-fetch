@@ -324,21 +324,3 @@ const fetchText = up(fetch, () => ({
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                                                                  |
 | `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.                                                                                                                    |
 | _...and all other fetch options_ |                                |                                                                                                                                                                  |
-
-<!-- body
-headers
-params
-parseResponse
-parseResponseError
-serializeBody
-serializeParams
-throwResponseErrorWhen
-schema -->
-
-#### Hooks
-
-| Hook            | Parameters                 | Description                 |
-| --------------- | -------------------------- | --------------------------- |
-| `onBeforeFetch` | `(options) => options`     | Modify request options      |
-| `onSuccess`     | `(response, data) => data` | Handle successful responses |
-| `onError`       | `(error) => void`          | Handle errors               |
