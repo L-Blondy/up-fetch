@@ -39,7 +39,7 @@ const data = await upfetch('https://a.b.c/todos/1', {
 })
 ```
 
-`data` is properly typed based on the schema.
+The `json` data is already parsed and properly typed based on the schema.
 
 ## ➡️ Key Features
 
