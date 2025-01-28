@@ -295,18 +295,33 @@ const fetchText = up(fetch, () => ({
 
 ## ➡️ API Reference
 
-### Options
+### <samp>up</samp>
 
-| Option                          | Type          | Description                                    |
-| ------------------------------- | ------------- | ---------------------------------------------- |
-| `baseUrl`                       | `string`      | Base URL for all requests                      |
-| `params`                        | `object`      | Query parameters                               |
-| `body`                          | `any`         | Request body (automatically stringified)       |
-| `schema`                        | `Schema`      | standard-schema schema for response validation |
-| `headers`                       | `HeadersInit` | Request headers                                |
-| ...and all native fetch options |               |                                                |
+| Option                          | Type                           | Description                                       |
+| ------------------------------- | ------------------------------ | ------------------------------------------------- |
+| `baseUrl`                       | `string`                       | Base URL for all requests                         |
+| `params`                        | `object`                       | The default query parameters.                     |
+| `onBeforeFetch`                 | `(options) => void`            | Executes before the request is made.              |
+| `onError`                       | `(error, options) => void`     | Executes on error.                                |
+| `onSuccess`                     | `(data, options) => void`      | Executes when the request successfully completes. |
+| `parseResponse`                 | `(response, options) => data`  | The default success response parser.              |
+| `parseResponseError`            | `(response, options) => error` | The default error response parser.                |
+| `serializeBody`                 | `(body) => BodyInit`           | The default body serializer.                      |
+| `serializeParams`               | `(params) => string`           | The default query parameter serializer.           |
+| `throwResponseErrorWhen`        | `(response) => boolean`        | Decides if the request should throw an error.     |
+| ...and all native fetch options |                                |                                                   |
 
-### Hooks
+<!-- body
+headers
+params
+parseResponse
+parseResponseError
+serializeBody
+serializeParams
+throwResponseErrorWhen
+schema -->
+
+#### Hooks
 
 | Hook            | Parameters                 | Description                 |
 | --------------- | -------------------------- | --------------------------- |
