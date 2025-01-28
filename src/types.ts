@@ -97,7 +97,7 @@ export type ComputedOptions<
    serializeBody: SerializeBody
    serializeParams: SerializeParams
    throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
-   validate?: Validate<TFetchFn, TData, TParsedData>
+   validate: Validate<TFetchFn, TData, TParsedData>
 }
 
 export type DefaultOptions<
