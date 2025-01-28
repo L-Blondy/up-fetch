@@ -4,15 +4,15 @@ Tiny & Composable fetch configuration tool with sensible defaults.
 
 ## ➡️ Highlights
 
--  🚀 **Lightweight** - 1kB gzipped, no dependency
--  🤩 **Familiar** - same API as [fetch][MDN] with additional options and sensible defaults
--  🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
--  🔥 **Composable** - bring your own `serialization`, `parsing` and `throwing` strategies when needed
--  👁️ **observable** - thanks to the built in `interceptors`
--  💫 **Reusable** - create instances with custom defaults
--  💪 **Strongly typed** - best in class type inferrence and autocomplete
--  🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
--  📦 **Tree Shakable** - You only get what you use
+- 🚀 **Lightweight** - 1kB gzipped, no dependency
+- 🤩 **Familiar** - same API as [fetch][MDN] with additional options and sensible defaults
+- 🎯 **Intuitive** - define the `params` and `body` as plain objects, the `Response` is parsed out of the box
+- 🔥 **Composable** - bring your own `serialization`, `parsing` and `throwing` strategies when needed
+- 👁️ **observable** - thanks to the built in `interceptors`
+- 💫 **Reusable** - create instances with custom defaults
+- 💪 **Strongly typed** - best in class type inferrence and autocomplete
+- 🤯 **Validation adapters** - _(opt-in)_ validate the data for maximum type safety with [zod](https://zod.dev/) or [valibot](https://valibot.dev/)
+- 📦 **Tree Shakable** - You only get what you use
 
 ## ➡️ QuickStart
 
@@ -361,10 +361,10 @@ You can decide **what** to throw using the [parseResponseError](#parseresponseer
 
 On the default `ResponseError`:
 
--  The parsed response body is available with `error.data`. \
--  The raw Response is available with `error.response`. \
--  The response status is available with `error.status`. \
--  The options used the make the request are available with `error.options`.
+- The parsed response body is available with `error.data`. \
+- The raw Response is available with `error.response`. \
+- The response status is available with `error.status`. \
+- The options used the make the request are available with `error.options`.
 
 The [type guard](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types) `isResponseError` can be used to check if an error is a `ResponseError`
 
@@ -1152,13 +1152,13 @@ const upfetch = up(fetch, () => ({
 
 ## ➡️ Compatibility
 
--  ✅ All modern browsers
--  ✅ Bun
--  ✅ Node 18+
--  ✅ Cloudflare Workers
+- ✅ All modern browsers
+- ✅ Bun
+- ✅ Node 18+
+- ✅ Cloudflare Workers
 
 [MDN]: https://developer.mozilla.org/en-US/docs/Web/API/fetch
 
 ## From the same author
 
--  [tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to easily add multiple color themes to your projects.
+- [tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to easily add multiple color themes to your projects.
