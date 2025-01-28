@@ -313,8 +313,8 @@ function up(
 | `onBeforeFetch`                  | `(options) => void`            | Executes before the request is made.              |
 | `onError`                        | `(error, options) => void`     | Executes on error.                                |
 | `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes. |
-| `parseResponse`                  | `(response, options) => data`  | The default success response parser.              |
-| `parseResponseError`             | `(response, options) => error` | The default error response parser.                |
+| `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically.           |
+| `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically               |
 | `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                      |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.           |
 | `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.     |
