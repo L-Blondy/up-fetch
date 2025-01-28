@@ -5,7 +5,7 @@ Tiny & Composable fetch configuration tool with sensible defaults and built-in s
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1kB gzipped, no dependency
-- 💪 **Standard Schema** - Built-in schema validation with **zod**, **valibot** or **arktype**. Check out the full list [here](<[text](https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec)>)
+- 💪 **Standard Schema** - Built-in schema validation with **zod**, **valibot** or **arktype**. Check out the full list [here](https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec)
 - 🤩 **Familiar** - same API as fetch with additional options and sensible defaults
 - 🎯 **Intuitive** - define `params` and `body` as plain objects, `Response` parsed out of the box
 - 🔥 **Composable** - bring your own validation, serialization and parsing strategies
@@ -30,11 +30,11 @@ Make a fetch request with schema validation:
 ```ts
 import { z } from 'zod'
 
-const data = await upfetch('https://api.example.com/todos/1', {
-   schema: s.object({
-      id: s.number(),
-      title: s.string(),
-      completed: s.boolean(),
+const data = await upfetch('https://a.b.c/todos/1', {
+   schema: z.object({
+      id: z.number(),
+      title: z.string(),
+      completed: z.boolean(),
    }),
 })
 ```
@@ -49,20 +49,24 @@ Set defaults for all requests when creating an instance:
 
 ```ts
 const upfetch = up(fetch, () => ({
-   baseUrl: 'https://api.example.com',
-   headers: { Authorization: localStorage.getItem('bearer-token') },
+   baseUrl: 'https://a.b.c',
+   headers: { 'x-api-key': '123' },
 }))
 ```
 
 ### ✔️ Simple Query Parameters
 
+👎 With raw fetch:
+
 ```ts
-// Before with fetch
 fetch(
    `https://api.example.com/todos?search=${search}&skip=${skip}&take=${take}`,
 )
+```
 
-// After with up-fetch
+👍 With up-fetch:
+
+```ts
 upfetch('/todos', {
    params: { search, skip, take },
 })
