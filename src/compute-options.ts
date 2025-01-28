@@ -21,11 +21,8 @@ import {
 
 export let interceptors: Interceptors = [
    'onBeforeFetch',
-   'onParsingError',
-   'onRequestError',
-   'onResponseError',
    'onSuccess',
-   'onTransformError',
+   'onError',
 ]
 
 export let computeOptions = <

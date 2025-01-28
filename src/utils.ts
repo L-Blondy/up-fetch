@@ -55,7 +55,7 @@ export let omit = <O extends object, K extends KeysOfUnion<O> | (string & {})>(
 ): DistributiveOmit<O, K> => {
    let copy = { ...obj } as DistributiveOmit<O, K>
    for (let key in copy) {
-      if (keys.includes(key as any)) delete copy[key]
+      if (keys.includes(key as any as K)) delete copy[key]
    }
    return copy
 }
@@ -73,9 +73,11 @@ export let isJsonifiableObjectOrArray = (
 ): body is JsonifiableObject | JsonifiableArray => {
    if (!body || typeof body !== 'object') return false
    return (
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       body?.constructor?.name === 'Object' ||
       Array.isArray(body) ||
-      typeof (body as any)?.toJSON === 'function'
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      typeof body?.toJSON === 'function'
    )
 }
 
@@ -90,8 +92,8 @@ export function getUrl(
    let url = /^https?:\/\//.test(input)
       ? input
       : !base || !input
-      ? base + input
-      : base.replace(/\/$/, '') + '/' + input.replace(/^\//, '')
+        ? base + input
+        : base.replace(/\/$/, '') + '/' + input.replace(/^\//, '')
 
    if (queryString) {
       url += (url.includes('?') ? '&' : '?') + queryString.replace(/^\?/, '')
