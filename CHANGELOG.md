@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0-beta.0](https://github.com/L-Blondy/up-fetch/compare/v1.0.0-beta.0...v0.7.0) - 2025.01-28
+## [1.0.0](https://github.com/L-Blondy/up-fetch/compare/v1.0.0...v0.7.0) - 2025.01-28
 
 ### Added
 
