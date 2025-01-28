@@ -8,15 +8,15 @@ import type {
 } from './types'
 import { type MaybePromise } from './utils'
 
-export type FallbackOptions<TFetchFn extends BaseFetchFn, TError> = {
+export type FallbackOptions<TFetchFn extends BaseFetchFn> = {
    parseResponse: ParseResponse<TFetchFn, any>
-   parseResponseError: ParseResponseError<TFetchFn, TError>
+   parseResponseError: ParseResponseError<TFetchFn>
    serializeParams: SerializeParams
    serializeBody: SerializeBody
    throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
 }
 
-export let fallbackOptions: FallbackOptions<any, any> = {
+export let fallbackOptions: FallbackOptions<any> = {
    parseResponse: (res) =>
       res
          .clone()

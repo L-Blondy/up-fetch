@@ -28,23 +28,17 @@ export let computeOptions = <
    TFetchFn extends BaseFetchFn,
    TParsedData = any,
    TSchema extends StandardSchemaV1 = any,
-   TError = any,
 >(
    input: Parameters<TFetchFn>[0], // fetch 1st arg
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
-   fetcherOpts: FetcherOptions<
-      TFetchFn,
-      TSchema,
-      TError,
-      TParsedData
-   > = emptyOptions,
-): ComputedOptions<TFetchFn, TSchema, TError, TParsedData> => {
+   fetcherOpts: FetcherOptions<TFetchFn, TSchema, TParsedData> = emptyOptions,
+): ComputedOptions<TFetchFn, TSchema, TParsedData> => {
    // transform URL to string right away
    input = input?.href ?? input
    let mergedOptions = {
       // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
       ...(emptyOptions as BaseOptions<TFetchFn>),
-      ...(fallbackOptions as FallbackOptions<TFetchFn, TError>),
+      ...(fallbackOptions as FallbackOptions<TFetchFn>),
       ...omit(defaultOptions, interceptors),
       ...omit(fetcherOpts, interceptors),
    }

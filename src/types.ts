@@ -58,10 +58,10 @@ export type ParseResponse<TFetchFn extends BaseFetchFn, TParsedData> = (
    options: ComputedOptions<TFetchFn>,
 ) => MaybePromise<TParsedData>
 
-export type ParseResponseError<TFetchFn extends BaseFetchFn, TError> = (
+export type ParseResponseError<TFetchFn extends BaseFetchFn> = (
    res: Response,
    options: ComputedOptions<TFetchFn>,
-) => MaybePromise<TError>
+) => any
 
 export type SerializeBody = (
    body: Exclude<RawBody, BodyInit | null>,
@@ -80,7 +80,6 @@ export type RawHeaders =
 export type ComputedOptions<
    TFetchFn extends BaseFetchFn,
    TSchema extends StandardSchemaV1 = any,
-   TError = any,
    TParsedData = any,
 > = BaseOptions<TFetchFn> & {
    readonly body?: BodyInit | null
@@ -88,7 +87,7 @@ export type ComputedOptions<
    readonly input: Request | string
    params: Params
    parseResponse: ParseResponse<TFetchFn, TParsedData>
-   parseResponseError: ParseResponseError<TFetchFn, TError>
+   parseResponseError: ParseResponseError<TFetchFn>
    rawBody?: RawBody
    serializeBody: SerializeBody
    serializeParams: SerializeParams
@@ -96,33 +95,30 @@ export type ComputedOptions<
    schema?: TSchema
 }
 
-export type DefaultOptions<
-   TFetchFn extends BaseFetchFn,
-   TError = any,
-> = BaseOptions<TFetchFn> & {
-   headers?: RawHeaders
-   onBeforeFetch?: (options: ComputedOptions<TFetchFn>) => void
-   onError?: (error: any, options: ComputedOptions<TFetchFn>) => void
-   onSuccess?: (data: any, options: ComputedOptions<TFetchFn>) => void
-   params?: Params
-   parseResponse?: ParseResponse<TFetchFn, any>
-   parseResponseError?: ParseResponseError<TFetchFn, TError>
-   serializeBody?: SerializeBody
-   serializeParams?: SerializeParams
-   throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
-}
+export type DefaultOptions<TFetchFn extends BaseFetchFn> =
+   BaseOptions<TFetchFn> & {
+      headers?: RawHeaders
+      onBeforeFetch?: (options: ComputedOptions<TFetchFn>) => void
+      onError?: (error: any, options: ComputedOptions<TFetchFn>) => void
+      onSuccess?: (data: any, options: ComputedOptions<TFetchFn>) => void
+      params?: Params
+      parseResponse?: ParseResponse<TFetchFn, any>
+      parseResponseError?: ParseResponseError<TFetchFn>
+      serializeBody?: SerializeBody
+      serializeParams?: SerializeParams
+      throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
+   }
 
 export type FetcherOptions<
    TFetchFn extends BaseFetchFn,
    TSchema extends StandardSchemaV1 = any,
-   TError = any,
    TParsedData = any,
 > = BaseOptions<TFetchFn> & {
    body?: RawBody
    headers?: RawHeaders
    params?: Params
    parseResponse?: ParseResponse<TFetchFn, TParsedData>
-   parseResponseError?: ParseResponseError<TFetchFn, TError>
+   parseResponseError?: ParseResponseError<TFetchFn>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
    throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>

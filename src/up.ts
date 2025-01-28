@@ -1,15 +1,11 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import { computeOptions } from './compute-options'
-import { ResponseError } from './response-error'
 import type { FetcherOptions, DefaultOptions, BaseFetchFn } from './types'
 import { emptyOptions, parseStandardSchema } from './utils'
 
 export function up<
    TFetchFn extends BaseFetchFn,
-   TDefaultOptions extends DefaultOptions<TFetchFn, any> = DefaultOptions<
-      TFetchFn,
-      ResponseError
-   >,
+   TDefaultOptions extends DefaultOptions<TFetchFn> = DefaultOptions<TFetchFn>,
 >(
    fetchFn: TFetchFn,
    getDefaultOptions: () => TDefaultOptions = () => emptyOptions,
@@ -18,23 +14,17 @@ export function up<
       TParsedData = Awaited<
          ReturnType<NonNullable<TDefaultOptions['parseResponse']>>
       >,
-      TSchema extends
-         StandardSchemaV1<TParsedData> = StandardSchemaV1<TParsedData>,
-      TError = Awaited<
-         ReturnType<NonNullable<TDefaultOptions['parseResponseError']>>
-      >,
+      TSchema extends StandardSchemaV1<
+         TParsedData,
+         any
+      > = StandardSchemaV1<TParsedData>,
    >(
       input: Parameters<TFetchFn>[0],
       fetcherOptions:
-         | FetcherOptions<TFetchFn, TSchema, TError, TParsedData>
+         | FetcherOptions<TFetchFn, TSchema, TParsedData>
          | ((
               defaultOptions: TDefaultOptions,
-           ) => FetcherOptions<
-              TFetchFn,
-              TSchema,
-              TError,
-              TParsedData
-           >) = emptyOptions,
+           ) => FetcherOptions<TFetchFn, TSchema, TParsedData>) = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
       let defaultOpts = getDefaultOptions()
@@ -71,7 +61,7 @@ export function up<
                defaultOpts.onSuccess?.(data, options)
                return data
             } else {
-               let respError: Awaited<TError>
+               let respError: any
                try {
                   respError = await options.parseResponseError(
                      response,
