@@ -163,6 +163,28 @@ try {
 }
 ```
 
+## Usage
+
+### ✔️ Timeouts
+
+While up-fetch doesn't provide a timeout option, you can easily implement one using the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout) method:
+
+Set a default timeout for all requests:
+
+```ts
+const upfetch = up(fetch, () => ({
+   signal: AbortSignal.timeout(5000),
+}))
+```
+
+Use a different timeout for a specific request:
+
+```ts
+upfetch('/todos', {
+   signal: AbortSignal.timeout(3000),
+})
+```
+
 ## ➡️ API Reference
 
 ### Options
