@@ -185,6 +185,18 @@ upfetch('/todos', {
 })
 ```
 
+### ✔️ Authentication
+
+You can easily add authentication to all requests by setting a default header:
+
+```ts
+const upfetch = up(fetch, () => ({
+   headers: { Authorization: localStorage.getItem('bearer-token') },
+}))
+```
+
+The bearer token will be retrieved from `localStorage` before each request.
+
 ## ➡️ API Reference
 
 ### Options
