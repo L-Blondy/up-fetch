@@ -41,13 +41,11 @@ export function up<
             ? fetcherOptions(defaultOpts)
             : fetcherOptions
       let options = computeOptions(input, defaultOpts, fetcherOpts)
-      fetcherOpts.onBeforeFetch?.(options)
       defaultOpts.onBeforeFetch?.(options)
 
       return fetchFn(options.input, options, ctx)
          .catch((error) => {
-            fetcherOpts.onRequestError?.(error, options)
-            defaultOpts.onRequestError?.(error, options)
+            defaultOpts.onError?.(error, options)
             throw error
          })
          .then(async (response) => {
@@ -56,19 +54,16 @@ export function up<
                try {
                   parsed = await options.parseResponse(response, options)
                } catch (error: any) {
-                  fetcherOpts.onParsingError?.(error, options)
-                  defaultOpts.onParsingError?.(error, options)
+                  defaultOpts.onError?.(error, options)
                   throw error
                }
                let data: Awaited<TData>
                try {
                   data = await options.transform(parsed, options)
                } catch (error: any) {
-                  fetcherOpts.onTransformError?.(error, options)
-                  defaultOpts.onTransformError?.(error, options)
+                  defaultOpts.onError?.(error, options)
                   throw error
                }
-               fetcherOpts.onSuccess?.(data, options)
                defaultOpts.onSuccess?.(data, options)
                return data
             } else {
@@ -79,12 +74,10 @@ export function up<
                      options,
                   )
                } catch (error: any) {
-                  fetcherOpts.onParsingError?.(error, options)
-                  defaultOpts.onParsingError?.(error, options)
+                  defaultOpts.onError?.(error, options)
                   throw error
                }
-               fetcherOpts.onResponseError?.(respError, options)
-               defaultOpts.onResponseError?.(respError, options)
+               defaultOpts.onError?.(respError, options)
                throw respError
             }
          })
