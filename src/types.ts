@@ -66,7 +66,7 @@ export type SerializeBody = (
    body: Exclude<RawBody, BodyInit | null>,
 ) => BodyInit | null | undefined
 
-export type Transform<TFetchFn extends BaseFetchFn, TData, TParsedData> = (
+export type Validate<TFetchFn extends BaseFetchFn, TData, TParsedData> = (
    parsedData: TParsedData,
    options: ComputedOptions<TFetchFn>,
 ) => MaybePromise<TData>
@@ -97,6 +97,7 @@ export type ComputedOptions<
    serializeBody: SerializeBody
    serializeParams: SerializeParams
    throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
+   validate?: Validate<TFetchFn, TData, TParsedData>
 }
 
 export type DefaultOptions<
@@ -129,4 +130,5 @@ export type FetcherOptions<
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
    throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
+   validate?: Validate<TFetchFn, TData, TParsedData>
 }
