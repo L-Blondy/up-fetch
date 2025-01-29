@@ -149,7 +149,8 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Error Handling
 
-By default, _up-fetch_ throws a `ResponseError` when `response.ok` is `false`. The error includes:
+By default, _up-fetch_ throws a `ResponseError` when `response.ok` is `false`. \
+The error includes extends the Error class with the followimg properties:
 
 - `status`: The HTTP status code
 - `data`: The parsed error body
