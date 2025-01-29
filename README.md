@@ -361,18 +361,16 @@ Options:
 - ✅ Cloudflare Workers
 - ✅ Vercel Edge Functions
 
-## ➡️ From the same Author
+<div align="center">
+<br />
+<br />
+<br />
+
+<h2>From the same Author</h2>
 
 [tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to add multiple color themes to your projects.
-<br />
-<br />
 
-<hr/>
-<br />
-
-<div align="center">
-
-Please share
+<h3>Please share</h3>
 
 [![Share on Bluesky][bsky-badge]][bsky-link]
 [![Share on Twitter][tweet-badge]][tweet-link]
