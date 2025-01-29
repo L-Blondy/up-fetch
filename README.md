@@ -385,5 +385,5 @@ Please share
 
 </div >
 
-[tweet]: https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fsaadeghi%2Fdaisyui
+[tweet]: https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com
 [tweet-url]: https://twitter.com/intent/tweet?text=up-fetch%0A%0ATiny%20%26%20Composable%20fetch%20configuration%20tool%20with%20sensible%20defaults%20and%20built-in%20schema%20validation%0A%0Ahttps://github.com/L-Blondy/up-fetch
