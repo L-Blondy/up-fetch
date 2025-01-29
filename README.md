@@ -53,7 +53,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Check out the the [API Reference](#%EF%B8%8F-api-reference) for the full list of options.
+Check out the the [API Reference][api-reference] for the full list of options.
 
 ### ✔️ Simple Query Parameters
 
@@ -72,6 +72,8 @@ upfetch('/todos', {
    params: { search, skip, take },
 })
 ```
+
+Use the [serializeParams][api-reference] option to customize the query parameter serialization.
 
 ### ✔️ Automatic Body Handling
 
@@ -93,6 +95,8 @@ upfetch('/todos', {
    body: { title: 'New Todo' },
 })
 ```
+
+Use the [serializeBody][api-reference] option to customize the body serialization.
 
 ### ✔️ Schema Validation
 
@@ -164,6 +168,8 @@ try {
    }
 }
 ```
+
+Use the [throwResponseErrorWhen][api-reference] option to decide **when** to throw, or the [parseResponseError][api-reference] option to customize **what** to throw.
 
 ## Usage
 
@@ -360,3 +366,4 @@ Options:
 [arktype]: https://arktype.dev/
 [standard-schema]: https://github.com/standard-schema/standard-schema
 [standard-schema-libs]: https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec
+[api-reference]: #%EF%B8%8F-api-reference
