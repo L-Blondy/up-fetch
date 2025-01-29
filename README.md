@@ -53,6 +53,8 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+Check out the the [API Reference](#%EF%B8%8F-api-reference) for the full list of options
+
 ### ✔️ Simple Query Parameters
 
 👎 With raw fetch:
@@ -306,19 +308,19 @@ function up(
 ): UpFetch
 ```
 
-| Option                           | Signature                      | Description                                       |
-| -------------------------------- | ------------------------------ | ------------------------------------------------- |
-| `baseUrl`                        | `string`                       | Base URL for all requests.                        |
-| `params`                         | `object`                       | The default query parameters.                     |
-| `onBeforeFetch`                  | `(options) => void`            | Executes before the request is made.              |
-| `onError`                        | `(error, options) => void`     | Executes on error.                                |
-| `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes. |
-| `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically.           |
-| `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically               |
-| `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                      |
-| `serializeParams`                | `(params) => string`           | The default query parameter serializer.           |
-| `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.     |
-| _...and all other fetch options_ |                                |                                                   |
+| Option                           | Signature                      | Description                                                                                               |
+| -------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `baseUrl`                        | `string`                       | Base URL for all requests.                                                                                |
+| `params`                         | `object`                       | The default query parameters.                                                                             |
+| `onBeforeFetch`                  | `(options) => void`            | Executes before the request is made.                                                                      |
+| `onError`                        | `(error, options) => void`     | Executes on error.                                                                                        |
+| `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
+| `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
+| `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
+| `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                                                                              |
+| `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
+| `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.                                                             |
+| _...and all other fetch options_ |                                |                                                                                                           |
 
 ### <samp>upfetch(url, options?)</samp>
 
