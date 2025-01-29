@@ -53,11 +53,11 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Check out the the [API Reference](#%EF%B8%8F-api-reference) for the full list of options
+Check out the the [API Reference](#%EF%B8%8F-api-reference) for the full list of options.
 
 ### ✔️ Simple Query Parameters
 
-👎 With raw fetch:
+🤔 With raw fetch:
 
 ```ts
 fetch(
@@ -75,7 +75,7 @@ upfetch('/todos', {
 
 ### ✔️ Automatic Body Handling
 
-👎 With raw fetch:
+🤔 With raw fetch:
 
 ```ts
 fetch('https://api.example.com/todos', {
