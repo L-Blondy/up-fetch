@@ -376,7 +376,6 @@ Options:
 
 <hr/>
 <br />
-<br />
 
 <div align="center">
 
