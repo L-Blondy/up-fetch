@@ -370,6 +370,7 @@ Options:
 
 [tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to add multiple color themes to your projects.
 
+<br /> 
 <h3>Share on:</h3>
 
 [![s][bsky-badge]][bsky-link]
