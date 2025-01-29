@@ -169,7 +169,7 @@ try {
 }
 ```
 
-Use the [throwResponseErrorWhen][api-reference] option to decide **when** to throw, or the [parseResponseError][api-reference] option to customize **what** to throw.
+Use the [throwResponseError][api-reference] option to decide **when** to throw, or the [parseResponseError][api-reference] option to customize **what** to throw.
 
 ## Usage
 
@@ -325,7 +325,7 @@ function up(
 | `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
 | `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                                                                              |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
-| `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.                                                             |
+| `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                       |
 | _...and all other fetch options_ |                                |                                                                                                           |
 
 ### <samp>upfetch(url, options?)</samp>
@@ -350,7 +350,7 @@ Options:
 | `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification](https://github.com/standard-schema/standard-schema). |
 | `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                                                             |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                                                                  |
-| `throwResponseErrorWhen`         | `(response) => boolean`        | Decides if the request should throw an error.                                                                                                                    |
+| `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                                                              |
 | _...and all other fetch options_ |                                |                                                                                                                                                                  |
 
 ## ➡️ Environment Support

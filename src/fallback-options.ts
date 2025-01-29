@@ -13,7 +13,7 @@ export type FallbackOptions<TFetchFn extends BaseFetchFn> = {
    parseResponseError: ParseResponseError<TFetchFn>
    serializeParams: SerializeParams
    serializeBody: SerializeBody
-   throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
+   throwResponseError: (response: Response) => MaybePromise<boolean>
 }
 
 export let fallbackOptions: FallbackOptions<any> = {
@@ -40,5 +40,5 @@ export let fallbackOptions: FallbackOptions<any> = {
 
    serializeBody: (val: any) => JSON.stringify(val),
 
-   throwResponseErrorWhen: (response) => !response.ok,
+   throwResponseError: (response) => !response.ok,
 }

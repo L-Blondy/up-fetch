@@ -41,7 +41,7 @@ export function up<
             throw error
          })
          .then(async (response: Response) => {
-            if (!(await options.throwResponseErrorWhen(response))) {
+            if (!(await options.throwResponseError(response))) {
                let parsed: Awaited<TParsedData>
                try {
                   parsed = await options.parseResponse(response, options)

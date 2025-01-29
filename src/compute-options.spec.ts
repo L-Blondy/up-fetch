@@ -97,7 +97,7 @@ test('options overrides', () => {
       referrer: 'https://a.b.c',
       referrerPolicy: 'no-referrer-when-downgrade',
       signal: new AbortController().signal,
-      throwResponseErrorWhen: () => true,
+      throwResponseError: () => true,
       window: null,
    }
    const fetcherOptions: FetcherOptions<typeof fetch> = {

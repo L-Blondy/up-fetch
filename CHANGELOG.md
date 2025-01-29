@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0](https://github.com/L-Blondy/up-fetch/compare/v1.1.0...v1.0.0) - 2025.01-29
+
+### Breaking changes
+
+- renamed `parseResponseErrorWhen` to `parseResponseError`
+
 ## [1.0.0](https://github.com/L-Blondy/up-fetch/compare/v1.0.0...v0.7.0) - 2025.01-28
 
 ### Added
@@ -7,7 +13,7 @@
 - Added the `schema` option following the [Standard Schema Specification](https://github.com/standard-schema/standard-schema)
 - Added the `onError` hook on `up`
 
-### Removed
+### Breaking changes
 
 - removed all `upfetch` hooks (on\*\*\*)
 - remove all `up` error hooks (on\*\*\*Error) in favor of `onError`

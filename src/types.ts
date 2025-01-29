@@ -91,7 +91,7 @@ export type ComputedOptions<
    rawBody?: RawBody
    serializeBody: SerializeBody
    serializeParams: SerializeParams
-   throwResponseErrorWhen: (response: Response) => MaybePromise<boolean>
+   throwResponseError: (response: Response) => MaybePromise<boolean>
    schema?: TSchema
 }
 
@@ -106,7 +106,7 @@ export type DefaultOptions<TFetchFn extends BaseFetchFn> =
       parseResponseError?: ParseResponseError<TFetchFn>
       serializeBody?: SerializeBody
       serializeParams?: SerializeParams
-      throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
+      throwResponseError?: (response: Response) => MaybePromise<boolean>
    }
 
 export type FetcherOptions<
@@ -121,6 +121,6 @@ export type FetcherOptions<
    parseResponseError?: ParseResponseError<TFetchFn>
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
-   throwResponseErrorWhen?: (response: Response) => MaybePromise<boolean>
+   throwResponseError?: (response: Response) => MaybePromise<boolean>
    schema?: TSchema
 }

@@ -15,7 +15,7 @@ describe('up', () => {
    afterEach(() => server.resetHandlers())
    afterAll(() => server.close())
 
-   describe('throwResponseErrorWhen', () => {
+   describe('throwResponseError', () => {
       test('Should throw by default if !response.ok', async () => {
          server.use(
             http.get('https://example.com', async () => {
@@ -47,7 +47,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            throwResponseErrorWhen: () => false,
+            throwResponseError: () => false,
          }))
 
          await upfetch('').catch(() => {
@@ -67,7 +67,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            throwResponseErrorWhen: () => {
+            throwResponseError: () => {
                expect(catchCount).toBe(0)
                catchCount++
                return true
@@ -97,7 +97,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            throwResponseErrorWhen: () => {
+            throwResponseError: () => {
                expect(catchCount).toBe(0)
                catchCount++
                return true
@@ -128,7 +128,7 @@ describe('up', () => {
 
          const upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            throwResponseErrorWhen: async () => {
+            throwResponseError: async () => {
                return new Promise((resolve) => {
                   catchCount++
                   setTimeout(() => resolve(true), 100)
