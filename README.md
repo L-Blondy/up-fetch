@@ -368,9 +368,13 @@ Options:
 [standard-schema-libs]: https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec
 [api-reference]: #%EF%B8%8F-api-reference
 
-## From the same Author
+## ➡️ From the same Author
 
 [tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to add multiple color themes to your projects.
+<br />
+<br />
+
+<hr/>
 <br />
 <br />
 
