@@ -361,13 +361,6 @@ Options:
 - ✅ Cloudflare Workers
 - ✅ Vercel Edge Functions
 
-[zod]: https://zod.dev/
-[valibot]: https://valibot.dev/
-[arktype]: https://arktype.dev/
-[standard-schema]: https://github.com/standard-schema/standard-schema
-[standard-schema-libs]: https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec
-[api-reference]: #%EF%B8%8F-api-reference
-
 ## ➡️ From the same Author
 
 [tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to add multiple color themes to your projects.
@@ -381,9 +374,23 @@ Options:
 
 Please share
 
-[![][tweet]][tweet-url]
+[![Share on Bluesky][bsky-badge]][bsky-link]
+[![Share on Twitter][tweet-badge]][tweet-link]
 
 </div >
 
-[tweet]: https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com
-[tweet-url]: https://twitter.com/intent/tweet?text=up-fetch%0A%0ATiny%20%26%20Composable%20fetch%20configuration%20tool%20with%20sensible%20defaults%20and%20built-in%20schema%20validation%0A%0Ahttps://github.com/L-Blondy/up-fetch
+<!-- Badges -->
+
+[bsky-badge]: https://img.shields.io/badge/Share_on-Bluesky-0285FF?logo=bluesky&logoColor=fff
+[bsky-link]: https://bsky.app/intent/compose?text=up-fetch%0A%0ATiny%20%26%20Composable%20fetch%20configuration%20tool%20with%20sensible%20defaults%20and%20built-in%20schema%20validation%0A%0Ahttps://github.com/L-Blondy/up-fetch
+[tweet-badge]: https://img.shields.io/badge/Share_on-Twitter-1DA1F2?logo=x&logoColor=fff
+[tweet-link]: https://twitter.com/intent/tweet?text=up-fetch%0A%0ATiny%20%26%20Composable%20fetch%20configuration%20tool%20with%20sensible%20defaults%20and%20built-in%20schema%20validation%0A%0Ahttps://github.com/L-Blondy/up-fetch
+
+<!-- links -->
+
+[zod]: https://zod.dev/
+[valibot]: https://valibot.dev/
+[arktype]: https://arktype.dev/
+[standard-schema]: https://github.com/standard-schema/standard-schema
+[standard-schema-libs]: https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec
+[api-reference]: #%EF%B8%8F-api-reference
