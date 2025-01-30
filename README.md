@@ -1,6 +1,6 @@
 # up-fetch
 
-Fetch API configuration tool with built-in validation and sensible default.
+Fetch API configuration tool with built-in validation and sensible defaults.
 
 ## ➡️ Highlights
 
