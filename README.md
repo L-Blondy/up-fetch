@@ -29,7 +29,7 @@ Make a fetch request with schema validation:
 ```ts
 import { z } from 'zod'
 
-const data = await upfetch('https://a.b.c/todos/1', {
+const todo = await upfetch('https://a.b.c/todos/1', {
    schema: z.object({
       id: z.number(),
       title: z.string(),
