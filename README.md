@@ -1,11 +1,11 @@
 # up-fetch
 
-Tiny & Composable fetch configuration tool with sensible defaults and built-in schema validation.
+Fetch API configuration tool with built-in validation and sensible default.
 
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1kB gzipped, no dependency
-- 💪 **Safe** - Built-in validation with **[zod][zod]**, **[valibot][valibot]** or **[arktype][arktype]**. _Full list [here][standard-schema-libs]_
+- 💪 **Type Safe** - Built-in validation with **[zod][zod]**, **[valibot][valibot]** or **[arktype][arktype]**. _Full list [here][standard-schema-libs]_
 - 🤩 **Familiar** - same API as fetch with additional options and sensible defaults
 - 🎯 **Intuitive** - define `params` and `body` as plain objects, `Response` parsed out of the box
 - 🔥 **Composable** - bring your own validation, serialization and parsing strategies
