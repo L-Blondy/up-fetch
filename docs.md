@@ -5,7 +5,7 @@ Fetch API configuration tool with built-in validation and sensible defaults.
 ## ➡️ Highlights
 
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
-- 🎨 **Flexible Config** - Set defaults like baseUrl or headers once, use everywhere
+- 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
 - 🔒 **Type Safe** - Validate API responses with **[zod][zod]**, **[valibot][valibot]** or **[arktype][arktype]**
 - 📦 **Zero Dependencies** - 1kB gzipped
 
