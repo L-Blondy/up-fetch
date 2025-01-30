@@ -56,7 +56,7 @@ Check out the the [API Reference][api-reference] for the full list of options.
 
 ### ✔️ Simple Query Parameters
 
-🤔 With raw fetch:
+👎 With raw fetch:
 
 ```ts
 fetch(
@@ -76,7 +76,7 @@ Use the [serializeParams][api-reference] option to customize the query parameter
 
 ### ✔️ Automatic Body Handling
 
-🤔 With raw fetch:
+👎 With raw fetch:
 
 ```ts
 fetch('https://api.example.com/todos', {
