@@ -314,19 +314,19 @@ function up(
 ): UpFetch
 ```
 
-| Option                           | Signature                      | Description                                                                                               |
-| -------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `baseUrl`                        | `string`                       | Base URL for all requests.                                                                                |
-| `params`                         | `object`                       | The default query parameters.                                                                             |
-| `onBeforeFetch`                  | `(options) => void`            | Executes before the request is made.                                                                      |
-| `onError`                        | `(error, options) => void`     | Executes on error.                                                                                        |
-| `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
-| `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
-| `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
-| `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                                                                              |
-| `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
-| `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                       |
-| _...and all other fetch options_ |                                |                                                                                                           |
+| Option                       | Signature                      | Description                                                                                               |
+| ---------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `baseUrl`                    | `string`                       | Base URL for all requests.                                                                                |
+| `params`                     | `object`                       | The default query parameters.                                                                             |
+| `onBeforeFetch`              | `(options) => void`            | Executes before the request is made.                                                                      |
+| `onError`                    | `(error, options) => void`     | Executes on error.                                                                                        |
+| `onSuccess`                  | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
+| `parseResponse`              | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
+| `parseResponseError`         | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
+| `serializeBody`              | `(body) => BodyInit`           | The default body serializer.                                                                              |
+| `serializeParams`            | `(params) => string`           | The default query parameter serializer.                                                                   |
+| `throwResponseError`         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
+| _...all other fetch options_ |                                |                                                                                                           |
 
 ### <samp>upfetch(url, options?)</samp>
 
@@ -341,17 +341,17 @@ function upfetch(
 
 Options:
 
-| Option                           | Signature                      | Description                                                                                                                                                      |
-| -------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                                                        |
-| `params`                         | `object`                       | The query parameters.                                                                                                                                            |
-| `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                                                     |
-| `parseResponseError`             | `(response, options) => error` | The error response parser.                                                                                                                                       |
-| `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification](https://github.com/standard-schema/standard-schema). |
-| `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                                                             |
-| `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                                                                  |
-| `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                                                              |
-| _...and all other fetch options_ |                                |                                                                                                                                                                  |
+| Option                       | Signature                      | Description                                                                                                                                                      |
+| ---------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `baseUrl`                    | `string`                       | Base URL for the request.                                                                                                                                        |
+| `params`                     | `object`                       | The query parameters.                                                                                                                                            |
+| `parseResponse`              | `(response, options) => data`  | The success response parser.                                                                                                                                     |
+| `parseResponseError`         | `(response, options) => error` | The error response parser.                                                                                                                                       |
+| `schema`                     | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification](https://github.com/standard-schema/standard-schema). |
+| `serializeBody`              | `(body) => BodyInit`           | The body serializer.                                                                                                                                             |
+| `serializeParams`            | `(params) => string`           | The query parameter serializer.                                                                                                                                  |
+| `throwResponseError`         | `(response) => boolean`        | Decide when to reject the response.                                                                                                                              |
+| _...all other fetch options_ |                                |                                                                                                                                                                  |
 
 ## ➡️ Environment Support
 
