@@ -2,11 +2,10 @@
 /* global require module process */
 import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
+import preferLet from 'eslint-plugin-prefer-let'
 
 export default tseslint.config(
-   {
-      ignores: ['**/dist/**', 'knip.ts'],
-   },
+   { ignores: ['dist', 'scripts', 'eslint.config.js'] },
    eslint.configs.recommended,
    ...tseslint.configs.recommendedTypeChecked,
    {
@@ -16,6 +15,7 @@ export default tseslint.config(
             tsconfigRootDir: '.',
          },
       },
+      'plugins': { 'prefer-let': preferLet },
       rules: {
          'block-scoped-var': 'error',
          'default-param-last': 0,
@@ -46,6 +46,7 @@ export default tseslint.config(
          'no-var': 0,
          'prefer-template': 0,
          'prefer-const': 0,
+         'prefer-let/prefer-let': 2,
          'no-ex-assign': 'error',
          'spaced-comment': [
             'warn',

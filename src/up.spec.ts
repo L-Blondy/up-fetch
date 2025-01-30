@@ -10,7 +10,7 @@ import { fallbackOptions } from './fallback-options'
 import { object, pipe, string, transform } from 'valibot'
 
 describe('up', () => {
-   const server = setupServer()
+   let server = setupServer()
    beforeAll(() => server.listen())
    afterEach(() => server.resetHandlers())
    afterAll(() => server.close())
@@ -25,7 +25,7 @@ describe('up', () => {
 
          let catchCount = 0
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
          }))
 
@@ -45,7 +45,7 @@ describe('up', () => {
 
          let catchCount = 0
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             throwResponseError: () => false,
          }))
@@ -65,7 +65,7 @@ describe('up', () => {
 
          let catchCount = 0
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             throwResponseError: () => {
                expect(catchCount).toBe(0)
@@ -95,7 +95,7 @@ describe('up', () => {
 
          let catchCount = 0
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             throwResponseError: () => {
                expect(catchCount).toBe(0)
@@ -126,7 +126,7 @@ describe('up', () => {
 
          let catchCount = 0
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             throwResponseError: async () => {
                return new Promise((resolve) => {
@@ -154,7 +154,7 @@ describe('up', () => {
       test('Should be ignored in up', async () => {
          server.use(
             http.post('https://example.com', async ({ request }) => {
-               const body = await request.text()
+               let body = await request.text()
                if (count === 1) {
                   expect(body).toBe('')
                }
@@ -167,7 +167,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             method: 'POST',
             body: 'my body',
@@ -202,14 +202,14 @@ describe('up', () => {
          async ({ body, expected }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
-                  const hasApplicationJsonHeader =
+                  let hasApplicationJsonHeader =
                      request.headers.get('content-type') === 'application/json'
                   expect(hasApplicationJsonHeader).toEqual(expected)
                   return HttpResponse.json({ hello: 'world' }, { status: 200 })
                }),
             )
 
-            const upfetch = up(fetch, () => ({
+            let upfetch = up(fetch, () => ({
                baseUrl: 'https://example.com',
                method: 'POST',
                serializeBody: (body) => JSON.stringify(body),
@@ -233,14 +233,14 @@ describe('up', () => {
          async ({ body, expected }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
-                  const hasApplicationJsonHeader =
+                  let hasApplicationJsonHeader =
                      request.headers.get('content-type') === 'application/json'
                   expect(hasApplicationJsonHeader).toEqual(expected)
                   return HttpResponse.json({ hello: 'world' }, { status: 200 })
                }),
             )
 
-            const upfetch = up(fetch, () => ({
+            let upfetch = up(fetch, () => ({
                baseUrl: 'https://example.com',
                method: 'POST',
                serializeBody: () => new FormData(),
@@ -271,7 +271,7 @@ describe('up', () => {
                }),
             )
 
-            const upfetch = up(fetch, () => ({
+            let upfetch = up(fetch, () => ({
                baseUrl: 'https://example.com',
                headers: { 'content-type': 'html/text' },
                method: 'POST',
@@ -290,7 +290,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             headers: { 'content-type': 'from up' },
             method: 'POST',
@@ -306,7 +306,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             headers: { 'content-type': 'text/html' },
             method: 'POST',
@@ -324,7 +324,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             params: { hello: 'world' },
          }))
@@ -342,7 +342,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
+         let upfetch = up(fetch, () => ({ baseUrl: 'https://example.com' }))
 
          await upfetch('/?input=param', {
             params: { hello: 'people', input: 'test' },
@@ -357,7 +357,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             params: { hello: 'world', input: 'test' },
          }))
@@ -380,7 +380,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             serializeParams(params) {
                expect(params).toEqual({ a: 1 })
@@ -399,7 +399,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             serializeParams(params) {
                expect(params).toEqual({ a: 1 })
@@ -418,7 +418,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             serializeParams() {
                count++
@@ -438,7 +438,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             serializeParams: () => 'from=up',
          }))
@@ -454,7 +454,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             serializeBody(body) {
                expect(body).toEqual({ a: 1 })
@@ -487,14 +487,14 @@ describe('up', () => {
          async ({ body, isSerialized }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
-                  const actualBody = await request.text()
+                  let actualBody = await request.text()
                   expect(actualBody === 'serialized').toBe(isSerialized)
 
                   return HttpResponse.json({ hello: 'world' }, { status: 200 })
                }),
             )
 
-            const upfetch = up(fetch, () => ({
+            let upfetch = up(fetch, () => ({
                baseUrl: 'https://example.com',
                method: 'POST',
             }))
@@ -516,7 +516,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             serializeBody: () => 'from=up',
          }))
@@ -536,10 +536,10 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
          }))
-         const data = await upfetch('')
+         let data = await upfetch('')
          expect(data).toEqual({ hello: 'world' })
       })
 
@@ -550,10 +550,10 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
          }))
-         const data = await upfetch('')
+         let data = await upfetch('')
          expect(data).toEqual('some text')
       })
 
@@ -564,7 +564,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             parseResponse(res, options) {
                expect(res instanceof Response).toEqual(true)
@@ -584,7 +584,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             parseResponse(res) {
                expect(count).toEqual(1)
@@ -609,7 +609,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             parseResponse(res) {
                expect(res.body).toEqual(null)
@@ -629,11 +629,11 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             parseResponse: () => Promise.resolve('from=up'),
          }))
-         const data = await upfetch('', {
+         let data = await upfetch('', {
             body: { a: 1 },
             method: 'POST',
             parseResponse: () => Promise.resolve('from=upfetch'),
@@ -651,7 +651,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
          }))
          await upfetch('').catch((error) => {
@@ -666,7 +666,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
          }))
          await upfetch('').catch((error) => {
@@ -681,7 +681,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             parseResponseError(res, options) {
                expect(res instanceof Response).toEqual(true)
@@ -703,7 +703,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             parseResponseError(res) {
                expect(count).toEqual(1)
@@ -729,7 +729,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             parseResponseError(res) {
                expect(res.body).toEqual(null)
@@ -749,7 +749,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             parseResponseError: () => Promise.resolve('from=up'),
          }))
@@ -773,7 +773,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             onSuccess() {
                expect(count).toBe(1)
@@ -792,7 +792,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             onSuccess(data, options) {
                expect(data).toEqual({ hello: 'world!' })
@@ -819,7 +819,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             onSuccess() {
                count++
@@ -847,7 +847,7 @@ describe('up', () => {
 
          let count = 1
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             onBeforeFetch() {
                expect(count).toBe(1)
@@ -866,7 +866,7 @@ describe('up', () => {
             }),
          )
 
-         const upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             onBeforeFetch(options) {
                expect(options.input).toBe('https://example.com')

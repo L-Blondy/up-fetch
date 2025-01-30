@@ -106,7 +106,7 @@ export async function parseStandardSchema<TSchema extends StandardSchemaV1>(
    schema: TSchema,
    input: StandardSchemaV1.InferInput<TSchema>,
 ): Promise<StandardSchemaV1.InferOutput<TSchema>> {
-   const result = await schema['~standard'].validate(input)
+   let result = await schema['~standard'].validate(input)
    // if the `issues` field exists, the validation failed
    if (result.issues) {
       throw new Error(JSON.stringify(result.issues, null, 2))

@@ -47,7 +47,7 @@ describe('parseResponseError', () => {
       ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseResponseError: $response', async ({ response, output }) => {
-      const responseError: ResponseError =
+      let responseError: ResponseError =
          await fallbackOptions.parseResponseError(response, {
             href: 'my-options',
          } as any)

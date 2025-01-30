@@ -82,7 +82,7 @@ describe('strip', () => {
       ${{ a: 1, b: undefined }}   | ${[]}         | ${{ a: 1, b: undefined }}
       ${{ a: 1, b: 'c', d: 'e' }} | ${['b', 'd']} | ${{ a: 1 }}
    `('Input: $object', ({ object, keys, output }) => {
-      const stripped = omit(object, keys)
+      let stripped = omit(object, keys)
       expect(stripped).toEqual(output)
    })
 })

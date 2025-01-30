@@ -29,9 +29,9 @@
    },
    "include": [
       "./src",
-      "./app",
       "./eslint.config.js",
       "./vitest.config.ts",
       "./tsup.config.ts"
-   ]
+   ],
+   "exclude": ["./dist"]
 }

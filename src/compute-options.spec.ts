@@ -71,7 +71,7 @@ describe('computeOptions body', () => {
       ${{}}                 | ${{ body: undefined }}                    | ${undefined}
       ${{}}                 | ${{ body: null }}                         | ${null}
    `('Input: $body', ({ defaultOptions, fetcherOpts, output }) => {
-      const input = 'http://a'
+      let input = 'http://a'
 
       expect(computeOptions(input, defaultOptions, fetcherOpts).body).toEqual(
          output,
@@ -80,7 +80,7 @@ describe('computeOptions body', () => {
 })
 
 test('options overrides', () => {
-   const defaultOptions: DefaultOptions<typeof fetch> = {
+   let defaultOptions: DefaultOptions<typeof fetch> = {
       baseUrl: 'https://a.b.c',
       cache: 'force-cache',
       credentials: 'include',
@@ -100,7 +100,7 @@ test('options overrides', () => {
       throwResponseError: () => true,
       window: null,
    }
-   const fetcherOptions: FetcherOptions<typeof fetch> = {
+   let fetcherOptions: FetcherOptions<typeof fetch> = {
       baseUrl: undefined,
       cache: undefined,
       credentials: undefined,
@@ -115,7 +115,7 @@ test('options overrides', () => {
       signal: undefined,
       window: undefined,
    }
-   const computed = computeOptions('', defaultOptions, fetcherOptions)
+   let computed = computeOptions('', defaultOptions, fetcherOptions)
 
    expect('baseUrl' in computed).toBeFalsy()
    expect('cache' in computed).toBeFalsy()
