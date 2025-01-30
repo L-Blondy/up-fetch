@@ -326,7 +326,7 @@ function up(
 | `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                                                                              |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                       |
-| _...and-all-other-fetch-options_ |                                |                                                                                                           |
+| _...and all other fetch options_ |                                |                                                                                                           |
 
 ### <samp>upfetch(url, options?)</samp>
 
@@ -351,7 +351,7 @@ Options:
 | `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                                                             |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                                                                  |
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                                                              |
-| _...and-all-other-fetch-options_ |                                |                                                                                                                                                                  |
+| _...and all other fetch options_ |                                |                                                                                                                                                                  |
 
 ## ➡️ Environment Support
 
