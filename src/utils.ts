@@ -22,7 +22,7 @@ export let mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
    return res
 }
 
-export let computeParams = (
+export let resolveParams = (
    defaultParams: Params | undefined,
    input: unknown,
    fetcherParams: Params | undefined,

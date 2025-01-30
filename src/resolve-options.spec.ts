@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
-import { computeOptions } from './compute-options'
+import { resolveOptions } from './resolve-options'
 import { bodyMock } from './_mocks'
 import type { DefaultOptions, FetcherOptions } from './types'
 
-describe('computeOptions input', () => {
+describe('resolveOptions input', () => {
    test.each`
       input                                 | defaultOptions                                 | fetcherOpts                             | output
       ${'/'}                                | ${{ baseUrl: 'http://a.b.c' }}                 | ${{}}                                   | ${'http://a.b.c/'}
@@ -40,18 +40,18 @@ describe('computeOptions input', () => {
       ${'http://c/d?e=f'}                   | ${{ serializeParams: () => '?q=search' }}      | ${{ params: { q: 'will be ignored' } }} | ${'http://c/d?e=f&q=search'}
    `('Input: $body', ({ input, defaultOptions, fetcherOpts, output }) => {
       if (input instanceof Request) {
-         expect(computeOptions(input, defaultOptions, fetcherOpts).input).toBe(
+         expect(resolveOptions(input, defaultOptions, fetcherOpts).input).toBe(
             input,
          )
       } else {
          expect(
-            computeOptions(input, defaultOptions, fetcherOpts).input,
+            resolveOptions(input, defaultOptions, fetcherOpts).input,
          ).toEqual(output)
       }
    })
 })
 
-describe('computeOptions body', () => {
+describe('resolveOptions body', () => {
    test.each`
       defaultOptions        | fetcherOpts                               | output
       ${{ body: { a: 1 } }} | ${{}}                                     | ${undefined}
@@ -73,7 +73,7 @@ describe('computeOptions body', () => {
    `('Input: $body', ({ defaultOptions, fetcherOpts, output }) => {
       let input = 'http://a'
 
-      expect(computeOptions(input, defaultOptions, fetcherOpts).body).toEqual(
+      expect(resolveOptions(input, defaultOptions, fetcherOpts).body).toEqual(
          output,
       )
    })
@@ -115,19 +115,19 @@ test('options overrides', () => {
       signal: undefined,
       window: undefined,
    }
-   let computed = computeOptions('', defaultOptions, fetcherOptions)
+   let resolved = resolveOptions('', defaultOptions, fetcherOptions)
 
-   expect('baseUrl' in computed).toBeFalsy()
-   expect('cache' in computed).toBeFalsy()
-   expect('credentials' in computed).toBeFalsy()
-   expect('integrity' in computed).toBeFalsy()
-   expect('keepalive' in computed).toBeFalsy()
-   expect('method' in computed).toBeFalsy()
-   expect('mode' in computed).toBeFalsy()
-   expect('priority' in computed).toBeFalsy()
-   expect('redirect' in computed).toBeFalsy()
-   expect('referrer' in computed).toBeFalsy()
-   expect('referrerPolicy' in computed).toBeFalsy()
-   expect('signal' in computed).toBeFalsy()
-   expect('window' in computed).toBeFalsy()
+   expect('baseUrl' in resolved).toBeFalsy()
+   expect('cache' in resolved).toBeFalsy()
+   expect('credentials' in resolved).toBeFalsy()
+   expect('integrity' in resolved).toBeFalsy()
+   expect('keepalive' in resolved).toBeFalsy()
+   expect('method' in resolved).toBeFalsy()
+   expect('mode' in resolved).toBeFalsy()
+   expect('priority' in resolved).toBeFalsy()
+   expect('redirect' in resolved).toBeFalsy()
+   expect('referrer' in resolved).toBeFalsy()
+   expect('referrerPolicy' in resolved).toBeFalsy()
+   expect('signal' in resolved).toBeFalsy()
+   expect('window' in resolved).toBeFalsy()
 })

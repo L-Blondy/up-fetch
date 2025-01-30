@@ -29,8 +29,8 @@
       "build": "tsup",
       "dev": "vitest",
       "test": "vitest run && tsc --noEmit",
-      "release:pre:beta": "git pull && node scripts/check-beta-version.js && npm run test && npm run build",
-      "release:pre:stable": "git pull && node scripts/check-stable-version.js && npm run test && npm run build",
+      "release:pre:beta": "git pull && node scripts/check-beta-version.js && npm run lint && npm run test && npm run build",
+      "release:pre:stable": "git pull && node scripts/check-stable-version.js && npm run lint && npm run test && npm run build",
       "release:stable": "npm run release:pre:stable && npm publish && npm run release:post",
       "release:beta": "npm run release:pre:beta && npm publish --tag beta && npm run release:post",
       "release:post": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"

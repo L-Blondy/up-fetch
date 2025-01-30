@@ -4,7 +4,7 @@ import {
    isJsonifiableObjectOrArray,
    mergeHeaders,
    omit,
-   computeParams,
+   resolveParams,
 } from './utils'
 import { bodyMock } from './_mocks'
 
@@ -57,7 +57,7 @@ describe('mergeHeaders', () => {
    )
 })
 
-describe('computeParams', () => {
+describe('resolveParams', () => {
    test.each`
       defaultParams | input                      | fetcherParams | output
       ${{ a: 1 }}   | ${''}                      | ${{ a: 2 }}   | ${{ a: 2 }}
@@ -69,7 +69,7 @@ describe('computeParams', () => {
    `(
       'Input: $defaultHeaders, $fetcherHeaders',
       ({ defaultParams, input, fetcherParams, output }) => {
-         expect(computeParams(defaultParams, input, fetcherParams)).toEqual(
+         expect(resolveParams(defaultParams, input, fetcherParams)).toEqual(
             output,
          )
       },

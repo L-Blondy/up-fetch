@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
-import { computeOptions } from './compute-options'
+import { resolveOptions } from './resolve-options'
 import type { FetcherOptions, DefaultOptions, BaseFetchFn } from './types'
 import { emptyOptions, parseStandardSchema } from './utils'
 
@@ -32,7 +32,7 @@ export function up<
          typeof fetcherOptions === 'function'
             ? fetcherOptions(defaultOpts)
             : fetcherOptions
-      let options = computeOptions(input, defaultOpts, fetcherOpts)
+      let options = resolveOptions(input, defaultOpts, fetcherOpts)
       defaultOpts.onBeforeFetch?.(options)
 
       return fetchFn(options.input, options, ctx)
