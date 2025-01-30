@@ -5,11 +5,10 @@ Fetch API configuration tool with built-in validation and sensible defaults.
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1kB gzipped, no dependency
-- 💪 **Type Safe** - Built-in validation with **[zod][zod]**, **[valibot][valibot]** or **[arktype][arktype]**. _Full list [here][standard-schema-libs]_
-- 🤩 **Familiar** - same API as fetch with additional options and sensible defaults
-- 🎯 **Intuitive** - define `params` and `body` as plain objects, `Response` parsed out of the box
-- 🔥 **Composable** - bring your own validation, serialization and parsing strategies
-- 💫 **Reusable** - create instances with custom defaults
+- �️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
+- 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
+- 🔒 **Type Safe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
+- � **Familiar** - same API as fetch with additional options and sensible defaults
 
 ## ➡️ QuickStart
 
@@ -393,4 +392,4 @@ Options:
 [arktype]: https://arktype.dev/
 [standard-schema]: https://github.com/standard-schema/standard-schema
 [standard-schema-libs]: https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec
-[api-reference]: #%EF%B8%8F-api-reference
+[api-reference]: #️-api-reference
