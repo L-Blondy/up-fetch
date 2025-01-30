@@ -1,18 +1,18 @@
 # Changelog
 
-## [1.1.1](https://github.com/L-Blondy/up-fetch/compare/v1.1.1...v1.1.0) - 2025.01-30
+## [1.1.1](https://github.com/L-Blondy/up-fetch/compare/v1.1.0...v1.1.1) - 2025.01-30
 
 ### Fixed
 
 - Removed peerDependencies in package.json
 
-## [1.1.0](https://github.com/L-Blondy/up-fetch/compare/v1.1.0...v1.0.0) - 2025.01-29
+## [1.1.0](https://github.com/L-Blondy/up-fetch/compare/v1.0.0...v1.1.0) - 2025.01-29
 
 ### Breaking changes
 
 - renamed `parseResponseErrorWhen` to `parseResponseError`
 
-## [1.0.0](https://github.com/L-Blondy/up-fetch/compare/v1.0.0...v0.7.0) - 2025.01-28
+## [1.0.0](https://github.com/L-Blondy/up-fetch/compare/v0.7.0...v1.0.0) - 2025.01-28
 
 ### Added
 
@@ -25,7 +25,7 @@
 - remove all `up` error hooks (on\*\*\*Error) in favor of `onError`
 - removed the `transform` option
 
-## [0.7.0](https://github.com/L-Blondy/up-fetch/compare/v0.7.0...v0.6.0) - 2024-05-06
+## [0.7.0](https://github.com/L-Blondy/up-fetch/compare/v0.6.0...v0.7.0) - 2024-05-06
 
 ### Added
 
