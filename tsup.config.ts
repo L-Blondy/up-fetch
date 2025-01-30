@@ -10,5 +10,4 @@ export default defineConfig({
    format: ['esm', 'cjs'],
    outDir: 'dist',
    minify: true,
-   treeshake: true, // rollup
 })
