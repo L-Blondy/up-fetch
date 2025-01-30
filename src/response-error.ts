@@ -1,4 +1,4 @@
-import type { BaseFetchFn, ComputedOptions } from './types'
+import type { BaseFetchFn, ResolvedOptions } from './types'
 
 export class ResponseError<
    TData = any,
@@ -6,11 +6,11 @@ export class ResponseError<
 > extends Error {
    override name: 'ResponseError'
    response: Response
-   options: ComputedOptions<TFetchFn>
+   options: ResolvedOptions<TFetchFn>
    data: TData
    status: number
 
-   constructor(res: Response, data: TData, options: ComputedOptions<TFetchFn>) {
+   constructor(res: Response, data: TData, options: ResolvedOptions<TFetchFn>) {
       super(`Request failed with status ${res.status}`)
       this.data = data
       this.name = 'ResponseError'

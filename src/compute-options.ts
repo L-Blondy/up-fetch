@@ -1,6 +1,6 @@
 import type {
    BaseOptions,
-   ComputedOptions,
+   ResolvedOptions,
    FetcherOptions,
    DefaultOptions,
    BaseFetchFn,
@@ -32,7 +32,7 @@ export let computeOptions = <
    input: Parameters<TFetchFn>[0], // fetch 1st arg
    defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
    fetcherOpts: FetcherOptions<TFetchFn, TSchema, TParsedData> = emptyOptions,
-): ComputedOptions<TFetchFn, TSchema, TParsedData> => {
+): ResolvedOptions<TFetchFn, TSchema, TParsedData> => {
    // transform URL to string right away
    input = input?.href ?? input
    let mergedOptions = {

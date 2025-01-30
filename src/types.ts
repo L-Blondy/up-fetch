@@ -55,12 +55,12 @@ export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
 
 export type ParseResponse<TFetchFn extends BaseFetchFn, TParsedData> = (
    response: Response,
-   options: ComputedOptions<TFetchFn>,
+   options: ResolvedOptions<TFetchFn>,
 ) => MaybePromise<TParsedData>
 
 export type ParseResponseError<TFetchFn extends BaseFetchFn> = (
    res: Response,
-   options: ComputedOptions<TFetchFn>,
+   options: ResolvedOptions<TFetchFn>,
 ) => any
 
 export type SerializeBody = (
@@ -77,7 +77,7 @@ export type RawHeaders =
    | HeadersInit
    | Record<string, string | number | null | undefined>
 
-export type ComputedOptions<
+export type ResolvedOptions<
    TFetchFn extends BaseFetchFn,
    TSchema extends StandardSchemaV1 = any,
    TParsedData = any,
@@ -98,9 +98,9 @@ export type ComputedOptions<
 export type DefaultOptions<TFetchFn extends BaseFetchFn> =
    BaseOptions<TFetchFn> & {
       headers?: RawHeaders
-      onBeforeFetch?: (options: ComputedOptions<TFetchFn>) => void
-      onError?: (error: any, options: ComputedOptions<TFetchFn>) => void
-      onSuccess?: (data: any, options: ComputedOptions<TFetchFn>) => void
+      onBeforeFetch?: (options: ResolvedOptions<TFetchFn>) => void
+      onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
+      onSuccess?: (data: any, options: ResolvedOptions<TFetchFn>) => void
       params?: Params
       parseResponse?: ParseResponse<TFetchFn, any>
       parseResponseError?: ParseResponseError<TFetchFn>
