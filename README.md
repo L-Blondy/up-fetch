@@ -253,7 +253,7 @@ upfetch('https://a.b.c', {
 })
 ```
 
-### ✔️ HTTP Agent (node only)
+### ✔️ HTTP Agent
 
 Since _up-fetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
 
