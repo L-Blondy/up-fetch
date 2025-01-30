@@ -99,10 +99,10 @@ Use the [serializeBody][api-reference] option to customize the body serializatio
 
 ### ✔️ Schema Validation
 
-Since _up-fetch_ follows the [Standard Schema Specification](standard-schema) it can be used with any schema library that implements the spec. \
+Since _up-fetch_ follows the [Standard Schema Specification][standard-schema] it can be used with any schema library that implements the spec. \
 See the full list [here][standard-schema-libs].
 
-👉 With **zod**
+👉 With **zod** 3.24+
 
 ```ts
 import { z } from 'zod'
@@ -115,7 +115,7 @@ const posts = await upfetch('/posts/1', {
 })
 ```
 
-👉 With **valibot**
+👉 With **valibot** 1.0+
 
 ```ts
 import { object, string, number } from 'valibot'
@@ -341,17 +341,17 @@ function upfetch(
 
 Options:
 
-| Option                           | Signature                      | Description                                                                                                                                                      |
-| -------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                                                        |
-| `params`                         | `object`                       | The query parameters.                                                                                                                                            |
-| `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                                                     |
-| `parseResponseError`             | `(response, options) => error` | The error response parser.                                                                                                                                       |
-| `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification](https://github.com/standard-schema/standard-schema). |
-| `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                                                             |
-| `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                                                                  |
-| `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                                                              |
-| _...and all other fetch options_ |                                |                                                                                                                                                                  |
+| Option                           | Signature                      | Description                                                                                                                   |
+| -------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                     |
+| `params`                         | `object`                       | The query parameters.                                                                                                         |
+| `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                  |
+| `parseResponseError`             | `(response, options) => error` | The error response parser.                                                                                                    |
+| `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification][standard-schema]. |
+| `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                          |
+| `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                               |
+| `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
+| _...and all other fetch options_ |                                |                                                                                                                               |
 
 ## ➡️ Environment Support
 
