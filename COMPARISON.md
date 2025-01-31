@@ -41,13 +41,13 @@ Legend:
 
 <!-- badges -->
 
-[up-fetch-size-badge]: https://deno.bundlejs.com/?q=up-fetch&badge
-[up-fetch-size-link]: https://bundlejs.com/?q=up-fetch
-[ofetch-size-badge]: https://deno.bundlejs.com/?q=ofetch&badge
-[ofetch-size-link]: https://bundlejs.com/?q=ofetch
-[wretch-size-badge]: https://deno.bundlejs.com/?q=wretch&badge
-[wretch-size-link]: https://bundlejs.com/?q=wretch
-[ky-size-badge]: https://deno.bundlejs.com/?q=ky&badge
-[ky-size-link]: https://bundlejs.com/?q=ky
-[better-fetch-size-badge]: https://deno.bundlejs.com/?q=%40better-fetch%2Ffetch&badge
-[better-fetch-size-link]: https://bundlejs.com/?q=%40better-fetch%2Ffetch
+[up-fetch-size-badge]: https://img.shields.io/bundlephobia/minzip/up-fetch
+[up-fetch-size-link]: https://bundlephobia.com/package/up-fetch
+[ofetch-size-badge]: https://img.shields.io/bundlephobia/minzip/ofetch
+[ofetch-size-link]: https://bundlephobia.com/package/ofetch
+[wretch-size-badge]: https://img.shields.io/bundlephobia/minzip/wretch
+[wretch-size-link]: https://bundlephobia.com/package/wretch
+[ky-size-badge]: https://img.shields.io/bundlephobia/minzip/ky
+[ky-size-link]: https://bundlephobia.com/package/ky
+[better-fetch-size-badge]: https://img.shields.io/bundlephobia/minzip/@better-fetch/fetch
+[better-fetch-size-link]: https://bundlephobia.com/package/@better-fetch/fetch
