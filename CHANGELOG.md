@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1](https://github.com/L-Blondy/up-fetch/compare/v1.1.1...v1.1.2) - 2025.01-31
+
+### Breaking changes
+
+- renamed type `ComputedOptions` to `ResolvedOptions`
+
 ## [1.1.1](https://github.com/L-Blondy/up-fetch/compare/v1.1.0...v1.1.1) - 2025.01-30
 
 ### Fixed
