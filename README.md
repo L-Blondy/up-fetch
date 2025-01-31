@@ -355,9 +355,13 @@ Options:
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
 | _...and all other fetch options_ |                                |                                                                                                                               |
 
+<br/>
+
 ## Feature Comparison
 
-Check out the [Feature Comparison Table][comparison] to see how up-fetch compares to other fetch libraries.
+Check out the [Feature Comparison][comparison] table to see how up-fetch compares to other fetch libraries.
+
+<br/>
 
 ## ➡️ Environment Support
 
@@ -399,4 +403,4 @@ Check out the [Feature Comparison Table][comparison] to see how up-fetch compare
 [standard-schema]: https://github.com/standard-schema/standard-schema
 [standard-schema-libs]: https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec
 [api-reference]: #️-api-reference
-[comparison]: https://github.com/L-Blondy/up-fetch/blob/master/comparison.md
+[comparison]: https://github.com/L-Blondy/up-fetch/blob/master/COMPARISON.md
