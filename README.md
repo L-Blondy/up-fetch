@@ -134,14 +134,14 @@ Control request/response lifecycle with simple hooks:
 
 ```ts
 const upfetch = up(fetch, () => ({
-   onBeforeFetch: (options) => {
-      // ...
+   onRequest: (options) => {
+      // Called before the request is made, options might be mutated here
    },
    onSuccess: (data, options) => {
-      // ...
+      // Called when the request successfully completes
    },
    onError: (error, options) => {
-      // ...
+      // Called when the request fails
    },
 }))
 ```
@@ -318,7 +318,7 @@ function up(
 | -------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for all requests.                                                                                |
 | `params`                         | `object`                       | The default query parameters.                                                                             |
-| `onBeforeFetch`                  | `(options) => void`            | Executes before the request is made.                                                                      |
+| `onRequest`                      | `(options) => void`            | Executes before the request is made.                                                                      |
 | `onError`                        | `(error, options) => void`     | Executes on error.                                                                                        |
 | `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
 | `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |

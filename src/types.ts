@@ -98,7 +98,7 @@ export type ResolvedOptions<
 export type DefaultOptions<TFetchFn extends BaseFetchFn> =
    BaseOptions<TFetchFn> & {
       headers?: RawHeaders
-      onBeforeFetch?: (options: ResolvedOptions<TFetchFn>) => void
+      onRequest?: (options: ResolvedOptions<TFetchFn>) => void
       onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
       onSuccess?: (data: any, options: ResolvedOptions<TFetchFn>) => void
       params?: Params
