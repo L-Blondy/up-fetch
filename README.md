@@ -95,7 +95,9 @@ upfetch('/todos', {
 })
 ```
 
-Use the [serializeBody][api-reference] option to customize the body serialization.
+_up-fetch_ also supports all [fetch body types](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#body).
+
+Check out the [serializeBody][api-reference] option to customize the body serialization.
 
 ### ✔️ Schema Validation
 
@@ -353,6 +355,10 @@ Options:
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
 | _...and all other fetch options_ |                                |                                                                                                                               |
 
+## Feature Comparison
+
+Check out the [Feature Comparison Table][comparison] to see how up-fetch compares to other fetch libraries.
+
 ## ➡️ Environment Support
 
 - ✅ Browsers (Chrome, Firefox, Safari, Edge)
@@ -393,3 +399,4 @@ Options:
 [standard-schema]: https://github.com/standard-schema/standard-schema
 [standard-schema-libs]: https://github.com/standard-schema/standard-schema?tab=readme-ov-file#what-schema-libraries-implement-the-spec
 [api-reference]: #️-api-reference
+[comparison]: https://github.com/L-Blondy/up-fetch/blob/master/comparison.md
