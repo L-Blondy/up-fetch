@@ -1,8 +1,8 @@
 # Feature Comparison
 
-## up-fetch vs ofetch vs wretch vs ky vs better-fetch
-
 _This table aims to provide an accurate comparison of fetch libraries, though there may be room for improvement. If you notice any discrepancies or have additional information to share, please submit a PR with supporting documentation._
+
+## up-fetch vs ofetch vs wretch vs ky vs better-fetch
 
 Legend:
 
