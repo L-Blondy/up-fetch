@@ -135,13 +135,13 @@ Control request/response lifecycle with simple hooks:
 ```ts
 const upfetch = up(fetch, () => ({
    onRequest: (options) => {
-      // ...
+      // Called before the request is made, options might be mutated here
    },
    onSuccess: (data, options) => {
-      // ...
+      // Called when the request successfully completes
    },
    onError: (error, options) => {
-      // ...
+      // Called when the request fails
    },
 }))
 ```
