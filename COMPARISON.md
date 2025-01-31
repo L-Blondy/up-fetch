@@ -12,7 +12,7 @@ Legend:
 
 | Feature                     | [up-fetch][up-fetch]                           | [ofetch][ofetch]                           | [wretch][wretch]                           | [ky][ky]                           | [better-fetch][better-fetch]                                       |
 | --------------------------- | ---------------------------------------------- | ------------------------------------------ | ------------------------------------------ | ---------------------------------- | ------------------------------------------------------------------ |
-| Size                        | [![][up-fetch-size-badge]][up-fetch-size-link] | [![][ofetch-size-badge]][ofetch-size-link] | [![][wretch-size-badge]][wretch-size-link] | [![][ky-size-badge]][ky-size-link] | [![better-fetch][better-fetch-size-badge]][better-fetch-size-link] |
+| Minzipped Size              | [![][up-fetch-size-badge]][up-fetch-size-link] | [![][ofetch-size-badge]][ofetch-size-link] | [![][wretch-size-badge]][wretch-size-link] | [![][ky-size-badge]][ky-size-link] | [![better-fetch][better-fetch-size-badge]][better-fetch-size-link] |
 | Automatic Body Handling     | ✅                                             | ✅                                         | ✅                                         | ✅                                 | ✅                                                                 |
 | Automatic Params Handling   | ✅                                             | ✅                                         | ✅                                         | ✅                                 | ✅                                                                 |
 | Automatic Response Parsing  | ✅                                             | ✅                                         | ✅                                         | ✅                                 | ✅                                                                 |
@@ -41,13 +41,13 @@ Legend:
 
 <!-- badges -->
 
-[up-fetch-size-badge]: https://img.shields.io/bundlephobia/minzip/up-fetch
+[up-fetch-size-badge]: https://img.shields.io/bundlephobia/minzip/up-fetch?label=
 [up-fetch-size-link]: https://bundlephobia.com/package/up-fetch
-[ofetch-size-badge]: https://img.shields.io/bundlephobia/minzip/ofetch
+[ofetch-size-badge]: https://img.shields.io/bundlephobia/minzip/ofetch?label=
 [ofetch-size-link]: https://bundlephobia.com/package/ofetch
-[wretch-size-badge]: https://img.shields.io/bundlephobia/minzip/wretch
+[wretch-size-badge]: https://img.shields.io/bundlephobia/minzip/wretch?label=
 [wretch-size-link]: https://bundlephobia.com/package/wretch
-[ky-size-badge]: https://img.shields.io/bundlephobia/minzip/ky
+[ky-size-badge]: https://img.shields.io/bundlephobia/minzip/ky?label=
 [ky-size-link]: https://bundlephobia.com/package/ky
-[better-fetch-size-badge]: https://img.shields.io/bundlephobia/minzip/@better-fetch/fetch
+[better-fetch-size-badge]: https://img.shields.io/bundlephobia/minzip/@better-fetch/fetch?label=
 [better-fetch-size-link]: https://bundlephobia.com/package/@better-fetch/fetch
