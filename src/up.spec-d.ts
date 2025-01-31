@@ -132,7 +132,7 @@ test('callback types', async () => {
    ) => fetch(input, init)
 
    let upfetch = up(fetcher, () => ({
-      onBeforeFetch(options) {
+      onRequest(options) {
          expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
       },

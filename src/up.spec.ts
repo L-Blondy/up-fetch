@@ -837,7 +837,7 @@ describe('up', () => {
       })
    })
 
-   describe('onBeforeFetch', () => {
+   describe('onRequest', () => {
       test('Should be called on upfetch, then on up', async () => {
          server.use(
             http.get('https://example.com', () => {
@@ -849,7 +849,7 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onBeforeFetch() {
+            onRequest() {
                expect(count).toBe(1)
                count++
             },
@@ -868,7 +868,7 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onBeforeFetch(options) {
+            onRequest(options) {
                expect(options.input).toBe('https://example.com')
             },
          }))

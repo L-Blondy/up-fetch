@@ -18,11 +18,7 @@ import {
 } from './utils'
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 
-export let interceptors: Interceptors = [
-   'onBeforeFetch',
-   'onSuccess',
-   'onError',
-]
+export let interceptors: Interceptors = ['onRequest', 'onSuccess', 'onError']
 
 export let resolveOptions = <
    TFetchFn extends BaseFetchFn,

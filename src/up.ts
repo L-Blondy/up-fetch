@@ -33,7 +33,7 @@ export function up<
             ? fetcherOptions(defaultOpts)
             : fetcherOptions
       let options = resolveOptions(input, defaultOpts, fetcherOpts)
-      defaultOpts.onBeforeFetch?.(options)
+      defaultOpts.onRequest?.(options)
 
       return fetchFn(options.input, options, ctx)
          .catch((error) => {
