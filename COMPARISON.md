@@ -19,7 +19,7 @@ Legend:
 | Custom Body Serializer      | ✅                                             | 🟧                                         | ❌                                         | ❌                                 | ❌                                                                 |
 | Custom Error Parser         | ✅                                             | ❌                                         | 🟧                                         | ❌                                 | ❌                                                                 |
 | Custom Error Throwing       | ✅                                             | ❌                                         | ❌                                         | ✅                                 | ✅                                                                 |
-| Custom Fetch Implementation | ✅                                             | ❌                                         | ❌                                         | ✅                                 | 🟧                                                                 |
+| Custom Fetch Implementation | ✅                                             | ❌                                         | ❌                                         | 🟧 (1)                             | 🟧 (1)                                                             |
 | Custom Params Serializer    | ✅                                             | ❌                                         | ❌                                         | ❌                                 | ❌                                                                 |
 | Custom Response Parser      | ✅                                             | ✅                                         | 🟧                                         | 🟧                                 | 🟧                                                                 |
 | Dynamic Default Headers     | ✅                                             | 🟧                                         | 🟧                                         | 🟧                                 | 🟧                                                                 |
@@ -30,6 +30,8 @@ Legend:
 | Schema Validation           | ✅                                             | ❌                                         | ❌                                         | ❌                                 | ✅                                                                 |
 | Timeout                     | ✅                                             | ✅                                         | ✅                                         | ✅                                 | ✅                                                                 |
 | Zero Dependencies           | ✅                                             | ❌                                         | ✅                                         | ✅                                 | ✅                                                                 |
+
+(1) type is not inferred
 
 <!-- libs -->
 
