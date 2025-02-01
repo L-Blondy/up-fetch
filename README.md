@@ -36,7 +36,7 @@ const todos = await upfetch('https://a.b.c/todos', {
 })
 ```
 
-The `json` data is already parsed and properly typed based on the schema.
+The response is already parsed and properly typed based on the schema.
 
 ## ➡️ Key Features
 
