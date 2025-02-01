@@ -28,13 +28,11 @@ Make a fetch request with schema validation:
 
 ```ts
 import { z } from 'zod'
+import { todoSchema } from './schema'
 
-const todo = await upfetch('https://a.b.c/todos/1', {
-   schema: z.object({
-      id: z.number(),
-      title: z.string(),
-      completed: z.boolean(),
-   }),
+const todos = await upfetch('https://a.b.c/todos', {
+   params: { take: 12, skip: 0 },
+   schema: z.array(todoSchema),
 })
 ```
 
