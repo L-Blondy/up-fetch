@@ -364,10 +364,10 @@ Check out the [Feature Comparison][comparison] table to see how up-fetch compare
 ## ➡️ Environment Support
 
 - ✅ Browsers (Chrome, Firefox, Safari, Edge)
-- ✅ Node.js (18+)
+- ✅ Node.js (20.3.0+)
 - ✅ Bun
 - ✅ Cloudflare Workers
-- ✅ Vercel Edge Functions
+- ✅ Vercel Edge Runtime
 
 <div align="center">
 <br />
