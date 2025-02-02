@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/require-await */
-import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
+import {
+   afterAll,
+   afterEach,
+   beforeAll,
+   describe,
+   expect,
+   test,
+   vi,
+} from 'vitest'
 import { up } from './up'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -969,6 +977,37 @@ describe('up', () => {
          controller.abort()
          await promise
          expect(exec).toBe(1)
+      })
+
+      describe('Environnement compatibility', () => {
+         beforeAll(() => {
+            vi.stubGlobal('AbortSignal', {})
+         })
+
+         afterAll(() => {
+            vi.unstubAllGlobals()
+         })
+
+         test('Should not crash if AbortSignal.any and AbortSignal.timeout are not supported', async () => {
+            server.use(
+               http.get('https://example.com', async () => {
+                  await scheduler.wait(2)
+                  return HttpResponse.json({ hello: 'world' }, { status: 200 })
+               }),
+            )
+
+            let upfetch = up(fetch, () => ({
+               baseUrl: 'https://example.com',
+            }))
+
+            let controller = new AbortController()
+            let signal = controller.signal
+            await upfetch('', {
+               // having both timeout and signal will use AbortSignal.any
+               timeout: 1,
+               signal,
+            })
+         })
       })
    })
 })

@@ -22,11 +22,19 @@ export let mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
    return res
 }
 
-export let mergeSignals = (signals: any[]) =>
-   // if AbortSignal.any is not supported, most likely AbortSignal.timeout is not supported either
+export let mergeSignal = (
+   signal: AbortSignal | undefined,
+   timeout: number | undefined,
+): AbortSignal | undefined =>
+   // if AbortSignal.any is not supported
+   //  AbortSignal.timeout is not supported either
    'any' in AbortSignal
-      ? AbortSignal.any(signals.filter(Boolean) as AbortSignal[])
-      : signals.find(Boolean)
+      ? AbortSignal.any(
+           [signal, timeout && AbortSignal.timeout(timeout)].filter(
+              Boolean,
+           ) as AbortSignal[],
+        )
+      : signal
 
 export let resolveParams = (
    defaultParams: Params | undefined,

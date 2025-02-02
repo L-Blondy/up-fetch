@@ -40,6 +40,8 @@ export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    'body' | 'headers' | 'method'
 > & {
    baseUrl?: string
+   signal?: AbortSignal
+   timeout?: number
    method?:
       | 'GET'
       | 'POST'
@@ -92,7 +94,6 @@ export type ResolvedOptions<
    schema?: TSchema
    serializeBody: SerializeBody
    serializeParams: SerializeParams
-   signal: AbortSignal
    throwResponseError: (response: Response) => MaybePromise<boolean>
 }
 
@@ -108,7 +109,6 @@ export type DefaultOptions<TFetchFn extends BaseFetchFn> =
       serializeBody?: SerializeBody
       serializeParams?: SerializeParams
       throwResponseError?: (response: Response) => MaybePromise<boolean>
-      timeout?: number
    }
 
 export type FetcherOptions<
@@ -125,5 +125,4 @@ export type FetcherOptions<
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
    throwResponseError?: (response: Response) => MaybePromise<boolean>
-   timeout?: number
 }
