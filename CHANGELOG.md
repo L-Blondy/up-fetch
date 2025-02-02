@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.1](https://github.com/L-Blondy/up-fetch/compare/v1.2.0...v1.2.1) - 2025.02-02
+
+## Added
+
+- `timeout` option, making it easier to set a timeout alogn with a signal.
+
 ## [1.2.0](https://github.com/L-Blondy/up-fetch/compare/v1.1.1...v1.2.0) - 2025.01-31
 
 ### Breaking changes

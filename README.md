@@ -366,6 +366,7 @@ Check out the [Feature Comparison][comparison] table to see how up-fetch compare
 - ✅ Browsers (Chrome, Firefox, Safari, Edge)
 - ✅ Node.js (20.3.0+)
 - ✅ Bun
+- ✅ Deno
 - ✅ Cloudflare Workers
 - ✅ Vercel Edge Runtime
 
