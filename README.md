@@ -4,7 +4,7 @@ Fetch API configuration tool with built-in validation and sensible defaults.
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.2kB gzipped, no dependency
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
 - 🔒 **Type Safe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
@@ -146,6 +146,24 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+### ✔️ Timeout
+
+Set a default timeout for all requests:
+
+```ts
+const upfetch = up(fetch, () => ({
+   timeout: 5000,
+}))
+```
+
+Use a different timeout for a specific request:
+
+```ts
+upfetch('/todos', {
+   timeout: 3000,
+})
+```
+
 ### ✔️ Error Handling
 
 By default, _up-fetch_ throws a `ResponseError` when `response.ok` is `false`. \
@@ -172,26 +190,6 @@ try {
 Use the [throwResponseError][api-reference] option to decide **when** to throw, or the [parseResponseError][api-reference] option to customize **what** to throw.
 
 ## Usage
-
-### ✔️ Timeouts
-
-While _up-fetch_ doesn't provide a timeout option, you can easily implement one using the [AbortSignal.timeout](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout) method:
-
-Set a default timeout for all requests:
-
-```ts
-const upfetch = up(fetch, () => ({
-   signal: AbortSignal.timeout(5000),
-}))
-```
-
-Use a different timeout for a specific request:
-
-```ts
-upfetch('/todos', {
-   signal: AbortSignal.timeout(3000),
-})
-```
 
 ### ✔️ Authentication
 
@@ -325,6 +323,7 @@ function up(
 | `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
 | `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                                                                              |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
+| `timeout`                        | `number`                       | The default timeout in milliseconds.                                                                      |
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                       |
 | _...and all other fetch options_ |                                |                                                                                                           |
 
@@ -350,6 +349,7 @@ Options:
 | `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification][standard-schema]. |
 | `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                          |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                               |
+| `timeout`                        | `number`                       | The timeout in milliseconds.                                                                                                  |
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
 | _...and all other fetch options_ |                                |                                                                                                                               |
 

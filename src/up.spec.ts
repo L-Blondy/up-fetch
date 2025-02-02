@@ -8,6 +8,7 @@ import { isResponseError } from './response-error'
 import { bodyMock } from './_mocks'
 import { fallbackOptions } from './fallback-options'
 import { object, pipe, string, transform } from 'valibot'
+import { scheduler } from 'timers/promises'
 
 describe('up', () => {
    let server = setupServer()
@@ -874,6 +875,100 @@ describe('up', () => {
          }))
 
          await upfetch('')
+      })
+   })
+
+   describe('timeout', () => {
+      test('Default timeout should apply if not fetcher timeout is defined', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               await scheduler.wait(2)
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            timeout: 1,
+         }))
+
+         let exec = 0
+         await upfetch('').catch((error) => {
+            exec++
+            expect(error.name).toBe('TimeoutError')
+         })
+         expect(exec).toBe(1)
+      })
+
+      test('the default timeout should be overriden by the fetcher timeout', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               await scheduler.wait(2)
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            timeout: undefined,
+         }))
+
+         let exec = 0
+         await upfetch('').catch((error) => {
+            exec++
+            expect(error.name).toBe('TimeoutError')
+         })
+         expect(exec).toBe(0)
+      })
+
+      test('The timeout should still work along with a signal', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               await scheduler.wait(2)
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            timeout: 1,
+         }))
+
+         let exec = 0
+         await upfetch('', {
+            signal: new AbortController().signal,
+         }).catch((error) => {
+            exec++
+            expect(error.name).toBe('TimeoutError')
+         })
+         expect(exec).toBe(1)
+      })
+
+      test('The signal should still work along with a timeout', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               await scheduler.wait(10000)
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            timeout: 9000,
+         }))
+
+         let exec = 0
+         let controller = new AbortController()
+         let signal = controller.signal
+         let promise = upfetch('', {
+            signal,
+         }).catch((error) => {
+            exec++
+            expect(error.name).toBe('AbortError')
+         })
+         controller.abort()
+         await promise
+         expect(exec).toBe(1)
       })
    })
 })
