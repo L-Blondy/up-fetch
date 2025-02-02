@@ -54,6 +54,7 @@
    "license": "MIT",
    "devDependencies": {
       "@eslint/js": "^9.19.0",
+      "@types/node": "^22.13.0",
       "eslint": "^9.19.0",
       "eslint-plugin-prefer-let": "^4.0.0",
       "jsdom": "^26.0.0",

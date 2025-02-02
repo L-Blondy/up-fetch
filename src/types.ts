@@ -89,10 +89,11 @@ export type ResolvedOptions<
    parseResponse: ParseResponse<TFetchFn, TParsedData>
    parseResponseError: ParseResponseError<TFetchFn>
    rawBody?: RawBody
+   schema?: TSchema
    serializeBody: SerializeBody
    serializeParams: SerializeParams
+   signal: AbortSignal
    throwResponseError: (response: Response) => MaybePromise<boolean>
-   schema?: TSchema
 }
 
 export type DefaultOptions<TFetchFn extends BaseFetchFn> =
@@ -107,6 +108,7 @@ export type DefaultOptions<TFetchFn extends BaseFetchFn> =
       serializeBody?: SerializeBody
       serializeParams?: SerializeParams
       throwResponseError?: (response: Response) => MaybePromise<boolean>
+      timeout?: number
    }
 
 export type FetcherOptions<
@@ -119,8 +121,9 @@ export type FetcherOptions<
    params?: Params
    parseResponse?: ParseResponse<TFetchFn, TParsedData>
    parseResponseError?: ParseResponseError<TFetchFn>
+   schema?: TSchema
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
    throwResponseError?: (response: Response) => MaybePromise<boolean>
-   schema?: TSchema
+   timeout?: number
 }

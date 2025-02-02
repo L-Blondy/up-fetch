@@ -128,6 +128,6 @@ test('options overrides', () => {
    expect('redirect' in resolved).toBeFalsy()
    expect('referrer' in resolved).toBeFalsy()
    expect('referrerPolicy' in resolved).toBeFalsy()
-   expect('signal' in resolved).toBeFalsy()
+   expect('signal' in resolved).toBeTruthy() // there is always a signal
    expect('window' in resolved).toBeFalsy()
 })
