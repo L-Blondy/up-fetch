@@ -15,6 +15,7 @@ import {
    emptyOptions,
    getUrl,
    stripUndefined,
+   mergeSignals,
 } from './utils'
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 
@@ -58,17 +59,17 @@ export let resolveOptions = <
       params,
       rawBody,
       body,
-      signal: AbortSignal.any(
-         [
-            typeof mergedOptions.timeout === 'number' &&
-               AbortSignal.timeout(mergedOptions.timeout),
-            mergedOptions.signal as AbortSignal | undefined,
-         ].filter(Boolean) as AbortSignal[],
-      ),
       input: getUrl(
          mergedOptions.baseUrl,
          input,
          mergedOptions.serializeParams(params),
+      ),
+      signal: mergeSignals(
+         [
+            mergedOptions.signal,
+            typeof mergedOptions.timeout === 'number' &&
+               AbortSignal.timeout(mergedOptions.timeout),
+         ].filter(Boolean) as AbortSignal[],
       ),
    })
 }
