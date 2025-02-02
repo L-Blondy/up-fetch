@@ -1,5 +1,4 @@
 import type {
-   BaseOptions,
    ResolvedOptions,
    FetcherOptions,
    DefaultOptions,
@@ -33,11 +32,9 @@ export let resolveOptions = <
    // transform URL to string right away
    input = input?.href ?? input
    let mergedOptions = {
-      // Necessary for some reason, probably because`BaseOptions<TFetchFn>` is not preserved properly when using `strip`
-      ...(emptyOptions as BaseOptions<TFetchFn>),
       ...(fallbackOptions as FallbackOptions<TFetchFn>),
-      ...omit(defaultOptions, interceptors),
-      ...omit(fetcherOpts, interceptors),
+      ...defaultOptions,
+      ...fetcherOpts,
    }
    let rawBody = fetcherOpts.body
    let params = resolveParams(defaultOptions.params, input, fetcherOpts.params)
@@ -48,7 +45,12 @@ export let resolveOptions = <
       : rawBody
 
    return stripUndefined({
-      ...mergedOptions,
+      // I have to cast as mergedOptions because the type breaks with omit
+      ...(omit(mergedOptions, interceptors) as typeof mergedOptions),
+      params,
+      rawBody,
+      body,
+      signal: mergeSignal(mergedOptions.signal, mergedOptions.timeout),
       headers: mergeHeaders(
          isJsonifiable && typeof body === 'string'
             ? { 'content-type': 'application/json' }
@@ -56,14 +58,10 @@ export let resolveOptions = <
          defaultOptions.headers,
          fetcherOpts.headers,
       ),
-      params,
-      rawBody,
-      body,
       input: getUrl(
          mergedOptions.baseUrl,
          input,
          mergedOptions.serializeParams(params),
       ),
-      signal: mergeSignal(mergedOptions.signal, mergedOptions.timeout),
    })
 }

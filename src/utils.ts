@@ -53,18 +53,16 @@ export let resolveParams = (
            ...fetcherParams,
         })
 
-type KeysOfUnion<ObjectType> = ObjectType extends unknown
-   ? keyof ObjectType
-   : never
+type KeyOf<O> = O extends unknown ? keyof O : never
 
 export type DistributiveOmit<
    TObject extends object,
-   TKey extends KeysOfUnion<TObject> | (string & {}),
+   TKey extends KeyOf<TObject> | (string & {}),
 > = TObject extends unknown ? Omit<TObject, TKey> : never
 
 export type MaybePromise<T> = T | Promise<T>
 
-export let omit = <O extends object, K extends KeysOfUnion<O> | (string & {})>(
+export let omit = <O extends object, K extends KeyOf<O> | (string & {})>(
    obj?: O,
    keys: K[] | readonly K[] = [],
 ): DistributiveOmit<O, K> => {

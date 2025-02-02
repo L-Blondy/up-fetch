@@ -35,26 +35,6 @@ export type Interceptors = TupleToUnion<Interceptor>
 
 export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
 
-export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
-   NonNullable<Parameters<TFetch>[1]>,
-   'body' | 'headers' | 'method'
-> & {
-   baseUrl?: string
-   signal?: AbortSignal
-   timeout?: number
-   method?:
-      | 'GET'
-      | 'POST'
-      | 'PUT'
-      | 'DELETE'
-      | 'PATCH'
-      | 'CONNECT'
-      | 'OPTIONS'
-      | 'TRACE'
-      | 'HEAD'
-      | (string & {})
-}
-
 export type ParseResponse<TFetchFn extends BaseFetchFn, TParsedData> = (
    response: Response,
    options: ResolvedOptions<TFetchFn>,
@@ -79,14 +59,33 @@ export type RawHeaders =
    | HeadersInit
    | Record<string, string | number | null | undefined>
 
+type Method =
+   | 'GET'
+   | 'POST'
+   | 'PUT'
+   | 'DELETE'
+   | 'PATCH'
+   | 'CONNECT'
+   | 'OPTIONS'
+   | 'TRACE'
+   | 'HEAD'
+   | (string & {})
+
+export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
+   NonNullable<Parameters<TFetch>[1]>,
+   'body' | 'headers' | 'method'
+> & {}
+
 export type ResolvedOptions<
    TFetchFn extends BaseFetchFn,
    TSchema extends StandardSchemaV1 = any,
    TParsedData = any,
 > = BaseOptions<TFetchFn> & {
+   baseUrl?: string
    readonly body?: BodyInit | null
    headers: Record<string, string>
    readonly input: Request | string
+   method?: Method
    params: Params
    parseResponse: ParseResponse<TFetchFn, TParsedData>
    parseResponseError: ParseResponseError<TFetchFn>
@@ -94,12 +93,16 @@ export type ResolvedOptions<
    schema?: TSchema
    serializeBody: SerializeBody
    serializeParams: SerializeParams
+   signal?: AbortSignal
    throwResponseError: (response: Response) => MaybePromise<boolean>
+   timeout?: number
 }
 
 export type DefaultOptions<TFetchFn extends BaseFetchFn> =
    BaseOptions<TFetchFn> & {
+      baseUrl?: string
       headers?: RawHeaders
+      method?: Method
       onRequest?: (options: ResolvedOptions<TFetchFn>) => void
       onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
       onSuccess?: (data: any, options: ResolvedOptions<TFetchFn>) => void
@@ -108,7 +111,9 @@ export type DefaultOptions<TFetchFn extends BaseFetchFn> =
       parseResponseError?: ParseResponseError<TFetchFn>
       serializeBody?: SerializeBody
       serializeParams?: SerializeParams
+      signal?: AbortSignal
       throwResponseError?: (response: Response) => MaybePromise<boolean>
+      timeout?: number
    }
 
 export type FetcherOptions<
@@ -116,13 +121,17 @@ export type FetcherOptions<
    TSchema extends StandardSchemaV1 = any,
    TParsedData = any,
 > = BaseOptions<TFetchFn> & {
+   baseUrl?: string
    body?: RawBody
    headers?: RawHeaders
+   method?: Method
    params?: Params
    parseResponse?: ParseResponse<TFetchFn, TParsedData>
    parseResponseError?: ParseResponseError<TFetchFn>
    schema?: TSchema
    serializeBody?: SerializeBody
    serializeParams?: SerializeParams
+   signal?: AbortSignal
    throwResponseError?: (response: Response) => MaybePromise<boolean>
+   timeout?: number
 }
