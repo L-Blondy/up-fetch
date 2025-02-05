@@ -167,7 +167,7 @@ upfetch('/todos', {
 ### ✔️ Error Handling
 
 By default, _up-fetch_ throws a `ResponseError` when `response.ok` is `false`. \
-The error extends the Error class with the followimg properties:
+The error extends the Error class with the following properties:
 
 - `status`: The HTTP status code
 - `data`: The parsed error body
