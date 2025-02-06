@@ -1,4 +1,12 @@
-# up-fetch
+<br>
+<p align="center">
+  <img alt="upfetch" width="400" src="logos/upfetch-logo.png" />
+</p>
+<br>
+
+<br>
+<br>
+<h1 align="center">Type safe data fetching</h1>
 
 Fetch API configuration tool with built-in validation and sensible defaults.
 
