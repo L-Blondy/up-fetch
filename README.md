@@ -10,11 +10,10 @@
    <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=169DBC" alt="commit activity"></a>
    <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=169DBC" alt="downloads per month"></a>
 </p>
-
 <br>
-   <h1 align="center">Type safe data fetching</h1>
-   
-   _up-fetch_ is a tiny fetch configuration tool that provides built-in schema validation, automatic response parsing, and sensible defaults. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
+<h1 align="center">Type Safe Data Fetching</h1>
+
+_up-fetch_ is a tiny fetch configuration tool that provides built-in schema validation, automatic response parsing, and sensible defaults. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
 
 ## ➡️ Highlights
 
