@@ -1,14 +1,21 @@
 <br>
 <p align="center">
-  <img alt="upfetch" width="400" src="logos/upfetch-logo.png" />
+  <img alt="upfetch" width="400" src="logos/upfetch-logo.svg" />
 </p>
 <br>
+<p align="center">
+   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/v/up-fetch.svg?color=169DBC" alt="npm version"></a>
+   <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=169DBC" alt="npm bundle size"></a>
+   <a href="https://github.com/L-Blondy/up-fetch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/up-fetch.svg?color=169DBC" alt="license"></a>
+   <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=169DBC" alt="commit activity"></a>
+   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=169DBC" alt="downloads per month"></a>
+</p>
 
 <br>
 <br>
-<h1 align="center">Type safe data fetching</h1>
-
-Fetch API configuration tool with built-in validation and sensible defaults.
+   <h1 align="center">Type safe data fetching</h1>
+   
+   Fetch API configuration tool with built-in validation and sensible defaults.
 
 ## ➡️ Highlights
 
