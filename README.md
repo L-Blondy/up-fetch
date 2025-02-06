@@ -12,10 +12,9 @@
 </p>
 
 <br>
-<br>
    <h1 align="center">Type safe data fetching</h1>
    
-   Fetch API configuration tool with built-in validation and sensible defaults.
+   _up-fetch_ is a tiny fetch configuration tool that provides built-in schema validation, automatic response parsing, and sensible defaults. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
 
 ## ➡️ Highlights
 
