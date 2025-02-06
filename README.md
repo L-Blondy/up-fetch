@@ -5,7 +5,7 @@ Fetch API configuration tool with built-in validation and sensible defaults.
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1.2kB gzipped, no dependency
-- 🔒 **Type Safe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype] 
+- 🔒 **Type Safe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
 - 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
@@ -28,15 +28,17 @@ Make a fetch request with schema validation:
 
 ```ts
 import { z } from 'zod'
-import { todoSchema } from './schema'
 
-const todos = await upfetch('https://a.b.c/todos', {
-   params: { take: 12, skip: 0 },
-   schema: z.array(todoSchema),
+const user = await upfetch('https://a.b.c/users/1', {
+   schema: z.object({
+      id: z.number(),
+      name: z.string(),
+      avatar: z.string().url(),
+   }),
 })
 ```
 
-The response is already parsed and properly typed based on the schema.
+The response is already **parsed** and properly **typed** based on the schema.
 
 ## ➡️ Key Features
 
