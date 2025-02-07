@@ -3,17 +3,17 @@
 
 <picture>
   <source alt="upfetch" media="(prefers-color-scheme: dark)" srcset="logos/upfetch-logo-dark-6.svg">
-  <source alt="upfetch" media="(prefers-color-scheme: light)" srcset="logos/upfetch-logo-light.svg">
-  <img alt="upfetch" src="logos/upfetch-logo-light.svg">
+  <source alt="upfetch" media="(prefers-color-scheme: light)" srcset="logos/upfetch-logo-light-1.svg">
+  <img alt="upfetch" src="logos/upfetch-logo-light-1.svg">
 </picture>
 </p>
 <br>
 <p align="center">
-   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/v/up-fetch.svg?color=1DC381" alt="npm version"></a>
-   <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=1DC381" alt="npm bundle size"></a>
-   <a href="https://github.com/L-Blondy/up-fetch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/up-fetch.svg?color=1DC381" alt="license"></a>
-   <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=1DC381" alt="commit activity"></a>
-   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=1DC381" alt="downloads per month"></a>
+   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/v/up-fetch.svg?color=009FB8" alt="npm version"></a>
+   <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=009FB8" alt="npm bundle size"></a>
+   <a href="https://github.com/L-Blondy/up-fetch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/up-fetch.svg?color=009FB8" alt="license"></a>
+   <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=009FB8" alt="commit activity"></a>
+   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=009FB8" alt="downloads per month"></a>
 </p>
 <br>
 <h1 align="center">Type Safe Data Fetching</h1>
