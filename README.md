@@ -2,7 +2,7 @@
 <p align="center">
 
 <picture>
-  <source alt="upfetch" media="(prefers-color-scheme: dark)" srcset="logos/upfetch-logo-dark-13.svg">
+  <source alt="upfetch" media="(prefers-color-scheme: dark)" srcset="logos/upfetch-logo-dark-14.svg">
   <source alt="upfetch" media="(prefers-color-scheme: light)" srcset="logos/upfetch-logo-light-2.svg">
   <img alt="upfetch" src="logos/upfetch-logo-light-2.svg">
 </picture>
