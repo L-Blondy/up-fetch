@@ -1,14 +1,14 @@
 <br>
 <p align="center">
-  <img alt="upfetch" width="400" src="logos/upfetch-logo-1.svg" />
+  <img alt="upfetch" width="400" src="logos/upfetch-logo-2.svg" />
 </p>
 <br>
 <p align="center">
-   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/v/up-fetch.svg?color=BE0098" alt="npm version"></a>
-   <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=BE0098" alt="npm bundle size"></a>
-   <a href="https://github.com/L-Blondy/up-fetch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/up-fetch.svg?color=BE0098" alt="license"></a>
-   <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=BE0098" alt="commit activity"></a>
-   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=BE0098" alt="downloads per month"></a>
+   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/v/up-fetch.svg?color=D20077" alt="npm version"></a>
+   <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=D20077" alt="npm bundle size"></a>
+   <a href="https://github.com/L-Blondy/up-fetch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/up-fetch.svg?color=D20077" alt="license"></a>
+   <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=D20077" alt="commit activity"></a>
+   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=D20077" alt="downloads per month"></a>
 </p>
 <br>
 <h1 align="center">Type Safe Data Fetching</h1>
