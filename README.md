@@ -1,6 +1,11 @@
 <br>
 <p align="center">
-  <img alt="upfetch" width="400" src="logos/upfetch-logo-4.svg" />
+  <img alt="upfetch" width="400" src="logos/upfetch-logo-light.svg" />
+
+  <picture>
+  <source alt="upfetch" media="(prefers-color-scheme: dark)" srcset="logos/upfetch-logo-dark.svg">
+  <source alt="upfetch" media="(prefers-color-scheme: light)" srcset="logos/upfetch-logo-light.svg">
+</picture>
 </p>
 <br>
 <p align="center">
