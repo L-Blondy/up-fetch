@@ -1,6 +1,6 @@
 <br>
 <p align="center">
-  <img alt="upfetch" width="400" src="logos/upfetch-logo.svg" />
+  <img alt="upfetch" width="400" src="logos/upfetch-logo-1.svg" />
 </p>
 <br>
 <p align="center">
