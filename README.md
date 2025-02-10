@@ -216,7 +216,7 @@ Use the [throwResponseError][api-reference] option to decide **when** to throw, 
 a `ValidationError` is raised when the schema validation fails.
 The error extends the Error class with the following properties:
 
-- `issues`: the validation issues following the standard schema specification.
+- `issues`: an array of validation issues, following the standard schema specification.
 
 ```ts
 import { isValidationError } from 'up-fetch'
