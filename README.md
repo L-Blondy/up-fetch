@@ -186,7 +186,7 @@ upfetch('/todos', {
 
 ### ✔️ Error Handling
 
-#### Response errors
+#### 👉 Response errors
 
 By default, _up-fetch_ throws a `ResponseError` when `response.ok` is `false`. \
 The error extends the Error class with the following properties:
@@ -211,7 +211,7 @@ try {
 
 Use the [throwResponseError][api-reference] option to decide **when** to throw, or the [parseResponseError][api-reference] option to customize **what** to throw.
 
-#### Validation errors
+#### 👉 Validation errors
 
 a `ValidationError` is raised when the schema validation fails.
 The error extends the Error class with the following properties:
