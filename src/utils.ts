@@ -5,6 +5,7 @@ import type {
    JsonifiableObject,
    JsonifiableArray,
 } from './types'
+import { ValidationError } from './validation-error'
 
 export let mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
    let res: Record<string, string> = {}
@@ -119,9 +120,6 @@ export async function parseStandardSchema<TSchema extends StandardSchemaV1>(
    input: StandardSchemaV1.InferInput<TSchema>,
 ): Promise<StandardSchemaV1.InferOutput<TSchema>> {
    let result = await schema['~standard'].validate(input)
-   // if the `issues` field exists, the validation failed
-   if (result.issues) {
-      throw new Error(JSON.stringify(result.issues, null, 2))
-   }
+   if (result.issues) throw new ValidationError(result)
    return result.value
 }
