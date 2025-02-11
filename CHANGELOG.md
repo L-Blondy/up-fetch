@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.2.1](https://github.com/L-Blondy/up-fetch/compare/v1.2.0...v1.2.1) - 2025.02-02
+## [1.2.4-beta.0](https://github.com/L-Blondy/up-fetch/compare/v1.2.3...v1.2.4-beta.0) - 2025.02-11
+
+## Added
+
+- add a `ValidationError` along with an `isValidationError` type guard
+
+## [1.2.3](https://github.com/L-Blondy/up-fetch/compare/v1.2.0...v1.2.3) - 2025.02-02
 
 ## Added
 
