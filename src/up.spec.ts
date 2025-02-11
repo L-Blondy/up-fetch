@@ -824,6 +824,12 @@ describe('up', () => {
       })
 
       test('Should catch the any error', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
          let exec = 0
 
          let upfetch = up(fetch, () => ({
@@ -834,7 +840,11 @@ describe('up', () => {
             },
          }))
 
-         await upfetch('not found', {}).catch(() => {})
+         await upfetch('', {
+            parseResponse: () => {
+               throw new Error('any error')
+            },
+         }).catch(() => {})
          expect(exec).toBe(1)
       })
    })
