@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/require-await */
 import {
@@ -6,17 +7,20 @@ import {
    beforeAll,
    describe,
    expect,
+   expectTypeOf,
    test,
    vi,
 } from 'vitest'
 import { up } from './up'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { isResponseError } from './response-error'
+import { isResponseError, ResponseError } from './response-error'
 import { bodyMock } from './_mocks'
 import { fallbackOptions } from './fallback-options'
 import { object, pipe, string, transform } from 'valibot'
 import { scheduler } from 'timers/promises'
+import { z } from 'zod'
+import { isValidationError, ValidationError } from './validation-error'
 
 describe('up', () => {
    let server = setupServer()
@@ -769,6 +773,79 @@ describe('up', () => {
          }).catch((error) => {
             expect(error).toEqual('from=upfetch')
          })
+      })
+   })
+
+   describe('onError', () => {
+      test('Should catch the validation errors', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+         let exec = 0
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onError(error, options) {
+               if (isValidationError(error)) {
+                  exec++
+                  expectTypeOf(error).toEqualTypeOf<ValidationError>()
+               }
+            },
+         }))
+
+         await upfetch('', {
+            schema: z.object({ hello: z.number() }),
+         }).catch(() => {})
+         expect(exec).toBe(1)
+      })
+
+      test('Should catch the response errors', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 400 })
+            }),
+         )
+         let exec = 0
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onError(error, options) {
+               if (isResponseError(error)) {
+                  exec++
+                  expectTypeOf(error).toEqualTypeOf<ResponseError>()
+               }
+            },
+         }))
+
+         await upfetch('', {}).catch(() => {})
+         expect(exec).toBe(1)
+      })
+
+      test('Should catch the any error', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         let exec = 0
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+            onError(error, options) {
+               exec++
+               expectTypeOf(error).toEqualTypeOf<any>()
+            },
+         }))
+
+         await upfetch('', {
+            parseResponse: () => {
+               throw new Error('any error')
+            },
+         }).catch(() => {})
+         expect(exec).toBe(1)
       })
    })
 
