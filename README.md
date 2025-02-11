@@ -186,7 +186,7 @@ upfetch('/todos', {
 
 ### ✔️ Error Handling
 
-#### ResponseError
+#### <samp>ResponseError</samp>
 
 Raised when `response.ok` is `false`. \
 Use `isResponseError` to identify this error type.
@@ -206,7 +206,7 @@ try {
 - Use the [throwResponseError][api-reference] option to decide **when** to throw a ResponseError
 - Use the [parseResponseError][api-reference] option to customize **what** to throw when a response error occurs
 
-#### ValidationError
+#### <samp>ValidationError</samp>
 
 Raised when schema validation fails. \
 Use `isValidationError` to identify this error type.
