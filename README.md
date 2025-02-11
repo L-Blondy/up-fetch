@@ -186,15 +186,10 @@ upfetch('/todos', {
 
 ### ✔️ Error Handling
 
-#### 👉 Response errors
+#### ResponseError
 
-By default, _up-fetch_ throws a `ResponseError` when `response.ok` is `false`. \
-The error extends the Error class with the following properties:
-
-- `status`: The HTTP status code
-- `data`: The parsed error body
-- `options`: The options used for the request
-- `response`: The raw Response
+Raised when `response.ok` is `false`. \
+Use `isResponseError` to identify this error type.
 
 ```ts
 import { isResponseError } from 'up-fetch'
@@ -203,25 +198,21 @@ try {
    await upfetch('/todos/1')
 } catch (error) {
    if (isResponseError(error)) {
-      console.log(error.data)
       console.log(error.status)
    }
 }
 ```
 
-Use the [throwResponseError][api-reference] option to decide **when** to throw, or the [parseResponseError][api-reference] option to customize **what** to throw.
+- Use the [throwResponseError][api-reference] option to decide **when** to throw a ResponseError
+- Use the [parseResponseError][api-reference] option to customize **what** to throw when a response error occurs
 
-#### 👉 Validation errors
+#### ValidationError
 
-A `ValidationError` is raised when the schema validation fails.
-The error extends the Error class with the following properties:
-
-- `issues`: an array of validation issues, following the standard schema specification.
-- `data`: the invalid data that failed validation
+Raised when schema validation fails. \
+Use `isValidationError` to identify this error type.
 
 ```ts
 import { isValidationError } from 'up-fetch'
-import { todoSchema } from './schema'
 
 try {
    await upfetch('/todos/1', { schema: todoSchema })
