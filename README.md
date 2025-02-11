@@ -407,18 +407,14 @@ Check out the [Feature Comparison][comparison] table to see how up-fetch compare
 <div align="center">
 <br />
 <br />
-<br />
-
-<h2>From the same Author</h2>
-
-[tw-colors](https://github.com/L-Blondy/tw-colors): Tailwind plugin to add multiple color themes to your projects.
-
-<br /> 
+<hr/>
 <h3>Share on:</h3>
 
 [![s][bsky-badge]][bsky-link]
 [![Share on Twitter][tweet-badge]][tweet-link]
 
+<br />
+<br />
 </div >
 
 <!-- Badges -->
