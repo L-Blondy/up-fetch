@@ -1,29 +1,24 @@
+<h1 align="center">upfetch - advanced fetch client builder for typescript</h1>
 <br>
 <p align="center">
-
-<picture>
-  <source alt="upfetch" media="(prefers-color-scheme: dark)" srcset="logos/upfetch-logo-dark-0.svg">
-  <source alt="upfetch" media="(prefers-color-scheme: light)" srcset="logos/upfetch-logo-light-0.svg">
-  <img alt="upfetch" src="logos/upfetch-logo-light-0.svg">
-</picture>
+<img src="logos/upfetch-logo-gold.svg" alt="upfetch">
 </p>
 <br>
 <p align="center">
-   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/v/up-fetch.svg?color=0097BD" alt="npm version"></a>
-   <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=0097BD" alt="npm bundle size"></a>
-   <a href="https://github.com/L-Blondy/up-fetch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/up-fetch.svg?color=0097BD" alt="license"></a>
-   <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=0097BD" alt="commit activity"></a>
-   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=0097BD" alt="downloads per month"></a>
+   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/v/up-fetch.svg?color=EFBA5F" alt="npm version"></a>
+   <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=EFBA5F" alt="npm bundle size"></a>
+   <a href="https://github.com/L-Blondy/up-fetch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/up-fetch.svg?color=EFBA5F" alt="license"></a>
+   <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=EFBA5F" alt="commit activity"></a>
+   <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=EFBA5F" alt="downloads per month"></a>
 </p>
 <br>
-<h1 align="center">Type Safe Data Fetching</h1>
 
-_up-fetch_ is a tiny fetch configuration tool that provides built-in schema validation, automatic response parsing, and sensible defaults. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
+_upfetch_ is an advanced fetch client builder with standard schema validation, automatic response parsing, smart defaults and more. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
 
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1.2kB gzipped, no dependency
-- 🔒 **Type Safe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
+- 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
 - 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
@@ -82,7 +77,7 @@ fetch(
 )
 ```
 
-👍 With _up-fetch_:
+👍 With _upfetch_:
 
 ```ts
 upfetch('/todos', {
@@ -104,7 +99,7 @@ fetch('https://api.example.com/todos', {
 })
 ```
 
-👍 With _up-fetch_:
+👍 With _upfetch_:
 
 ```ts
 upfetch('/todos', {
@@ -113,13 +108,13 @@ upfetch('/todos', {
 })
 ```
 
-_up-fetch_ also supports all [fetch body types](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#body).
+_upfetch_ also supports all [fetch body types](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#body).
 
 Check out the [serializeBody][api-reference] option to customize the body serialization.
 
 ### ✔️ Schema Validation
 
-Since _up-fetch_ follows the [Standard Schema Specification][standard-schema] it can be used with any schema library that implements the spec. \
+Since _upfetch_ follows the [Standard Schema Specification][standard-schema] it can be used with any schema library that implements the spec. \
 See the full list [here][standard-schema-libs].
 
 👉 With **zod** 3.24+
@@ -287,7 +282,7 @@ upfetch('https://a.b.c', {
 
 ### ✔️ HTTP Agent
 
-Since _up-fetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
+Since _upfetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
 
 On a single request:
 
@@ -391,7 +386,7 @@ Options:
 
 ## Feature Comparison
 
-Check out the [Feature Comparison][comparison] table to see how up-fetch compares to other fetch libraries.
+Check out the [Feature Comparison][comparison] table to see how _upfetch_ compares to other fetch libraries.
 
 <br/>
 
