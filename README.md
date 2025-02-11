@@ -203,8 +203,8 @@ try {
 }
 ```
 
-- Use the [throwResponseError][api-reference] option to decide **when** to throw a ResponseError
-- Use the [parseResponseError][api-reference] option to customize **what** to throw when a response error occurs
+- Use the [parseResponseError][api-reference] option to throw a custom error instead.
+- Use the [throwResponseError][api-reference] option to decide **when** to throw.
 
 #### 👉 <samp>ValidationError</samp>
 
