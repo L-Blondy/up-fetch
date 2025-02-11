@@ -6,6 +6,7 @@
    "jsxSingleQuote": false,
    "printWidth": 80,
    "proseWrap": "preserve",
+   "objectWrap": "preserve",
    "semi": false,
    "singleQuote": true,
    "tabWidth": 3,
