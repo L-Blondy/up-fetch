@@ -117,9 +117,9 @@ export function getUrl(
 
 export async function parseStandardSchema<TSchema extends StandardSchemaV1>(
    schema: TSchema,
-   input: StandardSchemaV1.InferInput<TSchema>,
+   data: StandardSchemaV1.InferInput<TSchema>,
 ): Promise<StandardSchemaV1.InferOutput<TSchema>> {
-   let result = await schema['~standard'].validate(input)
-   if (result.issues) throw new ValidationError(result)
+   let result = await schema['~standard'].validate(data)
+   if (result.issues) throw new ValidationError(result, data)
    return result.value
 }
