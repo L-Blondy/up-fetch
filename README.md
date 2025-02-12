@@ -1,7 +1,7 @@
 <h1 align="center">upfetch - advanced fetch client builder for typescript</h1>
 <br>
 <p align="center">
-<img src="logos/upfetch-logo-gold.svg" alt="upfetch">
+<img src="https://raw.githubusercontent.com/L-Blondy/up-fetch/refs/heads/master/logos/upfetch-logo-gold.svg" alt="upfetch">
 </p>
 <br>
 <p align="center">
