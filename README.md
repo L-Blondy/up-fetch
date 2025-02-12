@@ -53,6 +53,8 @@ const user = await upfetch('https://a.b.c/users/1', {
 
 The response is already **parsed** and properly **typed** based on the schema.
 
+_upfetch_ extends the native fetch API, which means all standard fetch options are available.
+
 ## ➡️ Key Features
 
 ### ✔️ Request Configuration
