@@ -27,13 +27,12 @@ Legend:
 | Hooks/Interceptors          | ✅                                             | ✅                                         | ✅                                         | ✅                                 | ✅                                                                 |
 | Instance Configuration      | ✅                                             | ✅                                         | ✅                                         | ✅                                 | ✅                                                                 |
 | Retry                       | ❌                                             | ✅                                         | ✅                                         | ✅                                 | ✅                                                                 |
-| Schema Validation           | ✅                                             | ❌                                         | ❌                                         | ❌                                 | ✅ (2)                                                             |
-| Timeout                     | ✅                                             | 🟧 (3)                                     | ✅                                         | ✅                                 | 🟧 (3)                                                             |
+| Schema Validation           | ✅                                             | ❌                                         | ❌                                         | ❌                                 | ✅                                                                 |
+| Timeout                     | ✅                                             | 🟧 (2)                                     | ✅                                         | ✅                                 | 🟧 (2)                                                             |
 | Zero Dependencies           | ✅                                             | ❌                                         | ✅                                         | ✅                                 | ✅                                                                 |
 
 (1) type is not inferred
-(2) zod only as per better-fetch 1.1.12
-(3) can't be used together with signal as per ofetch 1.4.1 & better-fetch 1.1.12
+(2) can't be used together with signal as per ofetch 1.4.1 & better-fetch 1.1.12
 
 <!-- libs -->
 
