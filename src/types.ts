@@ -98,40 +98,73 @@ export type ResolvedOptions<
    timeout?: number
 }
 
+/**
+ * Default configuration options for the fetch client
+ */
 export type DefaultOptions<TFetchFn extends BaseFetchFn> =
    BaseOptions<TFetchFn> & {
+      /** Base URL to prepend to all request URLs */
       baseUrl?: string
+      /** Request headers to be sent with each request */
       headers?: RawHeaders
+      /** HTTP method to use for the request */
       method?: Method
+      /** Callback executed before the request is made */
       onRequest?: (options: ResolvedOptions<TFetchFn>) => void
+      /** Callback executed when the request fails */
       onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
+      /** Callback executed when the request succeeds */
       onSuccess?: (data: any, options: ResolvedOptions<TFetchFn>) => void
+      /** URL parameters to be serialized and appended to the URL */
       params?: Params
+      /** Function to parse the response data */
       parseResponse?: ParseResponse<TFetchFn, any>
+      /** Function to parse response errors */
       parseResponseError?: ParseResponseError<TFetchFn>
+      /** Function to serialize request body */
       serializeBody?: SerializeBody
+      /** Function to serialize URL parameters */
       serializeParams?: SerializeParams
+      /** AbortSignal to cancel the request */
       signal?: AbortSignal
+      /** Function to determine if a response should throw an error */
       throwResponseError?: (response: Response) => MaybePromise<boolean>
+      /** Request timeout in milliseconds */
       timeout?: number
    }
 
+/**
+ * Options for individual fetch requests
+ */
 export type FetcherOptions<
    TFetchFn extends BaseFetchFn,
    TSchema extends StandardSchemaV1 = any,
    TParsedData = any,
 > = BaseOptions<TFetchFn> & {
+   /** Base URL to prepend to the request URL */
    baseUrl?: string
+   /** Request body data */
    body?: RawBody
+   /** Request headers */
    headers?: RawHeaders
+   /** HTTP method */
    method?: Method
+   /** URL parameters */
    params?: Params
+   /** Function to parse the response data */
    parseResponse?: ParseResponse<TFetchFn, TParsedData>
+   /** Function to parse response errors */
    parseResponseError?: ParseResponseError<TFetchFn>
+   /** JSON Schema for request/response validation */
    schema?: TSchema
+   /** Function to serialize request body */
    serializeBody?: SerializeBody
+   /** Function to serialize URL parameters */
    serializeParams?: SerializeParams
+   /** AbortSignal to cancel the request */
    signal?: AbortSignal
+   /** Function to determine if a response should throw an error */
    throwResponseError?: (response: Response) => MaybePromise<boolean>
+   /** Request timeout in milliseconds */
    timeout?: number
 }
