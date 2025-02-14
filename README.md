@@ -220,7 +220,7 @@ try {
 }
 ```
 
-## Usage
+## ➡️ Usage
 
 ### ✔️ Authentication
 
@@ -327,6 +327,92 @@ const fetchBlob = up(fetch, () => ({
 
 const fetchText = up(fetch, () => ({
    parseResponse: (res) => res.text(),
+}))
+```
+
+## ➡️ Advanced Usage
+
+### Error as value
+
+By default _upfetch_ throws an error when the response is not ok.
+
+To handle errors as values instead, set `throwResponseError` to return `false`. \
+This allows you to customize the `parseResponse` function to return both successful data and error responses in a structured format.
+
+```ts
+const upfetch = up(fetch, () => ({
+   throwResponseError: () => false,
+   parseResponse: async (response) => {
+      const json = await response.json()
+      return response.ok
+         ? { data: json, error: null }
+         : { data: null, error: json }
+   },
+}))
+```
+
+Usage:
+
+```ts
+const { data, error } = await upfetch('/users/1')
+```
+
+### Custom params serialization
+
+_upfetch_ serializes the params using `URLSearchParams`.
+
+You can customize the params serialization by passing a function to the `serializeParams` option.
+
+```ts
+import queryString from 'query-string'
+
+const upfetch = up(fetch, () => ({
+   serializeParams: (params) => queryString.stringify(params),
+}))
+```
+
+### Custom body serialization
+
+_upfetch_ serializes the body using `JSON.stringify`.
+
+You can customize the body serialization by passing a function to the `serializeBody` option.
+
+```ts
+import superjson from 'superjson'
+
+const upfetch = up(fetch, () => ({
+   serializeBody: (body) => superjson.stringify(body),
+}))
+```
+
+### Custom response success parsing
+
+By default _upfetch_ is able to parse `json` and `text` sucessful responses automatically.
+
+The `parseResponse` method is called when `throwResponseError` returns `false`.
+You can use that option to parse other response types.
+
+```ts
+const upfetch = up(fetch, () => ({
+   parseResponse: (response) => response.blob(),
+}))
+```
+
+Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
+
+### Custom response errors
+
+By default _upfetch_ throws a `ResponseError` when `throwResponseError` returns `true`.
+
+If you want to throw a custom error instead, you can pass a function to the `parseResponseError` option.
+
+```ts
+const upfetch = up(fetch, () => ({
+   parseResponseError: async (response) => {
+      const status = response.status
+      const data = await response.json()
+      return new CustomError(status, data)
+   },
 }))
 ```
 
