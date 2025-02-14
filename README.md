@@ -334,9 +334,9 @@ const fetchText = up(fetch, () => ({
 
 ### Error as value
 
-By default _upfetch_ throws an error when the response is not ok.
+While the Fetch API does not throw an error when the response is not ok, _upfetch_ throws a `ResponseError` instead.
 
-To handle errors as values instead, set `throwResponseError` to return `false`. \
+If you'd rather handle errors as values, set `throwResponseError` to return `false`. \
 This allows you to customize the `parseResponse` function to return both successful data and error responses in a structured format.
 
 ```ts
