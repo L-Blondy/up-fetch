@@ -385,7 +385,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-### Custom response success parsing
+### Custom response parsing
 
 By default _upfetch_ is able to parse `json` and `text` sucessful responses automatically.
 
