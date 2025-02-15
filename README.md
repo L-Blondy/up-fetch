@@ -373,16 +373,28 @@ const upfetch = up(fetch, () => ({
 
 ### Custom body serialization
 
-_upfetch_ serializes the body using `JSON.stringify`.
+_upfetch_ serializes the plain objects using `JSON.stringify`.
 
 You can customize the body serialization by passing a function to the `serializeBody` option.
 
 ```ts
 import superjson from 'superjson'
 
+// Restrict the body type to Record<string, any>
+type ValidBody = Record<string, any>
+
 const upfetch = up(fetch, () => ({
-   serializeBody: (body) => superjson.stringify(body),
+   serializeBody: (body: ValidBody) => superjson.stringify(body),
 }))
+```
+
+_upfetch_ will only accept bodies of type `ValidBody` and will serialize them using `superjson`.
+
+```ts
+upfetch('/todos', {
+   method: 'POST',
+   body: { title: 'New Todo' },
+})
 ```
 
 ### Custom response parsing

@@ -110,12 +110,11 @@ test('Infer body', () => {
    /**
     * Default body
     */
+   function serializeBody2(b: DefaultOkBody) {
+      return ''
+   }
    type DefaultOkBody = symbol
-   let upfetch2 = up(fetch, () => ({
-      serializeBody(b: DefaultOkBody) {
-         return ''
-      },
-   }))
+   let upfetch2 = up(fetch, () => ({ serializeBody: serializeBody2 }))
    upfetch2('', { body: {} as DefaultOkBody | null | undefined })
    upfetch2('', () => ({ body: {} as DefaultOkBody | null | undefined }))
    // @ts-expect-error illegal type
@@ -129,12 +128,11 @@ test('Infer body', () => {
    /**
     * Fetcher body
     */
+   function serializeBody3(b: DefaultOkBody) {
+      return ''
+   }
    type FetcherOkBody = number
-   let upfetch3 = up(fetch, () => ({
-      serializeBody(b: DefaultOkBody) {
-         return ''
-      },
-   }))
+   let upfetch3 = up(fetch, () => ({ serializeBody: serializeBody3 }))
    upfetch3('', {
       serializeBody: (body: FetcherOkBody) => '',
       body: {} as FetcherOkBody | null | undefined,
