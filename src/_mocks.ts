@@ -15,7 +15,8 @@ class Jsonifiable {
 const buffer = new ArrayBuffer(8)
 const typedArray = new Int32Array(buffer)
 const formData = new FormData()
-const dataview = new DataView(buffer).setInt16(0, 256, true /* littleEndian */)
+const dataview = new DataView(buffer)
+dataview.setInt16(0, 256, true /* littleEndian */)
 formData.append('username', 'me')
 const getStream = () =>
    new ReadableStream({

@@ -478,30 +478,32 @@ describe('up', () => {
       })
 
       test.each`
-         body                            | isSerialized
+         body                            | shouldCallSerializeBody
          ${{}}                           | ${true}
          ${{ a: 1 }}                     | ${true}
          ${[1, 2]}                       | ${true}
          ${bodyMock.classJsonifiable}    | ${true}
-         ${bodyMock.classNonJsonifiable} | ${false}
-         ${bodyMock.buffer}              | ${false}
-         ${bodyMock.dataview}            | ${false}
-         ${bodyMock.blob}                | ${false}
-         ${bodyMock.typedArray}          | ${false}
-         ${bodyMock.formData}            | ${false}
-         ${bodyMock.urlSearchParams}     | ${false}
-         ${bodyMock.stream}              | ${false}
+         ${bodyMock.classNonJsonifiable} | ${true}
+         ${bodyMock.buffer}              | ${true}
+         ${bodyMock.dataview}            | ${true}
+         ${bodyMock.blob}                | ${true}
+         ${bodyMock.typedArray}          | ${true}
+         ${bodyMock.formData}            | ${true}
+         ${bodyMock.urlSearchParams}     | ${true}
+         ${bodyMock.stream}              | ${true}
          ${''}                           | ${false}
-         ${0}                            | ${false}
+         ${0}                            | ${true}
          ${undefined}                    | ${false}
          ${null}                         | ${false}
       `(
-         'Should be called when body is an Array, a plain Object or a class with a JSON method',
-         async ({ body, isSerialized }) => {
+         'Should be called on any non-nullish an non-string body',
+         async ({ body, shouldCallSerializeBody }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
                   let actualBody = await request.text()
-                  expect(actualBody === 'serialized').toBe(isSerialized)
+                  expect(actualBody === 'serialized').toBe(
+                     shouldCallSerializeBody,
+                  )
 
                   return HttpResponse.json({ hello: 'world' }, { status: 200 })
                }),

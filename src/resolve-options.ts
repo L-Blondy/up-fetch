@@ -39,11 +39,12 @@ export let resolveOptions = <
    }
    let rawBody = fetcherOpts.body
    let params = resolveParams(defaultOptions.params, input, fetcherOpts.params)
-   let isJsonifiable: boolean
-   // assign isJsonifiable value while making use of the type guard
-   let body = (isJsonifiable = isJsonifiableObjectOrArray(rawBody))
-      ? mergedOptions.serializeBody(rawBody)
-      : rawBody
+
+   let isJsonifiable = isJsonifiableObjectOrArray(rawBody)
+   let body: BodyInit | null | undefined =
+      typeof rawBody === 'string' || rawBody === null || rawBody === undefined
+         ? rawBody
+         : mergedOptions.serializeBody(rawBody)
 
    return stripUndefined({
       // I have to cast as mergedOptions because the type breaks with omit
