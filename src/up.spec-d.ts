@@ -75,6 +75,85 @@ test('infer TData', async () => {
    expectTypeOf(data9).toEqualTypeOf<'!'>()
 })
 
+test('Infer body', () => {
+   /**
+    * Fallback body
+    */
+   type FallbackOkBody =
+      | BodyInit
+      | JsonifiableArray
+      | JsonifiableObject
+      | null
+      | undefined
+   let upfetch1 = up(fetch)
+   upfetch1('', { body: {} as FallbackOkBody })
+   upfetch1('', () => ({ body: {} as FallbackOkBody }))
+   // @ts-expect-error illegal type
+   upfetch1('', { body: true })
+   // @ts-expect-error illegal type
+   upfetch1('', () => ({ body: true }))
+   // @ts-expect-error illegal type
+   upfetch1('', { body: Symbol() })
+   // @ts-expect-error illegal type
+   upfetch1('', () => ({ body: Symbol() }))
+   /**
+    * Default body
+    */
+   type DefaultOkBody = symbol
+   let upfetch2 = up(fetch, () => ({
+      serializeBody(b: DefaultOkBody) {
+         return ''
+      },
+   }))
+   upfetch2('', { body: {} as DefaultOkBody | null | undefined })
+   upfetch2('', () => ({ body: {} as DefaultOkBody | null | undefined }))
+   // @ts-expect-error illegal type
+   upfetch2('', { body: true })
+   // @ts-expect-error illegal type
+   upfetch2('', () => ({ body: true }))
+   // @ts-expect-error illegal type
+   upfetch2('', { body: 1 })
+   // @ts-expect-error illegal type
+   upfetch2('', () => ({ body: 1 }))
+   /**
+    * Fetcher body
+    */
+   type FetcherOkBody = number
+   let upfetch3 = up(fetch, () => ({
+      serializeBody(b: DefaultOkBody) {
+         return ''
+      },
+   }))
+   upfetch3('', {
+      serializeBody: (body: FetcherOkBody) => '',
+      body: {} as FetcherOkBody | null | undefined,
+   })
+   upfetch3('', () => ({
+      serializeBody: (body: FetcherOkBody) => '',
+      body: {} as FetcherOkBody | null | undefined,
+   }))
+   upfetch3('', {
+      // @ts-expect-error illegal type
+      body: true,
+      serializeBody: (body: FetcherOkBody) => '',
+   })
+   // @ts-expect-error illegal type
+   upfetch3('', () => ({
+      serializeBody: (body: FetcherOkBody) => '',
+      body: true,
+   }))
+   upfetch3('', {
+      // @ts-expect-error illegal type
+      body: '',
+      serializeBody: (body: FetcherOkBody) => '',
+   })
+   // @ts-expect-error illegal type
+   upfetch3('', () => ({
+      serializeBody: (body: FetcherOkBody) => '',
+      body: '',
+   }))
+})
+
 test('The defaultSerializer of params should expect 1 arg only (the params)', async () => {
    let upfetch = up(fetch, () => ({
       serializeParams(params) {
@@ -101,7 +180,7 @@ test('The defaultSerializer of body should expect 1 arg only (the body)', async 
    let upfetch = up(fetch, () => ({
       serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
-            JsonifiableObject | JsonifiableArray
+            BodyInit | JsonifiableObject | JsonifiableArray
          >()
          return fallbackOptions.serializeBody(body)
       },
@@ -110,7 +189,7 @@ test('The defaultSerializer of body should expect 1 arg only (the body)', async 
    await upfetch('', {
       serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
-            JsonifiableObject | JsonifiableArray
+            BodyInit | JsonifiableObject | JsonifiableArray
          >()
          return fallbackOptions.serializeBody(body)
       },
@@ -118,7 +197,7 @@ test('The defaultSerializer of body should expect 1 arg only (the body)', async 
    await upfetch('', (defaultOptions) => ({
       serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
-            JsonifiableObject | JsonifiableArray
+            BodyInit | JsonifiableObject | JsonifiableArray
          >()
          return fallbackOptions.serializeBody(body)
       },
@@ -164,7 +243,7 @@ test('callback types', async () => {
       },
       serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
-            JsonifiableObject | JsonifiableArray
+            BodyInit | JsonifiableObject | JsonifiableArray
          >()
          return ''
       },
@@ -193,7 +272,7 @@ test('callback types', async () => {
       },
       serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
-            JsonifiableObject | JsonifiableArray
+            BodyInit | JsonifiableObject | JsonifiableArray
          >()
          return ''
       },
@@ -222,7 +301,7 @@ test('callback types', async () => {
       },
       serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
-            JsonifiableObject | JsonifiableArray
+            BodyInit | JsonifiableObject | JsonifiableArray
          >()
          return ''
       },
