@@ -4,8 +4,9 @@ import type {
    DefaultOptions,
    BaseFetchFn,
    Interceptors,
+   FallbackOptions,
 } from './types'
-import { type FallbackOptions, fallbackOptions } from './fallback-options'
+import { fallbackOptions } from './fallback-options'
 import {
    resolveParams,
    isJsonifiableObjectOrArray,
