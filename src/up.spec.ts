@@ -380,7 +380,7 @@ describe('up', () => {
          })
 
          await upfetch('/', (defaultOptions) => ({
-            params: { hello: defaultOptions.params?.hello, input: undefined },
+            params: { hello: defaultOptions.params.hello, input: undefined },
          }))
       })
    })

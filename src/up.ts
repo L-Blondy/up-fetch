@@ -1,14 +1,20 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import { resolveOptions } from './resolve-options'
-import type { FetcherOptions, DefaultOptions, BaseFetchFn } from './types'
+import type {
+   FetcherOptions,
+   DefaultOptions,
+   BaseFetchFn,
+   FallbackOptions,
+} from './types'
 import { emptyOptions, parseStandardSchema } from './utils'
 
 export function up<
    TFetchFn extends BaseFetchFn,
-   TDefaultOptions extends DefaultOptions<TFetchFn, any, any> = DefaultOptions<
+   TDefaultOptions extends DefaultOptions<
       TFetchFn,
+      any,
       any
-   >,
+   > = DefaultOptions<TFetchFn>,
 >(
    fetchFn: TFetchFn,
    getDefaultOptions: () => TDefaultOptions = () => emptyOptions,
@@ -16,9 +22,14 @@ export function up<
    type TDefaultParsedData = Awaited<
       ReturnType<NonNullable<TDefaultOptions['parseResponse']>>
    >
-   type TDefaultRawBody = Awaited<
-      Parameters<NonNullable<TDefaultOptions['serializeBody']>>[0]
-   >
+   type TDefaultRawBody =
+      Awaited<
+         Parameters<NonNullable<TDefaultOptions['serializeBody']>>[0]
+      > extends infer U
+         ? NonNullable<U> extends never
+            ? Parameters<FallbackOptions<any>['serializeBody']>[0]
+            : U
+         : never
    return <
       TParsedData = TDefaultParsedData,
       TSchema extends StandardSchemaV1<

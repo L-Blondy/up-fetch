@@ -85,17 +85,28 @@ test('Infer body', () => {
       | JsonifiableObject
       | null
       | undefined
-   let upfetch1 = up(fetch)
-   upfetch1('', { body: {} as FallbackOkBody })
-   upfetch1('', () => ({ body: {} as FallbackOkBody }))
+   let upfetch1_1 = up(fetch)
+   let upfetch1_2 = up(fetch, () => ({}))
+   upfetch1_1('', { body: {} as FallbackOkBody })
+   upfetch1_2('', { body: {} as FallbackOkBody })
+   upfetch1_1('', () => ({ body: {} as FallbackOkBody }))
+   upfetch1_2('', () => ({ body: {} as FallbackOkBody }))
    // @ts-expect-error illegal type
-   upfetch1('', { body: true })
+   upfetch1_1('', { body: true })
    // @ts-expect-error illegal type
-   upfetch1('', () => ({ body: true }))
+   upfetch1_2('', { body: true })
    // @ts-expect-error illegal type
-   upfetch1('', { body: Symbol() })
+   upfetch1_1('', () => ({ body: true }))
    // @ts-expect-error illegal type
-   upfetch1('', () => ({ body: Symbol() }))
+   upfetch1_2('', () => ({ body: true }))
+   // @ts-expect-error illegal type
+   upfetch1_1('', { body: Symbol() })
+   // @ts-expect-error illegal type
+   upfetch1_2('', { body: Symbol() })
+   // @ts-expect-error illegal type
+   upfetch1_1('', () => ({ body: Symbol() }))
+   // @ts-expect-error illegal type
+   upfetch1_2('', () => ({ body: Symbol() }))
    /**
     * Default body
     */
