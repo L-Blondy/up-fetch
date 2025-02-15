@@ -319,8 +319,8 @@ test('When the fetcher options are functional, They should receive the fully inf
    let upfetch = up(fetch, () => defaultOptions)
 
    // @ts-expect-error type check dhould still work on the return type
-   upfetch('', (defaultOptions) => {
-      expectTypeOf(defaultOptions).toEqualTypeOf<typeof defaultOptions>()
+   upfetch('', (_defaultOptions) => {
+      expectTypeOf(_defaultOptions).toEqualTypeOf<typeof defaultOptions>()
 
       return { headers: '' } // This incorrect return type produces the error
    })
