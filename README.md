@@ -377,7 +377,7 @@ _upfetch_ serializes the plain objects using `JSON.stringify`.
 
 You can customize the body serialization by passing a function to the `serializeBody` option.
 
-The valid body type is inferred from the `serializeBody`'s first argument.
+The valid body type is inferred from `serializeBody`'s first argument.
 
 ```ts
 import superjson from 'superjson'
@@ -390,7 +390,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-_upfetch_ will only accept bodies of type `ValidBody` and will serialize them using `superjson`.
+With this setup, _upfetch_ will only accept bodies of type `ValidBody` and will serialize them using `superjson`.
 
 ```ts
 upfetch('https://a.b.c/todos', {
