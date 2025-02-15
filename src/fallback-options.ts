@@ -1,20 +1,5 @@
 import { ResponseError } from './response-error'
-import type {
-   BaseFetchFn,
-   ParseResponse,
-   ParseResponseError,
-   SerializeBody,
-   SerializeParams,
-} from './types'
-import { type MaybePromise } from './utils'
-
-export type FallbackOptions<TFetchFn extends BaseFetchFn> = {
-   parseResponse: ParseResponse<TFetchFn, any>
-   parseResponseError: ParseResponseError<TFetchFn>
-   serializeParams: SerializeParams
-   serializeBody: SerializeBody
-   throwResponseError: (response: Response) => MaybePromise<boolean>
-}
+import type { FallbackOptions } from './types'
 
 export let fallbackOptions: FallbackOptions<any> = {
    parseResponse: (res) =>

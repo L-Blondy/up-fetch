@@ -98,6 +98,14 @@ export type ResolvedOptions<
    timeout?: number
 }
 
+export type FallbackOptions<TFetchFn extends BaseFetchFn> = {
+   parseResponse: ParseResponse<TFetchFn, any>
+   parseResponseError: ParseResponseError<TFetchFn>
+   serializeParams: SerializeParams
+   serializeBody: SerializeBody
+   throwResponseError: (response: Response) => MaybePromise<boolean>
+}
+
 /**
  * Default configuration options for the fetch client
  */
