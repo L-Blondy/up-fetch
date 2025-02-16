@@ -239,9 +239,9 @@ The bearer token will be retrieved from `localStorage` before each request.
 Simply pass `undefined`:
 
 ```ts
-upfetch('/todos', (defaultOptions) => ({
+upfetch('/todos', {
    signal: undefined,
-}))
+})
 ```
 
 ### ✔️ FormData
