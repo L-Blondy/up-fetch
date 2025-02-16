@@ -194,20 +194,20 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Timeout
 
+Set a timeout for one request:
+
+```ts
+upfetch('/todos', {
+   timeout: 3000,
+})
+```
+
 Set a default timeout for all requests:
 
 ```ts
 const upfetch = up(fetch, () => ({
    timeout: 5000,
 }))
-```
-
-Use a different timeout for a specific request:
-
-```ts
-upfetch('/todos', {
-   timeout: 3000,
-})
 ```
 
 ### ✔️ Error Handling
