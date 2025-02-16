@@ -414,8 +414,8 @@ You can customize the body serialization by passing a function to the `serialize
 The following example show how to restrict the valid body type to `Record<string, any>` and serialize it using `JSON.stringify`:
 
 ```ts
+// Restrict the body type to Record<string, any> and serialize it
 const upfetch = up(fetch, () => ({
-   // Restrict the body type to Record<string, any>
    serializeBody: (body: Record<string, any>) => JSON.stringify(body),
 }))
 
