@@ -432,6 +432,33 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+### Tailor the defaults based on the request
+
+The default options receive the fetcher arguments, this allows you to tailor the defaults based on the actual request.
+
+```ts
+const upfetch = up(fetch, (input, options) => ({
+   baseUrl: 'https://example.com/',
+   headers: {
+      // Add authentication only for protected routes
+      Authorization:
+         typeof input === 'string' && input.startsWith('/api/protected/')
+            ? `Bearer ${getToken()}`
+            : undefined,
+   },
+   // Add tracking params only for public endpoints
+   params: {
+      trackingId:
+         typeof input === 'string' && input.startsWith('/public/')
+            ? crypto.randomUUID()
+            : undefined,
+   },
+   // Increase timeout for long-running operations
+   timeout:
+      typeof input === 'string' && input.startsWith('/export/') ? 30000 : 5000,
+}))
+```
+
 ## ➡️ API Reference
 
 ### <samp>up(fetch, getDefaultOptions?)</samp>
@@ -487,6 +514,18 @@ Options:
 | _...and all other fetch options_ |                                |                                                                                                                               |
 
 <br/>
+
+### <samp>isResponseError(error)</samp>
+
+Checks if the error is a `ResponseError`.
+
+### <samp>isValidationError(error)</samp>
+
+Checks if the error is a `ValidationError`.
+
+### <samp>isJsonifiable(value)</samp>
+
+Determines whether a value can be safely converted to `json`.
 
 ## Feature Comparison
 

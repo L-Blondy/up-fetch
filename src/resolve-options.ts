@@ -9,7 +9,7 @@ import type {
 import { fallbackOptions } from './fallback-options'
 import {
    resolveParams,
-   isJsonifiableObjectOrArray,
+   isJsonifiable,
    mergeHeaders,
    omit,
    emptyOptions,
@@ -46,7 +46,6 @@ export let resolveOptions = <
    let rawBody = fetcherOpts.body
    let params = resolveParams(defaultOptions.params, input, fetcherOpts.params)
 
-   let isJsonifiable = isJsonifiableObjectOrArray(rawBody)
    let body: BodyInit | null | undefined =
       rawBody === null || rawBody === undefined
          ? (rawBody as null | undefined)
@@ -60,7 +59,7 @@ export let resolveOptions = <
       body,
       signal: mergeSignal(mergedOptions.signal, mergedOptions.timeout),
       headers: mergeHeaders(
-         isJsonifiable && typeof body === 'string'
+         isJsonifiable(rawBody) && typeof body === 'string'
             ? { 'content-type': 'application/json' }
             : {},
          defaultOptions.headers,

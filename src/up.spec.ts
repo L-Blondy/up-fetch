@@ -21,12 +21,23 @@ import { object, pipe, string, transform } from 'valibot'
 import { scheduler } from 'timers/promises'
 import { z } from 'zod'
 import { isValidationError, ValidationError } from './validation-error'
+import type { FetcherOptions } from './types'
 
 describe('up', () => {
    let server = setupServer()
    beforeAll(() => server.listen())
    afterEach(() => server.resetHandlers())
    afterAll(() => server.close())
+
+   test('Should receive the fetcher arguments', async () => {
+      up(fetch, (input, options) => {
+         expectTypeOf(input).toEqualTypeOf<string | Request | URL>()
+         expectTypeOf(options).toEqualTypeOf<
+            FetcherOptions<typeof fetch, any, any, any>
+         >()
+         return {}
+      })
+   })
 
    describe('throwResponseError', () => {
       test('Should throw by default if !response.ok', async () => {
@@ -38,7 +49,7 @@ describe('up', () => {
 
          let catchCount = 0
 
-         let upfetch = up(fetch, (fetcherOpts) => ({
+         let upfetch = up(fetch, (input) => ({
             baseUrl: 'https://example.com',
          }))
 

@@ -15,7 +15,9 @@ export function up<
 >(
    fetchFn: TFetchFn,
    getDefaultOptions: (
+      input: Parameters<TFetchFn>[0],
       fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
+      ctx?: Parameters<TFetchFn>[2],
    ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
       emptyOptions,
 ) {
@@ -36,7 +38,7 @@ export function up<
       > = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
-      let defaultOpts = getDefaultOptions(fetcherOpts)
+      let defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
       let options = resolveOptions(input, defaultOpts, fetcherOpts)
       defaultOpts.onRequest?.(options)
 
