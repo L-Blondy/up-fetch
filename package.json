@@ -1,7 +1,7 @@
 {
    "name": "up-fetch",
    "version": "1.3.0-beta.2",
-   "description": "Slim and flexible HTTP client based on the Fetch API.",
+   "description": "Advanced fetch client builder for typescript.",
    "type": "module",
    "main": "dist/index.cjs",
    "module": "dist/index.js",
