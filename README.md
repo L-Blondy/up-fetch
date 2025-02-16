@@ -63,12 +63,13 @@ Create a new upfetch instance:
 ```ts
 import { up } from 'up-fetch'
 
-const upfetch = up(fetch)
+export const upfetch = up(fetch)
 ```
 
 Make a fetch request with schema validation:
 
 ```ts
+import { upfetch } from './upfetch'
 import { z } from 'zod'
 
 const user = await upfetch('https://a.b.c/users/1', {
@@ -93,6 +94,7 @@ Set defaults for all requests when creating an instance:
 ```ts
 const upfetch = up(fetch, () => ({
    baseUrl: 'https://a.b.c',
+   timeout: 30000,
 }))
 ```
 
