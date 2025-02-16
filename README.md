@@ -357,6 +357,37 @@ Usage:
 const { data, error } = await upfetch('/users/1')
 ```
 
+### Custom response parsing
+
+By default _upfetch_ is able to parse `json` and `text` sucessful responses automatically.
+
+The `parseResponse` method is called when `throwResponseError` returns `false`.
+You can use that option to parse other response types.
+
+```ts
+const upfetch = up(fetch, () => ({
+   parseResponse: (response) => response.blob(),
+}))
+```
+
+Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
+
+### Custom response errors
+
+By default _upfetch_ throws a `ResponseError` when `throwResponseError` returns `true`.
+
+If you want to throw a custom error instead, you can pass a function to the `parseResponseError` option.
+
+```ts
+const upfetch = up(fetch, () => ({
+   parseResponseError: async (response) => {
+      const status = response.status
+      const data = await response.json()
+      return new CustomError(status, data)
+   },
+}))
+```
+
 ### Custom params serialization
 
 By default _upfetch_ serializes the params using `URLSearchParams`.
@@ -398,37 +429,6 @@ upfetch('https://a.b.c/todos', {
    method: 'POST',
    body: { title: 'New Todo' },
 })
-```
-
-### Custom response parsing
-
-By default _upfetch_ is able to parse `json` and `text` sucessful responses automatically.
-
-The `parseResponse` method is called when `throwResponseError` returns `false`.
-You can use that option to parse other response types.
-
-```ts
-const upfetch = up(fetch, () => ({
-   parseResponse: (response) => response.blob(),
-}))
-```
-
-Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
-
-### Custom response errors
-
-By default _upfetch_ throws a `ResponseError` when `throwResponseError` returns `true`.
-
-If you want to throw a custom error instead, you can pass a function to the `parseResponseError` option.
-
-```ts
-const upfetch = up(fetch, () => ({
-   parseResponseError: async (response) => {
-      const status = response.status
-      const data = await response.json()
-      return new CustomError(status, data)
-   },
-}))
 ```
 
 ## ➡️ API Reference
