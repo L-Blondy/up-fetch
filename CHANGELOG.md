@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.0-beta.2](https://github.com/L-Blondy/up-fetch/compare/v1.2.4-beta.0...v1.3.0-beta.0) - 2025.02-16
+## [1.3.0](https://github.com/L-Blondy/up-fetch/compare/v1.2.4...v1.3.0) - 2025.02-16
 
 ### Breaking changes
 
@@ -46,7 +46,7 @@
 
 - new `isJsonifiable` utility to determine if a value can be safely converted to `json`
 
-## [1.2.4](https://github.com/L-Blondy/up-fetch/compare/v1.2.3...v1.2.4-beta.0) - 2025.02-11
+## [1.2.4](https://github.com/L-Blondy/up-fetch/compare/v1.2.3...v1.2.4) - 2025.02-11
 
 ## Added
 
