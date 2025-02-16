@@ -558,7 +558,7 @@ Checks if the error is a `ValidationError`.
 
 Determines whether a value can be safely converted to `json`.
 
-The following values are considered jsonifiable:
+Are considered jsonifiable:
 
 - plain objects
 - arrays
