@@ -51,7 +51,7 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.2kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.3kB gzipped, no dependency
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
