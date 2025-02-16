@@ -415,6 +415,7 @@ The following example show how to restrict the valid body type to `Record<string
 
 ```ts
 const upfetch = up(fetch, () => ({
+   // Restrict the body type to Record<string, any>
    serializeBody: (body: Record<string, any>) => JSON.stringify(body),
 }))
 
