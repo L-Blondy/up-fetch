@@ -412,13 +412,16 @@ You can customize the body serialization by passing a function to the `serialize
 - **transform the body** in a valid `BodyInit` type
 
 ```ts
-import superjson from 'superjson'
+import SuperJSON from 'superjson'
 
 // Restrict the body type to Record<string, any>
-type ValidBody = Record<string, any>
-
 const upfetch = up(fetch, () => ({
-   serializeBody: (body: ValidBody) => superjson.stringify(body),
+   serializeBody: (body: Record<string, any>) => SuperJSON.stringify(body),
+}))
+
+// Or simply infer the valid body type from SuperJSON
+const upfetch = up(fetch, () => ({
+   serializeBody: SuperJSON.stringify,
 }))
 ```
 
