@@ -408,8 +408,8 @@ By default _upfetch_ serializes the plain objects using `JSON.stringify`.
 
 You can customize the body serialization by passing a function to the `serializeBody` option. It lets you:
 
-- **restrict the type** of the body by typing its first argument
-- **transform the body** in a valid `BodyInit` type
+- **_restrict the valid body type_** by typing its first argument
+- **_transform the body_** in a valid `BodyInit` type
 
 ```ts
 import superjson from 'superjson'
@@ -479,7 +479,7 @@ Options:
 | `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                  |
 | `parseResponseError`             | `(response, options) => error` | The error response parser.                                                                                                    |
 | `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification][standard-schema]. |
-| `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                          |
+| `serializeBody`                  | `(body) => BodyInit`           | The body serializer.<br/> Restrict the valid `body` type by typing its first argument.                                        |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                               |
 | `timeout`                        | `number`                       | The timeout in milliseconds.                                                                                                  |
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
