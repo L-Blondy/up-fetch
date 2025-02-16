@@ -375,9 +375,10 @@ const upfetch = up(fetch, () => ({
 
 _upfetch_ serializes the plain objects using `JSON.stringify`.
 
-You can customize the body serialization by passing a function to the `serializeBody` option.
+You can customize the body serialization by passing a function to the `serializeBody` option. It lets you:
 
-The valid body type is inferred from `serializeBody`'s first argument.
+- **restrict the type** of the body by typing its first argument
+- **transform the body** in a valid `BodyInit` type
 
 ```ts
 import superjson from 'superjson'
