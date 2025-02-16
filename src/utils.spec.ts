@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
-import {
-   isJsonifiableObjectOrArray,
-   mergeHeaders,
-   omit,
-   resolveParams,
-} from './utils'
+import { isJsonifiable, mergeHeaders, omit, resolveParams } from './utils'
 import { bodyMock } from './_mocks'
 
 describe('isJsonifiableObjectOrArray', () => {
@@ -27,7 +22,7 @@ describe('isJsonifiableObjectOrArray', () => {
       ${undefined}                    | ${false}
       ${null}                         | ${false}
    `('Input: $body', ({ body, output }) => {
-      expect(isJsonifiableObjectOrArray(body)).toEqual(output)
+      expect(isJsonifiable(body)).toEqual(output)
    })
 })
 

@@ -18,8 +18,8 @@ export type JsonifiableArray = readonly (
 type JsonPrimitive = string | number | boolean | null | undefined
 
 type Interceptor =
-   | keyof DefaultOptions<any>
-   | keyof FetcherOptions<any> extends infer U
+   | keyof DefaultOptions<any, any, any>
+   | keyof FetcherOptions<any, any, any, any> extends infer U
    ? U extends `on${infer V}`
       ? `on${V}`
       : never
@@ -45,15 +45,13 @@ export type ParseResponseError<TFetchFn extends BaseFetchFn> = (
    options: ResolvedOptions<TFetchFn>,
 ) => any
 
-export type SerializeBody = (
-   body: Exclude<RawBody, BodyInit | null>,
+export type SerializeBody<TRawBody> = (
+   body: TRawBody,
 ) => BodyInit | null | undefined
 
 export type SerializeParams = (params: Params) => string
 
 export type Params = Record<string, any>
-
-type RawBody = BodyInit | JsonifiableObject | JsonifiableArray | null
 
 export type RawHeaders =
    | HeadersInit
@@ -80,6 +78,7 @@ export type ResolvedOptions<
    TFetchFn extends BaseFetchFn,
    TSchema extends StandardSchemaV1 = any,
    TParsedData = any,
+   TRawBody = any,
 > = BaseOptions<TFetchFn> & {
    baseUrl?: string
    readonly body?: BodyInit | null
@@ -89,9 +88,9 @@ export type ResolvedOptions<
    params: Params
    parseResponse: ParseResponse<TFetchFn, TParsedData>
    parseResponseError: ParseResponseError<TFetchFn>
-   rawBody?: RawBody
+   rawBody?: TRawBody | null | undefined
    schema?: TSchema
-   serializeBody: SerializeBody
+   serializeBody: SerializeBody<TRawBody>
    serializeParams: SerializeParams
    signal?: AbortSignal
    throwResponseError: (response: Response) => MaybePromise<boolean>
@@ -102,57 +101,61 @@ export type FallbackOptions<TFetchFn extends BaseFetchFn> = {
    parseResponse: ParseResponse<TFetchFn, any>
    parseResponseError: ParseResponseError<TFetchFn>
    serializeParams: SerializeParams
-   serializeBody: SerializeBody
+   serializeBody: SerializeBody<BodyInit | JsonifiableObject | JsonifiableArray>
    throwResponseError: (response: Response) => MaybePromise<boolean>
 }
 
 /**
  * Default configuration options for the fetch client
  */
-export type DefaultOptions<TFetchFn extends BaseFetchFn> =
-   BaseOptions<TFetchFn> & {
-      /** Base URL to prepend to all request URLs */
-      baseUrl?: string
-      /** Request headers to be sent with each request */
-      headers?: RawHeaders
-      /** HTTP method to use for the request */
-      method?: Method
-      /** Callback executed before the request is made */
-      onRequest?: (options: ResolvedOptions<TFetchFn>) => void
-      /** Callback executed when the request fails */
-      onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
-      /** Callback executed when the request succeeds */
-      onSuccess?: (data: any, options: ResolvedOptions<TFetchFn>) => void
-      /** URL parameters to be serialized and appended to the URL */
-      params?: Params
-      /** Function to parse the response data */
-      parseResponse?: ParseResponse<TFetchFn, any>
-      /** Function to parse response errors */
-      parseResponseError?: ParseResponseError<TFetchFn>
-      /** Function to serialize request body */
-      serializeBody?: SerializeBody
-      /** Function to serialize URL parameters */
-      serializeParams?: SerializeParams
-      /** AbortSignal to cancel the request */
-      signal?: AbortSignal
-      /** Function to determine if a response should throw an error */
-      throwResponseError?: (response: Response) => MaybePromise<boolean>
-      /** Request timeout in milliseconds */
-      timeout?: number
-   }
+export type DefaultOptions<
+   TFetchFn extends BaseFetchFn,
+   TDefaultParsedData,
+   TDefaultRawBody,
+> = BaseOptions<TFetchFn> & {
+   /** Base URL to prepend to all request URLs */
+   baseUrl?: string
+   /** Request headers to be sent with each request */
+   headers?: RawHeaders
+   /** HTTP method to use for the request */
+   method?: Method
+   /** Callback executed before the request is made */
+   onRequest?: (options: ResolvedOptions<TFetchFn>) => void
+   /** Callback executed when the request fails */
+   onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
+   /** Callback executed when the request succeeds */
+   onSuccess?: (data: any, options: ResolvedOptions<TFetchFn>) => void
+   /** URL parameters to be serialized and appended to the URL */
+   params?: Params
+   /** Function to parse the response data */
+   parseResponse?: ParseResponse<TFetchFn, TDefaultParsedData>
+   /** Function to parse response errors */
+   parseResponseError?: ParseResponseError<TFetchFn>
+   /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
+   serializeBody?: SerializeBody<TDefaultRawBody>
+   /** Function to serialize URL parameters */
+   serializeParams?: SerializeParams
+   /** AbortSignal to cancel the request */
+   signal?: AbortSignal
+   /** Function to determine if a response should throw an error */
+   throwResponseError?: (response: Response) => MaybePromise<boolean>
+   /** Request timeout in milliseconds */
+   timeout?: number
+}
 
 /**
  * Options for individual fetch requests
  */
 export type FetcherOptions<
    TFetchFn extends BaseFetchFn,
-   TSchema extends StandardSchemaV1 = any,
-   TParsedData = any,
+   TSchema extends StandardSchemaV1,
+   TParsedData,
+   TRawBody,
 > = BaseOptions<TFetchFn> & {
    /** Base URL to prepend to the request URL */
    baseUrl?: string
    /** Request body data */
-   body?: RawBody
+   body?: NoInfer<TRawBody> | null | undefined
    /** Request headers */
    headers?: RawHeaders
    /** HTTP method */
@@ -165,8 +168,8 @@ export type FetcherOptions<
    parseResponseError?: ParseResponseError<TFetchFn>
    /** JSON Schema for request/response validation */
    schema?: TSchema
-   /** Function to serialize request body */
-   serializeBody?: SerializeBody
+   /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
+   serializeBody?: SerializeBody<TRawBody>
    /** Function to serialize URL parameters */
    serializeParams?: SerializeParams
    /** AbortSignal to cancel the request */

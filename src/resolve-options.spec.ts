@@ -80,7 +80,7 @@ describe('resolveOptions body', () => {
 })
 
 test('options overrides', () => {
-   let defaultOptions: DefaultOptions<typeof fetch> = {
+   let defaultOptions: DefaultOptions<typeof fetch, any, any> = {
       baseUrl: 'https://a.b.c',
       cache: 'force-cache',
       credentials: 'include',
@@ -100,7 +100,7 @@ test('options overrides', () => {
       throwResponseError: () => true,
       window: null,
    }
-   let fetcherOptions: FetcherOptions<typeof fetch> = {
+   let fetcherOptions: FetcherOptions<typeof fetch, any, any, any> = {
       baseUrl: undefined,
       cache: undefined,
       credentials: undefined,

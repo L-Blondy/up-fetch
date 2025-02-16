@@ -82,16 +82,18 @@ export let stripUndefined = <O extends object>(obj?: O): O => {
    return copy
 }
 
-export let isJsonifiableObjectOrArray = (
-   body: any,
-): body is JsonifiableObject | JsonifiableArray => {
-   if (!body || typeof body !== 'object') return false
+export let isJsonifiable = (
+   value: any,
+): value is JsonifiableObject | JsonifiableArray => {
+   // bun FormData has a toJSON method
+   if (!value || typeof value !== 'object' || value instanceof FormData)
+      return false
    return (
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      body?.constructor?.name === 'Object' ||
-      Array.isArray(body) ||
+      value?.constructor?.name === 'Object' ||
+      Array.isArray(value) ||
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      typeof body?.toJSON === 'function'
+      typeof value?.toJSON === 'function'
    )
 }
 

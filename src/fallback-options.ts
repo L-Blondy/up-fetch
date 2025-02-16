@@ -1,5 +1,6 @@
 import { ResponseError } from './response-error'
 import type { FallbackOptions } from './types'
+import { isJsonifiable } from './utils'
 
 export let fallbackOptions: FallbackOptions<any> = {
    parseResponse: (res) =>
@@ -23,7 +24,8 @@ export let fallbackOptions: FallbackOptions<any> = {
          JSON.parse(JSON.stringify(params)) as Record<string, string>,
       ).toString(),
 
-   serializeBody: (val: any) => JSON.stringify(val),
+   serializeBody: (body: any) =>
+      isJsonifiable(body) ? JSON.stringify(body) : body,
 
    throwResponseError: (response) => !response.ok,
 }

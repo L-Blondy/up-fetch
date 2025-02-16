@@ -4,11 +4,12 @@ import type {
    DefaultOptions,
    BaseFetchFn,
    Interceptors,
+   FallbackOptions,
 } from './types'
-import { type FallbackOptions, fallbackOptions } from './fallback-options'
+import { fallbackOptions } from './fallback-options'
 import {
    resolveParams,
-   isJsonifiableObjectOrArray,
+   isJsonifiable,
    mergeHeaders,
    omit,
    emptyOptions,
@@ -22,12 +23,18 @@ export let interceptors: Interceptors = ['onRequest', 'onSuccess', 'onError']
 
 export let resolveOptions = <
    TFetchFn extends BaseFetchFn,
-   TParsedData = any,
-   TSchema extends StandardSchemaV1 = any,
+   TParsedData,
+   TSchema extends StandardSchemaV1,
+   TRawBody,
 >(
    input: Parameters<TFetchFn>[0], // fetch 1st arg
-   defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
-   fetcherOpts: FetcherOptions<TFetchFn, TSchema, TParsedData> = emptyOptions,
+   defaultOptions: DefaultOptions<TFetchFn, any, any> = emptyOptions,
+   fetcherOpts: FetcherOptions<
+      TFetchFn,
+      TSchema,
+      TParsedData,
+      TRawBody
+   > = emptyOptions,
 ): ResolvedOptions<TFetchFn, TSchema, TParsedData> => {
    // transform URL to string right away
    input = input?.href ?? input
@@ -38,11 +45,11 @@ export let resolveOptions = <
    }
    let rawBody = fetcherOpts.body
    let params = resolveParams(defaultOptions.params, input, fetcherOpts.params)
-   let isJsonifiable: boolean
-   // assign isJsonifiable value while making use of the type guard
-   let body = (isJsonifiable = isJsonifiableObjectOrArray(rawBody))
-      ? mergedOptions.serializeBody(rawBody)
-      : rawBody
+
+   let body: BodyInit | null | undefined =
+      rawBody === null || rawBody === undefined
+         ? (rawBody as null | undefined)
+         : mergedOptions.serializeBody(rawBody)
 
    return stripUndefined({
       // I have to cast as mergedOptions because the type breaks with omit
@@ -52,7 +59,7 @@ export let resolveOptions = <
       body,
       signal: mergeSignal(mergedOptions.signal, mergedOptions.timeout),
       headers: mergeHeaders(
-         isJsonifiable && typeof body === 'string'
+         isJsonifiable(rawBody) && typeof body === 'string'
             ? { 'content-type': 'application/json' }
             : {},
          defaultOptions.headers,

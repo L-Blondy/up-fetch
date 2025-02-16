@@ -1,5 +1,51 @@
 # Changelog
 
+## [1.3.0-beta.2](https://github.com/L-Blondy/up-fetch/compare/v1.2.4-beta.0...v1.3.0-beta.0) - 2025.02-16
+
+### Breaking changes
+
+1. The `serializeBody` option now receives any non nullish body as its first argument. Previously it received jsonifiable values only.
+
+   The valid `body` type can now be restricted by typing the `serializeBody` option's first argument.
+
+   ```ts
+   let upfetch = up(fetch, () => ({
+      // accept FormData only
+      serializeBody: (body: FormData) => body,
+   }))
+
+   // ❌ type error: the body is not a FormData
+   upfetch('https://example.com', {
+      method: 'POST',
+      body: { name: 'John' },
+   })
+
+   // ✅ works fine with FormData
+   upfetch('https://example.com', {
+      method: 'POST',
+      body: new FormData(),
+   })
+   ```
+
+2. upfetch's 2nd argument no longer has a functional signature.
+   Instead, `up` receives the fetcher arguments to tailor the defaults based on the request.
+
+   Example:
+
+   ```ts
+   let upfetch = up(fetch, (input, options) => ({
+      baseUrl: 'https://example.com',
+      timeout:
+         typeof input === 'string' && input.startsWith('/export/')
+            ? 30000
+            : 5000,
+   }))
+   ```
+
+### Added
+
+- new `isJsonifiable` utility to determine if a value can be safely converted to `json`
+
 ## [1.2.4](https://github.com/L-Blondy/up-fetch/compare/v1.2.3...v1.2.4-beta.0) - 2025.02-11
 
 ## Added
@@ -57,3 +103,7 @@
 ### Improvements
 
 - Better `options` type inferrence in the interceptors
+
+```
+
+```

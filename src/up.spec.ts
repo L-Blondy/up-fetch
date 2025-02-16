@@ -21,12 +21,23 @@ import { object, pipe, string, transform } from 'valibot'
 import { scheduler } from 'timers/promises'
 import { z } from 'zod'
 import { isValidationError, ValidationError } from './validation-error'
+import type { FetcherOptions } from './types'
 
 describe('up', () => {
    let server = setupServer()
    beforeAll(() => server.listen())
    afterEach(() => server.resetHandlers())
    afterAll(() => server.close())
+
+   test('Should receive the fetcher arguments', async () => {
+      up(fetch, (input, options) => {
+         expectTypeOf(input).toEqualTypeOf<string | Request | URL>()
+         expectTypeOf(options).toEqualTypeOf<
+            FetcherOptions<typeof fetch, any, any, any>
+         >()
+         return {}
+      })
+   })
 
    describe('throwResponseError', () => {
       test('Should throw by default if !response.ok', async () => {
@@ -38,7 +49,7 @@ describe('up', () => {
 
          let catchCount = 0
 
-         let upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, (input) => ({
             baseUrl: 'https://example.com',
          }))
 
@@ -378,10 +389,6 @@ describe('up', () => {
          await upfetch('/', {
             params: { input: undefined },
          })
-
-         await upfetch('/', (defaultOptions) => ({
-            params: { hello: defaultOptions.params.hello, input: undefined },
-         }))
       })
    })
 
@@ -478,30 +485,32 @@ describe('up', () => {
       })
 
       test.each`
-         body                            | isSerialized
+         body                            | shouldCallSerializeBody
          ${{}}                           | ${true}
          ${{ a: 1 }}                     | ${true}
          ${[1, 2]}                       | ${true}
          ${bodyMock.classJsonifiable}    | ${true}
-         ${bodyMock.classNonJsonifiable} | ${false}
-         ${bodyMock.buffer}              | ${false}
-         ${bodyMock.dataview}            | ${false}
-         ${bodyMock.blob}                | ${false}
-         ${bodyMock.typedArray}          | ${false}
-         ${bodyMock.formData}            | ${false}
-         ${bodyMock.urlSearchParams}     | ${false}
-         ${bodyMock.stream}              | ${false}
-         ${''}                           | ${false}
-         ${0}                            | ${false}
+         ${bodyMock.classNonJsonifiable} | ${true}
+         ${bodyMock.buffer}              | ${true}
+         ${bodyMock.dataview}            | ${true}
+         ${bodyMock.blob}                | ${true}
+         ${bodyMock.typedArray}          | ${true}
+         ${bodyMock.formData}            | ${true}
+         ${bodyMock.urlSearchParams}     | ${true}
+         ${bodyMock.stream}              | ${true}
+         ${''}                           | ${true}
+         ${0}                            | ${true}
          ${undefined}                    | ${false}
          ${null}                         | ${false}
       `(
-         'Should be called when body is an Array, a plain Object or a class with a JSON method',
-         async ({ body, isSerialized }) => {
+         'Should be called on any non-nullish an non-string body',
+         async ({ body, shouldCallSerializeBody }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
                   let actualBody = await request.text()
-                  expect(actualBody === 'serialized').toBe(isSerialized)
+                  expect(actualBody === 'serialized').toBe(
+                     shouldCallSerializeBody,
+                  )
 
                   return HttpResponse.json({ hello: 'world' }, { status: 200 })
                }),

@@ -15,9 +15,43 @@
 
 _upfetch_ is an advanced fetch client builder with standard schema validation, automatic response parsing, smart defaults and more. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
 
+## Table of Contents
+
+- [Highlights](#️-highlights)
+- [QuickStart](#️-quickstart)
+- [Key Features](#️-key-features)
+   - [Request Configuration](#️-request-configuration)
+   - [Simple Query Parameters](#️-simple-query-parameters)
+   - [Automatic Body Handling](#️-automatic-body-handling)
+   - [Schema Validation](#️-schema-validation)
+   - [Lifecycle Hooks](#️-lifecycle-hooks)
+   - [Timeout](#️-timeout)
+   - [Error Handling](#️-error-handling)
+- [Usage](#️-usage)
+   - [Authentication](#️-authentication)
+   - [Delete a default option](#️-delete-a-default-option)
+   - [FormData](#️-formdata)
+   - [HTTP Agent](#️-http-agent)
+   - [Multiple fetch clients](#️-multiple-fetch-clients)
+- [Advanced Usage](#️-advanced-usage)
+   - [Error as value](#error-as-value)
+   - [Custom response parsing](#custom-response-parsing)
+   - [Custom response errors](#custom-response-errors)
+   - [Custom params serialization](#custom-params-serialization)
+   - [Custom body serialization](#custom-body-serialization)
+   - [Defaults based on the request](#defaults-based-on-the-request)
+- [API Reference](#️-api-reference)
+   - [up(fetch, getDefaultOptions?)](#upfetch-getdefaultoptions)
+   - [upfetch(url, options?)](#upfetchurl-options)
+   - [isResponseError(error)](#isresponseerrorerror)
+   - [isValidationError(error)](#isvalidationerrorerror)
+   - [isJsonifiable(value)](#isjsonifiablevalue)
+- [Feature Comparison](#feature-comparison)
+- [Environment Support](#️-environment-support)
+
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.2kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.3kB gzipped, no dependency
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
@@ -244,16 +278,6 @@ upfetch('/todos', {
 })
 ```
 
-### ✔️ Override a default option conditionally
-
-You can override default options for a specific request by passing a function as the 2nd argument:
-
-```ts
-upfetch('/todos', (defaultOptions) => ({
-   signal: condition ? AbortSignal.timeout(5000) : defaultOptions.signal,
-}))
-```
-
 ### ✔️ FormData
 
 Grab the FormData from a `form`.
@@ -357,34 +381,6 @@ Usage:
 const { data, error } = await upfetch('/users/1')
 ```
 
-### Custom params serialization
-
-_upfetch_ serializes the params using `URLSearchParams`.
-
-You can customize the params serialization by passing a function to the `serializeParams` option.
-
-```ts
-import queryString from 'query-string'
-
-const upfetch = up(fetch, () => ({
-   serializeParams: (params) => queryString.stringify(params),
-}))
-```
-
-### Custom body serialization
-
-_upfetch_ serializes the body using `JSON.stringify`.
-
-You can customize the body serialization by passing a function to the `serializeBody` option.
-
-```ts
-import superjson from 'superjson'
-
-const upfetch = up(fetch, () => ({
-   serializeBody: (body) => superjson.stringify(body),
-}))
-```
-
 ### Custom response parsing
 
 By default _upfetch_ is able to parse `json` and `text` sucessful responses automatically.
@@ -398,7 +394,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
+💡 Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
 
 ### Custom response errors
 
@@ -416,6 +412,87 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+### Custom params serialization
+
+By default _upfetch_ serializes the params using `URLSearchParams`.
+
+You can customize the params serialization by passing a function to the `serializeParams` option.
+
+```ts
+import queryString from 'query-string'
+
+const upfetch = up(fetch, () => ({
+   serializeParams: (params) => queryString.stringify(params),
+}))
+```
+
+### Custom body serialization
+
+By default _upfetch_ serializes the plain objects using `JSON.stringify`.
+
+You can customize the body serialization by passing a function to the `serializeBody` option. It lets you:
+
+- **restrict the valid body type** by typing its first argument
+- **transform the body** in a valid `BodyInit` type
+
+The following example show how to restrict the valid body type to `Record<string, any>` and serialize it using `JSON.stringify`:
+
+```ts
+// Restrict the body type to Record<string, any> and serialize it
+const upfetch = up(fetch, () => ({
+   serializeBody: (body: Record<string, any>) => JSON.stringify(body),
+}))
+
+// ❌ type error: the body is not a Record<string, any>
+upfetch('https://a.b.c/todos', {
+   method: 'POST',
+   body: [['title', 'New Todo']],
+})
+
+// ✅ works fine with Record<string, any>
+upfetch('https://a.b.c/todos', {
+   method: 'POST',
+   body: { title: 'New Todo' },
+})
+```
+
+The following example uses `superjson` to serialize the body. The valid body type is inferred from `SuperJSON.stringify`.
+
+```ts
+import SuperJSON from 'superjson'
+
+const upfetch = up(fetch, () => ({
+   serializeBody: SuperJSON.stringify,
+}))
+```
+
+### Defaults based on the request
+
+The default options receive the fetcher arguments, this allows you to tailor the defaults based on the actual request.
+
+```ts
+const upfetch = up(fetch, (input, options) => ({
+   baseUrl: 'https://example.com/',
+   headers: {
+      // Add authentication only for protected routes
+      Authorization:
+         typeof input === 'string' && input.startsWith('/api/protected/')
+            ? `Bearer ${getToken()}`
+            : undefined,
+   },
+   // Add tracking params only for public endpoints
+   params: {
+      trackingId:
+         typeof input === 'string' && input.startsWith('/public/')
+            ? crypto.randomUUID()
+            : undefined,
+   },
+   // Increase timeout for long-running operations
+   timeout:
+      typeof input === 'string' && input.startsWith('/export/') ? 30000 : 5000,
+}))
+```
+
 ## ➡️ API Reference
 
 ### <samp>up(fetch, getDefaultOptions?)</samp>
@@ -425,7 +502,7 @@ Creates a new upfetch instance with optional default options.
 ```ts
 function up(
    fetchFn: typeof globalThis.fetch,
-   getDefaultOptions?: () => DefaultOptions,
+   getDefaultOptions?: (fetcherOptions: FetcherOptions) => DefaultOptions,
 ): UpFetch
 ```
 
@@ -438,7 +515,7 @@ function up(
 | `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
 | `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
 | `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
-| `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                                                                              |
+| `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.<br/> Restrict the valid `body` type by typing its first argument.            |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
 | `timeout`                        | `number`                       | The default timeout in milliseconds.                                                                      |
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                       |
@@ -451,7 +528,7 @@ Makes a fetch request with the given options.
 ```ts
 function upfetch(
    url: string | URL | Request,
-   options?: FetcherOptions | ((defaultOptions: UpOptions) => FetcherOptions),
+   options?: FetcherOptions,
 ): Promise<any>
 ```
 
@@ -464,7 +541,7 @@ Options:
 | `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                  |
 | `parseResponseError`             | `(response, options) => error` | The error response parser.                                                                                                    |
 | `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification][standard-schema]. |
-| `serializeBody`                  | `(body) => BodyInit`           | The body serializer.                                                                                                          |
+| `serializeBody`                  | `(body) => BodyInit`           | The body serializer.<br/> Restrict the valid `body` type by typing its first argument.                                        |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                               |
 | `timeout`                        | `number`                       | The timeout in milliseconds.                                                                                                  |
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
@@ -472,9 +549,21 @@ Options:
 
 <br/>
 
+### <samp>isResponseError(error)</samp>
+
+Checks if the error is a `ResponseError`.
+
+### <samp>isValidationError(error)</samp>
+
+Checks if the error is a `ValidationError`.
+
+### <samp>isJsonifiable(value)</samp>
+
+Determines whether a value can be safely converted to `json`.
+
 ## Feature Comparison
 
-Check out the [Feature Comparison][comparison] table to see how _upfetch_ compares to other fetch libraries.
+Check out the [Feature Comparison][comparison] table to see how _upfetch_ compares to other fetching libraries.
 
 <br/>
 
