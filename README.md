@@ -441,7 +441,7 @@ Creates a new upfetch instance with optional default options.
 ```ts
 function up(
    fetchFn: typeof globalThis.fetch,
-   getDefaultOptions?: () => DefaultOptions,
+   getDefaultOptions?: (fetcherOptions: FetcherOptions) => DefaultOptions,
 ): UpFetch
 ```
 
@@ -467,7 +467,7 @@ Makes a fetch request with the given options.
 ```ts
 function upfetch(
    url: string | URL | Request,
-   options?: FetcherOptions | ((defaultOptions: UpOptions) => FetcherOptions),
+   options?: FetcherOptions,
 ): Promise<any>
 ```
 
