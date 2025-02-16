@@ -38,7 +38,7 @@ describe('up', () => {
 
          let catchCount = 0
 
-         let upfetch = up(fetch, () => ({
+         let upfetch = up(fetch, (fetcherOpts) => ({
             baseUrl: 'https://example.com',
          }))
 
@@ -378,10 +378,6 @@ describe('up', () => {
          await upfetch('/', {
             params: { input: undefined },
          })
-
-         await upfetch('/', (defaultOptions) => ({
-            params: { hello: defaultOptions.params.hello, input: undefined },
-         }))
       })
    })
 
@@ -491,7 +487,7 @@ describe('up', () => {
          ${bodyMock.formData}            | ${true}
          ${bodyMock.urlSearchParams}     | ${true}
          ${bodyMock.stream}              | ${true}
-         ${''}                           | ${false}
+         ${''}                           | ${true}
          ${0}                            | ${true}
          ${undefined}                    | ${false}
          ${null}                         | ${false}

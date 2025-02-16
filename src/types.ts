@@ -18,8 +18,8 @@ export type JsonifiableArray = readonly (
 type JsonPrimitive = string | number | boolean | null | undefined
 
 type Interceptor =
-   | keyof DefaultOptions<any>
-   | keyof FetcherOptions<any> extends infer U
+   | keyof DefaultOptions<any, any, any>
+   | keyof FetcherOptions<any, any, any, any> extends infer U
    ? U extends `on${infer V}`
       ? `on${V}`
       : never
@@ -110,8 +110,8 @@ export type FallbackOptions<TFetchFn extends BaseFetchFn> = {
  */
 export type DefaultOptions<
    TFetchFn extends BaseFetchFn,
-   TDefaultParsedData = any,
-   TDefaultRawBody = Parameters<FallbackOptions<any>['serializeBody']>[0],
+   TDefaultParsedData,
+   TDefaultRawBody,
 > = BaseOptions<TFetchFn> & {
    /** Base URL to prepend to all request URLs */
    baseUrl?: string
@@ -148,9 +148,9 @@ export type DefaultOptions<
  */
 export type FetcherOptions<
    TFetchFn extends BaseFetchFn,
-   TSchema extends StandardSchemaV1 = any,
-   TParsedData = any,
-   TRawBody = any,
+   TSchema extends StandardSchemaV1,
+   TParsedData,
+   TRawBody,
 > = BaseOptions<TFetchFn> & {
    /** Base URL to prepend to the request URL */
    baseUrl?: string

@@ -23,12 +23,18 @@ export let interceptors: Interceptors = ['onRequest', 'onSuccess', 'onError']
 
 export let resolveOptions = <
    TFetchFn extends BaseFetchFn,
-   TParsedData = any,
-   TSchema extends StandardSchemaV1 = any,
+   TParsedData,
+   TSchema extends StandardSchemaV1,
+   TRawBody,
 >(
    input: Parameters<TFetchFn>[0], // fetch 1st arg
-   defaultOptions: DefaultOptions<TFetchFn> = emptyOptions,
-   fetcherOpts: FetcherOptions<TFetchFn, TSchema, TParsedData> = emptyOptions,
+   defaultOptions: DefaultOptions<TFetchFn, any, any> = emptyOptions,
+   fetcherOpts: FetcherOptions<
+      TFetchFn,
+      TSchema,
+      TParsedData,
+      TRawBody
+   > = emptyOptions,
 ): ResolvedOptions<TFetchFn, TSchema, TParsedData> => {
    // transform URL to string right away
    input = input?.href ?? input
@@ -42,8 +48,8 @@ export let resolveOptions = <
 
    let isJsonifiable = isJsonifiableObjectOrArray(rawBody)
    let body: BodyInit | null | undefined =
-      typeof rawBody === 'string' || rawBody === null || rawBody === undefined
-         ? rawBody
+      rawBody === null || rawBody === undefined
+         ? (rawBody as null | undefined)
          : mergedOptions.serializeBody(rawBody)
 
    return stripUndefined({

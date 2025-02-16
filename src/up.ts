@@ -10,26 +10,15 @@ import { emptyOptions, parseStandardSchema } from './utils'
 
 export function up<
    TFetchFn extends BaseFetchFn,
-   TDefaultOptions extends DefaultOptions<
-      TFetchFn,
-      any,
-      any
-   > = DefaultOptions<TFetchFn>,
+   TDefaultParsedData = any,
+   TDefaultRawBody = Parameters<FallbackOptions<any>['serializeBody']>[0],
 >(
    fetchFn: TFetchFn,
-   getDefaultOptions: () => TDefaultOptions = () => emptyOptions,
+   getDefaultOptions: (
+      fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
+   ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
+      emptyOptions,
 ) {
-   type TDefaultParsedData = Awaited<
-      ReturnType<NonNullable<TDefaultOptions['parseResponse']>>
-   >
-   type TDefaultRawBody =
-      Awaited<
-         Parameters<NonNullable<TDefaultOptions['serializeBody']>>[0]
-      > extends infer U
-         ? NonNullable<U> extends never
-            ? Parameters<FallbackOptions<any>['serializeBody']>[0]
-            : U
-         : never
    return <
       TParsedData = TDefaultParsedData,
       TSchema extends StandardSchemaV1<
@@ -39,23 +28,15 @@ export function up<
       TRawBody = TDefaultRawBody,
    >(
       input: Parameters<TFetchFn>[0],
-      fetcherOptions:
-         | FetcherOptions<TFetchFn, TSchema, TParsedData, TRawBody>
-         | ((
-              defaultOptions: TDefaultOptions,
-           ) => FetcherOptions<
-              TFetchFn,
-              TSchema,
-              TParsedData,
-              TRawBody
-           >) = emptyOptions,
+      fetcherOpts: FetcherOptions<
+         TFetchFn,
+         TSchema,
+         TParsedData,
+         TRawBody
+      > = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
-      let defaultOpts = getDefaultOptions()
-      let fetcherOpts =
-         typeof fetcherOptions === 'function'
-            ? fetcherOptions(defaultOpts)
-            : fetcherOptions
+      let defaultOpts = getDefaultOptions(fetcherOpts)
       let options = resolveOptions(input, defaultOpts, fetcherOpts)
       defaultOpts.onRequest?.(options)
 
