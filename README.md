@@ -422,7 +422,7 @@ const upfetch = up(fetch, () => ({
 // ❌ type error: the body is not a Record<string, any>
 upfetch('https://a.b.c/todos', {
    method: 'POST',
-   body: new FormData(),
+   body: [['title', 'New Todo']],
 })
 
 // ✅ works fine with Record<string, any>
