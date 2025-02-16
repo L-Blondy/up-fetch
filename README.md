@@ -244,16 +244,6 @@ upfetch('/todos', (defaultOptions) => ({
 }))
 ```
 
-### ✔️ Override a default option conditionally
-
-You can override default options for a specific request by passing a function as the 2nd argument:
-
-```ts
-upfetch('/todos', (defaultOptions) => ({
-   signal: condition ? AbortSignal.timeout(5000) : defaultOptions.signal,
-}))
-```
-
 ### ✔️ FormData
 
 Grab the FormData from a `form`.
