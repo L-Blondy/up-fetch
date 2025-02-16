@@ -359,7 +359,7 @@ const { data, error } = await upfetch('/users/1')
 
 ### Custom params serialization
 
-_upfetch_ serializes the params using `URLSearchParams`.
+By default _upfetch_ serializes the params using `URLSearchParams`.
 
 You can customize the params serialization by passing a function to the `serializeParams` option.
 
@@ -373,7 +373,7 @@ const upfetch = up(fetch, () => ({
 
 ### Custom body serialization
 
-_upfetch_ serializes the plain objects using `JSON.stringify`.
+By default _upfetch_ serializes the plain objects using `JSON.stringify`.
 
 You can customize the body serialization by passing a function to the `serializeBody` option. It lets you:
 
