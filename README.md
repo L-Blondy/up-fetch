@@ -15,6 +15,40 @@
 
 _upfetch_ is an advanced fetch client builder with standard schema validation, automatic response parsing, smart defaults and more. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
 
+## Table of Contents
+
+- [Highlights](#️-highlights)
+- [QuickStart](#️-quickstart)
+- [Key Features](#️-key-features)
+   - [Request Configuration](#️-request-configuration)
+   - [Simple Query Parameters](#️-simple-query-parameters)
+   - [Automatic Body Handling](#️-automatic-body-handling)
+   - [Schema Validation](#️-schema-validation)
+   - [Lifecycle Hooks](#️-lifecycle-hooks)
+   - [Timeout](#️-timeout)
+   - [Error Handling](#️-error-handling)
+- [Usage](#️-usage)
+   - [Authentication](#️-authentication)
+   - [Delete a default option](#️-delete-a-default-option)
+   - [FormData](#️-formdata)
+   - [HTTP Agent](#️-http-agent)
+   - [Multiple fetch clients](#️-multiple-fetch-clients)
+- [Advanced Usage](#️-advanced-usage)
+   - [Error as value](#error-as-value)
+   - [Custom response parsing](#custom-response-parsing)
+   - [Custom response errors](#custom-response-errors)
+   - [Custom params serialization](#custom-params-serialization)
+   - [Custom body serialization](#custom-body-serialization)
+   - [Tailor the defaults based on the request](#tailor-the-defaults-based-on-the-request)
+- [API Reference](#️-api-reference)
+   - [up(fetch, getDefaultOptions?)](#sampupfetch-getdefaultoptionssamp)
+   - [upfetch(url, options?)](#sampupfetchurl-optionssamp)
+   - [isResponseError(error)](#sampisresponseerrorersamp)
+   - [isValidationError(error)](#sampisvalidationerrorerrorsamp)
+   - [isJsonifiable(value)](#sampisjsonifiablevaluesamp)
+- [Feature Comparison](#feature-comparison)
+- [Environment Support](#️-environment-support)
+
 ## ➡️ Highlights
 
 - 🚀 **Lightweight** - 1.2kB gzipped, no dependency
