@@ -370,7 +370,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
+💡 Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
 
 ### Custom response errors
 
