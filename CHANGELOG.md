@@ -25,6 +25,7 @@ upfetch('https://example.com', {
    method: 'POST',
    body: new FormData(),
 })
+```
 
 ## [1.2.4](https://github.com/L-Blondy/up-fetch/compare/v1.2.3...v1.2.4-beta.0) - 2025.02-11
 
@@ -83,4 +84,7 @@ upfetch('https://example.com', {
 ### Improvements
 
 - Better `options` type inferrence in the interceptors
+
+```
+
 ```
