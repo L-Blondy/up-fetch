@@ -94,7 +94,11 @@ test('Infer body', () => {
       return ''
    }
    type DefaultOkBody = symbol
-   let upfetch2 = up(fetch, () => ({ serializeBody: serializeBody2 }))
+   let upfetch2 = up(fetch, () => ({
+      serializeBody: serializeBody2,
+      // this broke body's type inference, leave it here for the test
+      serializeParams: (p) => '',
+   }))
    upfetch2('', { body: {} as DefaultOkBody | null | undefined })
    // @ts-expect-error illegal type
    upfetch2('', { body: true })
