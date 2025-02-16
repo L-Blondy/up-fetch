@@ -408,8 +408,8 @@ By default _upfetch_ serializes the plain objects using `JSON.stringify`.
 
 You can customize the body serialization by passing a function to the `serializeBody` option. It lets you:
 
-- **_restrict the valid body type_** by typing its first argument
-- **_transform the body_** in a valid `BodyInit` type
+- **restrict the valid body type** by typing its first argument
+- **transform the body** in a valid `BodyInit` type
 
 ```ts
 import superjson from 'superjson'
@@ -453,7 +453,7 @@ function up(
 | `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
 | `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
 | `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
-| `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.                                                                              |
+| `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.<br/> Restrict the valid `body` type by typing its first argument.            |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
 | `timeout`                        | `number`                       | The default timeout in milliseconds.                                                                      |
 | `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                       |
