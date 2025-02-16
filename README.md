@@ -411,27 +411,34 @@ You can customize the body serialization by passing a function to the `serialize
 - **restrict the valid body type** by typing its first argument
 - **transform the body** in a valid `BodyInit` type
 
-```ts
-import SuperJSON from 'superjson'
-
-// Restrict the body type to Record<string, any>
-const upfetch = up(fetch, () => ({
-   serializeBody: (body: Record<string, any>) => SuperJSON.stringify(body),
-}))
-
-// Or simply infer the valid body type from SuperJSON
-const upfetch = up(fetch, () => ({
-   serializeBody: SuperJSON.stringify,
-}))
-```
-
-With this setup, _upfetch_ will only accept bodies of type `ValidBody` and will serialize them using `superjson`.
+The following example show how to restrict the valid body type to `Record<string, any>` and serialize it using `JSON.stringify`:
 
 ```ts
+const upfetch = up(fetch, () => ({
+   serializeBody: (body: Record<string, any>) => JSON.stringify(body),
+}))
+
+// ❌ type error: the body is not a Record<string, any>
+upfetch('https://a.b.c/todos', {
+   method: 'POST',
+   body: new FormData(),
+})
+
+// ✅ works fine with Record<string, any>
 upfetch('https://a.b.c/todos', {
    method: 'POST',
    body: { title: 'New Todo' },
 })
+```
+
+The following example uses `superjson` to serialize the body. The valid body type is inferred from `SuperJSON.stringify`.
+
+```ts
+import SuperJSON from 'superjson'
+
+const upfetch = up(fetch, () => ({
+   serializeBody: SuperJSON.stringify,
+}))
 ```
 
 ## ➡️ API Reference
