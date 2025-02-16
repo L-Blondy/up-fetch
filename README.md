@@ -41,11 +41,6 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
    - [Custom body serialization](#custom-body-serialization)
    - [Defaults based on the request](#defaults-based-on-the-request)
 - [API Reference](#️-api-reference)
-   - [up(fetch, getDefaultOptions?)](#upfetch-getdefaultoptions)
-   - [upfetch(url, options?)](#upfetchurl-options)
-   - [isResponseError(error)](#isresponseerrorerror)
-   - [isValidationError(error)](#isvalidationerrorerror)
-   - [isJsonifiable(value)](#isjsonifiablevalue)
 - [Feature Comparison](#feature-comparison)
 - [Environment Support](#️-environment-support)
 
