@@ -563,7 +563,7 @@ Determines whether a value can be safely converted to `json`.
 
 ## Feature Comparison
 
-Check out the [Feature Comparison][comparison] table to see how _upfetch_ compares to other fetch libraries.
+Check out the [Feature Comparison][comparison] table to see how _upfetch_ compares to other fetching libraries.
 
 <br/>
 
