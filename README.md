@@ -39,13 +39,13 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
    - [Custom response errors](#custom-response-errors)
    - [Custom params serialization](#custom-params-serialization)
    - [Custom body serialization](#custom-body-serialization)
-   - [Tailor the defaults based on the request](#tailor-the-defaults-based-on-the-request)
+   - [Defaults based on the request](#defaults-based-on-the-request)
 - [API Reference](#️-api-reference)
-   - [up(fetch, getDefaultOptions?)](#sampupfetch-getdefaultoptionssamp)
-   - [upfetch(url, options?)](#sampupfetchurl-optionssamp)
-   - [isResponseError(error)](#sampisresponseerrorersamp)
-   - [isValidationError(error)](#sampisvalidationerrorerrorsamp)
-   - [isJsonifiable(value)](#sampisjsonifiablevaluesamp)
+   - [up(fetch, getDefaultOptions?)](#upfetch-getdefaultoptions)
+   - [upfetch(url, options?)](#upfetchurl-options)
+   - [isResponseError(error)](#isresponseerrorerror)
+   - [isValidationError(error)](#isvalidationerrorerror)
+   - [isJsonifiable(value)](#isjsonifiablevalue)
 - [Feature Comparison](#feature-comparison)
 - [Environment Support](#️-environment-support)
 
@@ -466,7 +466,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-### Tailor the defaults based on the request
+### Defaults based on the request
 
 The default options receive the fetcher arguments, this allows you to tailor the defaults based on the actual request.
 
