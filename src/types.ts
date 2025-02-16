@@ -131,7 +131,7 @@ export type DefaultOptions<
    parseResponse?: ParseResponse<TFetchFn, TDefaultParsedData>
    /** Function to parse response errors */
    parseResponseError?: ParseResponseError<TFetchFn>
-   /** Function to serialize request body */
+   /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
    serializeBody?: SerializeBody<TDefaultRawBody>
    /** Function to serialize URL parameters */
    serializeParams?: SerializeParams
@@ -168,7 +168,7 @@ export type FetcherOptions<
    parseResponseError?: ParseResponseError<TFetchFn>
    /** JSON Schema for request/response validation */
    schema?: TSchema
-   /** Function to serialize request body */
+   /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
    serializeBody?: SerializeBody<TRawBody>
    /** Function to serialize URL parameters */
    serializeParams?: SerializeParams
