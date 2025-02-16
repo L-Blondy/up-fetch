@@ -558,6 +558,12 @@ Checks if the error is a `ValidationError`.
 
 Determines whether a value can be safely converted to `json`.
 
+The following values are considered jsonifiable:
+
+- plain objects
+- arrays
+- class instances with a `toJSON` method
+
 ## Feature Comparison
 
 Check out the [Feature Comparison][comparison] table to see how _upfetch_ compares to other fetching libraries.
