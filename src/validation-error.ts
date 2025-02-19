@@ -14,5 +14,4 @@ export class ValidationError<TData = any> extends Error {
 }
 
 export let isValidationError = (error: any): error is ValidationError =>
-   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-   error?.name === 'ValidationError'
+   error instanceof ValidationError

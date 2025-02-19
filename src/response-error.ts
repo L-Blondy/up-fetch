@@ -25,5 +25,4 @@ export let isResponseError = <
    TFetchFn extends BaseFetchFn = typeof fetch,
 >(
    error: any,
-   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-): error is ResponseError<TData, TFetchFn> => error?.name === 'ResponseError'
+): error is ResponseError<TData, TFetchFn> => error instanceof ResponseError
