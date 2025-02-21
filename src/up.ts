@@ -6,7 +6,7 @@ import type {
    BaseFetchFn,
    FallbackOptions,
 } from './types'
-import { emptyOptions, parseStandardSchema } from './utils'
+import { emptyOptions, validate } from './utils'
 
 export function up<
    TFetchFn extends BaseFetchFn,
@@ -59,7 +59,7 @@ export function up<
                let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
                try {
                   data = options.schema
-                     ? await parseStandardSchema(options.schema, parsed)
+                     ? await validate(options.schema, parsed)
                      : parsed
                } catch (error: any) {
                   defaultOpts.onError?.(error, options)

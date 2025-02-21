@@ -117,7 +117,7 @@ export function getUrl(
    return url
 }
 
-export async function parseStandardSchema<TSchema extends StandardSchemaV1>(
+export async function validate<TSchema extends StandardSchemaV1>(
    schema: TSchema,
    data: StandardSchemaV1.InferInput<TSchema>,
 ): Promise<StandardSchemaV1.InferOutput<TSchema>> {
