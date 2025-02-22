@@ -353,7 +353,7 @@ const fetchText = up(fetch, () => ({
 
 ## ➡️ Advanced Usage
 
-### Error as value
+### ✔️ Error as value
 
 While the Fetch API does not throw an error when the response is not ok, _upfetch_ throws a `ResponseError` instead.
 
@@ -378,7 +378,7 @@ Usage:
 const { data, error } = await upfetch('/users/1')
 ```
 
-### Custom response parsing
+### ✔️ Custom response parsing
 
 By default _upfetch_ is able to parse `json` and `text` sucessful responses automatically.
 
@@ -393,7 +393,7 @@ const upfetch = up(fetch, () => ({
 
 💡 Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
 
-### Custom response errors
+### ✔️ Custom response errors
 
 By default _upfetch_ throws a `ResponseError` when `throwResponseError` returns `true`.
 
@@ -409,7 +409,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-### Custom params serialization
+### ✔️ Custom params serialization
 
 By default _upfetch_ serializes the params using `URLSearchParams`.
 
@@ -423,7 +423,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-### Custom body serialization
+### ✔️ Custom body serialization
 
 By default _upfetch_ serializes the plain objects using `JSON.stringify`.
 
@@ -463,7 +463,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-### Defaults based on the request
+### ✔️ Defaults based on the request
 
 The default options receive the fetcher arguments, this allows you to tailor the defaults based on the actual request.
 
@@ -564,7 +564,7 @@ Are considered jsonifiable:
 - arrays
 - class instances with a `toJSON` method
 
-## Feature Comparison
+## ➡️ Feature Comparison
 
 Check out the [Feature Comparison][comparison] table to see how _upfetch_ compares to other fetching libraries.
 
