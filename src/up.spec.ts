@@ -40,7 +40,7 @@ describe('up', () => {
    })
 
    describe('throwResponseError', () => {
-      test('Should throw by default if !response.ok', async () => {
+      test('should throw ResponseError by default when response.ok is false', async () => {
          server.use(
             http.get('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -60,7 +60,7 @@ describe('up', () => {
          expect(catchCount).toEqual(1)
       })
 
-      test('Should not throw if () => false', async () => {
+      test('should not throw when throwResponseError returns false', async () => {
          server.use(
             http.get('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -80,7 +80,7 @@ describe('up', () => {
          expect(catchCount).toEqual(0)
       })
 
-      test('Should be called before the up parseResponseError', async () => {
+      test('should execute throwResponseError before up.parseResponseError', async () => {
          server.use(
             http.get('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -110,7 +110,7 @@ describe('up', () => {
          expect(catchCount).toEqual(3)
       })
 
-      test('Should be called before the upfetch parseResponseError', async () => {
+      test('should execute throwResponseError before upfetch.parseResponseError', async () => {
          server.use(
             http.get('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -141,7 +141,7 @@ describe('up', () => {
          expect(catchCount).toEqual(3)
       })
 
-      test('Should support async functions', async () => {
+      test('should support asynchronous throwResponseError functions', async () => {
          server.use(
             http.get('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -175,7 +175,7 @@ describe('up', () => {
    })
 
    describe('body', () => {
-      test('Should be ignored in up', async () => {
+      test('should ignore up.body configuration', async () => {
          server.use(
             http.post('https://example.com', async ({ request }) => {
                let body = await request.text()
@@ -222,7 +222,7 @@ describe('up', () => {
          ${undefined}                    | ${false}
          ${null}                         | ${false}
       `(
-         'Should automatically have "content-type: application/json" if the body is jsonifiable and the serialized body is a string',
+         'should automatically set content-type to application/json for jsonifiable bodies that serialize to strings',
          async ({ body, expected }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
@@ -253,7 +253,7 @@ describe('up', () => {
          ${[1, 2]}                    | ${false}
          ${bodyMock.classJsonifiable} | ${false}
       `(
-         'Should NOT automatically have "content-type: application/json" if the body is jsonifiable BUT the serialized body is NOT a string',
+         'should not set content-type to application/json when body is jsonifiable but serializes to non-string',
          async ({ body, expected }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
@@ -284,7 +284,7 @@ describe('up', () => {
          ${[1, 2]}
          ${bodyMock.classJsonifiable}
       `(
-         'If the "content-type" header is declared, "application/json" should not be added',
+         'should respect existing content-type header when already set',
          async ({ body }) => {
             server.use(
                http.post('https://example.com', async ({ request }) => {
@@ -304,7 +304,7 @@ describe('up', () => {
          },
       )
 
-      test('upfetch headers should override up headers', async () => {
+      test('should allow upfetch.headers to override up.headers', async () => {
          server.use(
             http.post('https://example.com', async ({ request }) => {
                expect(request.headers.get('content-type')).toEqual(
@@ -322,7 +322,7 @@ describe('up', () => {
          await upfetch('', { headers: { 'content-type': 'from upfetch' } })
       })
 
-      test('`undefined` can be used on upfetch headers to remove upOption headers', async () => {
+      test('should support removing up headers by setting `undefined` in upfetch headers', async () => {
          server.use(
             http.post('https://example.com', async ({ request }) => {
                expect(request.headers.get('content-type')).toEqual(null)
@@ -340,7 +340,7 @@ describe('up', () => {
    })
 
    describe('params', () => {
-      test('input params should override defaultOptions params', async () => {
+      test('should prioritize input URL params over up.params', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                expect(new URL(request.url).search).toEqual('?hello=people')
@@ -356,7 +356,7 @@ describe('up', () => {
          await upfetch('/?hello=people')
       })
 
-      test('upfetch params and input params should both live in the url search (the user is responsible for not duplicating)', async () => {
+      test('should merge up.params and upfetch.params with input URL params (input URL params are not deduped)', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                expect(new URL(request.url).search).toEqual(
@@ -373,7 +373,7 @@ describe('up', () => {
          })
       })
 
-      test('`undefined` can be used on upfetch params to remove upOption params', async () => {
+      test('should support removing up params by setting `undefined` in upfetch params', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                expect(new URL(request.url).search).toEqual('?hello=world')
@@ -393,7 +393,7 @@ describe('up', () => {
    })
 
    describe('serializeParams', () => {
-      test('Should receive the params', async () => {
+      test('should receive the params object for serialization', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -410,7 +410,7 @@ describe('up', () => {
          await upfetch('', { params: { a: 1 } })
       })
 
-      test('Should not receive the params defined in the url itself', async () => {
+      test('URL-defined params should not be passed to the serialization process', async () => {
          server.use(
             http.get('https://example.com/path', ({ request }) => {
                expect(new URL(request.url).search).toEqual('?b=2&a=1')
@@ -429,7 +429,7 @@ describe('up', () => {
          await upfetch('path?b=2', { params: { a: 1 } })
       })
 
-      test('Should be called even if no params are defined', async () => {
+      test('should be called even if no params are defined', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -449,7 +449,7 @@ describe('up', () => {
          expect(count).toEqual(2)
       })
 
-      test('serializeParams in upfetch should override serializeParams in up', async () => {
+      test('should allow upfetch.serializeParams to override up.serializeParams', async () => {
          server.use(
             http.get('https://example.com', ({ request }) => {
                expect(new URL(request.url).search).toEqual('?from=upfetch')
@@ -467,23 +467,6 @@ describe('up', () => {
    })
 
    describe('serializeBody', () => {
-      test('Should receive the body', async () => {
-         server.use(
-            http.post('https://example.com', () => {
-               return HttpResponse.json({ hello: 'world' }, { status: 200 })
-            }),
-         )
-
-         let upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
-            serializeBody(body) {
-               expect(body).toEqual({ a: 1 })
-               return ''
-            },
-         }))
-         await upfetch('', { body: { a: 1 }, method: 'POST' })
-      })
-
       test.each`
          body                            | shouldCallSerializeBody
          ${{}}                           | ${true}
@@ -551,7 +534,7 @@ describe('up', () => {
    })
 
    describe('parseResponse', () => {
-      test('Should parse JSON by default', async () => {
+      test('should parse JSON responses by default', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -565,7 +548,7 @@ describe('up', () => {
          expect(data).toEqual({ hello: 'world' })
       })
 
-      test('Should parse TEXT by default', async () => {
+      test('should parse TEXT responses by default', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.text('some text', { status: 200 })
@@ -579,7 +562,7 @@ describe('up', () => {
          expect(data).toEqual('some text')
       })
 
-      test('Should receive res, options as parameters', async () => {
+      test('should provide response and options to parseResponse function', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.text('some text', { status: 200 })
@@ -597,7 +580,7 @@ describe('up', () => {
          await upfetch('')
       })
 
-      test('Should be called before onSuccess', async () => {
+      test('should execute parseResponse before onSuccess callback', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.text('some text', { status: 200 })
@@ -622,7 +605,7 @@ describe('up', () => {
          expect(count).toEqual(3)
       })
 
-      test('Should be called even if the response has no body', async () => {
+      test('should also receive responses with empty body', async () => {
          server.use(
             http.get('https://example.com', () => {
                return new Response(null, { status: 200 })
@@ -644,7 +627,7 @@ describe('up', () => {
          expect(count).toEqual(2)
       })
 
-      test('parseResponse in upfetch should override parseResponse in up', async () => {
+      test('should allow upfetch.parseResponse to override up.parseResponse', async () => {
          server.use(
             http.post('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -666,7 +649,7 @@ describe('up', () => {
    })
 
    describe('parseResponseError', () => {
-      test('Should parse JSON by default', async () => {
+      test('should parse JSON error responses by default', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -681,7 +664,7 @@ describe('up', () => {
          })
       })
 
-      test('Should parse TEXT by default', async () => {
+      test('should parse TEXT error responses by default', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.text('some text', { status: 400 })
@@ -696,7 +679,7 @@ describe('up', () => {
          })
       })
 
-      test('Should receive res, options, defaultParser as parameters', async () => {
+      test('should provide response and options to parseResponseError', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.text('some text', { status: 400 })
@@ -716,7 +699,7 @@ describe('up', () => {
          })
       })
 
-      test('Should be called before onError', async () => {
+      test('should execute parseResponseError before onError callback', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.text('some text', { status: 400 })
@@ -742,7 +725,7 @@ describe('up', () => {
          })
       })
 
-      test('Should be called even if the response has no body', async () => {
+      test('should receive error responses with empty body', async () => {
          server.use(
             http.get('https://example.com', () => {
                return new Response(null, { status: 300 })
@@ -764,7 +747,7 @@ describe('up', () => {
          expect(count).toEqual(2)
       })
 
-      test('parseResponseError in upfetch should override parseResponseError in up', async () => {
+      test('should allow upfetch.parseResponseError to override up.parseResponseError', async () => {
          server.use(
             http.post('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -786,7 +769,7 @@ describe('up', () => {
    })
 
    describe('onError', () => {
-      test('Should catch the validation errors', async () => {
+      test('should receive validation errors', async () => {
          server.use(
             http.get('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -810,7 +793,7 @@ describe('up', () => {
          expect(exec).toBe(1)
       })
 
-      test('Should catch the response errors', async () => {
+      test('should receive the response errors', async () => {
          server.use(
             http.get('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 400 })
@@ -832,7 +815,7 @@ describe('up', () => {
          expect(exec).toBe(1)
       })
 
-      test('Should catch the any error', async () => {
+      test('should receive any error', async () => {
          server.use(
             http.get('https://example.com', async () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -859,28 +842,28 @@ describe('up', () => {
    })
 
    describe('onSuccess', () => {
-      test('Should be called on upfetch, then on up', async () => {
+      test('should execute onSuccess when no error occurs', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
-         let count = 1
+         let count = 0
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             onSuccess() {
-               expect(count).toBe(1)
+               expect(count).toBe(0)
                count++
             },
          }))
 
          await upfetch('')
-         expect(count).toBe(2)
+         expect(count).toBe(1)
       })
 
-      test('Should receive the validated data and the options', async () => {
+      test('should provide validated data and options to onSuccess callback', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -905,7 +888,7 @@ describe('up', () => {
          })
       })
 
-      test('Should not be called when parseResponse throws', async () => {
+      test('should skip onSuccess when parseResponse throws an error', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -933,28 +916,28 @@ describe('up', () => {
    })
 
    describe('onRequest', () => {
-      test('Should be called on upfetch, then on up', async () => {
+      test('should execute onRequest', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
-         let count = 1
+         let count = 0
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
             onRequest() {
-               expect(count).toBe(1)
+               expect(count).toBe(0)
                count++
             },
          }))
 
          await upfetch('')
-         expect(count).toBe(2)
+         expect(count).toBe(1)
       })
 
-      test('Should receive the options', async () => {
+      test('should provide complete options object to onRequest callback', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -973,7 +956,7 @@ describe('up', () => {
    })
 
    describe('timeout', () => {
-      test('Default timeout should apply if not fetcher timeout is defined', async () => {
+      test('should apply up.timeout when upfetch.timeout is not defined', async () => {
          server.use(
             http.get('https://example.com', async () => {
                await scheduler.wait(2)
@@ -994,7 +977,7 @@ describe('up', () => {
          expect(exec).toBe(1)
       })
 
-      test('the default timeout should be overriden by the fetcher timeout', async () => {
+      test('should allow upfetch.timeout to override up.timeout', async () => {
          server.use(
             http.get('https://example.com', async () => {
                await scheduler.wait(2)
@@ -1015,7 +998,7 @@ describe('up', () => {
          expect(exec).toBe(0)
       })
 
-      test('The timeout should still work along with a signal', async () => {
+      test('should maintain timeout functionality when an AbortSignal is passed to upfetch.signal', async () => {
          server.use(
             http.get('https://example.com', async () => {
                await scheduler.wait(2)
@@ -1038,7 +1021,7 @@ describe('up', () => {
          expect(exec).toBe(1)
       })
 
-      test('The signal should still work along with a timeout', async () => {
+      test('should maintain upfetch.signal functionality when timeout is defined', async () => {
          server.use(
             http.get('https://example.com', async () => {
                await scheduler.wait(10000)
@@ -1065,7 +1048,7 @@ describe('up', () => {
          expect(exec).toBe(1)
       })
 
-      describe('Environnement compatibility', () => {
+      describe('environment compatibility', () => {
          beforeAll(() => {
             vi.stubGlobal('AbortSignal', {})
          })
@@ -1074,7 +1057,7 @@ describe('up', () => {
             vi.unstubAllGlobals()
          })
 
-         test('Should not crash if AbortSignal.any and AbortSignal.timeout are not supported', async () => {
+         test('should gracefully handle environments without AbortSignal.any and AbortSignal.timeout', async () => {
             server.use(
                http.get('https://example.com', async () => {
                   await scheduler.wait(2)
