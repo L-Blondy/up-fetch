@@ -1,4 +1,4 @@
-<h1 align="center">upfetch - an advanced fetch client builder</h1>
+<h1 align="center">upfetch - advanced fetch client builder</h1>
 <br>
 <p align="center">
 <img src="https://raw.githubusercontent.com/L-Blondy/up-fetch/refs/heads/master/logos/upfetch-logo-gold.svg" alt="upfetch">
