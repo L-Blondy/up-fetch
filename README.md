@@ -595,9 +595,9 @@ Check out the [Feature Comparison][comparison] table to see how _upfetch_ compar
 <!-- Badges -->
 
 [bsky-badge]: https://img.shields.io/badge/Bluesky-0085ff?logo=bluesky&logoColor=fff
-[bsky-link]: https://bsky.app/intent/compose?text=up-fetch%0A%0ATiny%20%26%20Composable%20fetch%20configuration%20tool%20with%20sensible%20defaults%20and%20built-in%20schema%20validation%0A%0Ahttps://github.com/L-Blondy/up-fetch
+[bsky-link]: https://bsky.app/intent/compose?text=https%3A%2F%2Fgithub.com%2FL-Blondy%2Fup-fetch
 [tweet-badge]: https://img.shields.io/badge/Twitter-0f1419?logo=x&logoColor=fff
-[tweet-link]: https://twitter.com/intent/tweet?text=up-fetch%0A%0ATiny%20%26%20Composable%20fetch%20configuration%20tool%20with%20sensible%20defaults%20and%20built-in%20schema%20validation%0A%0Ahttps://github.com/L-Blondy/up-fetch
+[tweet-link]: https://twitter.com/intent/tweet?text=https%3A%2F%2Fgithub.com%2FL-Blondy%2Fup-fetch
 
 <!-- links -->
 
