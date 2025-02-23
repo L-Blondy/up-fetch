@@ -573,7 +573,7 @@ Check out the [Feature Comparison][comparison] table to see how _upfetch_ compar
 ## ➡️ Environment Support
 
 - ✅ Browsers (Chrome, Firefox, Safari, Edge)
-- ✅ Node.js (20.3.0+)
+- ✅ Node.js (18.0+)
 - ✅ Bun
 - ✅ Deno
 - ✅ Cloudflare Workers
