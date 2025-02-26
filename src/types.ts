@@ -2,12 +2,8 @@ import type { DistributiveOmit, MaybePromise } from './utils'
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 
 export type JsonifiableObject =
-   | {
-        [Key in string]?: JsonPrimitive | JsonifiableObject | JsonifiableArray
-     }
-   | {
-        toJSON: () => JsonPrimitive | JsonifiableObject | JsonifiableArray
-     }
+   | { [Key in string]: any }
+   | { toJSON: () => JsonPrimitive | JsonifiableObject | JsonifiableArray }
 
 export type JsonifiableArray = readonly (
    | JsonPrimitive
