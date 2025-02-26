@@ -8,11 +8,14 @@ test('JsonifiableObject should support both types and interfaces', () => {
    }
 
    /**
-    * 1 might succeed and 2 might fail
+    * 1 can pass while 2 fails
     */
 
    // 1
-   let participant: Participant = { id: '1', email: 'whatever@gmail.com' }
+   let participant: Participant = {
+      id: '1',
+      email: 'whatever@gmail.com',
+   } satisfies JsonifiableObject
    // 2
    participant satisfies JsonifiableObject
 })
@@ -24,7 +27,7 @@ test('JsonifiableArray should support both types and interfaces', () => {
    }
 
    /**
-    * 1 might succeed and 2 might fail
+    * 1 can pass while 2 fails
     */
 
    // 1
