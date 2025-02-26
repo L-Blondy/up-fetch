@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.3](https://github.com/L-Blondy/up-fetch/compare/v1.3.0...v1.3.3) - 2025.02-26
+
+### Fixed
+
+- [#23](https://github.com/L-Blondy/up-fetch/issues/23) the default body type now accepts both types and interfaces
+
 ## [1.3.0](https://github.com/L-Blondy/up-fetch/compare/v1.2.4...v1.3.0) - 2025.02-16
 
 ### Breaking changes
