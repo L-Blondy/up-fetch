@@ -19,7 +19,7 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
 
 ## 🚀 Try v2 Beta!
 
-Version 2 of upfetch is now available in beta! The changes only affect advanced use cases, making it safe to try in most projects. Try it out with:
+Version 2 of upfetch is now available in beta! The changes mainly impact advanced use cases, so most projects won’t require any modifications. Give it a try with:
 
 ```bash
 npm i up-fetch@2.0.0-beta.0
