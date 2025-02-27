@@ -17,6 +17,10 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
+## Coming from v1?
+
+Check out our [Migration Guide](./MIGRATION.md) for a step-by-step walkthrough of the changes and how to upgrade your codebase.
+
 ## Table of Contents
 
 - [Highlights](#️-highlights)
