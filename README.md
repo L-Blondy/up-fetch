@@ -13,15 +13,19 @@
 </p>
 <br>
 
-_upfetch_ is an advanced fetch client builder with standard schema validation, automatic response parsing, smart defaults and more. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
+_upfetch_ is an advanced fetch client builder with standard schema validation,
+automatic response parsing, smart defaults and more. Designed to make data fetching
+type-safe and developer-friendly while keeping the familiar fetch API.
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
-## Coming from v1?
+## 🔄 Migrate from v1
 
-Check out our [Migration Guide](./MIGRATION.md) for a step-by-step walkthrough of the changes and how to upgrade your codebase.
+Already using up-fetch? Most projects can upgrade without any changes since breaking
+changes only affect advanced use cases. Here's everything needed to upgrade:
 
-Looking for the v1 documentation? Check out [README_v1.md](./README_V1.md).
+- [Migration Guide](./MIGRATION.md) - Step-by-step guide to upgrade your codebase
+- [v1 Documentation](./README_V1.md) - Reference for the previous version
 
 ## Table of Contents
 
