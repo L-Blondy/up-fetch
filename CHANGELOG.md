@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.5](https://github.com/L-Blondy/up-fetch/compare/v1.3.3...v1.3.5) - 2025.02-27
+
+### Deprecated
+
+- `throwResponseError` will be renamed `reject` in v2.0
+- `parseResponseError` will be renamed `parseRejected` in v2.0
+
 ## [1.3.3](https://github.com/L-Blondy/up-fetch/compare/v1.3.0...v1.3.3) - 2025.02-26
 
 ### Fixed
