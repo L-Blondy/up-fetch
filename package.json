@@ -1,6 +1,6 @@
 {
    "name": "up-fetch",
-   "version": "1.3.4",
+   "version": "1.3.5",
    "description": "Advanced fetch client builder for typescript.",
    "type": "module",
    "main": "dist/index.cjs",
