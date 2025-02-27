@@ -21,8 +21,8 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 
 ## 🔄 Migrate from v1
 
-Check out our [Migration Guide](./MIGRATION.md) - breaking changes only affect advanced use cases. \
-Looking for the v1 documentation? See [README_V1.md](./README_V1.md).
+Check out our [Migration Guide](./MIGRATION_v1_v2.md) - breaking changes only affect advanced use cases. \
+Looking for the v1 documentation? See [README_v1.md](./README_v1.md).
 
 ## Table of Contents
 
