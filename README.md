@@ -15,6 +15,8 @@
 
 _upfetch_ is an advanced fetch client builder with standard schema validation, automatic response parsing, smart defaults and more. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
 
+[中文文档 (AI 翻译)](./docs/zh-CN/README.md)
+
 ## Table of Contents
 
 - [Highlights](#️-highlights)
