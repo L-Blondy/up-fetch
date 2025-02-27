@@ -21,11 +21,8 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 
 ## 🔄 Migrate from v1
 
-Already using up-fetch? Most projects can upgrade without any changes since breaking
-changes only affect advanced use cases. Here's everything needed to upgrade:
-
-- [Migration Guide](./MIGRATION.md) - Step-by-step guide to upgrade your codebase
-- [v1 Documentation](./README_V1.md) - Reference for the previous version
+Check out our [Migration Guide](./MIGRATION.md) - breaking changes only affect advanced use cases. \
+Looking for the v1 documentation? See [README_V1.md](./README_V1.md).
 
 ## Table of Contents
 
