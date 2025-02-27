@@ -51,21 +51,10 @@ export let resolveOptions = <
          ? (rawBody as null | undefined)
          : mergedOptions.serializeBody(rawBody)
 
-   // throwResponseError will be renamed reject in v2.0
-   let reject =
-      fetcherOpts.reject ??
-      fetcherOpts.throwResponseError ??
-      defaultOptions.reject ??
-      defaultOptions.throwResponseError ??
-      fallbackOptions.reject
-
-   // parseResponseError will be renamed parseRejected in v2.0
-   let parseRejected =
-      fetcherOpts.parseRejected ??
-      fetcherOpts.parseResponseError ??
-      defaultOptions.parseRejected ??
-      defaultOptions.parseResponseError ??
-      fallbackOptions.parseRejected
+   mergedOptions.parseResponseError &&
+      renamingDeprecation('parseResponseError', 'parseRejected')
+   mergedOptions.throwResponseError &&
+      renamingDeprecation('throwResponseError', 'reject')
 
    return stripUndefined({
       // I have to cast as mergedOptions because the type breaks with omit
@@ -81,12 +70,31 @@ export let resolveOptions = <
          defaultOptions.headers,
          fetcherOpts.headers,
       ),
-      reject,
-      parseRejected,
+      // throwResponseError will be renamed reject in v2.0
+      reject:
+         fetcherOpts.reject ??
+         fetcherOpts.throwResponseError ??
+         defaultOptions.reject ??
+         defaultOptions.throwResponseError ??
+         fallbackOptions.reject,
+      // parseResponseError will be renamed parseRejected in v2.0
+      parseRejected:
+         fetcherOpts.parseRejected ??
+         fetcherOpts.parseResponseError ??
+         defaultOptions.parseRejected ??
+         defaultOptions.parseResponseError ??
+         fallbackOptions.parseRejected,
       input: getUrl(
          mergedOptions.baseUrl,
          input,
          mergedOptions.serializeParams(params),
       ),
    })
+}
+
+function renamingDeprecation(oldName: string, newName: string) {
+   // eslint-disable-next-line no-console
+   console.warn(
+      `Deprecation warning: \`${oldName}\` will be renamed \`${newName}\` in v2.0`,
+   )
 }
