@@ -562,7 +562,7 @@ describe('up', () => {
          expect(data).toEqual('some text')
       })
 
-      test('should provide response and options to parseResponse function', async () => {
+      test('should provide response and request to parseResponse function', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.text('some text', { status: 200 })
@@ -571,9 +571,9 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            parseResponse(res, options) {
+            parseResponse(res, request) {
                expect(res instanceof Response).toEqual(true)
-               expect(options.input).toEqual('https://example.com')
+               expect(request.url).toEqual('https://example.com/')
                return res.text()
             },
          }))
@@ -679,7 +679,7 @@ describe('up', () => {
          })
       })
 
-      test('should provide response and options to parseRejected', async () => {
+      test('should provide response and request to parseRejected', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.text('some text', { status: 400 })
@@ -688,9 +688,9 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            parseRejected(res, options) {
+            parseRejected(res, request) {
                expect(res instanceof Response).toEqual(true)
-               expect(options.input).toEqual('https://example.com')
+               expect(request.url).toEqual('https://example.com/')
                return res.text()
             },
          }))
@@ -779,7 +779,7 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onError(error, options) {
+            onError(error, request) {
                if (isValidationError(error)) {
                   exec++
                   expectTypeOf(error).toEqualTypeOf<ValidationError>()
@@ -803,7 +803,7 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onError(error, options) {
+            onError(error, request) {
                if (isResponseError(error)) {
                   exec++
                   expectTypeOf(error).toEqualTypeOf<ResponseError>()
@@ -826,7 +826,7 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onError(error, options) {
+            onError(error, request) {
                exec++
                expectTypeOf(error).toEqualTypeOf<any>()
             },
@@ -863,7 +863,7 @@ describe('up', () => {
          expect(count).toBe(1)
       })
 
-      test('should provide validated data and options to onSuccess callback', async () => {
+      test('should provide validated data and request to onSuccess callback', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -872,9 +872,9 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onSuccess(data, options) {
+            onSuccess(data, request) {
                expect(data).toEqual({ hello: 'world!' })
-               expect(options.input).toEqual('https://example.com')
+               expect(request.url).toEqual('https://example.com/')
             },
          }))
 
@@ -937,7 +937,7 @@ describe('up', () => {
          expect(count).toBe(1)
       })
 
-      test('should provide complete options object to onRequest callback', async () => {
+      test('should provide request object to onRequest callback', async () => {
          server.use(
             http.get('https://example.com', () => {
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -946,8 +946,8 @@ describe('up', () => {
 
          let upfetch = up(fetch, () => ({
             baseUrl: 'https://example.com',
-            onRequest(options) {
-               expect(options.input).toBe('https://example.com')
+            onRequest(request) {
+               expect(request.url).toBe('https://example.com/')
             },
          }))
 

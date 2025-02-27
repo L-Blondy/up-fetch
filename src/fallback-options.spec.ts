@@ -49,9 +49,7 @@ describe('parseRejected', () => {
    `('parseRejected: $response', async ({ response, output }) => {
       let responseError: ResponseError = await fallbackOptions.parseRejected(
          response,
-         {
-            href: 'my-options',
-         } as any,
+         new Request('https://a.b.c/'),
       )
       expect(responseError instanceof ResponseError).toBeTruthy()
       expect(responseError.data).toStrictEqual(output)
@@ -59,9 +57,7 @@ describe('parseRejected', () => {
       expect(responseError.message).toStrictEqual(
          'Request failed with status 200',
       )
-      expect(responseError.options).toStrictEqual({
-         href: 'my-options',
-      })
+      expect(responseError.request).toStrictEqual(new Request('https://a.b.c/'))
       expect(responseError.name).toStrictEqual('ResponseError')
    })
 })

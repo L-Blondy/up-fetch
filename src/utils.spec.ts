@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
-import { isJsonifiable, mergeHeaders, omit, resolveParams } from './utils'
+import {
+   isJsonifiable,
+   mergeHeaders,
+   omit,
+   resolveParams,
+   resolveInput,
+} from './utils'
 import { bodyMock } from './_mocks'
 
 describe('isJsonifiableObjectOrArray', () => {
@@ -80,4 +86,52 @@ describe('strip', () => {
       let stripped = omit(object, keys)
       expect(stripped).toEqual(output)
    })
+})
+
+describe('resolveInput', () => {
+   test.each`
+      baseUrl              | input                                 | queryString   | output
+      ${'http://a.b.c'}    | ${'/'}                                | ${''}         | ${'http://a.b.c/'}
+      ${'http://a.b.c'}    | ${''}                                 | ${''}         | ${'http://a.b.c'}
+      ${'http://a.b.c/'}   | ${''}                                 | ${''}         | ${'http://a.b.c/'}
+      ${'/'}               | ${''}                                 | ${''}         | ${'/'}
+      ${'/'}               | ${'/'}                                | ${''}         | ${'/'}
+      ${''}                | ${''}                                 | ${''}         | ${''}
+      ${'http://a.b.c'}    | ${'d/e/f'}                            | ${''}         | ${'http://a.b.c/d/e/f'}
+      ${'http://a.b.c/'}   | ${'/'}                                | ${''}         | ${'http://a.b.c/'}
+      ${'http://a.b.c/d'}  | ${'/'}                                | ${''}         | ${'http://a.b.c/d/'}
+      ${'http://a.b.c/d/'} | ${'/'}                                | ${''}         | ${'http://a.b.c/d/'}
+      ${'http://a'}        | ${'b'}                                | ${''}         | ${'http://a/b'}
+      ${'http://a/b'}      | ${'c'}                                | ${''}         | ${'http://a/b/c'}
+      ${'http://a/b'}      | ${'http://d/e'}                       | ${''}         | ${'http://d/e'}
+      ${'http://a'}        | ${''}                                 | ${''}         | ${'http://a'}
+      ${'http://a'}        | ${'http://b'}                         | ${''}         | ${'http://b'}
+      ${'http://a'}        | ${'http://b'}                         | ${''}         | ${'http://b'}
+      ${'http://a'}        | ${new URL('http://c/d')}              | ${''}         | ${'http://c/d'}
+      ${'http://a/b'}      | ${new URL('http://c/d')}              | ${''}         | ${'http://c/d'}
+      ${'http://a'}        | ${new URL('http://c/d?q=search')}     | ${'?a=a'}     | ${'http://c/d?q=search&a=a'}
+      ${'http://a?b=b'}    | ${new URL('http://c/d?q=search')}     | ${''}         | ${'http://c/d?q=search'}
+      ${'http://a'}        | ${new Request('http://c/d')}          | ${''}         | ${undefined}
+      ${'http://a'}        | ${new Request('http://c/d?q=search')} | ${''}         | ${undefined}
+      ${'http://a?b=b'}    | ${'http://c/d?q=search'}              | ${''}         | ${'http://c/d?q=search'}
+      ${undefined}         | ${'http://c/d?q=search'}              | ${'a=a&b=b'}  | ${'http://c/d?q=search&a=a&b=b'}
+      ${''}                | ${'http://c/d?q=search'}              | ${'a=1&b=2'}  | ${'http://c/d?q=search&a=1&b=2'}
+      ${''}                | ${'http://c/d?q=search'}              | ${'?a=1&b=2'} | ${'http://c/d?q=search&a=1&b=2'}
+      ${undefined}         | ${'http://c/d?q=search'}              | ${''}         | ${'http://c/d?q=search'}
+      ${''}                | ${'http://c'}                         | ${'q=query'}  | ${'http://c?q=query'}
+      ${undefined}         | ${'http://c'}                         | ${'?q=query'} | ${'http://c?q=query'}
+   `(
+      'resolveInput: $baseUrl $input',
+      ({ baseUrl, input, queryString, output }) => {
+         if (input instanceof Request) {
+            expect(resolveInput(baseUrl, input, queryString)).toStrictEqual(
+               input,
+            )
+         } else {
+            expect(resolveInput(baseUrl, input, queryString)).toStrictEqual(
+               output,
+            )
+         }
+      },
+   )
 })

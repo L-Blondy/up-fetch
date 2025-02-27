@@ -2,19 +2,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, expectTypeOf, test } from 'vitest'
 import { up } from './up'
-import type {
-   JsonifiableArray,
-   JsonifiableObject,
-   ResolvedOptions,
-} from './types'
+import type { JsonifiableArray, JsonifiableObject } from './types'
 import { fallbackOptions } from './fallback-options'
 import { z } from 'zod'
 import * as v from 'valibot'
 
 test('infer TData', async () => {
    let upfetch = up(fetch, () => ({
-      parseResponse: (res, options) => Promise.resolve(1),
-      onSuccess(data, options) {
+      parseResponse: (res, request) => Promise.resolve(1),
+      onSuccess(data, request) {
          expectTypeOf(data).toEqualTypeOf<any>()
       },
    }))
@@ -22,7 +18,7 @@ test('infer TData', async () => {
    expectTypeOf(data1).toEqualTypeOf<number>()
 
    let data2 = await upfetch('', {
-      parseResponse: (res, options) => Promise.resolve(''),
+      parseResponse: (res, request) => Promise.resolve(''),
    })
    expectTypeOf(data2).toEqualTypeOf<string>()
 
@@ -90,16 +86,15 @@ test('Infer body', () => {
    /**
     * Default body
     */
-   function serializeBody2(b: DefaultOkBody) {
+   function serializeBody2(b: symbol) {
       return ''
    }
-   type DefaultOkBody = symbol
    let upfetch2 = up(fetch, () => ({
       serializeBody: serializeBody2,
       // this broke body's type inference, leave it here for the test
       serializeParams: (p) => '',
    }))
-   upfetch2('', { body: {} as DefaultOkBody | null | undefined })
+   upfetch2('', { body: {} as symbol | null | undefined })
    // @ts-expect-error illegal type
    upfetch2('', { body: true })
    // @ts-expect-error illegal type
@@ -107,24 +102,23 @@ test('Infer body', () => {
    /**
     * Fetcher body
     */
-   function serializeBody3(b: DefaultOkBody) {
+   function serializeBody3(b: symbol) {
       return ''
    }
-   type FetcherOkBody = number
    let upfetch3 = up(fetch, () => ({ serializeBody: serializeBody3 }))
    upfetch3('', {
-      serializeBody: (body: FetcherOkBody) => '',
-      body: {} as FetcherOkBody | null | undefined,
+      serializeBody: (body: number) => '',
+      body: {} as number | null | undefined,
    })
    upfetch3('', {
       // @ts-expect-error illegal type
       body: true,
-      serializeBody: (body: FetcherOkBody) => '',
+      serializeBody: (body: number) => '',
    })
    upfetch3('', {
       // @ts-expect-error illegal type
       body: '',
-      serializeBody: (body: FetcherOkBody) => '',
+      serializeBody: (body: number) => '',
    })
 })
 
@@ -171,30 +165,25 @@ test('callback types', async () => {
    ) => fetch(input, init)
 
    let upfetch = up(fetcher, () => ({
-      onRequest(options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
+      onRequest(request) {
+         expectTypeOf(request).toEqualTypeOf<Request>()
       },
-      onError(error, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
+      onError(error, request) {
          expectTypeOf(error).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
+         expectTypeOf(request).toEqualTypeOf<Request>()
       },
-      onSuccess(data, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
+      onSuccess(data, request) {
          expectTypeOf(data).toEqualTypeOf<any>()
-         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
+         expectTypeOf(request).toEqualTypeOf<Request>()
       },
-      parseRejected(res, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
+      parseRejected(res, request) {
          expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
+         expectTypeOf(request).toEqualTypeOf<Request>()
          return Promise.resolve(true)
       },
-      parseResponse(res, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
+      parseResponse(res, request) {
          expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
+         expectTypeOf(request).toEqualTypeOf<Request>()
          return Promise.resolve(1)
       },
       serializeParams(params) {
@@ -214,10 +203,9 @@ test('callback types', async () => {
          v.number(),
          v.transform((n) => String(n)),
       ),
-      parseResponse(res, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
+      parseResponse(res, request) {
          expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
+         expectTypeOf(request).toEqualTypeOf<Request>()
          return Promise.resolve(1)
       },
       serializeParams(params) {

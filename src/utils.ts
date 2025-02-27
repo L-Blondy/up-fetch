@@ -44,7 +44,7 @@ export let resolveParams = (
 ): Params =>
    typeof input !== 'string'
       ? {} // an input of type Request cannot use the "params" option
-      : stripUndefined({
+      : {
            // Removing the 'url.searchParams.keys()' from the defaultParams
            // but not from the 'fetcherParams'. The user is responsible for not
            // specifying the params in both the "input" and the fetcher "params" option.
@@ -52,7 +52,7 @@ export let resolveParams = (
               ...new URL(input, 'http://a').searchParams.keys(),
            ]),
            ...fetcherParams,
-        })
+        }
 
 type KeyOf<O> = O extends unknown ? keyof O : never
 
@@ -74,14 +74,6 @@ export let omit = <O extends object, K extends KeyOf<O> | (string & {})>(
    return copy
 }
 
-export let stripUndefined = <O extends object>(obj?: O): O => {
-   let copy = { ...obj } as O
-   for (let key in copy) {
-      if (copy[key] === undefined) delete copy[key]
-   }
-   return copy
-}
-
 export let isJsonifiable = (
    value: any,
 ): value is JsonifiableObject | JsonifiableArray => {
@@ -99,11 +91,13 @@ export let isJsonifiable = (
 
 export let emptyOptions: any = {}
 
-export function getUrl(
+export function resolveInput<T>(
    base: string | undefined = '',
-   input: unknown,
+   input: T,
    queryString: string,
-): any {
+): T | string {
+   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+   input = (input as any)?.href ?? input
    if (typeof input !== 'string') return input
    let url = /^https?:\/\//.test(input)
       ? input

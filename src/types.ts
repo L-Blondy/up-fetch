@@ -27,15 +27,12 @@ export type Interceptors = TupleToUnion<Interceptor>
 
 export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
 
-export type ParseResponse<TFetchFn extends BaseFetchFn, TParsedData> = (
+export type ParseResponse<TParsedData> = (
    response: Response,
-   options: ResolvedOptions<TFetchFn>,
+   request: Request,
 ) => MaybePromise<TParsedData>
 
-export type ParseRejected<TFetchFn extends BaseFetchFn> = (
-   res: Response,
-   options: ResolvedOptions<TFetchFn>,
-) => any
+export type ParseRejected = (res: Response, request: Request) => any
 
 export type SerializeBody<TRawBody> = (
    body: TRawBody,
@@ -66,32 +63,9 @@ export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    'body' | 'headers' | 'method'
 > & {}
 
-export type ResolvedOptions<
-   TFetchFn extends BaseFetchFn,
-   TSchema extends StandardSchemaV1 = any,
-   TParsedData = any,
-   TRawBody = any,
-> = BaseOptions<TFetchFn> & {
-   baseUrl?: string
-   readonly body?: BodyInit | null
-   headers: Record<string, string>
-   readonly input: Request | string
-   method?: Method
-   params: Params
-   parseRejected: ParseRejected<TFetchFn>
-   parseResponse: ParseResponse<TFetchFn, TParsedData>
-   rawBody?: TRawBody | null | undefined
-   reject: (response: Response) => MaybePromise<boolean>
-   schema?: TSchema
-   serializeBody: SerializeBody<TRawBody>
-   serializeParams: SerializeParams
-   signal?: AbortSignal
-   timeout?: number
-}
-
-export type FallbackOptions<TFetchFn extends BaseFetchFn> = {
-   parseRejected: ParseRejected<TFetchFn>
-   parseResponse: ParseResponse<TFetchFn, any>
+export type FallbackOptions = {
+   parseRejected: ParseRejected
+   parseResponse: ParseResponse<any>
    reject: (response: Response) => MaybePromise<boolean>
    serializeParams: SerializeParams
    serializeBody: SerializeBody<BodyInit | JsonifiableObject | JsonifiableArray>
@@ -112,17 +86,17 @@ export type DefaultOptions<
    /** HTTP method to use for the request */
    method?: Method
    /** Callback executed before the request is made */
-   onRequest?: (options: ResolvedOptions<TFetchFn>) => void
+   onRequest?: (request: Request) => void
    /** Callback executed when the request fails */
-   onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
+   onError?: (error: any, request: Request) => void
    /** Callback executed when the request succeeds */
-   onSuccess?: (data: any, options: ResolvedOptions<TFetchFn>) => void
+   onSuccess?: (data: any, request: Request) => void
    /** URL parameters to be serialized and appended to the URL */
    params?: Params
    /** Function to parse response errors */
-   parseRejected?: ParseRejected<TFetchFn>
+   parseRejected?: ParseRejected
    /** Function to parse the response data */
-   parseResponse?: ParseResponse<TFetchFn, TDefaultParsedData>
+   parseResponse?: ParseResponse<TDefaultParsedData>
    /** Function to determine if a response should throw an error */
    reject?: (response: Response) => MaybePromise<boolean>
    /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
@@ -155,9 +129,9 @@ export type FetcherOptions<
    /** URL parameters */
    params?: Params
    /** Function to parse response errors */
-   parseRejected?: ParseRejected<TFetchFn>
+   parseRejected?: ParseRejected
    /** Function to parse the response data */
-   parseResponse?: ParseResponse<TFetchFn, TParsedData>
+   parseResponse?: ParseResponse<TParsedData>
    /** Function to determine if a response should throw an error */
    reject?: (response: Response) => MaybePromise<boolean>
    /** JSON Schema for request/response validation */
