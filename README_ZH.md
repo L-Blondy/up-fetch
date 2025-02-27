@@ -234,8 +234,8 @@ try {
 }
 ```
 
-- 使用 [parseResponseError][api-reference] 选项抛出自定义错误。
-- 使用 [throwResponseError][api-reference] 选项决定**何时**抛出错误。
+- 使用 [parseRejected][api-reference] 选项抛出自定义错误。
+- 使用 [reject][api-reference] 选项决定**何时**抛出错误。
 
 #### 👉 <samp>ValidationError</samp>
 
@@ -360,12 +360,12 @@ const fetchText = up(fetch, () => ({
 
 虽然 Fetch API 在响应不正常时不会抛出错误，但 _upfetch_ 会抛出 `ResponseError`。
 
-如果你更愿意将错误作为值处理，将 `throwResponseError` 设置为返回 `false`。\
+如果你更愿意将错误作为值处理，将 `reject` 设置为返回 `false`。\
 这允许你自定义 `parseResponse` 函数以结构化格式返回成功数据和错误响应。
 
 ```ts
 const upfetch = up(fetch, () => ({
-   throwResponseError: () => false,
+   reject: () => false,
    parseResponse: async (response) => {
       const json = await response.json()
       return response.ok
@@ -385,7 +385,7 @@ const { data, error } = await upfetch('/users/1')
 
 默认情况下，_upfetch_ 能够自动解析 `json` 和 `text` 成功响应。
 
-当 `throwResponseError` 返回 `false` 时调用 `parseResponse` 方法。
+当 `reject` 返回 `false` 时调用 `parseResponse` 方法。
 你可以使用该选项解析其他响应类型。
 
 ```ts
@@ -394,17 +394,17 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-💡 注意，只有当 `throwResponseError` 返回 `false` 时才会调用 `parseResponse` 方法。
+💡 注意，只有当 `reject` 返回 `false` 时才会调用 `parseResponse` 方法。
 
 ### ✔️ 自定义响应错误
 
-默认情况下，当 `throwResponseError` 返回 `true` 时，_upfetch_ 会抛出 `ResponseError`。
+默认情况下，当 `reject` 返回 `true` 时，_upfetch_ 会抛出 `ResponseError`。
 
-如果你想抛出自定义错误，可以向 `parseResponseError` 选项传递一个函数。
+如果你想抛出自定义错误，可以向 `parseRejected` 选项传递一个函数。
 
 ```ts
 const upfetch = up(fetch, () => ({
-   parseResponseError: async (response) => {
+   parseRejected: async (response) => {
       const status = response.status
       const data = await response.json()
       return new CustomError(status, data)
@@ -514,11 +514,11 @@ function up(
 | `onError`                    | `(error, options) => void`     | 发生错误时执行。                                                        |
 | `onSuccess`                  | `(data, options) => void`      | 请求成功完成时执行。                                                    |
 | `parseResponse`              | `(response, options) => data`  | 默认成功响应解析器。<br/>如果省略，将自动解析 `json` 和 `text` 响应。   |
-| `parseResponseError`         | `(response, options) => error` | 默认错误响应解析器。<br/>如果省略，将自动解析 `json` 和 `text` 响应。   |
+| `parseRejected`              | `(response, options) => error` | 默认错误响应解析器。<br/>如果省略，将自动解析 `json` 和 `text` 响应。   |
 | `serializeBody`              | `(body) => BodyInit`           | 默认请求体序列化器。<br/>通过类型化其第一个参数限制有效的 `body` 类型。 |
 | `serializeParams`            | `(params) => string`           | 默认查询参数序列化器。                                                  |
 | `timeout`                    | `number`                       | 默认超时时间（毫秒）。                                                  |
-| `throwResponseError`         | `(response) => boolean`        | 决定何时拒绝响应。                                                      |
+| `reject`                     | `(response) => boolean`        | 决定何时拒绝响应。                                                      |
 | _...以及所有其他 fetch 选项_ |                                |                                                                         |
 
 ### <samp>upfetch(url, options?)</samp>
@@ -539,12 +539,12 @@ function upfetch(
 | `baseUrl`                    | `string`                       | 请求的基础 URL。                                                                         |
 | `params`                     | `object`                       | 查询参数。                                                                               |
 | `parseResponse`              | `(response, options) => data`  | 成功响应解析器。                                                                         |
-| `parseResponseError`         | `(response, options) => error` | 错误响应解析器。                                                                         |
+| `parseRejected`              | `(response, options) => error` | 错误响应解析器。                                                                         |
 | `schema`                     | `StandardSchemaV1`             | 用于验证响应的模式。<br/>模式必须遵循 [Standard Schema Specification][standard-schema]。 |
 | `serializeBody`              | `(body) => BodyInit`           | 请求体序列化器。<br/>通过类型化其第一个参数限制有效的 `body` 类型。                      |
 | `serializeParams`            | `(params) => string`           | 查询参数序列化器。                                                                       |
 | `timeout`                    | `number`                       | 超时时间（毫秒）。                                                                       |
-| `throwResponseError`         | `(response) => boolean`        | 决定何时拒绝响应。                                                                       |
+| `reject`                     | `(response) => boolean`        | 决定何时拒绝响应。                                                                       |
 | _...以及所有其他 fetch 选项_ |                                |                                                                                          |
 
 <br/>

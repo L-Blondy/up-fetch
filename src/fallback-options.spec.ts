@@ -38,7 +38,7 @@ describe('parseResponse', () => {
    })
 })
 
-describe('parseResponseError', () => {
+describe('parseRejected', () => {
    test.each`
       response                                                       | output
       ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }')} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
@@ -46,11 +46,13 @@ describe('parseResponseError', () => {
       ${new Response()}                                              | ${null}
       ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
-   `('parseResponseError: $response', async ({ response, output }) => {
-      let responseError: ResponseError =
-         await fallbackOptions.parseResponseError(response, {
+   `('parseRejected: $response', async ({ response, output }) => {
+      let responseError: ResponseError = await fallbackOptions.parseRejected(
+         response,
+         {
             href: 'my-options',
-         } as any)
+         } as any,
+      )
       expect(responseError instanceof ResponseError).toBeTruthy()
       expect(responseError.data).toStrictEqual(output)
       expect(responseError.response).toStrictEqual(response)

@@ -90,6 +90,7 @@ test('options overrides', () => {
       method: 'PATCH',
       mode: 'navigate',
       params: { c: 'd' },
+      parseRejected: () => {},
       parseResponse: () => {},
       parseResponseError: () => {},
       priority: 'high',
@@ -98,6 +99,7 @@ test('options overrides', () => {
       referrerPolicy: 'no-referrer-when-downgrade',
       signal: new AbortController().signal,
       throwResponseError: () => true,
+      reject: () => true,
       window: null,
    }
    let fetcherOptions: FetcherOptions<typeof fetch, any, any, any> = {
