@@ -17,6 +17,16 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
+## 🚀 Try v2 Beta!
+
+Version 2 of upfetch is now available in beta! The breaking changes only affect advanced use cases, making it safe to try in most projects. Try it out with:
+
+```bash
+npm i up-fetch@2.0.0-beta.0
+```
+
+Check out the [v2 documentation here](https://github.com/L-Blondy/up-fetch/tree/v2.0).
+
 ## Table of Contents
 
 - [Highlights](#️-highlights)
