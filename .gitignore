@@ -8,3 +8,4 @@ package-lock.json
 bun.lock
 /articles
 todo.*
+PR.md
