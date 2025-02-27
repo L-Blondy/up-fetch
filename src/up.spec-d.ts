@@ -185,6 +185,12 @@ test('callback types', async () => {
          expectTypeOf(data).toEqualTypeOf<any>()
          expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
       },
+      parseRejected(res, options) {
+         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
+         expectTypeOf(res).toEqualTypeOf<Response>()
+         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
+         return Promise.resolve(true)
+      },
       parseResponse(res, options) {
          expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
          expectTypeOf(res).toEqualTypeOf<Response>()

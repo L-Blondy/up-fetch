@@ -231,8 +231,8 @@ try {
 }
 ```
 
-- Use the [parseResponseError][api-reference] option to throw a custom error instead.
-- Use the [throwResponseError][api-reference] option to decide **when** to throw.
+- Use the [parseRejected][api-reference] option to throw a custom error instead.
+- Use the [reject][api-reference] option to decide **when** to throw.
 
 #### 👉 <samp>ValidationError</samp>
 
@@ -357,12 +357,12 @@ const fetchText = up(fetch, () => ({
 
 While the Fetch API does not throw an error when the response is not ok, _upfetch_ throws a `ResponseError` instead.
 
-If you'd rather handle errors as values, set `throwResponseError` to return `false`. \
+If you'd rather handle errors as values, set `reject` to return `false`. \
 This allows you to customize the `parseResponse` function to return both successful data and error responses in a structured format.
 
 ```ts
 const upfetch = up(fetch, () => ({
-   throwResponseError: () => false,
+   reject: () => false,
    parseResponse: async (response) => {
       const json = await response.json()
       return response.ok
@@ -382,7 +382,7 @@ const { data, error } = await upfetch('/users/1')
 
 By default _upfetch_ is able to parse `json` and `text` sucessful responses automatically.
 
-The `parseResponse` method is called when `throwResponseError` returns `false`.
+The `parseResponse` method is called when `reject` returns `false`.
 You can use that option to parse other response types.
 
 ```ts
@@ -391,17 +391,17 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-💡 Note that the `parseResponse` method is called only when `throwResponseError` returns `false`.
+💡 Note that the `parseResponse` method is called only when `reject` returns `false`.
 
 ### ✔️ Custom response errors
 
-By default _upfetch_ throws a `ResponseError` when `throwResponseError` returns `true`.
+By default _upfetch_ throws a `ResponseError` when `reject` returns `true`.
 
-If you want to throw a custom error instead, you can pass a function to the `parseResponseError` option.
+If you want to throw a custom error instead, you can pass a function to the `parseRejected` option.
 
 ```ts
 const upfetch = up(fetch, () => ({
-   parseResponseError: async (response) => {
+   parseRejected: async (response) => {
       const status = response.status
       const data = await response.json()
       return new CustomError(status, data)
@@ -511,11 +511,11 @@ function up(
 | `onError`                        | `(error, options) => void`     | Executes on error.                                                                                        |
 | `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
 | `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
-| `parseResponseError`             | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
+| `parseRejected`                  | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
 | `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.<br/> Restrict the valid `body` type by typing its first argument.            |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
 | `timeout`                        | `number`                       | The default timeout in milliseconds.                                                                      |
-| `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                       |
+| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
 | _...and all other fetch options_ |                                |                                                                                                           |
 
 ### <samp>upfetch(url, options?)</samp>
@@ -536,12 +536,12 @@ Options:
 | `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                     |
 | `params`                         | `object`                       | The query parameters.                                                                                                         |
 | `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                  |
-| `parseResponseError`             | `(response, options) => error` | The error response parser.                                                                                                    |
+| `parseRejected`                  | `(response, options) => error` | The error response parser.                                                                                                    |
 | `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification][standard-schema]. |
 | `serializeBody`                  | `(body) => BodyInit`           | The body serializer.<br/> Restrict the valid `body` type by typing its first argument.                                        |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                               |
 | `timeout`                        | `number`                       | The timeout in milliseconds.                                                                                                  |
-| `throwResponseError`             | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
+| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
 | _...and all other fetch options_ |                                |                                                                                                                               |
 
 <br/>

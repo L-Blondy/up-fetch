@@ -10,7 +10,7 @@ export let fallbackOptions: FallbackOptions<any> = {
          .catch(() => res.text())
          .then((data) => data || null),
 
-   parseResponseError: async (res, options) =>
+   parseRejected: async (res, options) =>
       new ResponseError(
          res,
          await fallbackOptions.parseResponse(res, options),
@@ -27,5 +27,5 @@ export let fallbackOptions: FallbackOptions<any> = {
    serializeBody: (body: any) =>
       isJsonifiable(body) ? JSON.stringify(body) : body,
 
-   throwResponseError: (response) => !response.ok,
+   reject: (response) => !response.ok,
 }

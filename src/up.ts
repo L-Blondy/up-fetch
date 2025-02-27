@@ -48,7 +48,7 @@ export function up<
             throw error
          })
          .then(async (response: Response) => {
-            if (!(await options.throwResponseError(response))) {
+            if (!(await options.reject(response))) {
                let parsed: Awaited<TParsedData>
                try {
                   parsed = await options.parseResponse(response, options)
@@ -70,10 +70,7 @@ export function up<
             } else {
                let respError: any
                try {
-                  respError = await options.parseResponseError(
-                     response,
-                     options,
-                  )
+                  respError = await options.parseRejected(response, options)
                } catch (error: any) {
                   defaultOpts.onError?.(error, options)
                   throw error
