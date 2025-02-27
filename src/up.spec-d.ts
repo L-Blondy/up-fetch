@@ -197,12 +197,6 @@ test('callback types', async () => {
          expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
          return Promise.resolve(1)
       },
-      parseResponseError(res, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
-         return Promise.resolve(true)
-      },
       serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
          return ''
@@ -225,12 +219,6 @@ test('callback types', async () => {
          expectTypeOf(res).toEqualTypeOf<Response>()
          expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
          return Promise.resolve(1)
-      },
-      parseResponseError(res, options) {
-         expectTypeOf(options.test).toEqualTypeOf<number | undefined>()
-         expectTypeOf(res).toEqualTypeOf<Response>()
-         expectTypeOf(options).toEqualTypeOf<ResolvedOptions<typeof fetcher>>()
-         return Promise.resolve(true)
       },
       serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()

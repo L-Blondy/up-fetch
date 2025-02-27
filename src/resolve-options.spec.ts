@@ -92,13 +92,11 @@ test('options overrides', () => {
       params: { c: 'd' },
       parseRejected: () => {},
       parseResponse: () => {},
-      parseResponseError: () => {},
       priority: 'high',
       redirect: 'follow',
       referrer: 'https://a.b.c',
       referrerPolicy: 'no-referrer-when-downgrade',
       signal: new AbortController().signal,
-      throwResponseError: () => true,
       reject: () => true,
       window: null,
    }
