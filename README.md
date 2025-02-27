@@ -25,8 +25,8 @@ Version 2 of upfetch is now available in beta! The changes mainly impact advance
 npm i up-fetch@2.0.0-beta.0
 ```
 
-Check out the [v2 Pull Request](https://github.com/L-Blondy/up-fetch/pull/26) for details \
-Check out the [v2 documentation draft](https://github.com/L-Blondy/up-fetch/tree/v2.0).
+Check out the [Migration Guide](https://github.com/L-Blondy/up-fetch/blob/v2.0/MIGRATION_v1_v2.md) for details about changes and how to upgrade. \
+For a complete overview of new features, see the [v2 documentation](https://github.com/L-Blondy/up-fetch/tree/v2.0/README.md).
 
 ## Table of Contents
 
