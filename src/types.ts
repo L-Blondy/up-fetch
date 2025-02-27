@@ -32,7 +32,7 @@ export type ParseResponse<TParsedData> = (
    request: Request,
 ) => MaybePromise<TParsedData>
 
-export type ParseRejected = (res: Response, request: Request) => any
+export type ParseRejected = (response: Response, request: Request) => any
 
 export type SerializeBody<TRawBody> = (
    body: TRawBody,
