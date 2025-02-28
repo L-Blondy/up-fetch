@@ -1,13 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
+import { bodyMock } from './_mocks'
 import {
    isJsonifiable,
    mergeHeaders,
    omit,
-   resolveParams,
    resolveInput,
+   resolveParams,
 } from './utils'
-import { bodyMock } from './_mocks'
 
 describe('isJsonifiableObjectOrArray', () => {
    test.each`
@@ -34,22 +33,22 @@ describe('isJsonifiableObjectOrArray', () => {
 
 describe('mergeHeaders', () => {
    test.each`
-      defaultHeaders                                                                 | fetcherHeaders                                                  | output
-      ${{ 'Cache-Control': undefined }}                                              | ${undefined}                                                    | ${{}}
-      ${{ 'Cache-Control': undefined }}                                              | ${{ 'Cache-Control': undefined }}                               | ${{}}
-      ${{}}                                                                          | ${{ 'Cache-Control': undefined }}                               | ${{}}
-      ${{ 'Cache-Control': 'no-cache' }}                                             | ${{ 'Cache-Control': undefined }}                               | ${{}}
-      ${{ 'Cache-Control': '' }}                                                     | ${{}}                                                           | ${{ 'cache-control': '' }}
-      ${{ 'Cache-Control': '' }}                                                     | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
-      ${{}}                                                                          | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
-      ${{ 'Cache-Control': 'no-cache' }}                                             | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store' }}
-      ${{ 'Cache-Control': 'no-cache', 'content-type': 'text/html' }}                | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
-      ${{ 'Cache-Control': 'no-cache' }}                                             | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
-      ${[['Cache-Control', 'no-cache'], ['content-type', 'text/html']]}              | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
-      ${[['Cache-Control', 'no-cache']]}                                             | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
-      ${new Headers([['Cache-Control', 'no-cache'], ['content-type', 'text/html']])} | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
-      ${new Headers([['Cache-Control', 'no-cache']])}                                | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
-      ${undefined}                                                                   | ${undefined}                                                    | ${{}}
+      defaultHeaders                                                    | fetcherHeaders                                                  | output
+      ${{ 'Cache-Control': undefined }}                                 | ${undefined}                                                    | ${{}}
+      ${{ 'Cache-Control': undefined }}                                 | ${{ 'Cache-Control': undefined }}                               | ${{}}
+      ${{}}                                                             | ${{ 'Cache-Control': undefined }}                               | ${{}}
+      ${{ 'Cache-Control': 'no-cache' }}                                | ${{ 'Cache-Control': undefined }}                               | ${{}}
+      ${{ 'Cache-Control': '' }}                                        | ${{}}                                                           | ${{ 'cache-control': '' }}
+      ${{ 'Cache-Control': '' }}                                        | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
+      ${{}}                                                             | ${{ 'Cache-Control': '' }}                                      | ${{ 'cache-control': '' }}
+      ${{ 'Cache-Control': 'no-cache' }}                                | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store' }}
+      ${{ 'Cache-Control': 'no-cache', 'content-type': 'text/html' }}   | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${{ 'Cache-Control': 'no-cache' }}                                | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${[['Cache-Control', 'no-cache'], ['content-type', 'text/html']]} | ${{ 'cache-Control': 'no-store' }}                              | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${[['Cache-Control', 'no-cache']]}                                | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${new Headers([['Cache-Control', 'no-cache'], ['content-type', 'text/html']])} | ${{ 'cache-Control': 'no-store' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${new Headers([['Cache-Control', 'no-cache']])}                   | ${{ 'cache-Control': 'no-store', 'content-type': 'text/html' }} | ${{ 'cache-control': 'no-store', 'content-type': 'text/html' }}
+      ${undefined}                                                      | ${undefined}                                                    | ${{}}
    `(
       'Input: $defaultHeaders, $fetcherHeaders',
       ({ defaultHeaders, fetcherHeaders, output }) => {
@@ -83,7 +82,7 @@ describe('strip', () => {
       ${{ a: 1, b: undefined }}   | ${[]}         | ${{ a: 1, b: undefined }}
       ${{ a: 1, b: 'c', d: 'e' }} | ${['b', 'd']} | ${{ a: 1 }}
    `('Input: $object', ({ object, keys, output }) => {
-      let stripped = omit(object, keys)
+      const stripped = omit(object, keys)
       expect(stripped).toEqual(output)
    })
 })

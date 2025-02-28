@@ -23,8 +23,7 @@ up-fetch is a Tiny & Composable fetch configuration tool with sensible defaults.
 - vitest (testing framework)
 - msw (server mocking)
 - tsup (bundler)
-- prettier (code formatter)
-- eslint (code linter)
+- biome (code linter / formatter)
 - standard-schema (schema validation). Docs: [text](https://github.com/standard-schema/standard-schema)
 
 ## Naming Conventions

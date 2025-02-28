@@ -12,7 +12,7 @@ test('JsonifiableObject should support both types and interfaces', () => {
     */
 
    // 1
-   let participant: Participant = {
+   const participant: Participant = {
       id: '1',
       email: 'whatever@gmail.com',
    } satisfies JsonifiableObject
@@ -31,7 +31,7 @@ test('JsonifiableArray should support both types and interfaces', () => {
     */
 
    // 1
-   let participants: Participant[] = [
+   const participants: Participant[] = [
       { id: '1', email: 'whatever@gmail.com' },
       { id: '2', email: 'whatever@gmail.com' },
    ] satisfies JsonifiableArray
