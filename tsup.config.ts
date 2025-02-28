@@ -6,7 +6,7 @@ export default defineConfig({
    },
    sourcemap: true,
    clean: true,
-   dts: true,
+   dts: { resolve: true },
    format: ['esm', 'cjs'],
    outDir: 'dist',
    minify: true,
