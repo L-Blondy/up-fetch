@@ -54,6 +54,7 @@
    "license": "MIT",
    "devDependencies": {
       "@eslint/js": "^9.20.0",
+      "@standard-schema/spec": "^1.0.0",
       "@types/node": "^22.13.1",
       "eslint": "^9.20.0",
       "eslint-plugin-prefer-let": "^4.0.0",
@@ -79,8 +80,5 @@
    },
    "engines": {
       "node": ">=18"
-   },
-   "dependencies": {
-      "@standard-schema/spec": "^1.0.0"
    }
 }
