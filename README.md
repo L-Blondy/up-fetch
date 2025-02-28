@@ -22,7 +22,7 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 ## 🔄 Migrate from v1
 
 Check out our [Migration Guide](./MIGRATION_v1_v2.md) - breaking changes only affect advanced use cases. \
-Looking for the v1 documentation? See [README_v1.md](./README_v1.md).
+Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fetch/tree/v1.3.6/README.md).
 
 ## Table of Contents
 

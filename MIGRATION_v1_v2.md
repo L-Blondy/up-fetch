@@ -7,7 +7,7 @@ Version 2 of up-fetch focuses on simplifying the API and aligning more closely w
 ## Quick Start
 
 ```bash
-npm i up-fetch@2.0.0-beta.0
+npm i up-fetch@2.0.0-beta.1
 ```
 
 ## Breaking Changes
