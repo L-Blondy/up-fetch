@@ -839,6 +839,28 @@ describe('up', () => {
          }).catch(() => {})
          expect(exec).toBe(1)
       })
+
+      test('should ignore up.onError', async () => {
+         server.use(
+            http.get('https://example.com', async () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+         let exec = 0
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+         }))
+
+         await upfetch('', {
+            schema: z.object({ hello: z.number() }),
+            // @ts-expect-error invalid option
+            onError() {
+               exec++
+            },
+         }).catch(() => {})
+         expect(exec).toBe(0)
+      })
    })
 
    describe('onSuccess', () => {
@@ -913,6 +935,28 @@ describe('up', () => {
          })
          expect(count).toBe(1)
       })
+
+      test('should ignore up.onSuccess', async () => {
+         server.use(
+            http.get('https://example.com', () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         let count = 0
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+         }))
+
+         await upfetch('', {
+            // @ts-expect-error invalid option
+            onSuccess() {
+               count++
+            },
+         })
+         expect(count).toBe(0)
+      })
    })
 
    describe('onRequest', () => {
@@ -952,6 +996,28 @@ describe('up', () => {
          }))
 
          await upfetch('')
+      })
+
+      test('should ignore up.onRequest', async () => {
+         server.use(
+            http.get('https://example.com', () => {
+               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            }),
+         )
+
+         let count = 0
+
+         let upfetch = up(fetch, () => ({
+            baseUrl: 'https://example.com',
+         }))
+
+         await upfetch('', {
+            // @ts-expect-error invalid option
+            onRequest() {
+               count++
+            },
+         })
+         expect(count).toBe(0)
       })
    })
 

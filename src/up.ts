@@ -46,9 +46,8 @@ export function up<
       > = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
-      let defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
-      ///
       input = input?.href ?? input
+      let defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
       let mergedOptions = { ...fallbackOptions, ...defaultOpts, ...fetcherOpts }
       let params = resolveParams(defaultOpts.params, input, fetcherOpts.params)
       let body =
@@ -75,11 +74,11 @@ export function up<
       }
       let request = new Request(requestInput, options)
 
-      options.onRequest?.(request)
+      defaultOpts.onRequest?.(request)
 
       return fetchFn(requestInput, options, ctx)
          .catch((error) => {
-            options.onError?.(error, request)
+            defaultOpts.onError?.(error, request)
             throw error
          })
          .then(async (response: Response) => {
@@ -88,7 +87,7 @@ export function up<
                try {
                   parsed = await options.parseResponse(response, request)
                } catch (error: any) {
-                  options.onError?.(error, request)
+                  defaultOpts.onError?.(error, request)
                   throw error
                }
                let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
@@ -97,20 +96,20 @@ export function up<
                      ? await validate(options.schema, parsed)
                      : parsed
                } catch (error: any) {
-                  options.onError?.(error, request)
+                  defaultOpts.onError?.(error, request)
                   throw error
                }
-               options.onSuccess?.(data, request)
+               defaultOpts.onSuccess?.(data, request)
                return data
             } else {
                let respError: any
                try {
                   respError = await options.parseRejected(response, request)
                } catch (error: any) {
-                  options.onError?.(error, request)
+                  defaultOpts.onError?.(error, request)
                   throw error
                }
-               options.onError?.(respError, request)
+               defaultOpts.onError?.(respError, request)
                throw respError
             }
          })
