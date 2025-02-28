@@ -2,7 +2,7 @@ import { ResponseError } from './response-error'
 import type { FallbackOptions } from './types'
 import { isJsonifiable } from './utils'
 
-export let fallbackOptions: FallbackOptions = {
+export const fallbackOptions: FallbackOptions = {
    parseResponse: (res) =>
       res
          .clone()

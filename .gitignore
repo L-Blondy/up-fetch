@@ -1,6 +1,5 @@
 /node_modules
 /pnpm-lock.yaml
-/.vscode
 /dist
 tsconfig.vitest-temp.json
 __*

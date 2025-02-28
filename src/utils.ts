@@ -1,14 +1,14 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import type {
+   JsonifiableArray,
+   JsonifiableObject,
    Params,
    RawHeaders,
-   JsonifiableObject,
-   JsonifiableArray,
 } from './types'
 import { ValidationError } from './validation-error'
 
-export let mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
-   let res: Record<string, string> = {}
+export const mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
+   const res: Record<string, string> = {}
    headerInits.forEach((init) => {
       // casting `init` to `HeadersInit` because `Record<string, any>` is
       // properly transformed to `Record<string,string>` by `new Headers(init)`
@@ -23,7 +23,7 @@ export let mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
    return res
 }
 
-export let mergeSignal = (
+export const mergeSignal = (
    signal: AbortSignal | undefined,
    timeout: number | undefined,
 ): AbortSignal | undefined =>
@@ -37,7 +37,7 @@ export let mergeSignal = (
         )
       : signal
 
-export let resolveParams = (
+export const resolveParams = (
    defaultParams: Params | undefined,
    input: unknown,
    fetcherParams: Params | undefined,
@@ -63,40 +63,37 @@ export type DistributiveOmit<
 
 export type MaybePromise<T> = T | Promise<T>
 
-export let omit = <O extends object, K extends KeyOf<O> | (string & {})>(
+export const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
    obj?: O,
    keys: K[] | readonly K[] = [],
 ): DistributiveOmit<O, K> => {
-   let copy = { ...obj } as DistributiveOmit<O, K>
-   for (let key in copy) {
+   const copy = { ...obj } as DistributiveOmit<O, K>
+   for (const key in copy) {
       if (keys.includes(key as any as K)) delete copy[key]
    }
    return copy
 }
 
-export let isJsonifiable = (
+export const isJsonifiable = (
    value: any,
 ): value is JsonifiableObject | JsonifiableArray => {
    // bun FormData has a toJSON method
    if (!value || typeof value !== 'object' || value instanceof FormData)
       return false
    return (
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       value?.constructor?.name === 'Object' ||
       Array.isArray(value) ||
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       typeof value?.toJSON === 'function'
    )
 }
 
-export let emptyOptions: any = {}
+export const emptyOptions: any = {}
 
 export function resolveInput<T>(
    base: string | undefined = '',
    input: T,
    queryString: string,
 ): T | string {
-   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
    input = (input as any)?.href ?? input
    if (typeof input !== 'string') return input
    let url = /^https?:\/\//.test(input)
@@ -115,7 +112,7 @@ export async function validate<TSchema extends StandardSchemaV1>(
    schema: TSchema,
    data: StandardSchemaV1.InferInput<TSchema>,
 ): Promise<StandardSchemaV1.InferOutput<TSchema>> {
-   let result = await schema['~standard'].validate(data)
+   const result = await schema['~standard'].validate(data)
    if (result.issues) throw new ValidationError(result, data)
    return result.value
 }

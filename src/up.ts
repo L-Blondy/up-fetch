@@ -1,20 +1,20 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
+import { fallbackOptions } from './fallback-options'
 import type {
-   FetcherOptions,
-   DefaultOptions,
    BaseFetchFn,
+   DefaultOptions,
    FallbackOptions,
+   FetcherOptions,
 } from './types'
 import {
    emptyOptions,
-   resolveInput,
    isJsonifiable,
    mergeHeaders,
    mergeSignal,
+   resolveInput,
    resolveParams,
    validate,
 } from './utils'
-import { fallbackOptions } from './fallback-options'
 
 export function up<
    TFetchFn extends BaseFetchFn,
@@ -47,20 +47,28 @@ export function up<
       ctx?: Parameters<TFetchFn>[2],
    ) => {
       input = input?.href ?? input
-      let defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
-      let mergedOptions = { ...fallbackOptions, ...defaultOpts, ...fetcherOpts }
-      let params = resolveParams(defaultOpts.params, input, fetcherOpts.params)
-      let body =
+      const defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
+      const mergedOptions = {
+         ...fallbackOptions,
+         ...defaultOpts,
+         ...fetcherOpts,
+      }
+      const params = resolveParams(
+         defaultOpts.params,
+         input,
+         fetcherOpts.params,
+      )
+      const body =
          fetcherOpts.body === null || fetcherOpts.body === undefined
             ? (fetcherOpts.body as null | undefined)
             : mergedOptions.serializeBody(fetcherOpts.body)
 
-      let requestInput = resolveInput(
+      const requestInput = resolveInput(
          mergedOptions.baseUrl,
          input,
          mergedOptions.serializeParams(params),
       )
-      let options = {
+      const options = {
          ...mergedOptions,
          body,
          signal: mergeSignal(mergedOptions.signal, mergedOptions.timeout),
@@ -72,7 +80,7 @@ export function up<
             fetcherOpts.headers,
          ),
       }
-      let request = new Request(requestInput, options)
+      const request = new Request(requestInput, options)
 
       defaultOpts.onRequest?.(request)
 
@@ -101,17 +109,16 @@ export function up<
                }
                defaultOpts.onSuccess?.(data, request)
                return data
-            } else {
-               let respError: any
-               try {
-                  respError = await options.parseRejected(response, request)
-               } catch (error: any) {
-                  defaultOpts.onError?.(error, request)
-                  throw error
-               }
-               defaultOpts.onError?.(respError, request)
-               throw respError
             }
+            let respError: any
+            try {
+               respError = await options.parseRejected(response, request)
+            } catch (error: any) {
+               defaultOpts.onError?.(error, request)
+               throw error
+            }
+            defaultOpts.onError?.(respError, request)
+            throw respError
          })
    }
 }

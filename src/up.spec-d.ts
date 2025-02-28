@@ -1,38 +1,36 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { describe, expectTypeOf, test } from 'vitest'
-import { up } from './up'
-import type { JsonifiableArray, JsonifiableObject } from './types'
-import { fallbackOptions } from './fallback-options'
-import { z } from 'zod'
 import * as v from 'valibot'
+import { describe, expectTypeOf, test } from 'vitest'
+import { z } from 'zod'
+import { fallbackOptions } from './fallback-options'
+import type { JsonifiableArray, JsonifiableObject } from './types'
+import { up } from './up'
 
 test('infer TData', async () => {
-   let upfetch = up(fetch, () => ({
+   const upfetch = up(fetch, () => ({
       parseResponse: (res, request) => Promise.resolve(1),
       onSuccess(data, request) {
          expectTypeOf(data).toEqualTypeOf<any>()
       },
    }))
-   let data1 = await upfetch('')
+   const data1 = await upfetch('')
    expectTypeOf(data1).toEqualTypeOf<number>()
 
-   let data2 = await upfetch('', {
+   const data2 = await upfetch('', {
       parseResponse: (res, request) => Promise.resolve(''),
    })
    expectTypeOf(data2).toEqualTypeOf<string>()
 
-   let upfetch2 = up(fetch)
+   const upfetch2 = up(fetch)
 
-   let data5 = await upfetch2('')
+   const data5 = await upfetch2('')
    expectTypeOf(data5).toEqualTypeOf<any>()
 
-   let data6 = await upfetch2('', {
+   const data6 = await upfetch2('', {
       parseResponse: (res) => res,
    })
    expectTypeOf(data6).toEqualTypeOf<Response>()
 
-   let data7 = await upfetch2('', {
+   const data7 = await upfetch2('', {
       parseResponse: (res: any) => ({ res }),
       schema: v.object({
          res: v.string(),
@@ -40,18 +38,18 @@ test('infer TData', async () => {
    })
    expectTypeOf(data7).toEqualTypeOf<{ res: string }>()
 
-   let data8 = await upfetch2('', {
+   const data8 = await upfetch2('', {
       schema: z.number(),
    })
    expectTypeOf(data8).toEqualTypeOf<number>()
 
-   let upfetch3 = up(fetch, () => ({
+   const upfetch3 = up(fetch, () => ({
       parseResponse: () => 1,
    }))
 
    // Using currying
-   let curried = () => (res: Response) => res.text()
-   let data9 = await upfetch3('', {
+   const curried = () => (res: Response) => res.text()
+   const data9 = await upfetch3('', {
       parseResponse: curried(),
       schema: v.pipe(
          v.string(),
@@ -71,8 +69,8 @@ test('Infer body', () => {
       | JsonifiableObject
       | null
       | undefined
-   let upfetch1_1 = up(fetch)
-   let upfetch1_2 = up(fetch, () => ({}))
+   const upfetch1_1 = up(fetch)
+   const upfetch1_2 = up(fetch, () => ({}))
    upfetch1_1('', { body: {} as FallbackOkBody })
    upfetch1_2('', { body: {} as FallbackOkBody })
    // @ts-expect-error illegal type
@@ -89,7 +87,7 @@ test('Infer body', () => {
    function serializeBody2(b: symbol) {
       return ''
    }
-   let upfetch2 = up(fetch, () => ({
+   const upfetch2 = up(fetch, () => ({
       serializeBody: serializeBody2,
       // this broke body's type inference, leave it here for the test
       serializeParams: (p) => '',
@@ -105,7 +103,7 @@ test('Infer body', () => {
    function serializeBody3(b: symbol) {
       return ''
    }
-   let upfetch3 = up(fetch, () => ({ serializeBody: serializeBody3 }))
+   const upfetch3 = up(fetch, () => ({ serializeBody: serializeBody3 }))
    upfetch3('', {
       serializeBody: (body: number) => '',
       body: {} as number | null | undefined,
@@ -123,7 +121,7 @@ test('Infer body', () => {
 })
 
 test('The defaultSerializer of params should expect 1 arg only (the params)', async () => {
-   let upfetch = up(fetch, () => ({
+   const upfetch = up(fetch, () => ({
       serializeParams(params) {
          expectTypeOf(params).toEqualTypeOf<Record<string, any>>()
          return fallbackOptions.serializeParams(params)
@@ -139,7 +137,7 @@ test('The defaultSerializer of params should expect 1 arg only (the params)', as
 })
 
 test('The defaultSerializer of body should expect 1 arg only (the body)', async () => {
-   let upfetch = up(fetch, () => ({
+   const upfetch = up(fetch, () => ({
       serializeBody(body) {
          expectTypeOf(body).toEqualTypeOf<
             BodyInit | JsonifiableObject | JsonifiableArray
@@ -159,12 +157,12 @@ test('The defaultSerializer of body should expect 1 arg only (the body)', async 
 })
 
 test('callback types', async () => {
-   let fetcher = (
+   const fetcher = (
       input: Parameters<typeof fetch>[0],
       init: Parameters<typeof fetch>[1] & { test?: number },
    ) => fetch(input, init)
 
-   let upfetch = up(fetcher, () => ({
+   const upfetch = up(fetcher, () => ({
       onRequest(request) {
          expectTypeOf(request).toEqualTypeOf<Request>()
       },
@@ -226,9 +224,9 @@ test('base fetch type should be extended', () => {
       input: RequestInfo | URL,
       init?: RequestInit & { additionalOption: string },
    ) => Promise<Response>
-   let fetchFn: CustomFetchType = (() => {}) as any
+   const fetchFn: CustomFetchType = (() => {}) as any
 
-   let upfetch = up(fetchFn, () => ({
+   const upfetch = up(fetchFn, () => ({
       additionalOption: '1',
    }))
 
@@ -243,8 +241,8 @@ describe('up should accept a fetcher with', () => {
          input: string,
          options: Parameters<typeof fetch>[1],
       ) => Promise<Response>
-      let fetchFn: FetchFn = (() => {}) as any
-      let upfetch = up(fetchFn)
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
       upfetch('')
       // @ts-expect-error accept string only
       upfetch(new URL(''))
@@ -255,8 +253,8 @@ describe('up should accept a fetcher with', () => {
          input: string | URL | Request | number,
          options: Parameters<typeof fetch>[1],
       ) => Promise<Response>
-      let fetchFn: FetchFn = (() => {}) as any
-      let upfetch = up(fetchFn)
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
       upfetch('')
       upfetch(new Request(''))
       upfetch(new URL(''))
@@ -268,8 +266,8 @@ describe('up should accept a fetcher with', () => {
          input: Parameters<typeof fetch>[0],
          options: Omit<NonNullable<Parameters<typeof fetch>[1]>, 'cache'>,
       ) => Promise<Response>
-      let fetchFn: FetchFn = (() => {}) as any
-      let upfetch = up(fetchFn)
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
       upfetch('', { keepalive: true })
       // @ts-expect-error cache is not an option
       upfetch('', { cache: 'no-store' })
@@ -280,8 +278,8 @@ describe('up should accept a fetcher with', () => {
          input: Parameters<typeof fetch>[0],
          options: Parameters<typeof fetch>[1] & { newOption: string },
       ) => Promise<Response>
-      let fetchFn: FetchFn = (() => {}) as any
-      let upfetch = up(fetchFn)
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
       upfetch('', { baseUrl: '', keepalive: true, newOption: '' })
       // @ts-expect-error newOption is required
       upfetch('', { baseUrl: '', keepalive: true })
@@ -289,7 +287,7 @@ describe('up should accept a fetcher with', () => {
 
    test('narrower args', () => {
       type FetchFn = (input: Parameters<typeof fetch>[0]) => Promise<Response>
-      let fetchFn: FetchFn = (() => {}) as any
+      const fetchFn: FetchFn = (() => {}) as any
       fetchFn('')
       // @ts-expect-error accept one arg only
       fetchFn('', {})
@@ -301,8 +299,8 @@ describe('up should accept a fetcher with', () => {
          options: Parameters<typeof fetch>[1],
          ctx: Record<string, string>,
       ) => Promise<Response>
-      let fetchFn: FetchFn = (() => {}) as any
-      let upfetch = up(fetchFn)
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
       upfetch('', {}, {})
       upfetch('', {})
       // @ts-expect-error invalid 3rd arg

@@ -27,11 +27,6 @@
       "target": "ES2020",
       "verbatimModuleSyntax": true
    },
-   "include": [
-      "./src",
-      "./eslint.config.js",
-      "./vitest.config.ts",
-      "./tsup.config.ts"
-   ],
+   "include": ["src", "vitest.config.ts", "tsup.config.ts"],
    "exclude": ["./dist"]
 }

@@ -1,5 +1,5 @@
-import type { DistributiveOmit, MaybePromise } from './utils'
 import type { StandardSchemaV1 } from '@standard-schema/spec'
+import type { DistributiveOmit, MaybePromise } from './utils'
 
 type JsonPrimitive = string | number | boolean | null | undefined
 

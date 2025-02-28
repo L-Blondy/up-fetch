@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
 import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'
@@ -47,7 +46,7 @@ describe('parseRejected', () => {
       ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseRejected: $response', async ({ response, output }) => {
-      let responseError: ResponseError = await fallbackOptions.parseRejected(
+      const responseError: ResponseError = await fallbackOptions.parseRejected(
          response,
          new Request('https://a.b.c/'),
       )
