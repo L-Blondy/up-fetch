@@ -76,13 +76,13 @@ export function up<
             (input as Request).signal,
             mergedOptions.timeout && AbortSignal.timeout(mergedOptions.timeout)
          ].filter(Boolean) as AbortSignal[]),
-         headers: mergeHeaders(
+         headers: mergeHeaders([
             isJsonifiable(fetcherOpts.body) && typeof body === 'string'
                ? { 'content-type': 'application/json' }
                : {},
             defaultOpts.headers,
             fetcherOpts.headers,
-         ),
+         ]),
       }
       const request = new Request(requestInput, options)
 
