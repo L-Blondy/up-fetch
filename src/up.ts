@@ -71,11 +71,11 @@ export function up<
       const options = {
          ...mergedOptions,
          body,
-         signal: mergeSignals(
+         signal: mergeSignals([
             mergedOptions.signal, 
             (input as Request).signal,
             mergedOptions.timeout && AbortSignal.timeout(mergedOptions.timeout)
-         ),
+         ].filter(Boolean) as AbortSignal[]),
          headers: mergeHeaders(
             isJsonifiable(fetcherOpts.body) && typeof body === 'string'
                ? { 'content-type': 'application/json' }
