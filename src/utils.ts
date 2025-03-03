@@ -85,7 +85,6 @@ export function resolveInput<T>(
    input: T,
    queryString: string,
 ): T | string {
-   input = (input as any)?.href ?? input
    if (typeof input !== 'string') return input
    let url = /^https?:\/\//.test(input)
       ? input
