@@ -71,8 +71,7 @@ export function up<
          ...mergedOptions,
          body,
          signal: mergeSignals([
-            mergedOptions.signal, 
-            (input as Request).signal,
+            mergedOptions.signal ?? (input as Request).signal,
             mergedOptions.timeout && AbortSignal.timeout(mergedOptions.timeout)
          ].filter(Boolean) as AbortSignal[]),
          headers: mergeHeaders([
