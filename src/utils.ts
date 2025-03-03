@@ -7,7 +7,7 @@ import type {
 } from './types'
 import { ValidationError } from './validation-error'
 
-export const mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
+export const mergeHeaders = (headerInits: (RawHeaders | undefined)[]) => {
    const res: Record<string, string> = {}
    headerInits.forEach((init) => {
       // casting `init` to `HeadersInit` because `Record<string, any>` is
@@ -23,12 +23,10 @@ export const mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
    return res
 }
 
-export const mergeSignals = (
-   ...signals: AbortSignal | false | undefined,
-): AbortSignal | undefined =>
+export const mergeSignals = (signals: AbortSignal[]): AbortSignal | undefined =>
    'any' in AbortSignal
-      ? AbortSignal.any(signals.filter(Boolean) as AbortSignal[])
-      : signals.filter(Boolean)[0] as AbortSignal | undefined
+      ? AbortSignal.any(signals)
+      : signals[0]
 
 export const resolveParams = (
    defaultParams: Params | undefined,
