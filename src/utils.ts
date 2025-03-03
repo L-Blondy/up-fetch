@@ -23,19 +23,12 @@ export const mergeHeaders = (...headerInits: (RawHeaders | undefined)[]) => {
    return res
 }
 
-export const mergeSignal = (
-   signal: AbortSignal | undefined,
-   timeout: number | undefined,
+export const mergeSignals = (
+   ...signals: AbortSignal | false | undefined,
 ): AbortSignal | undefined =>
-   // if AbortSignal.any is not supported
-   //  AbortSignal.timeout is not supported either
    'any' in AbortSignal
-      ? AbortSignal.any(
-           [signal, timeout && AbortSignal.timeout(timeout)].filter(
-              Boolean,
-           ) as AbortSignal[],
-        )
-      : signal
+      ? AbortSignal.any(signals.filter(Boolean) as AbortSignal[])
+      : signals.filter(Boolean)[0] as AbortSignal | undefined
 
 export const resolveParams = (
    defaultParams: Params | undefined,
