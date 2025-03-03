@@ -46,7 +46,6 @@ export function up<
       > = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
-      input = input?.href ?? input
       const defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
       const mergedOptions = {
          ...fallbackOptions,
