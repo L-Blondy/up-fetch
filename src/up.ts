@@ -54,7 +54,7 @@ export function up<
       }
       const params = resolveParams(
          defaultOpts.params,
-         input,
+         input?.href ?? input,
          fetcherOpts.params,
       )
       const body =
@@ -64,7 +64,7 @@ export function up<
 
       const requestInput = resolveInput(
          mergedOptions.baseUrl,
-         input,
+         input?.href ?? input,
          mergedOptions.serializeParams(params),
       )
       const options = {
