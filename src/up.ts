@@ -10,10 +10,10 @@ import {
    emptyOptions,
    isJsonifiable,
    mergeHeaders,
-   mergeSignals,
    resolveInput,
    resolveParams,
    validate,
+   withTimeout, 
 } from './utils'
 
 export function up<
@@ -70,10 +70,10 @@ export function up<
       const options = {
          ...mergedOptions,
          body,
-         signal: mergeSignals([
+         signal: withTimeout(
             mergedOptions.signal ?? (input as Request).signal,
-            mergedOptions.timeout && AbortSignal.timeout(mergedOptions.timeout)
-         ].filter(Boolean) as AbortSignal[]),
+            mergedOptions.timeout
+         ),
          headers: mergeHeaders([
             isJsonifiable(fetcherOpts.body) && typeof body === 'string'
                ? { 'content-type': 'application/json' }
