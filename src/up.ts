@@ -47,65 +47,62 @@ export function up<
    ) => {
       const defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
 
-      const resolvedOpts = {
+      const options = {
          ...fallbackOptions,
          ...defaultOpts,
          ...fetcherOpts,
       }
 
       if('body' in fetcherOpts) {  
-         resolvedOpts.body = fetcherOpts.body === null || fetcherOpts.body === undefined
+         options.body = fetcherOpts.body === null || fetcherOpts.body === undefined
             ? (fetcherOpts.body as null | undefined)
-            : resolvedOpts.serializeBody(fetcherOpts.body)
+            : options.serializeBody(fetcherOpts.body)
       }
 
-      resolvedOpts.headers = mergeHeaders([
-         isJsonifiable(fetcherOpts.body) && typeof resolvedOpts.body === 'string'
+      options.headers = mergeHeaders([
+         isJsonifiable(fetcherOpts.body) && typeof options.body === 'string'
             ? { 'content-type': 'application/json' }
             : {},
          defaultOpts.headers,
          fetcherOpts.headers,
       ])
 
-      resolvedOpts.signal = withTimeout(
-         resolvedOpts.signal ?? input.signal, 
-         resolvedOpts.timeout
+      options.signal = withTimeout(
+         options.signal ?? input.signal, 
+         options.timeout
       )
       
-      const resolvedInput = resolveInput(
-         resolvedOpts.baseUrl,
-         input,
-         defaultOpts.params,
-         fetcherOpts.params,
-         resolvedOpts.serializeParams,
+      const request = new Request(
+         resolveInput(
+            options.baseUrl,
+            input,
+            defaultOpts.params,
+            fetcherOpts.params,
+            options.serializeParams,
+         ), 
+         options
       )
-
-      /**
-       * Request object used only for lifecycle hooks, not passed to fetchFn
-       * since fetchFn may not support Request interface
-       */
-      const request = new Request(resolvedInput, resolvedOpts)
 
       defaultOpts.onRequest?.(request)
 
-      return fetchFn(resolvedInput, resolvedOpts, ctx)
+      return fetchFn(request, options, ctx)
          .catch((error) => {
             defaultOpts.onError?.(error, request)
             throw error
          })
          .then(async (response: Response) => {
-            if (!(await resolvedOpts.reject(response))) {
+            if (!(await options.reject(response))) {
                let parsed: Awaited<TParsedData>
                try {
-                  parsed = await resolvedOpts.parseResponse(response, request)
+                  parsed = await options.parseResponse(response, request)
                } catch (error: any) {
                   defaultOpts.onError?.(error, request)
                   throw error
                }
                let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
                try {
-                  data = resolvedOpts.schema
-                     ? await validate(resolvedOpts.schema, parsed)
+                  data = options.schema
+                     ? await validate(options.schema, parsed)
                      : parsed
                } catch (error: any) {
                   defaultOpts.onError?.(error, request)
@@ -116,7 +113,7 @@ export function up<
             }
             let respError: any
             try {
-               respError = await resolvedOpts.parseRejected(response, request)
+               respError = await options.parseRejected(response, request)
             } catch (error: any) {
                defaultOpts.onError?.(error, request)
                throw error
