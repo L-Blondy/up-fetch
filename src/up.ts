@@ -7,7 +7,6 @@ import type {
    FetcherOptions,
 } from './types'
 import {
-   emptyOptions,
    isJsonifiable,
    mergeHeaders,
    resolveInput,
@@ -25,8 +24,7 @@ export function up<
       input: Parameters<TFetchFn>[0],
       fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
       ctx?: Parameters<TFetchFn>[2],
-   ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
-      emptyOptions,
+   ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () => ({}),
 ) {
    return <
       TParsedData = TDefaultParsedData,
