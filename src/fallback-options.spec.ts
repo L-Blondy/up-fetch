@@ -1,7 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, expect, test } from 'vitest'
 import { fallbackOptions } from './fallback-options'
 import { ResponseError } from './response-error'
+
+/**
+ * These tests assert the current default behaviors of the fallback options.
+ */
 
 describe('serializeParams', () => {
    test.each`
@@ -13,6 +16,7 @@ describe('serializeParams', () => {
       ${{ key5: ['string', 2, new Date('2023-02-15T13:46:35.046Z')] }}     | ${'key5=string%2C2%2C2023-02-15T13%3A46%3A35.046Z'}
       ${{ key5: [true, false, null, undefined, 7] }}                       | ${'key5=true%2Cfalse%2C%2C%2C7'}
       ${{ key5: [1, [2, true, null]] }}                                    | ${'key5=1%2C2%2Ctrue%2C'}
+      ${{ key5: { a: 1 } }}                                                | ${'key5=%5Bobject+Object%5D' /** does not support nested objects */}
    `('serializeParams: $params', ({ params, output }) => {
       expect(fallbackOptions.serializeParams(params)).toBe(output)
    })
@@ -47,11 +51,9 @@ describe('parseRejected', () => {
       ${new Response('')}                                            | ${null}
       ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
    `('parseRejected: $response', async ({ response, output }) => {
-      let responseError: ResponseError = await fallbackOptions.parseRejected(
+      const responseError: ResponseError = await fallbackOptions.parseRejected(
          response,
-         {
-            href: 'my-options',
-         } as any,
+         new Request('https://a.b.c/'),
       )
       expect(responseError instanceof ResponseError).toBeTruthy()
       expect(responseError.data).toStrictEqual(output)
@@ -59,9 +61,7 @@ describe('parseRejected', () => {
       expect(responseError.message).toStrictEqual(
          'Request failed with status 200',
       )
-      expect(responseError.options).toStrictEqual({
-         href: 'my-options',
-      })
+      expect(responseError.request).toStrictEqual(new Request('https://a.b.c/'))
       expect(responseError.name).toStrictEqual('ResponseError')
    })
 })

@@ -2,7 +2,7 @@ import { ResponseError } from './response-error'
 import type { FallbackOptions } from './types'
 import { isJsonifiable } from './utils'
 
-export let fallbackOptions: FallbackOptions<any> = {
+export const fallbackOptions: FallbackOptions = {
    parseResponse: (res) =>
       res
          .clone()
@@ -10,11 +10,11 @@ export let fallbackOptions: FallbackOptions<any> = {
          .catch(() => res.text())
          .then((data) => data || null),
 
-   parseRejected: async (res, options) =>
+   parseRejected: async (res, request) =>
       new ResponseError(
          res,
-         await fallbackOptions.parseResponse(res, options),
-         options,
+         await fallbackOptions.parseResponse(res, request),
+         request,
       ),
 
    // TODO: find a lighter way to do this with about the same amount of code

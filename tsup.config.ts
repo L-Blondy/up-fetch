@@ -6,7 +6,8 @@ export default defineConfig({
    },
    sourcemap: true,
    clean: true,
-   dts: { resolve: true },
+   // fix pnpm workspaces module resolution issues
+   dts: { resolve: ['@standard-schema/spec'] },
    format: ['esm', 'cjs'],
    outDir: 'dist',
    minify: true,
