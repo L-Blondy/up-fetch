@@ -71,18 +71,19 @@ export function up<
          options.timeout
       )
       
-      const request = new Request(
+      const request = 
          input instanceof Request
             ? input // cannot change the href of a Request
-            : resolveUrl(
-               options.baseUrl,
-               input,
-               defaultOpts.params,
-               fetcherOpts.params,
-               options.serializeParams,
-            ), 
-         options
-      )
+            : new Request(
+               resolveUrl(
+                  options.baseUrl,
+                  input,
+                  defaultOpts.params,
+                  fetcherOpts.params,
+                  options.serializeParams,
+               ), 
+               options
+            )
 
       defaultOpts.onRequest?.(request)
 
