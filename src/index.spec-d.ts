@@ -1,9 +1,9 @@
 import * as v from 'valibot'
 import { describe, expectTypeOf, test } from 'vitest'
 import { z } from 'zod'
+import { up } from '.'
 import { fallbackOptions } from './fallback-options'
 import type { JsonifiableArray, JsonifiableObject } from './types'
-import { up } from './up'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({

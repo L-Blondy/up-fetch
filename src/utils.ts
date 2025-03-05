@@ -4,6 +4,7 @@ import type {
    JsonifiableObject,
    Params,
    RawHeaders,
+   SerializeParams,
 } from './types'
 import { ValidationError } from './validation-error'
 
@@ -37,23 +38,6 @@ export const withTimeout = (
            ) as AbortSignal[],
         )
       : signal
-
-export const resolveParams = (
-   defaultParams: Params | undefined,
-   input: unknown,
-   fetcherParams: Params | undefined,
-): Params =>
-   typeof input !== 'string'
-      ? {} // an input of type Request cannot use the "params" option
-      : {
-           // Removing the 'url.searchParams.keys()' from the defaultParams
-           // but not from the 'fetcherParams'. The user is responsible for not
-           // specifying the params in both the "input" and the fetcher "params" option.
-           ...omit(defaultParams, [
-              ...new URL(input, 'http://a').searchParams.keys(),
-           ]),
-           ...fetcherParams,
-        }
 
 type KeyOf<O> = O extends unknown ? keyof O : never
 
@@ -90,20 +74,33 @@ export const isJsonifiable = (
 
 export const emptyOptions: any = {}
 
-export function resolveInput<T>(
+export function resolveInput(
    base: string | undefined = '',
-   input: T,
-   queryString: string,
-): T | string {
-   if (typeof input !== 'string') return input
-   let url = /^https?:\/\//.test(input)
+   input: URL | Request | string,
+   defaultOptsParams: Params | undefined,
+   fetcherOptsParams: Params | undefined,
+   serializeParams: SerializeParams,
+): Request | string {
+   if (input instanceof Request) return input
+   input = (input as URL).href ?? input
+   const qs = serializeParams({
+      // Removing the 'url.searchParams.keys()' from the defaultParams
+      // but not from the 'fetcherParams'. The user is responsible for not
+      // specifying the params in both the "input" and the fetcher "params" option.
+      ...omit(defaultOptsParams, [
+         ...new URL(input, 'http://a').searchParams.keys(),
+      ]),
+      ...fetcherOptsParams,
+   })
+
+   let url: string = /^https?:\/\//.test(input)
       ? input
       : !base || !input
         ? base + input
         : base.replace(/\/$/, '') + '/' + input.replace(/^\//, '')
 
-   if (queryString) {
-      url += (url.includes('?') ? '&' : '?') + queryString.replace(/^\?/, '')
+   if (qs) {
+      url += (url.includes('?') ? '&' : '?') + qs.replace(/^\?/, '')
    }
    return url
 }

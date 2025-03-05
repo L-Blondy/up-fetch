@@ -11,9 +11,8 @@ import {
    isJsonifiable,
    mergeHeaders,
    resolveInput,
-   resolveParams,
    validate,
-   withTimeout, 
+   withTimeout,
 } from './utils'
 
 export function up<
@@ -47,63 +46,74 @@ export function up<
       ctx?: Parameters<TFetchFn>[2],
    ) => {
       const defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
-      const mergedOptions = {
+
+      const mergedOpts = {
          ...fallbackOptions,
          ...defaultOpts,
          ...fetcherOpts,
       }
-      const params = resolveParams(
-         defaultOpts.params,
-         input?.href ?? input,
-         fetcherOpts.params,
-      )
+
       const body =
          fetcherOpts.body === null || fetcherOpts.body === undefined
             ? (fetcherOpts.body as null | undefined)
-            : mergedOptions.serializeBody(fetcherOpts.body)
+            : mergedOpts.serializeBody(fetcherOpts.body)
 
-      const requestInput = resolveInput(
-         mergedOptions.baseUrl,
-         input?.href ?? input,
-         mergedOptions.serializeParams(params),
+      const resolvedInput = resolveInput(
+         mergedOpts.baseUrl,
+         input,
+         defaultOpts.params,
+         fetcherOpts.params,
+         mergedOpts.serializeParams,
       )
-      const options = {
-         ...mergedOptions,
-         body,
-         signal: withTimeout(
-            mergedOptions.signal ?? (input as Request).signal,
-            mergedOptions.timeout
-         ),
-         headers: mergeHeaders([
-            isJsonifiable(fetcherOpts.body) && typeof body === 'string'
-               ? { 'content-type': 'application/json' }
-               : {},
-            defaultOpts.headers,
-            fetcherOpts.headers,
-         ]),
-      }
-      const request = new Request(requestInput, options)
+
+      const resolvedOpts =
+         /**
+          * Need to decide on params/headers/signal handling strategy:
+          * 1. Merge with Request (non-standard behavior)
+          * 2. Keep Request as-is (different from string/URL handling)
+          * 3. Ignore options entirely when input is Request (current approach)
+          */
+         resolvedInput instanceof Request
+            ? {}
+            : {
+                 ...mergedOpts,
+                 body,
+                 signal: withTimeout(mergedOpts.signal, mergedOpts.timeout),
+                 headers: mergeHeaders([
+                    isJsonifiable(fetcherOpts.body) && typeof body === 'string'
+                       ? { 'content-type': 'application/json' }
+                       : {},
+                    defaultOpts.headers,
+                    fetcherOpts.headers,
+                 ]),
+              }
+
+      /**
+       * Request object used only for lifecycle hooks, not passed to fetchFn
+       * since fetchFn may not support Request interface
+       */
+      const request = new Request(resolvedInput, resolvedOpts)
 
       defaultOpts.onRequest?.(request)
 
-      return fetchFn(requestInput, options, ctx)
+      return fetchFn(resolvedInput, resolvedOpts, ctx)
          .catch((error) => {
             defaultOpts.onError?.(error, request)
             throw error
          })
          .then(async (response: Response) => {
-            if (!(await options.reject(response))) {
+            if (!(await mergedOpts.reject(response))) {
                let parsed: Awaited<TParsedData>
                try {
-                  parsed = await options.parseResponse(response, request)
+                  parsed = await mergedOpts.parseResponse(response, request)
                } catch (error: any) {
                   defaultOpts.onError?.(error, request)
                   throw error
                }
                let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
                try {
-                  data = options.schema
-                     ? await validate(options.schema, parsed)
+                  data = mergedOpts.schema
+                     ? await validate(mergedOpts.schema, parsed)
                      : parsed
                } catch (error: any) {
                   defaultOpts.onError?.(error, request)
@@ -114,7 +124,7 @@ export function up<
             }
             let respError: any
             try {
-               respError = await options.parseRejected(response, request)
+               respError = await mergedOpts.parseRejected(response, request)
             } catch (error: any) {
                defaultOpts.onError?.(error, request)
                throw error
