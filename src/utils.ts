@@ -72,8 +72,6 @@ export const isJsonifiable = (
    )
 }
 
-export const emptyOptions: any = {}
-
 export function resolveInput(
    base: string | undefined = '',
    input: URL | Request | string,
