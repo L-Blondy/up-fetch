@@ -47,46 +47,38 @@ export function up<
    ) => {
       const defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
 
-      const mergedOpts = {
+      const resolvedOpts = {
          ...fallbackOptions,
          ...defaultOpts,
          ...fetcherOpts,
       }
 
-      const body =
-         fetcherOpts.body === null || fetcherOpts.body === undefined
+      if('body' in fetcherOpts) {  
+         resolvedOpts.body = fetcherOpts.body === null || fetcherOpts.body === undefined
             ? (fetcherOpts.body as null | undefined)
-            : mergedOpts.serializeBody(fetcherOpts.body)
+            : resolvedOpts.serializeBody(fetcherOpts.body)
+      }
 
+      resolvedOpts.headers = mergeHeaders([
+         isJsonifiable(fetcherOpts.body) && typeof resolvedOpts.body === 'string'
+            ? { 'content-type': 'application/json' }
+            : {},
+         defaultOpts.headers,
+         fetcherOpts.headers,
+      ])
+
+      resolvedOpts.signal = withTimeout(
+         resolvedOpts.signal ?? input.signal, 
+         resolvedOpts.timeout
+      )
+      
       const resolvedInput = resolveInput(
-         mergedOpts.baseUrl,
+         resolvedOpts.baseUrl,
          input,
          defaultOpts.params,
          fetcherOpts.params,
-         mergedOpts.serializeParams,
+         resolvedOpts.serializeParams,
       )
-
-      const resolvedOpts =
-         /**
-          * Need to decide on params/headers/signal handling strategy:
-          * 1. Merge with Request (non-standard behavior) -> Need to change the Request.url
-          * 2. Keep Request as-is (different from string/URL handling) -> lose the default json header
-          * 3. Ignore options entirely when input is Request (current approach)
-          */
-         resolvedInput instanceof Request
-            ? {}
-            : {
-                 ...mergedOpts,
-                 body,
-                 signal: withTimeout(mergedOpts.signal, mergedOpts.timeout),
-                 headers: mergeHeaders([
-                    isJsonifiable(fetcherOpts.body) && typeof body === 'string'
-                       ? { 'content-type': 'application/json' }
-                       : {},
-                    defaultOpts.headers,
-                    fetcherOpts.headers,
-                 ]),
-              }
 
       /**
        * Request object used only for lifecycle hooks, not passed to fetchFn
@@ -102,18 +94,18 @@ export function up<
             throw error
          })
          .then(async (response: Response) => {
-            if (!(await mergedOpts.reject(response))) {
+            if (!(await resolvedOpts.reject(response))) {
                let parsed: Awaited<TParsedData>
                try {
-                  parsed = await mergedOpts.parseResponse(response, request)
+                  parsed = await resolvedOpts.parseResponse(response, request)
                } catch (error: any) {
                   defaultOpts.onError?.(error, request)
                   throw error
                }
                let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
                try {
-                  data = mergedOpts.schema
-                     ? await validate(mergedOpts.schema, parsed)
+                  data = resolvedOpts.schema
+                     ? await validate(resolvedOpts.schema, parsed)
                      : parsed
                } catch (error: any) {
                   defaultOpts.onError?.(error, request)
@@ -124,7 +116,7 @@ export function up<
             }
             let respError: any
             try {
-               respError = await mergedOpts.parseRejected(response, request)
+               respError = await resolvedOpts.parseRejected(response, request)
             } catch (error: any) {
                defaultOpts.onError?.(error, request)
                throw error
