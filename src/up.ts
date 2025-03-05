@@ -62,6 +62,7 @@ export function up<
             ? { 'content-type': 'application/json' }
             : {},
          defaultOpts.headers,
+         (input as Request).headers,
          fetcherOpts.headers,
       ])
 
