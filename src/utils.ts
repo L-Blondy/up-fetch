@@ -78,7 +78,7 @@ export function resolveUrl(
    defaultOptsParams: Params | undefined,
    fetcherOptsParams: Params | undefined,
    serializeParams: SerializeParams,
-): Request | string {
+): string {
    input = (input as URL).href ?? input
    const qs = serializeParams({
       // Removing the 'url.searchParams.keys()' from the defaultParams
