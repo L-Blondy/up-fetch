@@ -23,12 +23,12 @@ export const mergeHeaders = (headerInits: (RawHeaders | undefined)[]) => {
    return res
 }
 
-export const withTimeout = = (
+export const withTimeout = (
    signal: AbortSignal | undefined,
    timeout: number | undefined,
 ): AbortSignal | undefined =>
    // if AbortSignal.any is not supported
-   // AbortSignal.timeout is not supported either. 
+   // AbortSignal.timeout is not supported either.
    // Feature detection is fine on AbortSignal.any only
    'any' in AbortSignal
       ? AbortSignal.any(
