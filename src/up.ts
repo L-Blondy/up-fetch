@@ -72,13 +72,15 @@ export function up<
       )
       
       const request = new Request(
-         resolveInput(
-            options.baseUrl,
-            input,
-            defaultOpts.params,
-            fetcherOpts.params,
-            options.serializeParams,
-         ), 
+         input instanceof Request
+            ? input
+            : resolveInput(
+               options.baseUrl,
+               input,
+               defaultOpts.params,
+               fetcherOpts.params,
+               options.serializeParams,
+            ), 
          options
       )
 
