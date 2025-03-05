@@ -73,7 +73,7 @@ export function up<
       
       const request = new Request(
          input instanceof Request
-            ? input
+            ? input // cannot change the href of a Request
             : resolveHref(
                options.baseUrl,
                input,
