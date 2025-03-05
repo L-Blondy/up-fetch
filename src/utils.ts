@@ -72,7 +72,7 @@ export const isJsonifiable = (
    )
 }
 
-export function resolveHref(
+export function resolveUrl(
    base: string | undefined = '',
    input: URL | string,
    defaultOptsParams: Params | undefined,
