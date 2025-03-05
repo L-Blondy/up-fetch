@@ -9,7 +9,7 @@ import type {
 import {
    isJsonifiable,
    mergeHeaders,
-   resolveHref,
+   resolveUrl,
    validate,
    withTimeout,
 } from './utils'
@@ -74,7 +74,7 @@ export function up<
       const request = new Request(
          input instanceof Request
             ? input // cannot change the href of a Request
-            : resolveHref(
+            : resolveUrl(
                options.baseUrl,
                input,
                defaultOpts.params,
