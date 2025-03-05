@@ -72,14 +72,13 @@ export const isJsonifiable = (
    )
 }
 
-export function resolveInput(
+export function resolveHref(
    base: string | undefined = '',
-   input: URL | Request | string,
+   input: URL | string,
    defaultOptsParams: Params | undefined,
    fetcherOptsParams: Params | undefined,
    serializeParams: SerializeParams,
 ): Request | string {
-   if (input instanceof Request) return input
    input = (input as URL).href ?? input
    const qs = serializeParams({
       // Removing the 'url.searchParams.keys()' from the defaultParams
