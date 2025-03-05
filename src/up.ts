@@ -69,8 +69,8 @@ export function up<
       const resolvedOpts =
          /**
           * Need to decide on params/headers/signal handling strategy:
-          * 1. Merge with Request (non-standard behavior)
-          * 2. Keep Request as-is (different from string/URL handling)
+          * 1. Merge with Request (non-standard behavior) -> Need to change the Request.url
+          * 2. Keep Request as-is (different from string/URL handling) -> lose the default json header
           * 3. Ignore options entirely when input is Request (current approach)
           */
          resolvedInput instanceof Request
