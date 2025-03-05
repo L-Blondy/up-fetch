@@ -52,7 +52,7 @@ describe('mergeHeaders', () => {
    `(
       'Input: $defaultHeaders, $fetcherHeaders',
       ({ defaultHeaders, fetcherHeaders, output }) => {
-         expect(mergeHeaders(defaultHeaders, fetcherHeaders)).toEqual(output)
+         expect(mergeHeaders([defaultHeaders, fetcherHeaders])).toEqual(output)
       },
    )
 })
