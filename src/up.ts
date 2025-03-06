@@ -83,6 +83,7 @@ export function up<
 
       defaultOpts.onRequest?.(request)
 
+      // Request has some quirks, better pass the url instead
       return fetchFn(request.url, options, ctx)
          .catch((error) => {
             defaultOpts.onError?.(error, request)
