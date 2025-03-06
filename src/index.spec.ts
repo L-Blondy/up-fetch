@@ -55,10 +55,9 @@ describe('isJsonifiable', () => {
 
 describe('Should receive the upfetch arguments (up to 3)', () => {
    test.each`
-      input                                 | options                 | ctx
-      ${'https://example.com'}              | ${{ method: 'DELETE' }} | ${{ is: 'ctx' }}
-      ${new URL('https://example.com')}     | ${{ method: 'DELETE' }} | ${'context'}
-      ${new Request('https://example.com')} | ${{ method: 'DELETE' }} | ${new ArrayBuffer()}
+      input                             | options                 | ctx
+      ${'https://example.com'}          | ${{ method: 'DELETE' }} | ${{ is: 'ctx' }}
+      ${new URL('https://example.com')} | ${{ method: 'DELETE' }} | ${'context'}
    `('%#', async ({ input, options, ctx }) => {
       server.use(
          http.delete('https://example.com', () => {
@@ -69,7 +68,7 @@ describe('Should receive the upfetch arguments (up to 3)', () => {
       const upfetch = up(
          fetch,
          (receivedInput, receivedOptions, receivedCtx) => {
-            expectTypeOf(receivedInput).toEqualTypeOf<string | Request | URL>()
+            expectTypeOf(receivedInput).toEqualTypeOf<string | URL>()
             expectTypeOf(receivedOptions).toEqualTypeOf<
                FetcherOptions<typeof fetch, any, any, any>
             >()
@@ -1106,7 +1105,7 @@ describe('timeout', () => {
       server.use(
          http.get('https://example.com', async () => {
             await scheduler.wait(2)
-            return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            return HttpResponse.json({}, { status: 200 })
          }),
       )
 
@@ -1127,7 +1126,7 @@ describe('timeout', () => {
       server.use(
          http.get('https://example.com', async () => {
             await scheduler.wait(2)
-            return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            return HttpResponse.json({}, { status: 200 })
          }),
       )
 
@@ -1148,7 +1147,7 @@ describe('timeout', () => {
       server.use(
          http.get('https://example.com', async () => {
             await scheduler.wait(2)
-            return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            return HttpResponse.json({}, { status: 200 })
          }),
       )
 
@@ -1171,7 +1170,7 @@ describe('timeout', () => {
       server.use(
          http.get('https://example.com', async () => {
             await scheduler.wait(10000)
-            return HttpResponse.json({ hello: 'world' }, { status: 200 })
+            return HttpResponse.json({}, { status: 200 })
          }),
       )
 
@@ -1207,7 +1206,7 @@ describe('timeout', () => {
          server.use(
             http.get('https://example.com', async () => {
                await scheduler.wait(2)
-               return HttpResponse.json({ hello: 'world' }, { status: 200 })
+               return HttpResponse.json({}, { status: 200 })
             }),
          )
 

@@ -14,6 +14,8 @@ import {
    withTimeout,
 } from './utils'
 
+const emptyOptions: any = {}
+
 export function up<
    TFetchFn extends BaseFetchFn,
    TDefaultParsedData = any,
@@ -21,10 +23,11 @@ export function up<
 >(
    fetchFn: TFetchFn,
    getDefaultOptions: (
-      input: Parameters<TFetchFn>[0],
+      input: Exclude<Parameters<TFetchFn>[0], Request>,
       fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
       ctx?: Parameters<TFetchFn>[2],
-   ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () => ({}),
+   ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
+      emptyOptions,
 ) {
    return <
       TParsedData = TDefaultParsedData,
@@ -34,7 +37,7 @@ export function up<
       > = StandardSchemaV1<TParsedData>,
       TRawBody = TDefaultRawBody,
    >(
-      input: Parameters<TFetchFn>[0],
+      input: Exclude<Parameters<TFetchFn>[0], Request>,
       fetcherOpts: FetcherOptions<
          TFetchFn,
          TSchema,
@@ -51,43 +54,36 @@ export function up<
          ...fetcherOpts,
       }
 
-      if('body' in fetcherOpts) {  
-         options.body = fetcherOpts.body === null || fetcherOpts.body === undefined
+      // @ts-expect-error
+      options.body =
+         fetcherOpts.body === null || fetcherOpts.body === undefined
             ? (fetcherOpts.body as null | undefined)
             : options.serializeBody(fetcherOpts.body)
-      }
 
       options.headers = mergeHeaders([
          isJsonifiable(fetcherOpts.body) && typeof options.body === 'string'
             ? { 'content-type': 'application/json' }
             : {},
          defaultOpts.headers,
-         (input as Request).headers,
          fetcherOpts.headers,
       ])
 
-      options.signal = withTimeout(
-         options.signal ?? input.signal, 
-         options.timeout
+      options.signal = withTimeout(options.signal, options.timeout)
+
+      const request = new Request(
+         resolveUrl(
+            options.baseUrl,
+            input,
+            defaultOpts.params,
+            fetcherOpts.params,
+            options.serializeParams,
+         ),
+         options,
       )
-      
-      const request = 
-         input instanceof Request
-            ? input // cannot change the href of a Request
-            : new Request(
-               resolveUrl(
-                  options.baseUrl,
-                  input,
-                  defaultOpts.params,
-                  fetcherOpts.params,
-                  options.serializeParams,
-               ), 
-               options
-            )
 
       defaultOpts.onRequest?.(request)
 
-      return fetchFn(request, options, ctx)
+      return fetchFn(request.url, options, ctx)
          .catch((error) => {
             defaultOpts.onError?.(error, request)
             throw error

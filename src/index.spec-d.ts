@@ -248,19 +248,6 @@ describe('up should accept a fetcher with', () => {
       upfetch(new URL(''))
    })
 
-   test('wider input', () => {
-      type FetchFn = (
-         input: string | URL | Request | number,
-         options: Parameters<typeof fetch>[1],
-      ) => Promise<Response>
-      const fetchFn: FetchFn = (() => {}) as any
-      const upfetch = up(fetchFn)
-      upfetch('')
-      upfetch(new Request(''))
-      upfetch(new URL(''))
-      upfetch(1)
-   })
-
    test('narrower options', () => {
       type FetchFn = (
          input: Parameters<typeof fetch>[0],
