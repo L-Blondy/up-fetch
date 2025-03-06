@@ -29,12 +29,12 @@ describe('serializeBody', () => {
 
 describe('parseResponse', () => {
    test.each`
-      response                                                       | output
-      ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }')} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
-      ${new Response(null)}                                          | ${null}
-      ${new Response()}                                              | ${null}
-      ${new Response('')}                                            | ${null}
-      ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
+      response                                                                                                                           | output
+      ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }', { headers: { 'Content-type': 'application/json; charset=utf-8' } })} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
+      ${new Response(null)}                                                                                                              | ${null}
+      ${new Response()}                                                                                                                  | ${null}
+      ${new Response('')}                                                                                                                | ${''}
+      ${new Response('<h1>Some text</h1>')}                                                                                              | ${'<h1>Some text</h1>'}
    `('parseResponse: $response', async ({ response, output }) => {
       expect(
          await fallbackOptions.parseResponse(response, {} as any),
@@ -44,13 +44,13 @@ describe('parseResponse', () => {
 
 describe('parseRejected', () => {
    test.each`
-      response                                                       | output
-      ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }')} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
-      ${new Response(null)}                                          | ${null}
-      ${new Response()}                                              | ${null}
-      ${new Response('')}                                            | ${null}
-      ${new Response('<h1>Some text</h1>')}                          | ${'<h1>Some text</h1>'}
-   `('parseRejected: $response', async ({ response, output }) => {
+      response                                                                                                            | output
+      ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }', { headers: { 'Content-type': 'application/json' } })} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
+      ${new Response(null)}                                                                                               | ${null}
+      ${new Response()}                                                                                                   | ${null}
+      ${new Response('')}                                                                                                 | ${''}
+      ${new Response('<h1>Some text</h1>')}                                                                               | ${'<h1>Some text</h1>'}
+   `('%#', async ({ response, output }) => {
       const responseError: ResponseError = await fallbackOptions.parseRejected(
          response,
          new Request('https://a.b.c/'),

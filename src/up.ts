@@ -16,20 +16,21 @@ import {
 
 const emptyOptions: any = {}
 
-export function up<
-   TFetchFn extends BaseFetchFn,
-   TDefaultParsedData = any,
-   TDefaultRawBody = Parameters<FallbackOptions['serializeBody']>[0],
->(
-   fetchFn: TFetchFn,
-   getDefaultOptions: (
-      input: Exclude<Parameters<TFetchFn>[0], Request>,
-      fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
-      ctx?: Parameters<TFetchFn>[2],
-   ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
-      emptyOptions,
-) {
-   return <
+export const up =
+   <
+      TFetchFn extends BaseFetchFn,
+      TDefaultParsedData = any,
+      TDefaultRawBody = Parameters<FallbackOptions['serializeBody']>[0],
+   >(
+      fetchFn: TFetchFn,
+      getDefaultOptions: (
+         input: Exclude<Parameters<TFetchFn>[0], Request>,
+         fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
+         ctx?: Parameters<TFetchFn>[2],
+      ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
+         emptyOptions,
+   ) =>
+   <
       TParsedData = TDefaultParsedData,
       TSchema extends StandardSchemaV1<
          TParsedData,
@@ -121,4 +122,3 @@ export function up<
             throw respError
          })
    }
-}
