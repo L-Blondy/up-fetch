@@ -48,7 +48,7 @@ export type DistributiveOmit<
 
 export type MaybePromise<T> = T | Promise<T>
 
-export const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
+const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
    obj?: O,
    keys: K[] | readonly K[] = [],
 ): DistributiveOmit<O, K> => {

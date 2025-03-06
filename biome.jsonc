@@ -7,7 +7,14 @@
    },
    "files": {
       "ignoreUnknown": false,
-      "include": ["tsconfig.json", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
+      "include": [
+         "**/*.json",
+         "**/*.jsonc",
+         "**/*.ts",
+         "**/*.tsx",
+         "**/*.js",
+         "**/*.jsx"
+      ]
    },
    "formatter": {
       "enabled": true,

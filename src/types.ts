@@ -9,34 +9,16 @@ export type JsonifiableArray =
    | Array<JsonPrimitive | JsonifiableObject | JsonifiableArray>
    | ReadonlyArray<JsonPrimitive | JsonifiableObject | JsonifiableArray>
 
-type Interceptor =
-   | keyof DefaultOptions<any, any, any>
-   | keyof FetcherOptions<any, any, any, any> extends infer U
-   ? U extends `on${infer V}`
-      ? `on${V}`
-      : never
-   : never
-
-type TupleToUnion<U extends string, R extends any[] = []> = {
-   [S in U]: Exclude<U, S> extends never
-      ? [...R, S]
-      : TupleToUnion<Exclude<U, S>, [...R, S]>
-}[U]
-
-export type Interceptors = TupleToUnion<Interceptor>
-
 export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
 
-export type ParseResponse<TParsedData> = (
+type ParseResponse<TParsedData> = (
    response: Response,
    request: Request,
 ) => MaybePromise<TParsedData>
 
-export type ParseRejected = (response: Response, request: Request) => any
+type ParseRejected = (response: Response, request: Request) => any
 
-export type SerializeBody<TRawBody> = (
-   body: TRawBody,
-) => BodyInit | null | undefined
+type SerializeBody<TRawBody> = (body: TRawBody) => BodyInit | null | undefined
 
 export type SerializeParams = (params: Params) => string
 
@@ -58,7 +40,7 @@ type Method =
    | 'HEAD'
    | (string & {})
 
-export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
+type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    NonNullable<Parameters<TFetch>[1]>,
    'body' | 'headers' | 'method'
 > & {}

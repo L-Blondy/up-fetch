@@ -7,7 +7,10 @@
    "module": "dist/index.js",
    "types": "dist/index.d.ts",
    "sideEffects": false,
-   "files": ["dist", "src"],
+   "files": [
+      "dist",
+      "src"
+   ],
    "exports": {
       ".": {
          "import": {
@@ -22,9 +25,10 @@
       "./package.json": "./package.json"
    },
    "scripts": {
-      "lint": "biome check --fix && tsc --noEmit",
       "build": "tsup",
       "dev": "vitest",
+      "knip": "knip",
+      "lint": "biome check --fix && tsc --noEmit",
       "test": "vitest run",
       "release:pre:beta": "git pull && node scripts/check-beta-version.js && npm run lint && npm run test && npm run build",
       "release:pre:stable": "git pull && node scripts/check-stable-version.js && npm run lint && npm run test && npm run build",
@@ -52,8 +56,9 @@
    "devDependencies": {
       "@biomejs/biome": "1.9.4",
       "@standard-schema/spec": "^1.0.0",
-      "@types/node": "^22.13.1",
+      "@types/node": "^22.13.5",
       "jsdom": "^26.0.0",
+      "knip": "^5.45.0",
       "msw": "^2.7.0",
       "tsup": "^8.3.6",
       "typescript": "5.7.3",
@@ -63,7 +68,9 @@
    },
    "publishConfig": {
       "access": "public",
-      "branches": ["master"]
+      "branches": [
+         "master"
+      ]
    },
    "repository": {
       "type": "git",
