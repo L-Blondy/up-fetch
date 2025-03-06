@@ -14,7 +14,7 @@ import {
    withTimeout,
 } from './utils'
 
-const emptyOptions: any = {}
+const emptyOptions = {} as any
 
 export function up<
    TFetchFn extends BaseFetchFn,
