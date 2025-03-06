@@ -1,16 +1,13 @@
 {
    "name": "up-fetch",
-   "version": "2.0.0-beta.3",
+   "version": "2.0.0-beta.4",
    "description": "Advanced fetch client builder for typescript.",
    "type": "module",
    "main": "dist/index.cjs",
    "module": "dist/index.js",
    "types": "dist/index.d.ts",
    "sideEffects": false,
-   "files": [
-      "dist",
-      "src"
-   ],
+   "files": ["dist", "src"],
    "exports": {
       ".": {
          "import": {
@@ -29,12 +26,8 @@
       "dev": "vitest",
       "knip": "knip",
       "lint": "biome check --fix && tsc --noEmit",
-      "test": "vitest run",
-      "release:pre:beta": "git pull && node scripts/check-beta-version.js && npm run lint && npm run test && npm run build",
-      "release:pre:stable": "git pull && node scripts/check-stable-version.js && npm run lint && npm run test && npm run build",
-      "release:stable": "npm run release:pre:stable && npm publish && npm run release:post",
-      "release:beta": "npm run release:pre:beta && npm publish --tag beta && npm run release:post",
-      "release:post": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"
+      "release": "bun scripts/release.ts && git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
+      "test": "vitest run"
    },
    "keywords": [
       "fetch",
@@ -62,15 +55,13 @@
       "msw": "^2.7.0",
       "tsup": "^8.3.6",
       "typescript": "5.7.3",
-      "valibot": ">=1.0.0-rc.0",
+      "valibot": ">=1.0.0-rc.3",
       "vitest": "^3.0.5",
       "zod": "3.24.1"
    },
    "publishConfig": {
       "access": "public",
-      "branches": [
-         "master"
-      ]
+      "branches": ["master"]
    },
    "repository": {
       "type": "git",
