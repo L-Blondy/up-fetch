@@ -5,6 +5,7 @@ tsconfig.vitest-temp.json
 __*
 package-lock.json
 bun.lock
+deno.lock
 /articles
 todo.*
 PR.md
