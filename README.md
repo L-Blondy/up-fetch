@@ -349,14 +349,20 @@ const upfetch = up(fetch, () => ({
 You can create multiple upfetch instances with different defaults:
 
 ```ts
-const fetchJson = up(fetch)
-
-const fetchBlob = up(fetch, () => ({
-   parseResponse: (res) => res.blob(),
+const fetchMovie = up(fetch, () => ({
+   baseUrl: "https://api.themoviedb.org",
+   headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${process.env.API_KEY}`,
+   },
 }))
 
-const fetchText = up(fetch, () => ({
-   parseResponse: (res) => res.text(),
+const fetchFile = up(fetch, () => ({
+   parseResponse: async (res) => {
+      const name = res.url.split('/').at(-1) ?? ''
+      const type = res.headers.get('content-type') ?? ''
+      return new File([await res.blob()], name, { type })
+   },
 }))
 ```
 

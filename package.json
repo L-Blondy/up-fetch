@@ -49,15 +49,15 @@
    "devDependencies": {
       "@biomejs/biome": "1.9.4",
       "@standard-schema/spec": "^1.0.0",
-      "@types/node": "^22.13.5",
+      "@types/node": "^22.13.9",
       "jsdom": "^26.0.0",
       "knip": "^5.45.0",
-      "msw": "^2.7.0",
-      "tsup": "^8.3.6",
+      "msw": "^2.7.3",
+      "tsup": "^8.4.0",
       "typescript": "5.7.3",
       "valibot": ">=1.0.0-rc.3",
-      "vitest": "^3.0.5",
-      "zod": "3.24.1"
+      "vitest": "^3.0.8",
+      "zod": "3.24.2"
    },
    "publishConfig": {
       "access": "public",

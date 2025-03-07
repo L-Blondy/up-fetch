@@ -47,7 +47,7 @@ const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
 ): DistributiveOmit<O, K> => {
    const copy = { ...obj } as DistributiveOmit<O, K>
    for (const key in copy) {
-      if (keys.includes(key as any as K)) delete copy[key]
+      if (keys.includes(key as any)) delete copy[key]
    }
    return copy
 }
@@ -65,13 +65,13 @@ export const isJsonifiable = (
    )
 }
 
-export function resolveUrl(
+export const resolveUrl = (
    base: string | undefined = '',
    input: URL | string,
    defaultOptsParams: Params | undefined,
    fetcherOptsParams: Params | undefined,
    serializeParams: SerializeParams,
-): string {
+): string => {
    input = (input as URL).href ?? input
    const qs = serializeParams({
       // Removing the 'url.searchParams.keys()' from the defaultParams
