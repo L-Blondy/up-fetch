@@ -33,7 +33,7 @@ describe('parseResponse', () => {
       ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }', { headers: { 'Content-type': 'application/json; charset=utf-8' } })} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
       ${new Response(null)}                                                                                                              | ${null}
       ${new Response()}                                                                                                                  | ${null}
-      ${new Response('')}                                                                                                                | ${''}
+      ${new Response('')}                                                                                                                | ${null}
       ${new Response('<h1>Some text</h1>')}                                                                                              | ${'<h1>Some text</h1>'}
    `('parseResponse: $response', async ({ response, output }) => {
       expect(
@@ -48,12 +48,13 @@ describe('parseRejected', () => {
       ${new Response('{ "a": true, "b": false, "c":"aaa", "d":1 }', { headers: { 'Content-type': 'application/json' } })} | ${{ a: true, b: false, c: 'aaa', d: 1 }}
       ${new Response(null)}                                                                                               | ${null}
       ${new Response()}                                                                                                   | ${null}
-      ${new Response('')}                                                                                                 | ${''}
+      ${new Response('')}                                                                                                 | ${null}
       ${new Response('<h1>Some text</h1>')}                                                                               | ${'<h1>Some text</h1>'}
    `('%#', async ({ response, output }) => {
+      const request = new Request('https://a.b.c/')
       const responseError: ResponseError = await fallbackOptions.parseRejected(
          response,
-         new Request('https://a.b.c/'),
+         request,
       )
       expect(responseError instanceof ResponseError).toBeTruthy()
       expect(responseError.data).toStrictEqual(output)
@@ -61,7 +62,7 @@ describe('parseRejected', () => {
       expect(responseError.message).toStrictEqual(
          'Request failed with status 200',
       )
-      expect(responseError.request).toStrictEqual(new Request('https://a.b.c/'))
+      expect(responseError.request).toBe(request)
       expect(responseError.name).toStrictEqual('ResponseError')
    })
 })
