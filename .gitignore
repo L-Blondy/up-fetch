@@ -1,10 +1,7 @@
 /node_modules
-/pnpm-lock.yaml
 /.vscode
 /dist
 tsconfig.vitest-temp.json
 __*
-package-lock.json
-bun.lock
 /articles
 todo.*
