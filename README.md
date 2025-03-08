@@ -246,7 +246,7 @@ const upfetch = up(fetcher, () => ({
 }))
 ```
 
-All retry options can be functions, that are also available on the `upfetch` instance:
+For fine-grained control over retry behavior, all retry options accept functions:
 
 ```ts
 upfetch('/todos', {
