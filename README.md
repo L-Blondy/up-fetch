@@ -230,13 +230,13 @@ Add retry capabilities to your requests using the `withRetry` adapter:
 import { withRetry } from 'up-fetch/adapters'
 ```
 
-Wrap your fetch implementation with the `withRetry` adapter:
+Enhance your fetch implementation with retry capabilities:
 
 ```ts
 const fetcher = withRetry(fetch)
 ```
 
-Then pass the fetcher to the `up` function:
+And pass it to the `up` function:
 
 ```ts
 const upfetch = up(fetcher, () => ({
