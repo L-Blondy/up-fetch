@@ -228,9 +228,17 @@ Add retry capabilities to your requests using the `withRetry` adapter:
 
 ```ts
 import { withRetry } from 'up-fetch/adapters'
+```
 
+Wrap your fetch implementation with the `withRetry` adapter:
+
+```ts
 const fetcher = withRetry(fetch)
+```
 
+Then pass the fetcher to the `up` function:
+
+```ts
 const upfetch = up(fetcher, () => ({
    retryWhen: (response, request) => !response.ok && request.method === 'GET',
    retryTimes: 3, // Number of retry attempts
@@ -238,15 +246,12 @@ const upfetch = up(fetcher, () => ({
 }))
 ```
 
-All retry options can be functions, this allows you to fine-tune the retry behavior based on the response and request.
+All retry options can be functions, that are also available on the `upfetch` instance:
 
 ```ts
-const fetcher = withRetry(fetch)
-
-const upfetch = up(fetcher, () => ({
-   retryTimes: (response) => (response.status === 429 ? 3 : 1), // retry up to 3 times
+upfetch('/todos', {
    retryDelay: (attempt) => Math.pow(2, attempt) * 1000, // exponential backoff
-}))
+})
 ```
 
 By default:
