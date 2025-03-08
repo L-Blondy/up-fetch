@@ -1,6 +1,6 @@
 import type { BaseFetchFn, MaybePromise, Prettify } from 'src/types'
 
-type RetryOptions = {
+export type RetryOptions = {
    retryWhen?: (response: Response, request: Request) => MaybePromise<boolean>
    retryTimes?:
       | number

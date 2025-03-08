@@ -26,40 +26,41 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
 
 ## Table of Contents
 
-- [Highlights](#️-highlights)
-- [QuickStart](#️-quickstart)
-- [Key Features](#️-key-features)
-   - [Request Configuration](#️-request-configuration)
-   - [Simple Query Parameters](#️-simple-query-parameters)
-   - [Automatic Body Handling](#️-automatic-body-handling)
-   - [Schema Validation](#️-schema-validation)
-   - [Lifecycle Hooks](#️-lifecycle-hooks)
-   - [Timeout](#️-timeout)
-   - [Error Handling](#️-error-handling)
-- [Usage](#️-usage)
-   - [Authentication](#️-authentication)
-   - [Delete a default option](#️-delete-a-default-option)
-   - [FormData](#️-formdata)
-   - [HTTP Agent](#️-http-agent)
-   - [Multiple fetch clients](#️-multiple-fetch-clients)
-- [Advanced Usage](#️-advanced-usage)
-   - [Error as value](#️-error-as-value)
-   - [Custom response parsing](#️-custom-response-parsing)
-   - [Custom response errors](#️-custom-response-errors)
-   - [Custom params serialization](#️-custom-params-serialization)
-   - [Custom body serialization](#️-custom-body-serialization)
-   - [Defaults based on the request](#️-defaults-based-on-the-request)
-- [API Reference](#️-api-reference)
-- [Feature Comparison](#️-feature-comparison)
-- [Environment Support](#️-environment-support)
+-  [Highlights](#️-highlights)
+-  [QuickStart](#️-quickstart)
+-  [Key Features](#️-key-features)
+   -  [Request Configuration](#️-request-configuration)
+   -  [Simple Query Parameters](#️-simple-query-parameters)
+   -  [Automatic Body Handling](#️-automatic-body-handling)
+   -  [Schema Validation](#️-schema-validation)
+   -  [Lifecycle Hooks](#️-lifecycle-hooks)
+   -  [Timeout](#️-timeout)
+   -  [Retry](#️-retry)
+   -  [Error Handling](#️-error-handling)
+-  [Usage](#️-usage)
+   -  [Authentication](#️-authentication)
+   -  [Delete a default option](#️-delete-a-default-option)
+   -  [FormData](#️-formdata)
+   -  [HTTP Agent](#️-http-agent)
+   -  [Multiple fetch clients](#️-multiple-fetch-clients)
+-  [Advanced Usage](#️-advanced-usage)
+   -  [Error as value](#️-error-as-value)
+   -  [Custom response parsing](#️-custom-response-parsing)
+   -  [Custom response errors](#️-custom-response-errors)
+   -  [Custom params serialization](#️-custom-params-serialization)
+   -  [Custom body serialization](#️-custom-body-serialization)
+   -  [Defaults based on the request](#️-defaults-based-on-the-request)
+-  [API Reference](#️-api-reference)
+-  [Feature Comparison](#️-feature-comparison)
+-  [Environment Support](#️-environment-support)
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.2kB gzipped, no dependency
-- 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
-- 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
-- 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
-- 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
+-  🚀 **Lightweight** - 1.2kB gzipped, no dependency
+-  🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
+-  🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
+-  🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
+-  🤝 **Familiar** - same API as fetch with additional options and sensible defaults
 
 ## ➡️ QuickStart
 
@@ -221,6 +222,43 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+### ✔️ Retry
+
+Add retry capabilities to your requests using the `withRetry` adapter:
+
+```ts
+import { up, withRetry } from 'up-fetch'
+
+const upfetch = up(withRetry(fetch), () => ({
+   baseUrl: 'https://api.example.com',
+   retryWhen: (response, request) => response.status === 429,
+   retryTimes: 3, // Number of retry attempts
+   retryDelay: 1000, // Delay between retries in ms
+   // Custom retry condition
+}))
+```
+
+By default, retries are enabled for:
+
+-  HTTP methods: GET, PUT, HEAD, DELETE, OPTIONS, TRACE
+-  Status codes: 408, 409, 425, 429, 500, 502, 503, 504
+
+Retries are automatically skipped for:
+
+-  Timeouts
+-  Aborted requests
+-  Non-retryable HTTP methods (POST, PATCH)
+
+Override retry options per request:
+
+```ts
+await upfetch('/endpoint', {
+   retryTimes: 5,
+   retryDelay: (attempt) => Math.pow(2, attempt) * 1000, // Exponential backoff
+   retryWhen: (response) => response.status >= 500,
+})
+```
+
 ### ✔️ Error Handling
 
 #### 👉 <samp>ResponseError</samp>
@@ -240,8 +278,8 @@ try {
 }
 ```
 
-- Use the [parseRejected][api-reference] option to throw a custom error instead.
-- Use the [reject][api-reference] option to decide **when** to throw.
+-  Use the [parseRejected][api-reference] option to throw a custom error instead.
+-  Use the [reject][api-reference] option to decide **when** to throw.
 
 #### 👉 <samp>ValidationError</samp>
 
@@ -350,9 +388,9 @@ You can create multiple upfetch instances with different defaults:
 
 ```ts
 const fetchMovie = up(fetch, () => ({
-   baseUrl: "https://api.themoviedb.org",
+   baseUrl: 'https://api.themoviedb.org',
    headers: {
-      accept: "application/json",
+      accept: 'application/json',
       Authorization: `Bearer ${process.env.API_KEY}`,
    },
 }))
@@ -444,8 +482,8 @@ By default _upfetch_ serializes the plain objects using `JSON.stringify`.
 
 You can customize the body serialization by passing a function to the `serializeBody` option. It lets you:
 
-- **restrict the valid body type** by typing its first argument
-- **transform the body** in a valid `BodyInit` type
+-  **restrict the valid body type** by typing its first argument
+-  **transform the body** in a valid `BodyInit` type
 
 The following example show how to restrict the valid body type to `Record<string, any>` and serialize it using `JSON.stringify`:
 
@@ -575,9 +613,9 @@ Determines whether a value can be safely converted to `json`.
 
 Are considered jsonifiable:
 
-- plain objects
-- arrays
-- class instances with a `toJSON` method
+-  plain objects
+-  arrays
+-  class instances with a `toJSON` method
 
 ## ➡️ Feature Comparison
 
@@ -587,12 +625,12 @@ Check out the [Feature Comparison][comparison] table to see how _upfetch_ compar
 
 ## ➡️ Environment Support
 
-- ✅ Browsers (Chrome, Firefox, Safari, Edge)
-- ✅ Node.js (18.0+)
-- ✅ Bun
-- ✅ Deno
-- ✅ Cloudflare Workers
-- ✅ Vercel Edge Runtime
+-  ✅ Browsers (Chrome, Firefox, Safari, Edge)
+-  ✅ Node.js (18.0+)
+-  ✅ Bun
+-  ✅ Deno
+-  ✅ Cloudflare Workers
+-  ✅ Vercel Edge Runtime
 
 <div align="center">
 <br />
