@@ -26,40 +26,40 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
 
 ## Table of Contents
 
-- [Highlights](#️-highlights)
-- [QuickStart](#️-quickstart)
-- [Key Features](#️-key-features)
-   - [Request Configuration](#️-request-configuration)
-   - [Simple Query Parameters](#️-simple-query-parameters)
-   - [Automatic Body Handling](#️-automatic-body-handling)
-   - [Schema Validation](#️-schema-validation)
-   - [Lifecycle Hooks](#️-lifecycle-hooks)
-   - [Timeout](#️-timeout)
-   - [Error Handling](#️-error-handling)
-- [Usage](#️-usage)
-   - [Authentication](#️-authentication)
-   - [Delete a default option](#️-delete-a-default-option)
-   - [FormData](#️-formdata)
-   - [HTTP Agent](#️-http-agent)
-   - [Multiple fetch clients](#️-multiple-fetch-clients)
-- [Advanced Usage](#️-advanced-usage)
-   - [Error as value](#️-error-as-value)
-   - [Custom response parsing](#️-custom-response-parsing)
-   - [Custom response errors](#️-custom-response-errors)
-   - [Custom params serialization](#️-custom-params-serialization)
-   - [Custom body serialization](#️-custom-body-serialization)
-   - [Defaults based on the request](#️-defaults-based-on-the-request)
-- [API Reference](#️-api-reference)
-- [Feature Comparison](#️-feature-comparison)
-- [Environment Support](#️-environment-support)
+-  [Highlights](#️-highlights)
+-  [QuickStart](#️-quickstart)
+-  [Key Features](#️-key-features)
+   -  [Request Configuration](#️-request-configuration)
+   -  [Simple Query Parameters](#️-simple-query-parameters)
+   -  [Automatic Body Handling](#️-automatic-body-handling)
+   -  [Schema Validation](#️-schema-validation)
+   -  [Lifecycle Hooks](#️-lifecycle-hooks)
+   -  [Timeout](#️-timeout)
+   -  [Error Handling](#️-error-handling)
+-  [Usage](#️-usage)
+   -  [Authentication](#️-authentication)
+   -  [Delete a default option](#️-delete-a-default-option)
+   -  [FormData](#️-formdata)
+   -  [HTTP Agent](#️-http-agent)
+   -  [Multiple fetch clients](#️-multiple-fetch-clients)
+-  [Advanced Usage](#️-advanced-usage)
+   -  [Error as value](#️-error-as-value)
+   -  [Custom response parsing](#️-custom-response-parsing)
+   -  [Custom response errors](#️-custom-response-errors)
+   -  [Custom params serialization](#️-custom-params-serialization)
+   -  [Custom body serialization](#️-custom-body-serialization)
+   -  [Defaults based on the request](#️-defaults-based-on-the-request)
+-  [API Reference](#️-api-reference)
+-  [Feature Comparison](#️-feature-comparison)
+-  [Environment Support](#️-environment-support)
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.2kB gzipped, no dependency
-- 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
-- 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
-- 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
-- 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
+-  🚀 **Lightweight** - 1.2kB gzipped, no dependency
+-  🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
+-  🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
+-  🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
+-  🤝 **Familiar** - same API as fetch with additional options and sensible defaults
 
 ## ➡️ QuickStart
 
@@ -240,8 +240,8 @@ try {
 }
 ```
 
-- Use the [parseRejected][api-reference] option to throw a custom error instead.
-- Use the [reject][api-reference] option to decide **when** to throw.
+-  Use the [parseRejected][api-reference] option to throw a custom error instead.
+-  Use the [reject][api-reference] option to decide **when** to throw.
 
 #### 👉 <samp>ValidationError</samp>
 
@@ -350,9 +350,9 @@ You can create multiple upfetch instances with different defaults:
 
 ```ts
 const fetchMovie = up(fetch, () => ({
-   baseUrl: "https://api.themoviedb.org",
+   baseUrl: 'https://api.themoviedb.org',
    headers: {
-      accept: "application/json",
+      accept: 'application/json',
       Authorization: `Bearer ${process.env.API_KEY}`,
    },
 }))
@@ -444,8 +444,8 @@ By default _upfetch_ serializes the plain objects using `JSON.stringify`.
 
 You can customize the body serialization by passing a function to the `serializeBody` option. It lets you:
 
-- **restrict the valid body type** by typing its first argument
-- **transform the body** in a valid `BodyInit` type
+-  **restrict the valid body type** by typing its first argument
+-  **transform the body** in a valid `BodyInit` type
 
 The following example show how to restrict the valid body type to `Record<string, any>` and serialize it using `JSON.stringify`:
 
@@ -521,10 +521,10 @@ function up(
 | Option                           | Signature                      | Description                                                                                               |
 | -------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for all requests.                                                                                |
-| `params`                         | `object`                       | The default query parameters.                                                                             |
 | `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                      |
 | `onError`                        | `(error, request) => void`     | Executes on error.                                                                                        |
 | `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                         |
+| `params`                         | `object`                       | The default query parameters.                                                                             |
 | `parseResponse`                  | `(response, request) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
 | `parseRejected`                  | `(response, request) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
 | `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
@@ -549,6 +549,9 @@ Options:
 | Option                           | Signature                      | Description                                                                                                                   |
 | -------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                     |
+| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                                          |
+| `onError`                        | `(error, request) => void`     | Executes on error.                                                                                                            |
+| `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                                             |
 | `params`                         | `object`                       | The query parameters.                                                                                                         |
 | `parseResponse`                  | `(response, request) => data`  | The success response parser.                                                                                                  |
 | `parseRejected`                  | `(response, request) => error` | The error response parser.                                                                                                    |
@@ -575,9 +578,9 @@ Determines whether a value can be safely converted to `json`.
 
 Are considered jsonifiable:
 
-- plain objects
-- arrays
-- class instances with a `toJSON` method
+-  plain objects
+-  arrays
+-  class instances with a `toJSON` method
 
 ## ➡️ Feature Comparison
 
@@ -587,12 +590,12 @@ Check out the [Feature Comparison][comparison] table to see how _upfetch_ compar
 
 ## ➡️ Environment Support
 
-- ✅ Browsers (Chrome, Firefox, Safari, Edge)
-- ✅ Node.js (18.0+)
-- ✅ Bun
-- ✅ Deno
-- ✅ Cloudflare Workers
-- ✅ Vercel Edge Runtime
+-  ✅ Browsers (Chrome, Firefox, Safari, Edge)
+-  ✅ Node.js (18.0+)
+-  ✅ Bun
+-  ✅ Deno
+-  ✅ Cloudflare Workers
+-  ✅ Vercel Edge Runtime
 
 <div align="center">
 <br />

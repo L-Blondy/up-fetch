@@ -868,8 +868,14 @@ describe('onError', () => {
 
       await upfetch('', {
          schema: z.object({ hello: z.number() }),
+         onError(error, request) {
+            if (isValidationError(error)) {
+               exec++
+               expectTypeOf(error).toEqualTypeOf<ValidationError>()
+            }
+         },
       }).catch(() => {})
-      expect(exec).toBe(1)
+      expect(exec).toBe(2)
    })
 
    test('should receive the response errors', async () => {
@@ -890,8 +896,15 @@ describe('onError', () => {
          },
       }))
 
-      await upfetch('', {}).catch(() => {})
-      expect(exec).toBe(1)
+      await upfetch('', {
+         onError(error, request) {
+            if (isResponseError(error)) {
+               exec++
+               expectTypeOf(error).toEqualTypeOf<ResponseError>()
+            }
+         },
+      }).catch(() => {})
+      expect(exec).toBe(2)
    })
 
    test('should receive any error', async () => {
@@ -915,30 +928,12 @@ describe('onError', () => {
          parseResponse: () => {
             throw new Error('any error')
          },
-      }).catch(() => {})
-      expect(exec).toBe(1)
-   })
-
-   test('should ignore up.onError', async () => {
-      server.use(
-         http.get('https://example.com', async () => {
-            return HttpResponse.json({ hello: 'world' }, { status: 200 })
-         }),
-      )
-      let exec = 0
-
-      const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
-      }))
-
-      await upfetch('', {
-         schema: z.object({ hello: z.number() }),
-         // @ts-expect-error invalid option
-         onError() {
+         onError(error, request) {
             exec++
+            expectTypeOf(error).toEqualTypeOf<any>()
          },
       }).catch(() => {})
-      expect(exec).toBe(0)
+      expect(exec).toBe(2)
    })
 })
 
@@ -950,18 +945,23 @@ describe('onSuccess', () => {
          }),
       )
 
-      let count = 0
+      let exec = 0
 
       const upfetch = up(fetch, () => ({
          baseUrl: 'https://example.com',
          onSuccess() {
-            expect(count).toBe(0)
-            count++
+            expect(exec).toBe(0)
+            exec++
          },
       }))
 
-      await upfetch('')
-      expect(count).toBe(1)
+      await upfetch('', {
+         onSuccess() {
+            expect(exec).toBe(1)
+            exec++
+         },
+      })
+      expect(exec).toBe(2)
    })
 
    test('should provide validated data and request to onSuccess callback', async () => {
@@ -970,10 +970,11 @@ describe('onSuccess', () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
-
+      let exec = 0
       const upfetch = up(fetch, () => ({
          baseUrl: 'https://example.com',
          onSuccess(data, request) {
+            exec++
             expect(data).toEqual({ hello: 'world!' })
             expect(request.url).toEqual('https://example.com/')
          },
@@ -986,7 +987,13 @@ describe('onSuccess', () => {
                transform((v) => (v += '!')),
             ),
          }),
+         onSuccess(data, request) {
+            exec++
+            expect(data).toEqual({ hello: 'world!' })
+            expect(request.url).toEqual('https://example.com/')
+         },
       })
+      expect(exec).toBe(2)
    })
 
    test('should skip onSuccess when parseResponse throws an error', async () => {
@@ -996,12 +1003,12 @@ describe('onSuccess', () => {
          }),
       )
 
-      let count = 1
+      let exec = 0
 
       const upfetch = up(fetch, () => ({
          baseUrl: 'https://example.com',
          onSuccess() {
-            count++
+            exec++
             throw new Error('onSuccess should not be called')
          },
          parseResponse: () => {
@@ -1009,32 +1016,15 @@ describe('onSuccess', () => {
          },
       }))
 
-      await upfetch('').catch((error) => {
+      await upfetch('', {
+         onSuccess() {
+            exec++
+            throw new Error('onSuccess should not be called')
+         },
+      }).catch((error) => {
          expect(error.message).toEqual('Some error')
       })
-      expect(count).toBe(1)
-   })
-
-   test('should ignore up.onSuccess', async () => {
-      server.use(
-         http.get('https://example.com', () => {
-            return HttpResponse.json({ hello: 'world' }, { status: 200 })
-         }),
-      )
-
-      let count = 0
-
-      const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
-      }))
-
-      await upfetch('', {
-         // @ts-expect-error invalid option
-         onSuccess() {
-            count++
-         },
-      })
-      expect(count).toBe(0)
+      expect(exec).toBe(0)
    })
 })
 
@@ -1046,18 +1036,23 @@ describe('onRequest', () => {
          }),
       )
 
-      let count = 0
+      let exec = 0
 
       const upfetch = up(fetch, () => ({
          baseUrl: 'https://example.com',
          onRequest() {
-            expect(count).toBe(0)
-            count++
+            expect(exec).toBe(0)
+            exec++
          },
       }))
 
-      await upfetch('')
-      expect(count).toBe(1)
+      await upfetch('', {
+         onRequest() {
+            expect(exec).toBe(1)
+            exec++
+         },
+      })
+      expect(exec).toBe(2)
    })
 
    test('should provide request object to onRequest callback', async () => {
@@ -1066,37 +1061,22 @@ describe('onRequest', () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
-
+      let exec = 0
       const upfetch = up(fetch, () => ({
          baseUrl: 'https://example.com',
          onRequest(request) {
+            exec++
             expect(request.url).toBe('https://example.com/')
          },
       }))
 
-      await upfetch('')
-   })
-
-   test('should ignore up.onRequest', async () => {
-      server.use(
-         http.get('https://example.com', () => {
-            return HttpResponse.json({ hello: 'world' }, { status: 200 })
-         }),
-      )
-
-      let count = 0
-
-      const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
-      }))
-
       await upfetch('', {
-         // @ts-expect-error invalid option
-         onRequest() {
-            count++
+         onRequest(request) {
+            exec++
+            expect(request.url).toBe('https://example.com/')
          },
       })
-      expect(count).toBe(0)
+      expect(exec).toBe(2)
    })
 })
 

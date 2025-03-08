@@ -83,6 +83,7 @@ export const up =
       )
 
       defaultOpts.onRequest?.(request)
+      fetcherOpts.onRequest?.(request)
 
       // Request has some quirks, better pass the url instead
       return fetchFn(request.url, options, ctx)
@@ -97,6 +98,7 @@ export const up =
                   parsed = await options.parseResponse(response, request)
                } catch (error: any) {
                   defaultOpts.onError?.(error, request)
+                  fetcherOpts.onError?.(error, request)
                   throw error
                }
                let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
@@ -106,9 +108,11 @@ export const up =
                      : parsed
                } catch (error: any) {
                   defaultOpts.onError?.(error, request)
+                  fetcherOpts.onError?.(error, request)
                   throw error
                }
                defaultOpts.onSuccess?.(data, request)
+               fetcherOpts.onSuccess?.(data, request)
                return data
             }
             let respError: any
@@ -116,9 +120,11 @@ export const up =
                respError = await options.parseRejected(response, request)
             } catch (error: any) {
                defaultOpts.onError?.(error, request)
+               fetcherOpts.onError?.(error, request)
                throw error
             }
             defaultOpts.onError?.(respError, request)
+            fetcherOpts.onError?.(respError, request)
             throw respError
          })
    }
