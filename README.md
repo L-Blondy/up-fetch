@@ -227,37 +227,35 @@ const upfetch = up(fetch, () => ({
 Add retry capabilities to your requests using the `withRetry` adapter:
 
 ```ts
-import { up, withRetry } from 'up-fetch'
+import { withRetry } from 'up-fetch/adapters'
 
-const upfetch = up(withRetry(fetch), () => ({
-   baseUrl: 'https://api.example.com',
-   retryWhen: (response, request) => response.status === 429,
+const fetcher = withRetry(fetch)
+
+const upfetch = up(fetcher, () => ({
+   retryWhen: (response, request) => !response.ok && request.method === 'GET',
    retryTimes: 3, // Number of retry attempts
    retryDelay: 1000, // Delay between retries in ms
-   // Custom retry condition
 }))
 ```
 
-By default, retries are enabled for:
-
--  HTTP methods: GET, PUT, HEAD, DELETE, OPTIONS, TRACE
--  Status codes: 408, 409, 425, 429, 500, 502, 503, 504
-
-Retries are automatically skipped for:
-
--  Timeouts
--  Aborted requests
--  Non-retryable HTTP methods (POST, PATCH)
-
-Override retry options per request:
+All retry options can be functions, this allows you to fine-tune the retry behavior based on the response and request.
 
 ```ts
-await upfetch('/endpoint', {
-   retryTimes: 5,
-   retryDelay: (attempt) => Math.pow(2, attempt) * 1000, // Exponential backoff
-   retryWhen: (response) => response.status >= 500,
-})
+const fetcher = withRetry(fetch)
+
+const upfetch = up(fetcher, () => ({
+   retryTimes: (response) => (response.status === 429 ? 3 : 1), // retry up to 3 times
+   retryDelay: (attempt) => Math.pow(2, attempt) * 1000, // exponential backoff
+}))
 ```
+
+By default:
+
+-  `retryWhen` is `true` for:
+   -  HTTP methods: GET, PUT, HEAD, DELETE, OPTIONS, TRACE
+   -  Status codes: 408, 409, 425, 429, 500, 502, 503, 504
+-  `retryTimes` is `0`
+-  `retryDelay` is `0`
 
 ### ✔️ Error Handling
 
