@@ -27,7 +27,7 @@ export type JsonifiableArray =
 
 export type BaseFetchFn = (
    input: any,
-   options?: Record<string, any>,
+   options?: any,
    ctx?: any,
 ) => Promise<Response>
 

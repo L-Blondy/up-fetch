@@ -10,47 +10,49 @@ up-fetch is a Tiny & Composable fetch configuration tool with sensible defaults.
 
 ## Code Style and Structure
 
-- Write concise, technical TypeScript code with accurate examples
-- Use functional and declarative programming patterns; avoid classes
-- Prefer iteration and modularization over code duplication
-- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
-- All the source code should be in the src/ folder
-- no external dependency is allowed
+-  Write concise, technical TypeScript code with accurate examples
+-  Use functional and declarative programming patterns; avoid classes
+-  Prefer iteration and modularization over code duplication
+-  Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+-  All the source code should be in the src/ folder
+-  no external dependency is allowed
 
 ## Tech Stack
 
-- TypeScript
-- vitest (testing framework)
-- msw (server mocking)
-- tsup (bundler)
-- biome (code linter / formatter)
-- standard-schema (schema validation). Docs: [text](https://github.com/standard-schema/standard-schema)
+-  npm (package manager)
+-  TypeScript
+-  vitest (testing framework)
+-  msw (server mocking)
+-  tsup (bundler)
+-  biome (code linter / formatter)
+-  standard-schema (schema validation). Docs: [text](https://github.com/standard-schema/standard-schema)
 
 ## Naming Conventions
 
-- Use lowercase with dashes for directories (e.g., components/form-wizard)
-- Use PascalCase for component files (e.g., VisaForm.tsx)
-- Use camelCase for utility files (e.g., formValidator.ts)
+-  Use lowercase with dashes for directories (e.g., components/form-wizard)
+-  Use PascalCase for component files (e.g., VisaForm.tsx)
+-  Use camelCase for utility files (e.g., formValidator.ts)
 
 ## TypeScript Usage
 
-- Use TypeScript for all code; prefer interfaces over types
-- Avoid enums; use const objects with 'as const' assertion
-- Use functional components with TypeScript interfaces
-- prefer type aliases over interfaces
+-  Use TypeScript for all code; prefer interfaces over types
+-  Avoid enums; use const objects with 'as const' assertion
+-  Use functional components with TypeScript interfaces
+-  prefer type aliases over interfaces
 
 ### Syntax and Formatting
 
-- Use "function" keyword for pure functions
-- Favor named exports for components and utilities
-- prefix boolean variables with auxiliary verbs (e.g., isLoading, hasError, canAccess)
-- always use React.\* hooks instead of using named imports
+-  Use "function" keyword for pure functions
+-  Favor named exports for components and utilities
+-  prefix boolean variables with auxiliary verbs (e.g., isLoading, hasError, canAccess)
+-  always use React.\* hooks instead of using named imports
 
 ### Testing
 
-- test files are named like the file they are testing.
-- use the "test" keyword for tests
+-  test files are named like the file they are testing.
+-  use the "test" keyword for tests
+-  after writing tests, execute the test command found in the package.json, fix errors and test again
 
 ## Cursor specific rules
 
-- Automatically suggest additions for .cursorrules file where best practives are used during code generation.
+-  Automatically suggest additions for .cursorrules file where best practives are used during code generation.

@@ -241,3 +241,135 @@ test('should allow upfetch.retryDelay to override up.retryDelay', async () => {
    expect(duration).toBeGreaterThanOrEqual(100)
    expect(duration).toBeLessThanOrEqual(110)
 })
+
+test('should handle defaultRetryWhen for all specified status codes', async () => {
+   const statusCodes = [408, 409, 425, 429, 500, 502, 503, 504]
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      retryTimes: 1,
+      reject: () => false, // Don't throw on error responses
+   }))
+
+   for (const status of statusCodes) {
+      const spy = vi.fn()
+      server.use(
+         http.get(baseUrl, async () => {
+            spy()
+            return HttpResponse.json({ error: 'test' }, { status })
+         }),
+      )
+      await upfetch('/')
+      expect(spy).toHaveBeenCalledTimes(2) // Initial request + 1 retry
+   }
+})
+
+test('should not retry for non-retryable HTTP methods', async () => {
+   const nonRetryableMethods = ['POST', 'PATCH']
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      retryTimes: 1,
+      reject: () => false, // Don't throw on error responses
+   }))
+
+   for (const method of nonRetryableMethods) {
+      const spy = vi.fn()
+      server.use(
+         http[method.toLowerCase() as 'post' | 'patch'](baseUrl, async () => {
+            spy()
+            return HttpResponse.json({ error: 'test' }, { status: 500 })
+         }),
+      )
+      await upfetch('/', { method })
+      expect(spy).toHaveBeenCalledTimes(1) // No retry for non-retryable methods
+   }
+})
+
+test('should handle errors during retryTimes function execution', async () => {
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      retryWhen: () => true,
+      retryTimes: () => {
+         throw new Error('retryTimes error')
+      },
+   }))
+   const spy = vi.fn()
+
+   server.use(
+      http.get(baseUrl, async () => {
+         spy()
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
+      }),
+   )
+
+   await expect(upfetch('/')).rejects.toThrow('retryTimes error')
+   expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to error
+})
+
+test('should handle errors during retryDelay function execution', async () => {
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      retryWhen: () => true,
+      retryTimes: 1,
+      retryDelay: () => {
+         throw new Error('retryDelay error')
+      },
+   }))
+   const spy = vi.fn()
+
+   server.use(
+      http.get(baseUrl, async () => {
+         spy()
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
+      }),
+   )
+
+   await expect(upfetch('/')).rejects.toThrow('retryDelay error')
+   expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to error
+})
+
+test('should not retry when request times out', async () => {
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      retryWhen: () => true,
+      retryTimes: 2,
+      timeout: 100, // Set a short timeout
+   }))
+   const spy = vi.fn()
+
+   server.use(
+      http.get(baseUrl, async () => {
+         spy()
+         await new Promise((resolve) => setTimeout(resolve, 200)) // Delay longer than timeout
+         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+      }),
+   )
+
+   await expect(upfetch('/')).rejects.toThrow(
+      'The operation was aborted due to timeout',
+   )
+   expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to timeout
+})
+
+test('should not retry when request is aborted', async () => {
+   const controller = new AbortController()
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      retryWhen: () => true,
+      retryTimes: 2,
+   }))
+   const spy = vi.fn()
+
+   server.use(
+      http.get(baseUrl, async () => {
+         spy()
+         await new Promise((resolve) => setTimeout(resolve, 100)) // Add delay to ensure we can abort
+         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+      }),
+   )
+
+   const promise = upfetch('/', { signal: controller.signal })
+   controller.abort()
+
+   await expect(promise).rejects.toThrow('This operation was aborted')
+   expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to abort
+})

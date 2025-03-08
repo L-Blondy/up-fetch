@@ -14,7 +14,8 @@
          "**/*.tsx",
          "**/*.js",
          "**/*.jsx"
-      ]
+      ],
+      "ignore": ["dist"]
    },
    "formatter": {
       "enabled": true,

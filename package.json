@@ -25,9 +25,9 @@
       "build": "tsup",
       "dev": "vitest",
       "knip": "knip",
-      "lint": "biome check --fix && tsc --noEmit",
+      "lint": "biome check && tsc --noEmit",
       "release": "bun scripts/release.ts && git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
-      "test": "vitest run"
+      "test": "vitest run && npm run lint"
    },
    "keywords": [
       "fetch",
