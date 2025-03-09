@@ -90,6 +90,7 @@
          },
          "style": {
             "noArguments": "error",
+            "noCommaOperator": "off",
             "noNamespace": "error",
             "noParameterAssign": "off",
             "noVar": "off",
@@ -99,6 +100,7 @@
             "useTemplate": "off"
          },
          "suspicious": {
+            "noAssignInExpressions": "off",
             "noAsyncPromiseExecutor": "error",
             "noCatchAssign": "error",
             "noClassAssign": "error",
