@@ -125,3 +125,8 @@ export async function validate<TSchema extends StandardSchemaV1>(
    if (result.issues) throw new ValidationError(result, data)
    return result.value
 }
+
+
+export function isPromise(p: any): boolean {
+   return p && Object.prototype.toString.call(p) === "[object Promise]";
+}

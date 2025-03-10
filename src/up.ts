@@ -8,6 +8,8 @@ import type {
 } from './types'
 import { emptyOptions, validate } from './utils'
 
+
+
 export function up<
    TFetchFn extends BaseFetchFn,
    TDefaultParsedData = any,
@@ -21,7 +23,7 @@ export function up<
    ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
       emptyOptions,
 ) {
-   return <
+   return async <
       TParsedData = TDefaultParsedData,
       TSchema extends StandardSchemaV1<
          TParsedData,
@@ -40,9 +42,8 @@ export function up<
    ) => {
       let defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
       let options = resolveOptions(input, defaultOpts, fetcherOpts)
-      defaultOpts.onRequest?.(options)
-
-      return fetchFn(options.input, options, ctx)
+         await defaultOpts?.onRequest?.(options)
+         return fetchFn(options.input, options, ctx)
          .catch((error) => {
             defaultOpts.onError?.(error, options)
             throw error

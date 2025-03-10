@@ -112,7 +112,7 @@ export type DefaultOptions<
    /** HTTP method to use for the request */
    method?: Method
    /** Callback executed before the request is made */
-   onRequest?: (options: ResolvedOptions<TFetchFn>) => void
+   onRequest?: (options: ResolvedOptions<TFetchFn>) => void | Promise<void>
    /** Callback executed when the request fails */
    onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
    /** Callback executed when the request succeeds */
