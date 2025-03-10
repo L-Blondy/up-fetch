@@ -7,7 +7,9 @@ import type {
    FetcherOptions,
 } from './types'
 import {
+   type MaybePromise,
    isJsonifiable,
+   isPlainObject,
    mergeHeaders,
    resolveUrl,
    validate,
@@ -27,10 +29,11 @@ export const up =
          input: Exclude<Parameters<TFetchFn>[0], Request>,
          fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
          ctx?: Parameters<TFetchFn>[2],
-      ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
-         emptyOptions,
+      ) => MaybePromise<
+         DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody>
+      > = () => emptyOptions,
    ) =>
-   <
+   async <
       TParsedData = TDefaultParsedData,
       TSchema extends StandardSchemaV1<
          TParsedData,
@@ -47,13 +50,27 @@ export const up =
       > = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
-      const defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
+      const defaultOpts = await getDefaultOptions(input, fetcherOpts, ctx)
 
       const options = {
          ...fallbackOptions,
          ...defaultOpts,
          ...fetcherOpts,
       }
+
+      Object.entries(defaultOpts).forEach(([name, value]) => {
+         // merge event handlers
+         if (/^on[A-Z]/.test(name)) {
+            ;(options as any)[name] = (...args: unknown[]) => {
+               defaultOpts[name]?.(...args)
+               fetcherOpts[name]?.(...args)
+            }
+         }
+         // merge plain objects
+         if (isPlainObject(value) && isPlainObject(fetcherOpts[name])) {
+            ;(options as any)[name] = { ...value, ...fetcherOpts[name] }
+         }
+      })
 
       // @ts-expect-error
       options.body =
@@ -82,8 +99,7 @@ export const up =
          options,
       )
 
-      defaultOpts.onRequest?.(request)
-      fetcherOpts.onRequest?.(request)
+      options.onRequest?.(request)
 
       // Request has some quirks, better pass the url instead
       return fetchFn(request.url, options, ctx)
@@ -97,8 +113,7 @@ export const up =
                try {
                   parsed = await options.parseResponse(response, request)
                } catch (error: any) {
-                  defaultOpts.onError?.(error, request)
-                  fetcherOpts.onError?.(error, request)
+                  options.onError?.(error, request)
                   throw error
                }
                let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
@@ -107,24 +122,20 @@ export const up =
                      ? await validate(options.schema, parsed)
                      : parsed
                } catch (error: any) {
-                  defaultOpts.onError?.(error, request)
-                  fetcherOpts.onError?.(error, request)
+                  options.onError?.(error, request)
                   throw error
                }
-               defaultOpts.onSuccess?.(data, request)
-               fetcherOpts.onSuccess?.(data, request)
+               options.onSuccess?.(data, request)
                return data
             }
             let respError: any
             try {
                respError = await options.parseRejected(response, request)
             } catch (error: any) {
-               defaultOpts.onError?.(error, request)
-               fetcherOpts.onError?.(error, request)
+               options.onError?.(error, request)
                throw error
             }
-            defaultOpts.onError?.(respError, request)
-            fetcherOpts.onError?.(respError, request)
+            options.onError?.(respError, request)
             throw respError
          })
    }
