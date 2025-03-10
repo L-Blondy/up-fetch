@@ -224,7 +224,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Retry
 
-Add retry capabilities to your requests using the `withRetry` adapter:
+The retry functionality is provided via an adapter rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
 
 ```ts
 import { withRetry } from 'up-fetch/adapters'
