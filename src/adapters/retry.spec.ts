@@ -18,14 +18,16 @@ afterAll(() => {
 
 const baseUrl = 'https://example.com'
 
-test('should call retryWhen with the response', async () => {
+test('should call retry.when with the response', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: (response) => {
-         spy()
-         expectTypeOf(response).toEqualTypeOf<Response>()
-         expect(response instanceof Response).toBe(true)
-         return false
+      retry: {
+         when: (response) => {
+            spy()
+            expectTypeOf(response).toEqualTypeOf<Response>()
+            expect(response instanceof Response).toBe(true)
+            return false
+         },
       },
    }))
    server.use(
@@ -39,35 +41,39 @@ test('should call retryWhen with the response', async () => {
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should not call retryTimes or retryDelay when retryWhen returns false', async () => {
+test('should not call times or retry.delay when retry.when returns false', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => false,
-      retryTimes: retryTimesSpy,
-      retryDelay: retryDelaySpy,
+      retry: {
+         when: () => false,
+         times: timesSpy,
+         delay: delaySpy,
+      },
    }))
    server.use(
       http.get(baseUrl, () =>
          HttpResponse.json({ hello: 'world' }, { status: 200 }),
       ),
    )
-   const retryTimesSpy = vi.fn()
-   const retryDelaySpy = vi.fn()
+   const timesSpy = vi.fn()
+   const delaySpy = vi.fn()
 
    await upfetch('/')
-   expect(retryTimesSpy).not.toHaveBeenCalled()
-   expect(retryDelaySpy).not.toHaveBeenCalled()
+   expect(timesSpy).not.toHaveBeenCalled()
+   expect(delaySpy).not.toHaveBeenCalled()
 })
 
-test('should call retryTimes with the response when retryWhen returns true', async () => {
+test('should call retry.times with the response when retry.when returns true', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes(response) {
-         spy()
-         expectTypeOf(response).toEqualTypeOf<Response>()
-         expect(response instanceof Response).toBe(true)
-         return 0
+      retry: {
+         when: () => true,
+         times(response) {
+            spy()
+            expectTypeOf(response).toEqualTypeOf<Response>()
+            expect(response instanceof Response).toBe(true)
+            return 0
+         },
       },
    }))
 
@@ -82,12 +88,14 @@ test('should call retryTimes with the response when retryWhen returns true', asy
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should not call retryDelay when retryTimes returns 0', async () => {
+test('should not call retry.delay when retry.times returns 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: () => 0,
-      retryDelay: spy,
+      retry: {
+         when: () => true,
+         times: () => 0,
+         delay: spy,
+      },
    }))
    server.use(
       http.get(baseUrl, () =>
@@ -100,18 +108,20 @@ test('should not call retryDelay when retryTimes returns 0', async () => {
    expect(spy).toHaveBeenCalledTimes(0)
 })
 
-test('should call retryDelay with the attempt number and response when retryWhen returns true and retryTimes returns more than 0', async () => {
+test('should call retry.delay with the attempt number and response when retry.when returns true and retry.times returns more than 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: () => 1,
-      retryDelay(attempt, response) {
-         spy()
-         expectTypeOf(attempt).toEqualTypeOf<number>()
-         expect(attempt).toBe(1)
-         expectTypeOf(response).toEqualTypeOf<Response>()
-         expect(response instanceof Response).toBe(true)
-         return 0
+      retry: {
+         when: () => true,
+         times: () => 1,
+         delay(attempt, response) {
+            spy()
+            expectTypeOf(attempt).toEqualTypeOf<number>()
+            expect(attempt).toBe(1)
+            expectTypeOf(response).toEqualTypeOf<Response>()
+            expect(response instanceof Response).toBe(true)
+            return 0
+         },
       },
    }))
    server.use(
@@ -125,11 +135,13 @@ test('should call retryDelay with the attempt number and response when retryWhen
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should retry `N = retryTimes()` times when retryWhen returns true', async () => {
+test('should retry `N = retry.times()` times when retry.when returns true', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: () => 1,
+      retry: {
+         when: () => true,
+         times: () => 1,
+      },
    }))
    const spy = vi.fn()
 
@@ -144,21 +156,23 @@ test('should retry `N = retryTimes()` times when retryWhen returns true', async 
    expect(spy).toHaveBeenCalledTimes(2)
 })
 
-test('should call retryWhen, then retryTimes then retryDelay', async () => {
+test('should call retry.when, then times then retry.delay', async () => {
    let exec = 0
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => {
-         expect(++exec).toBe(1)
-         return true
-      },
-      retryTimes: () => {
-         expect(++exec).toBe(2)
-         return 1
-      },
-      retryDelay: () => {
-         expect(++exec).toBe(3)
-         return 0
+      retry: {
+         when: () => {
+            expect(++exec).toBe(1)
+            return true
+         },
+         times: () => {
+            expect(++exec).toBe(2)
+            return 1
+         },
+         delay: () => {
+            expect(++exec).toBe(3)
+            return 0
+         },
       },
    }))
 
@@ -169,15 +183,17 @@ test('should call retryWhen, then retryTimes then retryDelay', async () => {
    )
 
    await upfetch('/', {
-      retryWhen: () => false,
+      retry: { when: () => false },
    })
 })
 
-test('should allow upfetch.retryWhen to override up.retryWhen', async () => {
+test('should allow upfetch.retry.when to override up.retry.when', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: 1,
+      retry: {
+         when: () => true,
+         times: 1,
+      },
    }))
    const spy = vi.fn()
 
@@ -189,17 +205,19 @@ test('should allow upfetch.retryWhen to override up.retryWhen', async () => {
    )
 
    await upfetch('/', {
-      retryWhen: () => false,
+      retry: { when: () => false },
    })
    // no retry
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should allow upfetch.retryTimes to override up.retryTimes', async () => {
+test('should allow upfetch.times to override up.times', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: 1,
+      retry: {
+         when: () => true,
+         times: 1,
+      },
    }))
    const spy = vi.fn()
 
@@ -211,18 +229,20 @@ test('should allow upfetch.retryTimes to override up.retryTimes', async () => {
    )
 
    await upfetch('/', {
-      retryTimes: 2,
+      retry: { times: 2 },
    })
    // no retry
    expect(spy).toHaveBeenCalledTimes(3)
 })
 
-test('should allow upfetch.retryDelay to override up.retryDelay', async () => {
+test('should allow upfetch.retry.delay to override up.retry.delay', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: 1,
-      retryDelay: 2000,
+      retry: {
+         when: () => true,
+         times: 1,
+         delay: 2000,
+      },
    }))
    const spy = vi.fn()
 
@@ -235,19 +255,19 @@ test('should allow upfetch.retryDelay to override up.retryDelay', async () => {
 
    const start = Date.now()
    await upfetch('/', {
-      retryDelay: 100,
+      retry: { delay: 100 },
    })
    const duration = Date.now() - start
    expect(duration).toBeGreaterThanOrEqual(100)
    expect(duration).toBeLessThanOrEqual(110)
 })
 
-test('should handle defaultRetryWhen for all specified status codes', async () => {
+test('should handle defaultRetry.when for all specified status codes', async () => {
    const statusCodes = [408, 409, 425, 429, 500, 502, 503, 504]
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryTimes: 1,
       reject: () => false, // Don't throw on error responses
+      retry: { times: 1 },
    }))
 
    for (const status of statusCodes) {
@@ -267,8 +287,8 @@ test('should not retry for non-retryable HTTP methods', async () => {
    const nonRetryableMethods = ['POST', 'PATCH']
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryTimes: 1,
       reject: () => false, // Don't throw on error responses
+      retry: { times: 1 },
    }))
 
    for (const method of nonRetryableMethods) {
@@ -284,12 +304,14 @@ test('should not retry for non-retryable HTTP methods', async () => {
    }
 })
 
-test('should handle errors during retryTimes function execution', async () => {
+test('should handle errors during times function execution', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: () => {
-         throw new Error('retryTimes error')
+      retry: {
+         when: () => true,
+         times: () => {
+            throw new Error('times error')
+         },
       },
    }))
    const spy = vi.fn()
@@ -301,17 +323,19 @@ test('should handle errors during retryTimes function execution', async () => {
       }),
    )
 
-   await expect(upfetch('/')).rejects.toThrow('retryTimes error')
+   await expect(upfetch('/')).rejects.toThrow('times error')
    expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to error
 })
 
-test('should handle errors during retryDelay function execution', async () => {
+test('should handle errors during retry.delay function execution', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: 1,
-      retryDelay: () => {
-         throw new Error('retryDelay error')
+      retry: {
+         when: () => true,
+         times: 1,
+         delay: () => {
+            throw new Error('delay error')
+         },
       },
    }))
    const spy = vi.fn()
@@ -323,16 +347,18 @@ test('should handle errors during retryDelay function execution', async () => {
       }),
    )
 
-   await expect(upfetch('/')).rejects.toThrow('retryDelay error')
+   await expect(upfetch('/')).rejects.toThrow('delay error')
    expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to error
 })
 
 test('should not retry when request times out', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: 2,
       timeout: 100, // Set a short timeout
+      retry: {
+         when: () => true,
+         times: 2,
+      },
    }))
    const spy = vi.fn()
 
@@ -354,8 +380,10 @@ test('should not retry when request is aborted', async () => {
    const controller = new AbortController()
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
-      retryWhen: () => true,
-      retryTimes: 2,
+      retry: {
+         when: () => true,
+         times: 2,
+      },
    }))
    const spy = vi.fn()
 

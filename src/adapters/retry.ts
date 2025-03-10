@@ -1,11 +1,11 @@
 import type { BaseFetchFn, MaybePromise, Prettify } from 'src/types'
 
 export type RetryOptions = {
-   retryWhen?: (response: Response, request: Request) => MaybePromise<boolean>
-   retryTimes?:
+   when?: (response: Response, request: Request) => MaybePromise<boolean>
+   times?:
       | number
       | ((response: Response, request: Request) => MaybePromise<number>)
-   retryDelay?:
+   delay?:
       | number
       | ((
            attempt: number,
@@ -18,11 +18,11 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
    async function fetchWithRetry(
       input: Parameters<TFetchFn>[0],
       {
-         retryWhen = defaultRetryWhen,
-         retryTimes = 0,
-         retryDelay = 0,
+         retry: { when = defaultRetryWhen, times = 0, delay = 0 } = {},
          ...options
-      }: Prettify<Parameters<TFetchFn>[1] & RetryOptions> = {} as any,
+      }: Prettify<
+         Parameters<TFetchFn>[1] & { retry?: RetryOptions }
+      > = {} as any,
       ctx?: Parameters<TFetchFn>[2],
    ): Promise<Response> {
       const request = new Request(input, options as RequestInit)
@@ -33,18 +33,18 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
       do {
          response = await fetchFn(input, options, ctx)
 
-         if (await retryWhen(response, request)) {
+         if (await when(response, request)) {
             if (maxAttempt === 1) {
                maxAttempt +=
-                  typeof retryTimes === 'function'
-                     ? await retryTimes(response, request)
-                     : retryTimes
+                  typeof times === 'function'
+                     ? await times(response, request)
+                     : times
             }
             if (attempt < maxAttempt) {
                await timeout(
-                  typeof retryDelay === 'function'
-                     ? await retryDelay(attempt, response, request)
-                     : retryDelay,
+                  typeof delay === 'function'
+                     ? await delay(attempt, response, request)
+                     : delay,
                )
             }
          }
