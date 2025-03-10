@@ -223,7 +223,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ 重试
 
-使用 `withRetry` 适配器为请求添加重试功能：
+重试功能通过适配器提供，而不是直接集成到核心库中。这种设计选择有助于保持基础包的体积尽可能小，因为许多应用程序并不需要重试功能。通过使用适配器，您只需在明确需要时才引入重试代码。
 
 ```ts
 import { withRetry } from 'up-fetch/adapters'
@@ -247,11 +247,8 @@ const upfetch = up(withRetry(fetch), () => ({
 你可以在每个请求的基础上覆盖重试选项：
 
 ```ts
-upfetch('/todos', {
-   retry: {
-      times: 5,
-      delay: (attempt) => Math.pow(2, attempt) * 1000,
-   },
+await upfetch('/api/data', {
+   retry: { times: 1 },
 })
 ```
 
