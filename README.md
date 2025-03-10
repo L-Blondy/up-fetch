@@ -240,14 +240,10 @@ const upfetch = up(withRetry(fetch), () => ({
 
 Each retry option can be a function, providing fine-grained control over the retry policy.
 
-The default `retry.when` implementation returns `true` for:
+By default upfetch will retry `1` time with a `0` delay for:
 
 -  Response status codes: 408, 409, 425, 429, 500, 502, 503, 504
 -  Request HTTP methods: GET, PUT, HEAD, DELETE, OPTIONS, TRACE
-
-The default `retry.times` is `1`
-
-The default `retry.delay` is `0`
 
 You can override retry options on a per request basis:
 
