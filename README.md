@@ -514,7 +514,10 @@ Creates a new upfetch instance with optional default options.
 ```ts
 function up(
    fetchFn: typeof globalThis.fetch,
-   getDefaultOptions?: (fetcherOptions: FetcherOptions) => DefaultOptions,
+   getDefaultOptions?: (
+      input: RequestInit,
+      options: FetcherOptions,
+   ) => DefaultOptions | Promise<DefaultOptions>,
 ): UpFetch
 ```
 
