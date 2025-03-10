@@ -54,16 +54,13 @@ const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
 
 export const isJsonifiable = (
    value: any,
-): value is JsonifiableObject | JsonifiableArray => {
-   // bun FormData has a toJSON method
-   if (!value || typeof value !== 'object' || value instanceof FormData)
-      return false
-   return (
-      value?.constructor?.name === 'Object' ||
-      Array.isArray(value) ||
-      typeof value?.toJSON === 'function'
-   )
-}
+): value is JsonifiableObject | JsonifiableArray =>
+   isPlainObject(value) ||
+   Array.isArray(value) ||
+   typeof value?.toJSON === 'function'
+
+export const isPlainObject = (value: any): value is Record<string, any> =>
+   value && typeof value === 'object' && value.constructor?.name === 'Object'
 
 export const resolveUrl = (
    base: string | undefined = '',

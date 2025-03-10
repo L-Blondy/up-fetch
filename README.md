@@ -555,17 +555,20 @@ Creates a new upfetch instance with optional default options.
 ```ts
 function up(
    fetchFn: typeof globalThis.fetch,
-   getDefaultOptions?: (fetcherOptions: FetcherOptions) => DefaultOptions,
+   getDefaultOptions?: (
+      input: RequestInit,
+      options: FetcherOptions,
+   ) => DefaultOptions | Promise<DefaultOptions>,
 ): UpFetch
 ```
 
 | Option                           | Signature                      | Description                                                                                               |
 | -------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for all requests.                                                                                |
-| `params`                         | `object`                       | The default query parameters.                                                                             |
 | `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                      |
 | `onError`                        | `(error, request) => void`     | Executes on error.                                                                                        |
 | `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                         |
+| `params`                         | `object`                       | The default query parameters.                                                                             |
 | `parseResponse`                  | `(response, request) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
 | `parseRejected`                  | `(response, request) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
 | `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
@@ -590,6 +593,9 @@ Options:
 | Option                           | Signature                      | Description                                                                                                                   |
 | -------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                     |
+| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                                          |
+| `onError`                        | `(error, request) => void`     | Executes on error.                                                                                                            |
+| `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                                             |
 | `params`                         | `object`                       | The query parameters.                                                                                                         |
 | `parseResponse`                  | `(response, request) => data`  | The success response parser.                                                                                                  |
 | `parseRejected`                  | `(response, request) => error` | The error response parser.                                                                                                    |

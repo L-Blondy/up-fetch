@@ -17,7 +17,7 @@ describe('serializeParams', () => {
       ${{ key5: [true, false, null, undefined, 7] }}                       | ${'key5=true%2Cfalse%2C%2C%2C7'}
       ${{ key5: [1, [2, true, null]] }}                                    | ${'key5=1%2C2%2Ctrue%2C'}
       ${{ key5: { a: 1 } }}                                                | ${'key5=%5Bobject+Object%5D' /** does not support nested objects */}
-   `('serializeParams: $params', ({ params, output }) => {
+   `('%#', ({ params, output }) => {
       expect(fallbackOptions.serializeParams(params)).toBe(output)
    })
 })
@@ -35,7 +35,7 @@ describe('parseResponse', () => {
       ${new Response()}                                                                                                                  | ${null}
       ${new Response('')}                                                                                                                | ${null}
       ${new Response('<h1>Some text</h1>')}                                                                                              | ${'<h1>Some text</h1>'}
-   `('parseResponse: $response', async ({ response, output }) => {
+   `('%#', async ({ response, output }) => {
       expect(
          await fallbackOptions.parseResponse(response, {} as any),
       ).toStrictEqual(output)

@@ -128,6 +128,12 @@ export type FetcherOptions<
    headers?: RawHeaders
    /** HTTP method */
    method?: Method
+   /** Callback executed before the request is made */
+   onRequest?: (request: Request) => void
+   /** Callback executed when the request fails */
+   onError?: (error: any, request: Request) => void
+   /** Callback executed when the request succeeds */
+   onSuccess?: (data: any, request: Request) => void
    /** URL parameters */
    params?: Params
    /** Function to parse response errors */
