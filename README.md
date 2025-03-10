@@ -229,19 +229,11 @@ Add retry capabilities to your requests using the `withRetry` adapter:
 ```ts
 import { withRetry } from 'up-fetch/adapters'
 
-// Enhance fetch with retry capabilities
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      // Retry when response matches certain conditions
       when: (response, request) => !response.ok && request.method === 'GET',
-      // Number of retry attempts (can be a function)
-      times: 3,
-      // Delay between retries in ms (can be a function)
-      delay: 1000,
-   },
-   // Called before each retry attempt
-   onRetry(attempt, response, request) {
-      console.log(`Retrying request (attempt ${attempt})`)
+      times: 3, // Number of retry attempts (can be a function)
+      delay: 1000, // Delay between retries in ms (can be a function)
    },
 }))
 ```
@@ -252,17 +244,9 @@ The retry adapter provides fine-grained control over retry behavior:
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
       // Function to determine if a request should be retried
-      when: (response, request) => {
-         return response.status === 429 // Retry on rate limit
-      },
-      // Dynamic number of retries based on response
-      times: (response, request) => {
-         return response.status === 429 ? 3 : 1
-      },
+      when: (response, request) => response.status === 429, // Retry on rate limit
       // Exponential backoff delay
-      delay: (attempt, response, request) => {
-         return Math.pow(2, attempt) * 1000
-      },
+      delay: (attempt, response, request) => Math.pow(2, attempt) * 1000,
    },
 }))
 ```
