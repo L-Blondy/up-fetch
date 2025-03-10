@@ -222,6 +222,8 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+> The timeout is applied _per-operation_, not per-try
+
 ### ✔️ Retry
 
 The retry functionality is provided via an adapter rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
