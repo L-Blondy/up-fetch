@@ -238,18 +238,7 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-The retry adapter provides fine-grained control over retry behavior:
-
-```ts
-const upfetch = up(withRetry(fetch), () => ({
-   retry: {
-      // Retry on rate limit
-      when: (response, request) => response.status === 429,
-      // Exponential backoff delay
-      delay: (attempt, response, request) => Math.pow(2, attempt) * 1000,
-   },
-}))
-```
+Each retry option can be a function, providing fine-grained control over the retry policy.
 
 By default, the retry adapter will retry requests that:
 
@@ -260,7 +249,7 @@ You can override retry options per request:
 
 ```ts
 await upfetch('/api/data', {
-   retry: { times: 2 },
+   retry: { times: 1 },
 })
 ```
 
