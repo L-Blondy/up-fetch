@@ -231,7 +231,7 @@ import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      when: (response, request) => !response.ok && request.method === 'GET',
+      when: (response, request) => !response.ok,
       times: 3, // can be a function
       delay: 1000, // can be a function
    },
