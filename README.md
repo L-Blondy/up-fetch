@@ -243,8 +243,8 @@ The retry adapter provides fine-grained control over retry behavior:
 ```ts
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      // Function to determine if a request should be retried
-      when: (response, request) => response.status === 429, // Retry on rate limit
+      // Retry on rate limit
+      when: (response, request) => response.status === 429,
       // Exponential backoff delay
       delay: (attempt, response, request) => Math.pow(2, attempt) * 1000,
    },
@@ -263,14 +263,6 @@ await upfetch('/api/data', {
    retry: { times: 2 },
 })
 ```
-
-The `onRetry` callback is executed before each retry attempt and receives:
-
--  `attempt`: The current retry attempt number (1-based)
--  `response`: The Response object from the failed attempt
--  `request`: The Request object being retried
-
-Both global and request-specific `onRetry` callbacks will be executed in sequence if both are provided.
 
 ### ✔️ Error Handling
 
