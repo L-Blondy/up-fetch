@@ -228,39 +228,65 @@ Add retry capabilities to your requests using the `withRetry` adapter:
 
 ```ts
 import { withRetry } from 'up-fetch/adapters'
-```
 
-Enhance your fetch implementation with retry capabilities:
-
-```ts
-const fetcher = withRetry(fetch)
-```
-
-And pass it to the `up` function:
-
-```ts
-const upfetch = up(fetcher, () => ({
-   retryWhen: (response, request) => !response.ok && request.method === 'GET',
-   retryTimes: 3, // Number of retry attempts
-   retryDelay: 1000, // Delay between retries in ms
+// Enhance fetch with retry capabilities
+const upfetch = up(withRetry(fetch), () => ({
+   retry: {
+      // Retry when response matches certain conditions
+      when: (response, request) => !response.ok && request.method === 'GET',
+      // Number of retry attempts (can be a function)
+      times: 3,
+      // Delay between retries in ms (can be a function)
+      delay: 1000,
+   },
+   // Called before each retry attempt
+   onRetry(attempt, response, request) {
+      console.log(`Retrying request (attempt ${attempt})`)
+   },
 }))
 ```
 
-For fine-grained control over retry behavior, all retry options accept functions:
+The retry adapter provides fine-grained control over retry behavior:
 
 ```ts
-upfetch('/todos', {
-   retryDelay: (attempt) => Math.pow(2, attempt) * 1000, // exponential backoff
+const upfetch = up(withRetry(fetch), () => ({
+   retry: {
+      // Function to determine if a request should be retried
+      when: (response, request) => {
+         return response.status === 429 // Retry on rate limit
+      },
+      // Dynamic number of retries based on response
+      times: (response, request) => {
+         return response.status === 429 ? 3 : 1
+      },
+      // Exponential backoff delay
+      delay: (attempt, response, request) => {
+         return Math.pow(2, attempt) * 1000
+      },
+   },
+}))
+```
+
+By default, the retry adapter will retry requests that:
+
+-  Return status codes: 408, 409, 425, 429, 500, 502, 503, 504
+-  Use HTTP methods: GET, PUT, HEAD, DELETE, OPTIONS, TRACE
+
+You can override retry options per request:
+
+```ts
+await upfetch('/api/data', {
+   retry: { times: 2 },
 })
 ```
 
-By default:
+The `onRetry` callback is executed before each retry attempt and receives:
 
--  `retryWhen` is `true` for:
-   -  HTTP methods: GET, PUT, HEAD, DELETE, OPTIONS, TRACE
-   -  Status codes: 408, 409, 425, 429, 500, 502, 503, 504
--  `retryTimes` is `0`
--  `retryDelay` is `0`
+-  `attempt`: The current retry attempt number (1-based)
+-  `response`: The Response object from the failed attempt
+-  `request`: The Request object being retried
+
+Both global and request-specific `onRetry` callbacks will be executed in sequence if both are provided.
 
 ### ✔️ Error Handling
 

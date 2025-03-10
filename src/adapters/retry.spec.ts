@@ -401,3 +401,85 @@ test('should not retry when request is aborted', async () => {
    await expect(promise).rejects.toThrow('This operation was aborted')
    expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to abort
 })
+
+test('should not call onRetry when no retry is needed', async () => {
+   const onRetrySpy = vi.fn()
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      onRetry: onRetrySpy,
+      retry: {
+         when: () => false,
+      },
+   }))
+
+   server.use(
+      http.get(baseUrl, () =>
+         HttpResponse.json({ hello: 'world' }, { status: 200 }),
+      ),
+   )
+
+   await upfetch('/')
+   expect(onRetrySpy).not.toHaveBeenCalled()
+})
+
+test('should call onRetry before each retry attempt', async () => {
+   const onRetrySpy = vi.fn()
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      onRetry: onRetrySpy,
+      retry: {
+         when: () => true,
+         times: 2,
+         delay: 0,
+      },
+   }))
+
+   server.use(http.get(baseUrl, () => HttpResponse.json({}, { status: 200 })))
+
+   await upfetch('/')
+   expect(onRetrySpy).toHaveBeenCalledTimes(2)
+   expect(onRetrySpy).toHaveBeenNthCalledWith(
+      1,
+      1,
+      expect.any(HttpResponse),
+      expect.any(Request),
+   )
+   expect(onRetrySpy).toHaveBeenNthCalledWith(
+      2,
+      2,
+      expect.any(HttpResponse),
+      expect.any(Request),
+   )
+})
+
+test('should execute both up.onRetry and upfetch.onRetry', async () => {
+   const defaultSpy = vi.fn()
+   const fetcherSpy = vi.fn()
+
+   let exec = 0
+
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      onRetry(...args) {
+         expect(++exec).toBe(1)
+         defaultSpy(...args)
+      },
+      reject: () => false,
+      retry: {
+         when: () => true,
+         times: 1,
+         delay: 0,
+      },
+   }))
+
+   server.use(http.get(baseUrl, () => HttpResponse.json({}, { status: 200 })))
+
+   await upfetch('/', {
+      onRetry(...args) {
+         expect(++exec).toBe(2)
+         fetcherSpy(...args)
+      },
+   })
+   expect(defaultSpy).toHaveBeenCalledTimes(1)
+   expect(fetcherSpy).toHaveBeenCalledTimes(1)
+})

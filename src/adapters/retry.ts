@@ -18,10 +18,18 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
    async function fetchWithRetry(
       input: Parameters<TFetchFn>[0],
       {
+         onRetry,
          retry: { when = defaultRetryWhen, times = 0, delay = 0 } = {},
          ...options
       }: Prettify<
-         Parameters<TFetchFn>[1] & { retry?: RetryOptions }
+         Parameters<TFetchFn>[1] & {
+            retry?: RetryOptions
+            onRetry?: (
+               attempt: number,
+               response: Response,
+               request: Request,
+            ) => MaybePromise<void>
+         }
       > = {} as any,
       ctx?: Parameters<TFetchFn>[2],
    ): Promise<Response> {
@@ -46,6 +54,7 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
                      ? await delay(attempt, response, request)
                      : delay,
                )
+               onRetry?.(attempt, response, request)
             }
          }
          attempt++
