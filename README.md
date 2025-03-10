@@ -230,6 +230,7 @@ The retry functionality is provided via an adapter rather than being integrated 
 import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
+   timeout: 5000, // abort the operation after 5s
    retry: {
       when: (response, request) => !response.ok,
       times: 3, // can be a function
