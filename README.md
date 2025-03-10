@@ -222,7 +222,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Note that the timeout is applied **per-operation**, not per-try
+_Note that the timeout is applied per-operation, not per-try_
 
 ### ✔️ Retry
 
