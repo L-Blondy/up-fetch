@@ -19,7 +19,7 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
       input: Parameters<TFetchFn>[0],
       {
          onRetry,
-         retry: { when = defaultRetryWhen, times = 0, delay = 0 } = {},
+         retry: { when = defaultRetryWhen, times = 1, delay = 0 } = {},
          ...options
       }: Prettify<
          Parameters<TFetchFn>[1] & {
