@@ -240,12 +240,16 @@ const upfetch = up(withRetry(fetch), () => ({
 
 Each retry option can be a function, providing fine-grained control over the retry policy.
 
-By default, the retry adapter will retry requests that:
+The default `retry.when` implementation returns `true` for:
 
--  Return status codes: 408, 409, 425, 429, 500, 502, 503, 504
--  Use HTTP methods: GET, PUT, HEAD, DELETE, OPTIONS, TRACE
+-  Response status codes: 408, 409, 425, 429, 500, 502, 503, 504
+-  Request HTTP methods: GET, PUT, HEAD, DELETE, OPTIONS, TRACE
 
-You can override retry options per request:
+The default `retry.times` is `1`
+
+The default `retry.delay` is `0`
+
+You can override retry options on a per request basis:
 
 ```ts
 await upfetch('/api/data', {
