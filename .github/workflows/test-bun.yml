@@ -1,0 +1,31 @@
+name: Test for Bun
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  test-bun:
+    name: Test Bun version "${{ matrix.bun-version }}" on "${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: 
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        bun-version:
+          - latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+      - name: Install deps
+        run: bun install
+      - name: Build
+        run: bun run build
+      - name: Test
+        run: bun run test
+  
