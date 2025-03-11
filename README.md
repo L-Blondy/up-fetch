@@ -19,10 +19,11 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
 
 ## 🚀 Try v2 Beta!
 
-Version 2 of upfetch is now available in beta! The changes mainly impact advanced use cases, so most projects won’t require any modifications. Give it a try with:
+Version 2 of upfetch is now available in beta with a new **retry** functionality! \
+Give it a try with:
 
 ```bash
-npm i up-fetch@2.0.0-beta.3
+npm i up-fetch@2.0.0-beta.7
 ```
 
 Check out the [Migration Guide](https://github.com/L-Blondy/up-fetch/blob/v2.0/MIGRATION_v1_v2.md) for details about changes and how to upgrade. \
@@ -354,9 +355,9 @@ You can create multiple upfetch instances with different defaults:
 
 ```ts
 const fetchMovie = up(fetch, () => ({
-   baseUrl: "https://api.themoviedb.org",
+   baseUrl: 'https://api.themoviedb.org',
    headers: {
-      accept: "application/json",
+      accept: 'application/json',
       Authorization: `Bearer ${process.env.API_KEY}`,
    },
 }))
