@@ -230,27 +230,39 @@ import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      when: (response, request) => !response.ok,
-      times: 3, // 可以是一个函数
-      delay: 1000, // 可以是一个函数
+      enabled: true,
+      times: 3,
+      delay: 1000,
    },
 }))
 ```
 
-每个重试选项都可以是一个函数，提供对重试策略的精细控制。
+所有重试选项都可以是函数，以实现精细控制。每个函数都接收一个包含相关信息的上下文对象：
 
-默认情况下，upfetch 将在以下情况下重试 `1` 次，延迟为 `0`：
+```ts
+const upfetch = up(withRetry(fetch), () => ({
+   retry: {
+      enabled: ({ response, request }) => !response.ok,
+      times: ({ response, request }) => (request.method === 'GET' ? 1 : 0),
+      delay: ({ attempt }) => attempt ** 2 * 1000, // 指数退避
+   },
+}))
+```
 
--  响应状态码：`408`、`409`、`425`、`429`、`500`、`502`、`503`、`504`
--  请求 HTTP 方法：`GET`、`PUT`、`HEAD`、`DELETE`、`OPTIONS`、`TRACE`
-
-你可以在每个请求的基础上覆盖重试选项：
+你可以在每个请求的基础上覆盖单个选项：
 
 ```ts
 await upfetch('/api/data', {
-   retry: { times: 1 },
+   method: 'DELETE',
+   retry: { times: 3 },
 })
 ```
+
+默认行为：
+
+-  对所有非 2XX 响应启用重试
+-  仅对 GET 请求重试一次
+-  重试之间的延迟为 1000 毫秒
 
 ### ✔️ 错误处理
 

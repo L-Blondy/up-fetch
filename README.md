@@ -233,27 +233,39 @@ import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      when: (response, request) => !response.ok,
-      times: 3, // can be a function
-      delay: 1000, // can be a function
+      enabled: true,
+      times: 3,
+      delay: 1000,
    },
 }))
 ```
 
-You can override retry options on a per request basis:
+All retry options can be functions for fine-grained control. Each function receives a context object with relevant information:
+
+```ts
+const upfetch = up(withRetry(fetch), () => ({
+   retry: {
+      enabled: ({ response, request }) => !response.ok,
+      times: ({ response, request }) => (request.method === 'GET' ? 1 : 0),
+      delay: ({ attempt }) => attempt ** 2 * 1000, // exponential backoff
+   },
+}))
+```
+
+You can override single options on a per request basis:
 
 ```ts
 await upfetch('/api/data', {
-   retry: {
-      delay: (attempt) => attempt ** 2 * 1000 // exponential backoff
-   },
+   method: 'DELETE',
+   retry: { times: 3 },
 })
-``` 
+```
 
-By default upfetch will retry `1` time with a `0` delay for:
+Default:
 
--  Response status codes: `408`, `409`, `425`, `429`, `500`, `502`, `503`, `504`
--  Request HTTP methods: `GET`, `PUT`, `HEAD`, `DELETE`, `OPTIONS`, `TRACE`
+-  enabled for all non 2XX responses
+-  retry one time for GET requests only
+-  retry with a delay of 1000ms between attempts
 
 ### ✔️ Error Handling
 

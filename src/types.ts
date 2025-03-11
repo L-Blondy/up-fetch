@@ -1,13 +1,5 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 
-export type Prettify<O> = O extends any
-   ? O extends Record<PropertyKey, any>
-      ? {
-           [K in keyof O]: O[K]
-        } & {}
-      : O
-   : never
-
 export type KeyOf<O> = O extends unknown ? keyof O : never
 
 export type DistributiveOmit<
