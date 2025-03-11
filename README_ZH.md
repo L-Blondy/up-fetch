@@ -267,6 +267,8 @@ await upfetch('/api/data', {
 })
 ```
 
+💡 超时时间是按操作应用的，而不是按重试次数。如果请求超时，将不会进行任何重试尝试。
+
 ### ✔️ 错误处理
 
 #### 👉 <samp>ResponseError</samp>

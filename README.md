@@ -240,7 +240,7 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-All retry options can be functions for fine-grained control. Each function receives a context object with relevant information.
+Retry options can also be functions for fine-grained control. Each function receives a context object with relevant information.
 
 The defaults are:
 
@@ -261,7 +261,7 @@ You can override single options on a per request basis:
 
 ```ts
 await upfetch('/api/data', {
-   method: 'DELETE',
+   timeout: 3000,
    retry: {
       times: 3,
       // exponential backoff
@@ -269,6 +269,8 @@ await upfetch('/api/data', {
    },
 })
 ```
+
+💡 The timeout is applied per-operation, not per-try. No retry attempts are made if the request times out.
 
 ### ✔️ Error Handling
 
