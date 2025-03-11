@@ -1,0 +1,21 @@
+name: Test for Deno
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  test-deno:
+    name: Test Deno version "latest" on "ubuntu-latest"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: vx.x.x # latest version
+      - name: Install deps 
+        run: deno install
+      - name: Build
+        run: deno run build
+      - name: Test 
+        run: deno run test
