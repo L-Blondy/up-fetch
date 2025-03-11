@@ -18,29 +18,7 @@
       "ignore": ["dist"]
    },
    "formatter": {
-      "enabled": true,
-      "useEditorconfig": true,
-      "formatWithErrors": false,
-      "indentStyle": "space",
-      "indentWidth": 3,
-      "lineEnding": "lf",
-      "lineWidth": 80,
-      "attributePosition": "auto",
-      "bracketSpacing": true
-   },
-   "javascript": {
-      "formatter": {
-         "jsxQuoteStyle": "double",
-         "quoteProperties": "preserve",
-         "trailingCommas": "all",
-         "semicolons": "asNeeded",
-         "arrowParentheses": "always",
-         "bracketSameLine": false,
-         "quoteStyle": "single",
-         "attributePosition": "auto",
-         "bracketSpacing": true
-      },
-      "globals": []
+      "enabled": false
    },
    "organizeImports": {
       "enabled": true,

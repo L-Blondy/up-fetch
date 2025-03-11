@@ -7,7 +7,10 @@
    "module": "dist/index.js",
    "types": "dist/index.d.ts",
    "sideEffects": false,
-   "files": ["dist", "src"],
+   "files": [
+      "dist",
+      "src"
+   ],
    "exports": {
       ".": {
          "import": {
@@ -63,6 +66,7 @@
       "jsdom": "^26.0.0",
       "knip": "^5.45.0",
       "msw": "^2.7.3",
+      "prettier": "^3.5.3",
       "tsup": "^8.4.0",
       "typescript": "5.7.3",
       "valibot": "^1.0.0-rc.3",
@@ -71,7 +75,9 @@
    },
    "publishConfig": {
       "access": "public",
-      "branches": ["master"]
+      "branches": [
+         "master"
+      ]
    },
    "repository": {
       "type": "git",

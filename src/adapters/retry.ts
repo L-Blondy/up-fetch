@@ -98,12 +98,8 @@ const timeout = (delay: number, signal?: AbortSignal) =>
       }
    })
 
-const defaultEnabled = (ctx: {
-   response: Response
-   request: Request
-}) => !ctx.response.ok
+const defaultEnabled = (ctx: { response: Response; request: Request }) =>
+   !ctx.response.ok
 
-const defaultTimes = (ctx: {
-   response: Response
-   request: Request
-}) => (ctx.request.method === 'GET' ? 1 : 0)
+const defaultTimes = (ctx: { response: Response; request: Request }) =>
+   ctx.request.method === 'GET' ? 1 : 0
