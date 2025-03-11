@@ -1,4 +1,5 @@
 import { afterEach } from 'node:test'
+import { scheduler } from 'node:timers/promises'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { up } from 'src/up'
@@ -21,6 +22,7 @@ const baseUrl = 'https://example.com'
 test('should call retry.enabled with the response', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled({ response, request }) {
             spy()
@@ -32,7 +34,7 @@ test('should call retry.enabled with the response', async () => {
    }))
    server.use(
       http.get(baseUrl, () =>
-         HttpResponse.json({ hello: 'world' }, { status: 200 }),
+         HttpResponse.json({ hello: 'world' }, { status: 500 }),
       ),
    )
    const spy = vi.fn()
@@ -44,6 +46,7 @@ test('should call retry.enabled with the response', async () => {
 test('should not call times or retry.delay when retry.enabled returns false', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => false,
          times: timesSpy,
@@ -52,7 +55,7 @@ test('should not call times or retry.delay when retry.enabled returns false', as
    }))
    server.use(
       http.get(baseUrl, () =>
-         HttpResponse.json({ hello: 'world' }, { status: 200 }),
+         HttpResponse.json({ hello: 'world' }, { status: 500 }),
       ),
    )
    const timesSpy = vi.fn()
@@ -66,6 +69,7 @@ test('should not call times or retry.delay when retry.enabled returns false', as
 test('should call retry.times with the response when retry.enabled returns true', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times({ response, request }) {
@@ -79,7 +83,7 @@ test('should call retry.times with the response when retry.enabled returns true'
 
    server.use(
       http.get(baseUrl, () =>
-         HttpResponse.json({ hello: 'world' }, { status: 200 }),
+         HttpResponse.json({ hello: 'world' }, { status: 500 }),
       ),
    )
    const spy = vi.fn()
@@ -91,6 +95,7 @@ test('should call retry.times with the response when retry.enabled returns true'
 test('should not call retry.delay when retry.times returns 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: () => 0,
@@ -99,7 +104,7 @@ test('should not call retry.delay when retry.times returns 0', async () => {
    }))
    server.use(
       http.get(baseUrl, () =>
-         HttpResponse.json({ hello: 'world' }, { status: 200 }),
+         HttpResponse.json({ hello: 'world' }, { status: 500 }),
       ),
    )
    const spy = vi.fn()
@@ -111,6 +116,7 @@ test('should not call retry.delay when retry.times returns 0', async () => {
 test('should call retry.delay with the attempt number and response when retry.enabled returns true and retry.times returns more than 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: () => 1,
@@ -126,7 +132,7 @@ test('should call retry.delay with the attempt number and response when retry.en
    }))
    server.use(
       http.get(baseUrl, () =>
-         HttpResponse.json({ hello: 'world' }, { status: 200 }),
+         HttpResponse.json({ hello: 'world' }, { status: 500 }),
       ),
    )
    const spy = vi.fn()
@@ -138,6 +144,7 @@ test('should call retry.delay with the attempt number and response when retry.en
 test('should retry `N = retry.times()` times when retry.enabled returns true', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: () => 1,
@@ -148,7 +155,7 @@ test('should retry `N = retry.times()` times when retry.enabled returns true', a
    server.use(
       http.get(baseUrl, async () => {
          spy()
-         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
       }),
    )
 
@@ -160,6 +167,7 @@ test('should call retry.enabled, then times then retry.delay', async () => {
    let exec = 0
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => {
             expect(++exec).toBe(1)
@@ -178,7 +186,7 @@ test('should call retry.enabled, then times then retry.delay', async () => {
 
    server.use(
       http.get(baseUrl, async () => {
-         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
       }),
    )
 
@@ -190,6 +198,7 @@ test('should call retry.enabled, then times then retry.delay', async () => {
 test('should allow upfetch.retry.enabled to override up.retry.enabled', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: 1,
@@ -200,7 +209,7 @@ test('should allow upfetch.retry.enabled to override up.retry.enabled', async ()
    server.use(
       http.get(baseUrl, async () => {
          spy()
-         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
       }),
    )
 
@@ -214,6 +223,7 @@ test('should allow upfetch.retry.enabled to override up.retry.enabled', async ()
 test('should allow upfetch.times to override up.times', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: 1,
@@ -224,7 +234,7 @@ test('should allow upfetch.times to override up.times', async () => {
    server.use(
       http.get(baseUrl, async () => {
          spy()
-         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
       }),
    )
 
@@ -238,6 +248,7 @@ test('should allow upfetch.times to override up.times', async () => {
 test('should allow upfetch.retry.delay to override up.retry.delay', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: 1,
@@ -249,7 +260,7 @@ test('should allow upfetch.retry.delay to override up.retry.delay', async () => 
    server.use(
       http.get(baseUrl, async () => {
          spy()
-         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
       }),
    )
 
@@ -265,6 +276,7 @@ test('should allow upfetch.retry.delay to override up.retry.delay', async () => 
 test('should handle errors during times function execution', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: () => {
@@ -288,6 +300,7 @@ test('should handle errors during times function execution', async () => {
 test('should handle errors during retry.delay function execution', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: 1,
@@ -313,6 +326,7 @@ test('should not retry when request times out', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       timeout: 100, // Set a short timeout
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: 2,
@@ -324,7 +338,7 @@ test('should not retry when request times out', async () => {
       http.get(baseUrl, async () => {
          spy()
          await new Promise((resolve) => setTimeout(resolve, 200)) // Delay longer than timeout
-         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
       }),
    )
 
@@ -338,26 +352,29 @@ test('should not retry when request is aborted', async () => {
    const controller = new AbortController()
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: 2,
       },
    }))
-   const spy = vi.fn()
 
    server.use(
       http.get(baseUrl, async () => {
-         spy()
          await new Promise((resolve) => setTimeout(resolve, 100)) // Add delay to ensure we can abort
-         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         return HttpResponse.json({ hello: 'world' }, { status: 500 })
       }),
    )
 
+   let exec = 0
+
    const promise = upfetch('/', { signal: controller.signal })
    controller.abort()
-
-   await expect(promise).rejects.toThrow('This operation was aborted')
-   expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to abort
+   await promise.catch((error) => {
+      exec++
+      expect(error.name).toBe('AbortError')
+   })
+   expect(exec).toBe(1)
 })
 
 test('should not call onRetry when no retry is needed', async () => {
@@ -365,6 +382,7 @@ test('should not call onRetry when no retry is needed', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       onRetry: onRetrySpy,
+      reject: () => false,
       retry: {
          enabled: () => false,
          times: 2,
@@ -372,7 +390,7 @@ test('should not call onRetry when no retry is needed', async () => {
       },
    }))
 
-   server.use(http.get(baseUrl, () => HttpResponse.json({}, { status: 200 })))
+   server.use(http.get(baseUrl, () => HttpResponse.json({}, { status: 500 })))
 
    await upfetch('/')
    expect(onRetrySpy).not.toHaveBeenCalled()
@@ -383,6 +401,7 @@ test('should call onRetry before each retry attempt', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       onRetry: onRetrySpy,
+      reject: () => false,
       retry: {
          enabled: () => true,
          times: 2,
@@ -390,7 +409,7 @@ test('should call onRetry before each retry attempt', async () => {
       },
    }))
 
-   server.use(http.get(baseUrl, () => HttpResponse.json({}, { status: 200 })))
+   server.use(http.get(baseUrl, () => HttpResponse.json({}, { status: 500 })))
 
    await upfetch('/')
    expect(onRetrySpy).toHaveBeenCalledTimes(2)
@@ -426,7 +445,7 @@ test('should execute both up.onRetry and upfetch.onRetry', async () => {
       },
    }))
 
-   server.use(http.get(baseUrl, () => HttpResponse.json({}, { status: 200 })))
+   server.use(http.get(baseUrl, () => HttpResponse.json({}, { status: 500 })))
 
    await upfetch('/', {
       onRetry(context) {
@@ -436,4 +455,35 @@ test('should execute both up.onRetry and upfetch.onRetry', async () => {
    })
    expect(defaultSpy).toHaveBeenCalledTimes(1)
    expect(fetcherSpy).toHaveBeenCalledTimes(1)
+})
+
+test('should abort retry immediately if signal controller aborts during retry delay', async () => {
+   const controller = new AbortController()
+   const upfetch = up(withRetry(fetch), () => ({
+      baseUrl,
+      reject: () => false,
+      retry: {
+         enabled: true,
+         times: 2,
+         delay: 1000,
+      },
+   }))
+
+   server.use(
+      http.get(baseUrl, async () => HttpResponse.json({}, { status: 500 })),
+   )
+
+   let exec = 0
+
+   const promise = upfetch('/', { signal: controller.signal })
+   await scheduler.wait(50)
+   const now = Date.now()
+   controller.abort()
+   await promise.catch((error) => {
+      exec++
+      expect(error.name).toBe('AbortError')
+   })
+   expect(exec).toBe(1)
+   // should not wait for the whole 1000ms delay
+   expect(Date.now() - now).toBeLessThan(50)
 })

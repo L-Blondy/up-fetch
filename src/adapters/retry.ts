@@ -68,6 +68,7 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
                   typeof delay === 'function'
                      ? await delay({ attempt, response, request })
                      : delay,
+                  options.signal,
                )
                onRetry?.({ attempt, response, request })
             }
@@ -80,8 +81,22 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
    return fetchWithRetry
 }
 
-const timeout = (delay: number) =>
-   new Promise((resolve) => setTimeout(resolve, delay))
+const timeout = (delay: number, signal?: AbortSignal) =>
+   new Promise<void>((resolve, reject) => {
+      signal?.throwIfAborted()
+      signal?.addEventListener('abort', handleAbort, { once: true })
+
+      const token = setTimeout(() => {
+         signal?.removeEventListener('abort', handleAbort)
+         resolve()
+      }, delay)
+
+      function handleAbort() {
+         clearTimeout(token)
+         // biome-ignore lint/style/noNonNullAssertion: <explanation>
+         reject(signal!.reason)
+      }
+   })
 
 const defaultEnabled = (ctx: {
    response: Response
