@@ -3,13 +3,15 @@
   "specifiers": {
     "npm:@biomejs/biome@1.9.4": "1.9.4",
     "npm:@standard-schema/spec@1": "1.0.0",
+    "npm:@types/node@^22.13.10": "22.13.10",
     "npm:@types/node@^22.13.9": "22.13.9",
     "npm:jsdom@26": "26.0.0",
     "npm:knip@^5.45.0": "5.45.0_@types+node@22.13.9_typescript@5.7.3_zod@3.24.2",
     "npm:msw@^2.7.3": "2.7.3_typescript@5.7.3_@types+node@22.13.9",
+    "npm:prettier@^3.5.3": "3.5.3",
     "npm:tsup@^8.4.0": "8.4.0_typescript@5.7.3_esbuild@0.25.0",
     "npm:typescript@5.7.3": "5.7.3",
-    "npm:valibot@>=1.0.0-rc.3": "1.0.0-rc.3_typescript@5.7.3",
+    "npm:valibot@^1.0.0-rc.3": "1.0.0-rc.3_typescript@5.7.3",
     "npm:vitest@^3.0.8": "3.0.8_@types+node@22.13.9_jsdom@26.0.0_msw@2.7.3__typescript@5.7.3__@types+node@22.13.9_vite@6.2.1__@types+node@22.13.9_typescript@5.7.3",
     "npm:zod@3.24.2": "3.24.2"
   },
@@ -188,7 +190,7 @@
       "dependencies": [
         "@inquirer/core",
         "@inquirer/type",
-        "@types/node"
+        "@types/node@22.13.9"
       ]
     },
     "@inquirer/core@10.1.7_@types+node@22.13.9": {
@@ -196,7 +198,7 @@
       "dependencies": [
         "@inquirer/figures",
         "@inquirer/type",
-        "@types/node",
+        "@types/node@22.13.9",
         "ansi-escapes",
         "cli-width",
         "mute-stream",
@@ -211,7 +213,7 @@
     "@inquirer/type@3.0.4_@types+node@22.13.9": {
       "integrity": "sha512-2MNFrDY8jkFYc9Il9DgLsHhMzuHnOYM1+CUYVWbzu9oT0hC7V7EcYvdCKeoll/Fcci04A+ERZ9wcc7cQ8lTkIA==",
       "dependencies": [
-        "@types/node"
+        "@types/node@22.13.9"
       ]
     },
     "@isaacs/cliui@8.0.2": {
@@ -383,6 +385,12 @@
     },
     "@types/estree@1.0.6": {
       "integrity": "sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw=="
+    },
+    "@types/node@22.13.10": {
+      "integrity": "sha512-I6LPUvlRH+O6VRUqYOcMudhaIdUVWfsjnZavnsraHvpBwaEyMN29ry+0UVJhImYL16xsscu0aske3yA+uPOWfw==",
+      "dependencies": [
+        "undici-types"
+      ]
     },
     "@types/node@22.13.9": {
       "integrity": "sha512-acBjXdRJ3A6Pb3tqnw9HZmyR3Fiol3aGxRCK1x3d+6CDAMjl7I649wpSd+yNURCjbOUGu9tqtLKnTGxmK6CyGw==",
@@ -953,7 +961,7 @@
       "dependencies": [
         "@nodelib/fs.walk@3.0.1",
         "@snyk/github-codeowners",
-        "@types/node",
+        "@types/node@22.13.9",
         "easy-table",
         "enhanced-resolve",
         "fast-glob",
@@ -1141,6 +1149,9 @@
         "picocolors",
         "source-map-js"
       ]
+    },
+    "prettier@3.5.3": {
+      "integrity": "sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw=="
     },
     "pretty-ms@9.2.0": {
       "integrity": "sha512-4yf0QO/sllf/1zbZWYnvWw3NxCQwLXKzIj0G849LSufP15BXKM0rbD2Z3wVnkMfjdn/CB0Dpp444gYAACdsplg==",
@@ -1458,7 +1469,7 @@
     "vite@6.2.1_@types+node@22.13.9": {
       "integrity": "sha512-n2GnqDb6XPhlt9B8olZPrgMD/es/Nd1RdChF6CBD/fHW6pUyUTt2sQW2fPRX5GiD9XEa6+8A6A4f2vT6pSsE7Q==",
       "dependencies": [
-        "@types/node",
+        "@types/node@22.13.9",
         "esbuild",
         "fsevents",
         "postcss",
@@ -1468,7 +1479,7 @@
     "vitest@3.0.8_@types+node@22.13.9_jsdom@26.0.0_msw@2.7.3__typescript@5.7.3__@types+node@22.13.9_vite@6.2.1__@types+node@22.13.9_typescript@5.7.3": {
       "integrity": "sha512-dfqAsNqRGUc8hB9OVR2P0w8PZPEckti2+5rdZip0WIz9WW0MnImJ8XiR61QhqLa92EQzKP2uPkzenKOAHyEIbA==",
       "dependencies": [
-        "@types/node",
+        "@types/node@22.13.9",
         "@vitest/expect",
         "@vitest/mocker",
         "@vitest/pretty-format",
@@ -1616,13 +1627,14 @@
       "dependencies": [
         "npm:@biomejs/biome@1.9.4",
         "npm:@standard-schema/spec@1",
-        "npm:@types/node@^22.13.9",
+        "npm:@types/node@^22.13.10",
         "npm:jsdom@26",
         "npm:knip@^5.45.0",
         "npm:msw@^2.7.3",
+        "npm:prettier@^3.5.3",
         "npm:tsup@^8.4.0",
         "npm:typescript@5.7.3",
-        "npm:valibot@>=1.0.0-rc.3",
+        "npm:valibot@^1.0.0-rc.3",
         "npm:vitest@^3.0.8",
         "npm:zod@3.24.2"
       ]
