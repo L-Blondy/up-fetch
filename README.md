@@ -35,6 +35,7 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
    -  [Schema Validation](#️-schema-validation)
    -  [Lifecycle Hooks](#️-lifecycle-hooks)
    -  [Timeout](#️-timeout)
+   -  [Retry](#️-retry)
    -  [Error Handling](#️-error-handling)
 -  [Usage](#️-usage)
    -  [Authentication](#️-authentication)
@@ -219,6 +220,54 @@ Set a default timeout for all requests:
 const upfetch = up(fetch, () => ({
    timeout: 5000,
 }))
+```
+
+_Note that the timeout is applied per-operation, not per-try_
+
+### ✔️ Retry
+
+The retry functionality is provided via an adapter rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
+
+```ts
+import { withRetry } from 'up-fetch/adapters'
+
+const upfetch = up(withRetry(fetch), () => ({
+   retry: {
+      enabled: true, // retry when !response.ok
+      times: 3,
+      delay: 1000,
+   },
+}))
+```
+
+All retry options can be functions for fine-grained control. Each function receives a context object with relevant information.
+
+The defaults are:
+
+```ts
+const upfetch = up(withRetry(fetch), () => ({
+   retry: {
+      // enable retry for all non 2XX responses
+      enabled: ({ response, request }) => !response.ok,
+      // retry one time for GET requests only
+      times: ({ response, request }) => (request.method === 'GET' ? 1 : 0),
+      // retry with a delay of 1000ms between attempts
+      delay: 1000,
+   },
+}))
+```
+
+You can override single options on a per request basis:
+
+```ts
+await upfetch('/api/data', {
+   method: 'DELETE',
+   retry: {
+      times: 3,
+      // exponential backoff
+      delay: ({ attempt }) => attempt ** 2 * 1000,
+   },
+})
 ```
 
 ### ✔️ Error Handling

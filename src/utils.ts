@@ -1,7 +1,9 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import type {
+   DistributiveOmit,
    JsonifiableArray,
    JsonifiableObject,
+   KeyOf,
    Params,
    RawHeaders,
    SerializeParams,
@@ -38,15 +40,6 @@ export const withTimeout = (
            ) as AbortSignal[],
         )
       : signal
-
-type KeyOf<O> = O extends unknown ? keyof O : never
-
-export type DistributiveOmit<
-   TObject extends object,
-   TKey extends KeyOf<TObject> | (string & {}),
-> = TObject extends unknown ? Omit<TObject, TKey> : never
-
-export type MaybePromise<T> = T | Promise<T>
 
 const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
    obj?: O,

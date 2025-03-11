@@ -5,9 +5,9 @@ import type {
    DefaultOptions,
    FallbackOptions,
    FetcherOptions,
+   MaybePromise,
 } from './types'
 import {
-   type MaybePromise,
    isJsonifiable,
    isPlainObject,
    mergeHeaders,
@@ -16,7 +16,7 @@ import {
    withTimeout,
 } from './utils'
 
-const emptyOptions: any = {}
+const emptyOptions = {} as any
 
 export const up =
    <

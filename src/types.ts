@@ -1,5 +1,13 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
-import type { DistributiveOmit, MaybePromise } from './utils'
+
+export type KeyOf<O> = O extends unknown ? keyof O : never
+
+export type DistributiveOmit<
+   TObject extends object,
+   TKey extends KeyOf<TObject> | (string & {}),
+> = TObject extends unknown ? Omit<TObject, TKey> : never
+
+export type MaybePromise<T> = T | Promise<T>
 
 type JsonPrimitive = string | number | boolean | null | undefined
 
@@ -9,7 +17,11 @@ export type JsonifiableArray =
    | Array<JsonPrimitive | JsonifiableObject | JsonifiableArray>
    | ReadonlyArray<JsonPrimitive | JsonifiableObject | JsonifiableArray>
 
-export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
+export type BaseFetchFn = (
+   input: any,
+   options?: any,
+   ctx?: any,
+) => Promise<Response>
 
 type ParseResponse<TParsedData> = (
    response: Response,

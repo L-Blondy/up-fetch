@@ -6,9 +6,9 @@ _This table aims to provide an accurate comparison of fetch libraries, though th
 
 Legend:
 
-- ✅ Supported
-- 🟧 Partially supported
-- ❌ Not supported or not documented
+-  ✅ Supported
+-  🟧 Partially supported
+-  ❌ Not supported or not documented
 
 | Feature                     | [up-fetch][up-fetch]                           | [ofetch][ofetch]                           | [wretch][wretch]                           | [ky][ky]                           |
 | --------------------------- | ---------------------------------------------- | ------------------------------------------ | ------------------------------------------ | ---------------------------------- |
@@ -26,7 +26,7 @@ Legend:
 | Extendable instance         | ❌                                             | ❌                                         | ✅                                         | ✅                                 |
 | Hooks/Interceptors          | ✅                                             | ✅                                         | ✅                                         | ✅                                 |
 | Instance Configuration      | ✅                                             | ✅                                         | ✅                                         | ✅                                 |
-| Retry                       | ❌                                             | ✅                                         | ✅                                         | ✅                                 |
+| Retry                       | ✅                                             | ✅                                         | ✅                                         | ✅                                 |
 | Schema Validation           | ✅                                             | ❌                                         | ❌                                         | ❌                                 |
 | Timeout                     | ✅                                             | 🟧 (2)                                     | ✅                                         | ✅                                 |
 | Zero Dependencies           | ✅                                             | ❌                                         | ✅                                         | ✅                                 |
