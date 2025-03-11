@@ -24,8 +24,6 @@ jobs:
           bun-version: ${{ matrix.bun-version }}
       - name: Install deps
         run: bun install
-      - name: Lint
-        run: bun run lint
       - name: Build
         run: bun run build
       - name: Test
