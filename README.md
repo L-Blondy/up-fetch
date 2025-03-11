@@ -233,8 +233,8 @@ import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      enabled: true, // retry when !response.ok
-      times: 3,
+      when: (ctx) => !ctx.response.ok,
+      limit: 3,
       delay: 1000,
    },
 }))
@@ -247,10 +247,10 @@ The defaults are:
 ```ts
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      // enable retry for all non 2XX responses
-      enabled: ({ response, request }) => !response.ok,
-      // retry one time for GET requests only
-      times: ({ response, request }) => (request.method === 'GET' ? 1 : 0),
+      // retry when response is not ok (status not in 2XX range)
+      when: (ctx) => !ctx.response.ok,
+      // retry one time max for GET requests only
+      limit: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
       // retry with a delay of 1000ms between attempts
       delay: 1000,
    },
@@ -263,9 +263,9 @@ You can override single options on a per request basis:
 await upfetch('/api/data', {
    timeout: 3000,
    retry: {
-      times: 3,
+      limit: 3,
       // exponential backoff
-      delay: ({ attempt }) => attempt ** 2 * 1000,
+      delay: (ctx) => ctx.attempt ** 2 * 1000,
    },
 })
 ```
