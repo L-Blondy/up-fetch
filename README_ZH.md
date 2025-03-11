@@ -223,7 +223,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ 重试
 
-重试功能通过适配器提供，而不是直接集成到核心库中。这种设计选择有助于保持基础包的体积尽可能小，因为许多应用程序并不需要重试功能。通过使用适配器，您只需在明确需要时才引入重试代码。
+重试功能通过适配器提供，而不是直接集成到核心库中。这种设计选择有助于保持基础包的体积尽可能小，因为许多应用程序并不需要重试功能。
 
 ```ts
 import { withRetry } from 'up-fetch/adapters'
@@ -237,14 +237,19 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-所有重试选项都可以是函数，以实现精细控制。每个函数都接收一个包含相关信息的上下文对象：
+所有重试选项都可以是函数，以实现精细控制。每个函数都接收一个包含相关信息的上下文对象。
+
+默认行为：
 
 ```ts
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
+      // 对所有非 2XX 响应启用重试
       enabled: ({ response, request }) => !response.ok,
+      // 仅对 GET 请求重试一次
       times: ({ response, request }) => (request.method === 'GET' ? 1 : 0),
-      delay: ({ attempt }) => attempt ** 2 * 1000, // 指数退避
+      // 重试之间的延迟为 1000ms
+      delay: 1000,
    },
 }))
 ```
@@ -254,15 +259,13 @@ const upfetch = up(withRetry(fetch), () => ({
 ```ts
 await upfetch('/api/data', {
    method: 'DELETE',
-   retry: { times: 3 },
+   retry: {
+      times: 3,
+      // 指数退避
+      delay: ({ attempt }) => attempt ** 2 * 1000,
+   },
 })
 ```
-
-默认行为：
-
--  对所有非 2XX 响应启用重试
--  仅对 GET 请求重试一次
--  重试之间的延迟为 1000 毫秒
 
 ### ✔️ 错误处理
 
