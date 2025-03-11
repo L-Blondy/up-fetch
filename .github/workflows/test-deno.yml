@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deno-tests:
+  test-deno:
     name: Test Deno version "latest" on "ubuntu-latest"
     runs-on: ubuntu-latest
     steps:
@@ -15,5 +15,7 @@ jobs:
           deno-version: vx.x.x # latest version
       - name: Install deps 
         run: deno install
+      - name: Build
+        run: deno run build
       - name: Test 
         run: deno run test

@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-lint-node:
+  test-node:
     name: Test Node.js version "${{ matrix.node-version }}" on "${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:

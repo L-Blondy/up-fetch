@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-lint-bun:
+  test-bun:
     name: Test Bun version "${{ matrix.bun-version }}" on "${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
