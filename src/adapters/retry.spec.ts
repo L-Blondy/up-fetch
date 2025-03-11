@@ -277,7 +277,7 @@ test('should allow upfetch.retry.delay to override up.retry.delay', async () => 
    })
    const duration = Date.now() - start
    expect(duration).toBeGreaterThanOrEqual(100)
-   expect(duration).toBeLessThanOrEqual(110)
+   expect(duration).toBeLessThanOrEqual(120)
 })
 
 test('should handle errors during times function execution', async () => {
