@@ -230,7 +230,7 @@ import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      enabled: true,
+      enabled: true, // 当 !response.ok 时重试
       times: 3,
       delay: 1000,
    },
@@ -266,6 +266,8 @@ await upfetch('/api/data', {
    },
 })
 ```
+
+_注意：重试延迟期间如果请求被中止，重试将立即停止。_
 
 ### ✔️ 错误处理
 

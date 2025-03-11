@@ -233,7 +233,7 @@ import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      enabled: true,
+      enabled: true, // retry when !response.ok
       times: 3,
       delay: 1000,
    },
