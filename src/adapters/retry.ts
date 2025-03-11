@@ -70,7 +70,7 @@ const timeout = (delay: number) =>
 
 // 408 - Request Timeout
 // 409 - Conflict
-// 425 - Too Early (Experimental)
+// 425 - Too Early
 // 429 - Too Many Requests
 // 500 - Internal Server Error
 // 502 - Bad Gateway
