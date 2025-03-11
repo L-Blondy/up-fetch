@@ -1,4 +1,4 @@
-name: Lint and test for Bun
+name: Test for Bun
 
 on:
   workflow_call:

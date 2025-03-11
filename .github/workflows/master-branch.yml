@@ -5,8 +5,14 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [master]
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
   push:
     branches: [master]
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
 
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.number || github.ref }}"

@@ -1,4 +1,4 @@
-name: Lint and test for Node.Js
+name: Test for Node.Js
 
 on:
   workflow_call:
