@@ -1,9 +1,16 @@
-import { afterEach } from 'node:test'
 import { scheduler } from 'node:timers/promises'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { up } from 'src/up'
-import { afterAll, beforeAll, expect, expectTypeOf, test, vi } from 'vitest'
+import {
+   afterAll,
+   afterEach,
+   beforeAll,
+   expect,
+   expectTypeOf,
+   test,
+   vi,
+} from 'vitest'
 import { withRetry } from './retry'
 
 const server = setupServer()
