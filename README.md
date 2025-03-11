@@ -19,7 +19,7 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
 
 ## 🚀 Try v2 Beta!
 
-Version 2 of upfetch is now available in beta with a new **retry** functionality! \
+Version 2 of upfetch is now available in beta! \
 Give it a try with:
 
 ```bash
