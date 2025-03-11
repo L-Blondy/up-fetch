@@ -14,7 +14,6 @@ import {
 import { withRetry } from './retry'
 
 const server = setupServer()
-
 beforeAll(() => {
    server.listen()
 })
