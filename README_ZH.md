@@ -267,8 +267,6 @@ await upfetch('/api/data', {
 })
 ```
 
-_注意：重试延迟期间如果请求被中止，重试将立即停止。_
-
 ### ✔️ 错误处理
 
 #### 👉 <samp>ResponseError</samp>
