@@ -233,7 +233,6 @@ import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      when: (ctx) => !ctx.response.ok,
       limit: 3,
       delay: 1000,
    },
@@ -247,11 +246,11 @@ The defaults are:
 ```ts
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      // retry when response is not ok (status not in 2XX range)
+      // when response is not ok (status not in 2XX range)
       when: (ctx) => !ctx.response.ok,
-      // retry one time max for GET requests only
+      // retry max 1 time for GET requests
       limit: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
-      // retry with a delay of 1000ms between attempts
+      // with a delay of 1000ms between attempts
       delay: 1000,
    },
 }))
