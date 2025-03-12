@@ -239,7 +239,7 @@ const upfetch = up(withRetry(fetch), () => ({
 
 Retry options can also be functions for fine-grained control. Each function receives a context object with relevant information.
 
-The defaults are:
+By default retry is enabled for all non 2XX responses but attempts will be made only once for GET requests, with a delay of 1000ms between attempts.
 
 ```ts
 const upfetch = up(withRetry(fetch), () => ({
@@ -254,20 +254,14 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-You can override single options on a per request basis:
+With this strategy you can decide to retry for other methods just by changing the `attempts` on the instance.
 
 ```ts
 await upfetch('/api/data', {
-   timeout: 3000,
-   retry: {
-      attempts: 3,
-      // exponential backoff
-      delay: (ctx) => ctx.attempt ** 2 * 1000,
-   },
+   method: 'DELETE',
+   retry: { attempts: 3 },
 })
 ```
-
-💡 The timeout is applied per-operation, not per-try. No retry attempts are made if the request times out.
 
 ### ✔️ Error Handling
 
