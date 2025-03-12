@@ -1,7 +1,7 @@
 import type { BaseFetchFn, MaybePromise } from 'src/types'
 
 export type RetryOptions = {
-   limit?: number | ((context: { request: Request }) => MaybePromise<number>)
+   attempts?: number | ((context: { request: Request }) => MaybePromise<number>)
    when?: (context: {
       response: Response
       request: Request
@@ -26,7 +26,11 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
       input: Parameters<TFetchFn>[0],
       {
          onRetry,
-         retry: { when = defaultWhen, limit = defaultLimit, delay = 0 } = {},
+         retry: {
+            when = defaultWhen,
+            attempts = defaultAttempts,
+            delay = 0,
+         } = {},
          ...options
       }: Parameters<TFetchFn>[1] & {
          retry?: RetryOptions
@@ -36,7 +40,7 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
    ): Promise<Response> {
       const request = new Request(input, options as RequestInit)
       const maxAttempt =
-         typeof limit === 'function' ? await limit({ request }) : limit
+         typeof attempts === 'function' ? await attempts({ request }) : attempts
       let attempt = 0
       let response: Response
 
@@ -80,5 +84,5 @@ const timeout = (delay: number, signal?: AbortSignal) =>
 const defaultWhen = (ctx: { response: Response; request: Request }) =>
    !ctx.response.ok
 
-const defaultLimit = (ctx: { request: Request }) =>
+const defaultAttempts = (ctx: { request: Request }) =>
    ctx.request.method === 'GET' ? 1 : 0

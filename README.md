@@ -231,7 +231,7 @@ import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      limit: 3,
+      attempts: 3,
       delay: 1000,
    },
 }))
@@ -247,7 +247,7 @@ const upfetch = up(withRetry(fetch), () => ({
       // when response is not ok (status not in 2XX range)
       when: (ctx) => !ctx.response.ok,
       // retry max 1 time for GET requests
-      limit: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
+      attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
       // with a delay of 1000ms between attempts
       delay: 1000,
    },
@@ -260,7 +260,7 @@ You can override single options on a per request basis:
 await upfetch('/api/data', {
    timeout: 3000,
    retry: {
-      limit: 3,
+      attempts: 3,
       // exponential backoff
       delay: (ctx) => ctx.attempt ** 2 * 1000,
    },

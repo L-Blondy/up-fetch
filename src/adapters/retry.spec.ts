@@ -31,8 +31,8 @@ test('should call retry.when with the response', async () => {
       baseUrl,
       reject: () => false,
       retry: {
-         limit: 1,
-         when({ response, request }) {
+         attempts: 1,
+         when({ response }) {
             spy()
             expectTypeOf(response).toEqualTypeOf<Response>()
             expect(response instanceof Response).toBe(true)
@@ -51,13 +51,13 @@ test('should call retry.when with the response', async () => {
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should not call retry.when or retry.delay when retry.limit returns 0', async () => {
+test('should not call retry.when or retry.delay when retry.attempts returns 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
          when: whenSpy,
-         limit: () => 0,
+         attempts: () => 0,
          delay: delaySpy,
       },
    }))
@@ -74,13 +74,13 @@ test('should not call retry.when or retry.delay when retry.limit returns 0', asy
    expect(delaySpy).not.toHaveBeenCalled()
 })
 
-test('should call retry.limit with the request when retry.when returns true', async () => {
+test('should call retry.attempts with the request when retry.when returns true', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
          when: () => true,
-         limit({ request }) {
+         attempts({ request }) {
             spy()
             expectTypeOf(request).toEqualTypeOf<Request>()
             expect(request instanceof Request).toBe(true)
@@ -100,13 +100,13 @@ test('should call retry.limit with the request when retry.when returns true', as
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should not call retry.delay when retry.limit returns 0', async () => {
+test('should not call retry.delay when retry.attempts returns 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
          when: () => true,
-         limit: () => 0,
+         attempts: () => 0,
          delay: spy,
       },
    }))
@@ -121,13 +121,13 @@ test('should not call retry.delay when retry.limit returns 0', async () => {
    expect(spy).toHaveBeenCalledTimes(0)
 })
 
-test('should call retry.delay with the attempt number and response when retry.when returns true and retry.limit returns more than 0', async () => {
+test('should call retry.delay with the attempt number and response when retry.when returns true and retry.attempts returns more than 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
          when: () => true,
-         limit: () => 1,
+         attempts: () => 1,
          delay({ attempt, response, request }) {
             spy()
             expectTypeOf(attempt).toEqualTypeOf<number>()
@@ -149,12 +149,12 @@ test('should call retry.delay with the attempt number and response when retry.wh
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should retry `N = retry.limit()` times when retry.when returns true', async () => {
+test('should retry `N = retry.attempts()` times when retry.when returns true', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         limit: 1,
+         attempts: 1,
          when: () => true,
       },
    }))
@@ -171,13 +171,13 @@ test('should retry `N = retry.limit()` times when retry.when returns true', asyn
    expect(spy).toHaveBeenCalledTimes(2)
 })
 
-test('should call retry.limit, then retry.when then retry.delay', async () => {
+test('should call retry.attempts, then retry.when then retry.delay', async () => {
    let exec = 0
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         limit: () => {
+         attempts: () => {
             expect(++exec).toBe(1)
             return 1
          },
@@ -203,13 +203,13 @@ test('should call retry.limit, then retry.when then retry.delay', async () => {
    })
 })
 
-test('should allow upfetch.limit to override up.limit', async () => {
+test('should allow upfetch.attempts to override up.attempts', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
          when: () => true,
-         limit: 1,
+         attempts: 1,
       },
    }))
    const spy = vi.fn()
@@ -222,20 +222,20 @@ test('should allow upfetch.limit to override up.limit', async () => {
    )
 
    await upfetch('/', {
-      retry: { limit: 2 },
+      retry: { attempts: 2 },
    })
    // no retry
    expect(spy).toHaveBeenCalledTimes(3)
 })
 
-test('should handle errors during limit function execution', async () => {
+test('should handle errors during attempts() function execution', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
          when: () => true,
-         limit: () => {
-            throw new Error('limit error')
+         attempts: () => {
+            throw new Error('attempts error')
          },
       },
    }))
@@ -259,7 +259,7 @@ test('should handle errors during retry.delay function execution', async () => {
       reject: () => false,
       retry: {
          when: () => true,
-         limit: 1,
+         attempts: 1,
          delay: () => {
             throw new Error('delay error')
          },
@@ -285,7 +285,7 @@ test('should not retry when request times out', async () => {
       reject: () => false,
       retry: {
          when: () => true,
-         limit: 2,
+         attempts: 2,
       },
    }))
 
@@ -312,7 +312,7 @@ test('should not retry when request is aborted', async () => {
       reject: () => false,
       retry: {
          when: () => true,
-         limit: 2,
+         attempts: 2,
       },
    }))
 
@@ -342,7 +342,7 @@ test('should not call onRetry when no retry is needed', async () => {
       reject: () => false,
       retry: {
          when: () => false,
-         limit: 2,
+         attempts: 2,
          delay: 0,
       },
    }))
@@ -361,7 +361,7 @@ test('should call onRetry before each retry attempt', async () => {
       reject: () => false,
       retry: {
          when: () => true,
-         limit: 2,
+         attempts: 2,
          delay: 0,
       },
    }))
@@ -397,7 +397,7 @@ test('should execute both up.onRetry and upfetch.onRetry', async () => {
       reject: () => false,
       retry: {
          when: () => true,
-         limit: 1,
+         attempts: 1,
          delay: 0,
       },
    }))
@@ -421,7 +421,7 @@ test('should abort retry immediately if signal controller aborts during retry de
       reject: () => false,
       retry: {
          when: () => true,
-         limit: 2,
+         attempts: 2,
          delay: 1000,
       },
    }))
