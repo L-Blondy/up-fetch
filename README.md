@@ -258,7 +258,6 @@ await upfetch('/api/data', {
    method: 'DELETE',
    retry: {
       attempts: 3,
-      // exponential backoff
       delay: (ctx) => ctx.attempt ** 2 * 1000,
    },
 })
