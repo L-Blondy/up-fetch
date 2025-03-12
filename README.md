@@ -224,7 +224,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Retry
 
-The retry functionality is provided via an adapter rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
+The retry functionality is provided via an **adapter** rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
 
 ```ts
 import { withRetry } from 'up-fetch/adapters'
@@ -243,8 +243,8 @@ const upfetch = up(withRetry(fetch), () => ({
 const upfetch = up(withRetry(fetch), () => ({
    // default retry strategy
    retry: {
-      when: (ctx) => !ctx.response.ok,
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
+      when: (ctx) => !ctx.response.ok,
       delay: 1000,
    },
 }))
@@ -253,9 +253,14 @@ const upfetch = up(withRetry(fetch), () => ({
 Retry options can be overriden on a per request basis:
 
 ```ts
+// retry 3 times for the DELETE request with exponential backoff
 await upfetch('/api/data', {
    method: 'DELETE',
-   retry: { attempts: 3 },
+   retry: {
+      attempts: 3,
+      // exponential backoff
+      delay: (ctx) => ctx.attempt ** 2 * 1000,
+   },
 })
 ```
 
