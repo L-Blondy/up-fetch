@@ -240,8 +240,8 @@ const upfetch = up(withRetry(fetch), () => ({
 By default **one attempt** will be made for **GET requests** with any **non 2xx** response, with a delay of 1000ms.
 
 ```ts
-// default strategy
 const upfetch = up(withRetry(fetch), () => ({
+   // default retry strategy
    retry: {
       when: (ctx) => !ctx.response.ok,
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
