@@ -253,7 +253,7 @@ const upfetch = up(withRetry(fetch), () => ({
 Retry options can be overriden on a per request basis:
 
 ```ts
-// retry 3 times for the DELETE request with exponential backoff
+// for this DELETE request retry 3 times with exponential backoff
 await upfetch('/api/data', {
    method: 'DELETE',
    retry: {
