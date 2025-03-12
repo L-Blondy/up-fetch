@@ -242,19 +242,17 @@ Retry options can also be functions for fine-grained control. Each function rece
 By default retry is enabled for all non 2XX responses but attempts will be made only once for GET requests, with a delay of 1000ms between attempts.
 
 ```ts
+// default strategy
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      // when response is not ok (status not in 2XX range)
       when: (ctx) => !ctx.response.ok,
-      // retry max 1 time for GET requests
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
-      // with a delay of 1000ms between attempts
       delay: 1000,
    },
 }))
 ```
 
-With this strategy you can decide to retry for other methods just by changing the `attempts` on the instance.
+With this strategy retries can be made on a per request basis by setting
 
 ```ts
 await upfetch('/api/data', {
