@@ -222,55 +222,46 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-_Note that the timeout is applied per-operation, not per-try_
-
 ### ✔️ Retry
 
-The retry functionality is provided via an adapter rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
+The retry functionality is provided via an **adapter** rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
 
 ```ts
 import { withRetry } from 'up-fetch/adapters'
 
 const upfetch = up(withRetry(fetch), () => ({
    retry: {
-      enabled: true, // retry when !response.ok
-      times: 3,
+      attempts: 3,
       delay: 1000,
    },
 }))
 ```
 
-Retry options can also be functions for fine-grained control. Each function receives a context object with relevant information.
-
-The defaults are:
+**By default:** one attempt will be made for GET requests with any non 2xx response, with a delay of 1000ms.
 
 ```ts
 const upfetch = up(withRetry(fetch), () => ({
+   // default retry strategy
    retry: {
-      // enable retry for all non 2XX responses
-      enabled: ({ response, request }) => !response.ok,
-      // retry one time for GET requests only
-      times: ({ response, request }) => (request.method === 'GET' ? 1 : 0),
-      // retry with a delay of 1000ms between attempts
+      attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
+      when: (ctx) => !ctx.response.ok,
       delay: 1000,
    },
 }))
 ```
 
-You can override single options on a per request basis:
+Retry options can be overriden on a per request basis:
 
 ```ts
+// for this delete request retry 3 times with exponential backoff
 await upfetch('/api/data', {
-   timeout: 3000,
+   method: 'DELETE',
    retry: {
-      times: 3,
-      // exponential backoff
-      delay: ({ attempt }) => attempt ** 2 * 1000,
+      attempts: 3,
+      delay: (ctx) => ctx.attempt ** 2 * 1000,
    },
 })
 ```
-
-💡 The timeout is applied per-operation, not per-try. No retry attempts are made if the request times out.
 
 ### ✔️ Error Handling
 

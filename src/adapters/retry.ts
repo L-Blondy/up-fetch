@@ -1,18 +1,11 @@
 import type { BaseFetchFn, MaybePromise } from 'src/types'
 
 export type RetryOptions = {
-   enabled?:
-      | boolean
-      | ((context: {
-           response: Response
-           request: Request
-        }) => MaybePromise<boolean>)
-   times?:
-      | number
-      | ((context: {
-           response: Response
-           request: Request
-        }) => MaybePromise<number>)
+   attempts?: number | ((context: { request: Request }) => MaybePromise<number>)
+   when?: (context: {
+      response: Response
+      request: Request
+   }) => MaybePromise<boolean>
    delay?:
       | number
       | ((context: {
@@ -33,47 +26,36 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
       input: Parameters<TFetchFn>[0],
       {
          onRetry,
-         retry: { enabled = true, times = defaultTimes, delay = 0 } = {},
+         retry: {
+            when = defaultWhen,
+            attempts = defaultAttempts,
+            delay = 0,
+         } = {},
          ...options
       }: Parameters<TFetchFn>[1] & {
          retry?: RetryOptions
          onRetry?: OnRetry
-      } = {} as any,
+      } = {},
       ctx?: Parameters<TFetchFn>[2],
    ): Promise<Response> {
       const request = new Request(input, options as RequestInit)
-      let attempt = 1
-      let maxAttempt = 1
+      const maxAttempt =
+         typeof attempts === 'function' ? await attempts({ request }) : attempts
+      let attempt = 0
       let response: Response
 
       do {
          response = await fetchFn(input, options, ctx)
 
-         const isEnabled =
-            enabled === true
-               ? defaultEnabled
-               : typeof enabled === 'function'
-                 ? await enabled({ response, request })
-                 : enabled
-
-         if (isEnabled) {
-            if (maxAttempt === 1) {
-               maxAttempt +=
-                  typeof times === 'function'
-                     ? await times({ response, request })
-                     : times
-            }
-            if (attempt < maxAttempt) {
-               await timeout(
-                  typeof delay === 'function'
-                     ? await delay({ attempt, response, request })
-                     : delay,
-                  options.signal,
-               )
-               onRetry?.({ attempt, response, request })
-            }
+         if (++attempt <= maxAttempt && (await when({ response, request }))) {
+            await timeout(
+               typeof delay === 'function'
+                  ? await delay({ attempt, response, request })
+                  : delay,
+               options.signal,
+            )
+            onRetry?.({ attempt, response, request })
          }
-         attempt++
       } while (attempt <= maxAttempt)
 
       return response
@@ -93,13 +75,13 @@ const timeout = (delay: number, signal?: AbortSignal) =>
 
       function handleAbort() {
          clearTimeout(token)
-         // biome-ignore lint/style/noNonNullAssertion: <explanation>
+         // biome-ignore lint/style/noNonNullAssertion:
          reject(signal!.reason)
       }
    })
 
-const defaultEnabled = (ctx: { response: Response; request: Request }) =>
+const defaultWhen = (ctx: { response: Response; request: Request }) =>
    !ctx.response.ok
 
-const defaultTimes = (ctx: { response: Response; request: Request }) =>
+const defaultAttempts = (ctx: { request: Request }) =>
    ctx.request.method === 'GET' ? 1 : 0

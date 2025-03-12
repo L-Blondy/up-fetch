@@ -26,12 +26,13 @@ afterAll(() => {
 
 const baseUrl = 'https://example.com'
 
-test('should call retry.enabled with the response', async () => {
+test('should call retry.when with the response', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled({ response, request }) {
+         attempts: 1,
+         when({ response }) {
             spy()
             expectTypeOf(response).toEqualTypeOf<Response>()
             expect(response instanceof Response).toBe(true)
@@ -50,13 +51,13 @@ test('should call retry.enabled with the response', async () => {
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should not call times or retry.delay when retry.enabled returns false', async () => {
+test('should not call retry.when or retry.delay when retry.attempts returns 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => false,
-         times: timesSpy,
+         when: whenSpy,
+         attempts: () => 0,
          delay: delaySpy,
       },
    }))
@@ -65,24 +66,24 @@ test('should not call times or retry.delay when retry.enabled returns false', as
          HttpResponse.json({ hello: 'world' }, { status: 500 }),
       ),
    )
-   const timesSpy = vi.fn()
+   const whenSpy = vi.fn()
    const delaySpy = vi.fn()
 
    await upfetch('/')
-   expect(timesSpy).not.toHaveBeenCalled()
+   expect(whenSpy).not.toHaveBeenCalled()
    expect(delaySpy).not.toHaveBeenCalled()
 })
 
-test('should call retry.times with the response when retry.enabled returns true', async () => {
+test('should call retry.attempts with the request when retry.when returns true', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times({ response, request }) {
+         when: () => true,
+         attempts({ request }) {
             spy()
-            expectTypeOf(response).toEqualTypeOf<Response>()
-            expect(response instanceof Response).toBe(true)
+            expectTypeOf(request).toEqualTypeOf<Request>()
+            expect(request instanceof Request).toBe(true)
             return 0
          },
       },
@@ -99,13 +100,13 @@ test('should call retry.times with the response when retry.enabled returns true'
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should not call retry.delay when retry.times returns 0', async () => {
+test('should not call retry.delay when retry.attempts returns 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: () => 0,
+         when: () => true,
+         attempts: () => 0,
          delay: spy,
       },
    }))
@@ -120,13 +121,13 @@ test('should not call retry.delay when retry.times returns 0', async () => {
    expect(spy).toHaveBeenCalledTimes(0)
 })
 
-test('should call retry.delay with the attempt number and response when retry.enabled returns true and retry.times returns more than 0', async () => {
+test('should call retry.delay with the attempt number and response when retry.when returns true and retry.attempts returns more than 0', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: () => 1,
+         when: () => true,
+         attempts: () => 1,
          delay({ attempt, response, request }) {
             spy()
             expectTypeOf(attempt).toEqualTypeOf<number>()
@@ -148,13 +149,13 @@ test('should call retry.delay with the attempt number and response when retry.en
    expect(spy).toHaveBeenCalledTimes(1)
 })
 
-test('should retry `N = retry.times()` times when retry.enabled returns true', async () => {
+test('should retry `N = retry.attempts()` times when retry.when returns true', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: () => 1,
+         attempts: 1,
+         when: () => true,
       },
    }))
    const spy = vi.fn()
@@ -170,19 +171,19 @@ test('should retry `N = retry.times()` times when retry.enabled returns true', a
    expect(spy).toHaveBeenCalledTimes(2)
 })
 
-test('should call retry.enabled, then times then retry.delay', async () => {
+test('should call retry.attempts, then retry.when then retry.delay', async () => {
    let exec = 0
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => {
+         attempts: () => {
             expect(++exec).toBe(1)
-            return true
-         },
-         times: () => {
-            expect(++exec).toBe(2)
             return 1
+         },
+         when: () => {
+            expect(++exec).toBe(2)
+            return true
          },
          delay: () => {
             expect(++exec).toBe(3)
@@ -198,17 +199,17 @@ test('should call retry.enabled, then times then retry.delay', async () => {
    )
 
    await upfetch('/', {
-      retry: { enabled: () => false },
+      retry: { when: () => false },
    })
 })
 
-test('should allow upfetch.retry.enabled to override up.retry.enabled', async () => {
+test('should allow upfetch.attempts to override up.attempts', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: 1,
+         when: () => true,
+         attempts: 1,
       },
    }))
    const spy = vi.fn()
@@ -221,73 +222,20 @@ test('should allow upfetch.retry.enabled to override up.retry.enabled', async ()
    )
 
    await upfetch('/', {
-      retry: { enabled: () => false },
-   })
-   // no retry
-   expect(spy).toHaveBeenCalledTimes(1)
-})
-
-test('should allow upfetch.times to override up.times', async () => {
-   const upfetch = up(withRetry(fetch), () => ({
-      baseUrl,
-      reject: () => false,
-      retry: {
-         enabled: () => true,
-         times: 1,
-      },
-   }))
-   const spy = vi.fn()
-
-   server.use(
-      http.get(baseUrl, async () => {
-         spy()
-         return HttpResponse.json({ hello: 'world' }, { status: 500 })
-      }),
-   )
-
-   await upfetch('/', {
-      retry: { times: 2 },
+      retry: { attempts: 2 },
    })
    // no retry
    expect(spy).toHaveBeenCalledTimes(3)
 })
 
-test('should allow upfetch.retry.delay to override up.retry.delay', async () => {
+test('should handle errors during attempts() function execution', async () => {
    const upfetch = up(withRetry(fetch), () => ({
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: 1,
-         delay: 2000,
-      },
-   }))
-   const spy = vi.fn()
-
-   server.use(
-      http.get(baseUrl, async () => {
-         spy()
-         return HttpResponse.json({ hello: 'world' }, { status: 500 })
-      }),
-   )
-
-   const start = Date.now()
-   await upfetch('/', {
-      retry: { delay: 100 },
-   })
-   const duration = Date.now() - start
-   expect(duration).toBeGreaterThanOrEqual(100)
-   expect(duration).toBeLessThanOrEqual(120)
-})
-
-test('should handle errors during times function execution', async () => {
-   const upfetch = up(withRetry(fetch), () => ({
-      baseUrl,
-      reject: () => false,
-      retry: {
-         enabled: () => true,
-         times: () => {
-            throw new Error('times error')
+         when: () => true,
+         attempts: () => {
+            throw new Error('attempts error')
          },
       },
    }))
@@ -310,8 +258,8 @@ test('should handle errors during retry.delay function execution', async () => {
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: 1,
+         when: () => true,
+         attempts: 1,
          delay: () => {
             throw new Error('delay error')
          },
@@ -336,8 +284,8 @@ test('should not retry when request times out', async () => {
       timeout: 100, // Set a short timeout
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: 2,
+         when: () => true,
+         attempts: 2,
       },
    }))
 
@@ -363,8 +311,8 @@ test('should not retry when request is aborted', async () => {
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: 2,
+         when: () => true,
+         attempts: 2,
       },
    }))
 
@@ -393,8 +341,8 @@ test('should not call onRetry when no retry is needed', async () => {
       onRetry: onRetrySpy,
       reject: () => false,
       retry: {
-         enabled: () => false,
-         times: 2,
+         when: () => false,
+         attempts: 2,
          delay: 0,
       },
    }))
@@ -412,8 +360,8 @@ test('should call onRetry before each retry attempt', async () => {
       onRetry: onRetrySpy,
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: 2,
+         when: () => true,
+         attempts: 2,
          delay: 0,
       },
    }))
@@ -448,8 +396,8 @@ test('should execute both up.onRetry and upfetch.onRetry', async () => {
       },
       reject: () => false,
       retry: {
-         enabled: () => true,
-         times: 1,
+         when: () => true,
+         attempts: 1,
          delay: 0,
       },
    }))
@@ -472,8 +420,8 @@ test('should abort retry immediately if signal controller aborts during retry de
       baseUrl,
       reject: () => false,
       retry: {
-         enabled: true,
-         times: 2,
+         when: () => true,
+         attempts: 2,
          delay: 1000,
       },
    }))
