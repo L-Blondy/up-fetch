@@ -237,7 +237,7 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-By default **one attempt** will be made for GET requests for any **non 2XX** response, with a delay of 1000ms.
+By default **one attempt** will be made for **GET requests** with any **non 2xx** response, with a delay of 1000ms.
 
 ```ts
 // default strategy
