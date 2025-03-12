@@ -237,9 +237,7 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-Retry options can also be functions for fine-grained control. Each function receives a context object with relevant information.
-
-By default retry is enabled for all non 2XX responses but attempts will be made only once for GET requests, with a delay of 1000ms between attempts.
+By default **one attempt** will be made for GET requests for any **non 2XX** response, with a delay of 1000ms.
 
 ```ts
 // default strategy
