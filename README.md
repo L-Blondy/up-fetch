@@ -237,7 +237,7 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-By default **one attempt** will be made for **GET requests** with any **non 2xx** response, with a delay of 1000ms.
+**By default:** one attempt will be made for GET requests with any non 2xx response, with a delay of 1000ms.
 
 ```ts
 const upfetch = up(withRetry(fetch), () => ({
@@ -250,7 +250,7 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-With this strategy retries can be made on a per request basis by setting
+Retry options can be overriden on a per request basis:
 
 ```ts
 await upfetch('/api/data', {
