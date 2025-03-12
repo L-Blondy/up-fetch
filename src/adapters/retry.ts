@@ -35,7 +35,7 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
       }: Parameters<TFetchFn>[1] & {
          retry?: RetryOptions
          onRetry?: OnRetry
-      } = {} as any,
+      } = {},
       ctx?: Parameters<TFetchFn>[2],
    ): Promise<Response> {
       const request = new Request(input, options as RequestInit)
@@ -47,7 +47,6 @@ export function withRetry<TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) {
       do {
          response = await fetchFn(input, options, ctx)
 
-         // Only evaluate when if we have retries left
          if (++attempt <= maxAttempt && (await when({ response, request }))) {
             await timeout(
                typeof delay === 'function'
@@ -76,7 +75,7 @@ const timeout = (delay: number, signal?: AbortSignal) =>
 
       function handleAbort() {
          clearTimeout(token)
-         // biome-ignore lint/style/noNonNullAssertion: <explanation>
+         // biome-ignore lint/style/noNonNullAssertion:
          reject(signal!.reason)
       }
    })
