@@ -125,15 +125,12 @@ export const up =
          ) {
             await abortableDelay(
                typeof options.retry.delay === 'function'
-                  ? await options.retry.delay({
-                       attempt,
-                       request,
-                       ...outcome,
-                    } as any)
+                  ? await options.retry.delay({ attempt, request, ...outcome })
                   : options.retry.delay,
                options.signal,
             )
-            options.onRetry?.({ attempt, request, ...outcome } as any)
+            options.onRequest?.(request)
+            options.onRetry?.({ attempt, request, ...outcome })
          }
       } while (attempt <= maxAttempt)
 

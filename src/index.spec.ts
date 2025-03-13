@@ -1621,17 +1621,17 @@ describe('retry', () => {
       })
    })
 
-   test('should execute both up.onRetry and upfetch.onRetry', async () => {
-      const defaultSpy = vi.fn()
-      const fetcherSpy = vi.fn()
-
+   test('should execute up.onRequest, up.onRetry and upfetch.onRetry', async () => {
       let exec = 0
 
       const upfetch = up(fetch, () => ({
          baseUrl,
+         onRequest(request) {
+            // calls twice
+            ++exec
+         },
          onRetry(context) {
-            expect(++exec).toBe(1)
-            defaultSpy(context)
+            expect(++exec).toBe(5)
          },
          reject: () => false,
          retry: {
@@ -1646,13 +1646,15 @@ describe('retry', () => {
       )
 
       await upfetch('/', {
+         onRequest(request) {
+            // calls twice
+            ++exec
+         },
          onRetry(context) {
-            expect(++exec).toBe(2)
-            fetcherSpy(context)
+            expect(++exec).toBe(6)
          },
       })
-      expect(defaultSpy).toHaveBeenCalledTimes(1)
-      expect(fetcherSpy).toHaveBeenCalledTimes(1)
+      expect(exec).toBe(6)
    })
 
    test('should abort retry immediately if signal controller aborts during retry delay', async () => {
@@ -1684,5 +1686,70 @@ describe('retry', () => {
       expect(exec).toBe(1)
       // should not wait for the whole 1000ms delay
       expect(Date.now() - now).toBeLessThan(50)
+   })
+
+   test('should retry once for GET requests that provide a response, with a delay of 1s', async () => {
+      const upfetch = up(fetch, () => ({
+         baseUrl,
+         reject: () => false,
+         retry: {
+            when: () => true,
+            attempts: 1,
+            delay: 1000,
+         },
+      }))
+
+      const spy = vi.fn()
+      server.use(
+         http.get(baseUrl, async () => {
+            spy()
+            return HttpResponse.json({ hello: 'world' }, { status: 500 })
+         }),
+      )
+
+      const startTime = Date.now()
+      await upfetch('/')
+      const endTime = Date.now()
+
+      expect(spy).toHaveBeenCalledTimes(2) // Initial request + 1 retry
+      expect(endTime - startTime).toBeGreaterThanOrEqual(1000) // Should wait at least 1s
+   })
+
+   test('should allow retrying after an error', async () => {
+      const spy = vi.fn()
+
+      const upfetch = up(fetch, () => ({
+         baseUrl: 'https://does.not.exist/',
+         retry: { attempts: 2, when: (ctx) => !!ctx.error },
+         onRetry(context) {
+            spy()
+         },
+      }))
+
+      await upfetch('/').catch(() => {})
+      expect(spy).toHaveBeenCalledTimes(2)
+   })
+
+   test('should allow retrying after a timeout', async () => {
+      const spy = vi.fn()
+
+      server.use(
+         http.get(baseUrl, async () => {
+            await scheduler.wait(1000)
+            return HttpResponse.json({}, { status: 200 })
+         }),
+      )
+
+      const upfetch = up(fetch, () => ({
+         baseUrl,
+         timeout: 1,
+         retry: { attempts: 2, when: (ctx) => !!ctx.error },
+         onRetry(context) {
+            spy()
+         },
+      }))
+
+      await upfetch('/').catch(() => {})
+      expect(spy).toHaveBeenCalledTimes(2)
    })
 })
