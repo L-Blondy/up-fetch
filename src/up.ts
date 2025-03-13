@@ -100,8 +100,6 @@ export const up =
          options,
       )
 
-      options.onRequest?.(request)
-
       const maxAttempt =
          typeof options.retry.attempts === 'function'
             ? await options.retry.attempts({ request })
@@ -113,6 +111,7 @@ export const up =
          | { response: undefined; error: {} } = {} as any
 
       do {
+         options.onRequest?.(request)
          try {
             outcome.response = await fetchFn(request.url, options, ctx)
          } catch (e: any) {
@@ -129,7 +128,6 @@ export const up =
                   : options.retry.delay,
                options.signal,
             )
-            options.onRequest?.(request)
             options.onRetry?.({ attempt, request, ...outcome })
          }
       } while (attempt <= maxAttempt)
