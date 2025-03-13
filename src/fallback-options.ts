@@ -28,4 +28,10 @@ export const fallbackOptions: FallbackOptions = {
       isJsonifiable(body) ? JSON.stringify(body) : body,
 
    reject: (response) => !response.ok,
+
+   retry: {
+      when: (ctx) => !!ctx.response && !ctx.response.ok,
+      attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
+      delay: 1000,
+   },
 }

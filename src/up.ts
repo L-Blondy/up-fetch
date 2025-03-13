@@ -8,6 +8,7 @@ import type {
    MaybePromise,
 } from './types'
 import {
+   abortableDelay,
    isJsonifiable,
    isPlainObject,
    mergeHeaders,
@@ -101,41 +102,76 @@ export const up =
 
       options.onRequest?.(request)
 
+      const maxAttempt =
+         typeof options.retry.attempts === 'function'
+            ? await options.retry.attempts({ request })
+            : options.retry.attempts
+      let attempt = 0
+      // biome-ignore lint/style/useConst:
+      let outcome:
+         | { response: Response; error: undefined }
+         | { response: undefined; error: {} } = {} as any
+
+      do {
+         try {
+            outcome.response = await fetchFn(request.url, options, ctx)
+         } catch (e: any) {
+            outcome.error = e
+         }
+
+         if (
+            ++attempt <= maxAttempt &&
+            (await options.retry.when({ request, ...outcome }))
+         ) {
+            await abortableDelay(
+               typeof options.retry.delay === 'function'
+                  ? await options.retry.delay({
+                       attempt,
+                       request,
+                       ...outcome,
+                    } as any)
+                  : options.retry.delay,
+               options.signal,
+            )
+            options.onRetry?.({ attempt, request, ...outcome } as any)
+         }
+      } while (attempt <= maxAttempt)
+
+      if (outcome.error) {
+         defaultOpts.onError?.(outcome.error, request)
+         throw outcome.error
+      }
+      const response = outcome.response as Response
+
       // Request has some quirks, better pass the url instead
-      return fetchFn(request.url, options, ctx)
-         .catch((error) => {
-            defaultOpts.onError?.(error, request)
+
+      if (!(await options.reject(response))) {
+         let parsed: Awaited<TParsedData>
+         try {
+            parsed = await options.parseResponse(response, request)
+         } catch (error: any) {
+            options.onError?.(error, request)
             throw error
-         })
-         .then(async (response: Response) => {
-            if (!(await options.reject(response))) {
-               let parsed: Awaited<TParsedData>
-               try {
-                  parsed = await options.parseResponse(response, request)
-               } catch (error: any) {
-                  options.onError?.(error, request)
-                  throw error
-               }
-               let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
-               try {
-                  data = options.schema
-                     ? await validate(options.schema, parsed)
-                     : parsed
-               } catch (error: any) {
-                  options.onError?.(error, request)
-                  throw error
-               }
-               options.onSuccess?.(data, request)
-               return data
-            }
-            let respError: any
-            try {
-               respError = await options.parseRejected(response, request)
-            } catch (error: any) {
-               options.onError?.(error, request)
-               throw error
-            }
-            options.onError?.(respError, request)
-            throw respError
-         })
+         }
+         let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
+         try {
+            data = options.schema
+               ? await validate(options.schema, parsed)
+               : parsed
+         } catch (error: any) {
+            options.onError?.(error, request)
+            throw error
+         }
+         options.onSuccess?.(data, request)
+         return data
+      }
+      let respError: any
+      try {
+         respError = await options.parseRejected(response, request)
+      } catch (error: any) {
+         options.onError?.(error, request)
+         throw error
+      }
+      options.onError?.(respError, request)
+      throw respError
    }

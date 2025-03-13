@@ -57,10 +57,73 @@ type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    'body' | 'headers' | 'method'
 > & {}
 
+type RetryWhen = (
+   context:
+      | {
+           response: Response
+           error: undefined
+           request: Request
+        }
+      | {
+           response: undefined
+           error: {}
+           request: Request
+        },
+) => MaybePromise<boolean>
+
+type RetryAttempts =
+   | number
+   | ((context: { request: Request }) => MaybePromise<number>)
+
+type RetryDelay =
+   | number
+   | ((
+        context:
+           | {
+                attempt: number
+                response: Response
+                error: undefined
+                request: Request
+             }
+           | {
+                attempt: number
+                response: undefined
+                error: {}
+                request: Request
+             },
+     ) => MaybePromise<number>)
+
+export type RetryOptions = {
+   attempts?: RetryAttempts
+   when?: RetryWhen
+   delay?: RetryDelay
+}
+
+type OnRetry = (
+   context:
+      | {
+           attempt: number
+           response: undefined
+           error: {}
+           request: Request
+        }
+      | {
+           attempt: number
+           response: Response
+           error: undefined
+           request: Request
+        },
+) => MaybePromise<void>
+
 export type FallbackOptions = {
    parseRejected: ParseRejected
    parseResponse: ParseResponse<any>
    reject: (response: Response) => MaybePromise<boolean>
+   retry: {
+      attempts: RetryAttempts
+      when: RetryWhen
+      delay: RetryDelay
+   }
    serializeParams: SerializeParams
    serializeBody: SerializeBody<BodyInit | JsonifiableObject | JsonifiableArray>
 }
@@ -79,10 +142,12 @@ export type DefaultOptions<
    headers?: RawHeaders
    /** HTTP method to use for the request */
    method?: Method
-   /** Callback executed before the request is made */
-   onRequest?: (request: Request) => void
    /** Callback executed when the request fails */
    onError?: (error: any, request: Request) => void
+   /** Callback executed before the request is made */
+   onRequest?: (request: Request) => void
+   /** Callback executed before each retry */
+   onRetry?: OnRetry
    /** Callback executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => void
    /** URL parameters to be serialized and appended to the URL */
@@ -93,6 +158,12 @@ export type DefaultOptions<
    parseResponse?: ParseResponse<TDefaultParsedData>
    /** Function to determine if a response should throw an error */
    reject?: (response: Response) => MaybePromise<boolean>
+   /** The default retry options. Will be merged with the fetcher options */
+   retry?: {
+      attempts?: RetryAttempts
+      when?: RetryWhen
+      delay?: RetryDelay
+   }
    /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
    serializeBody?: SerializeBody<TDefaultRawBody>
    /** Function to serialize URL parameters */
@@ -120,10 +191,12 @@ export type FetcherOptions<
    headers?: RawHeaders
    /** HTTP method */
    method?: Method
-   /** Callback executed before the request is made */
-   onRequest?: (request: Request) => void
    /** Callback executed when the request fails */
    onError?: (error: any, request: Request) => void
+   /** Callback executed before the request is made */
+   onRequest?: (request: Request) => void
+   /** Callback executed before each retry */
+   onRetry?: OnRetry
    /** Callback executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => void
    /** URL parameters */
@@ -134,6 +207,12 @@ export type FetcherOptions<
    parseResponse?: ParseResponse<TParsedData>
    /** Function to determine if a response should throw an error */
    reject?: (response: Response) => MaybePromise<boolean>
+   /** The fetch retry options. Merged with the default retry options */
+   retry?: {
+      attempts?: RetryAttempts
+      when?: RetryWhen
+      delay?: RetryDelay
+   }
    /** JSON Schema for request/response validation */
    schema?: TSchema
    /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */

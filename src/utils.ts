@@ -92,6 +92,23 @@ export const resolveUrl = (
    return url
 }
 
+export const abortableDelay = (delay: number, signal?: AbortSignal) =>
+   new Promise<void>((resolve, reject) => {
+      signal?.throwIfAborted()
+      signal?.addEventListener('abort', handleAbort, { once: true })
+
+      const token = setTimeout(() => {
+         signal?.removeEventListener('abort', handleAbort)
+         resolve()
+      }, delay)
+
+      function handleAbort() {
+         clearTimeout(token)
+         // biome-ignore lint/style/noNonNullAssertion:
+         reject(signal!.reason)
+      }
+   })
+
 export async function validate<TSchema extends StandardSchemaV1>(
    schema: TSchema,
    data: StandardSchemaV1.InferInput<TSchema>,
