@@ -237,9 +237,10 @@ const upfetch = up(fetch, () => ({
 
 **By default:** one attempt will be made for GET requests for any non 2xx response, with a delay of 1000ms.
 
+Here is the default config:
+
 ```ts
 const upfetch = up(fetch, () => ({
-   // default retry strategy
    retry: {
       when: (ctx) => ctx.response?.ok === false,
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
