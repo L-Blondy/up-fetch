@@ -224,7 +224,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Retry
 
-The retry functionality is provided via an **adapter** rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
+The retry functionality allows you to automatically retry failed requests with configurable attempts, delay, and condition.
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -260,6 +260,33 @@ await upfetch('/api/data', {
    },
 })
 ```
+
+The retry configuration supports:
+
+- `when`: Function that determines if a retry should happen based on the response or error
+- `attempts`: Number of retry attempts or function to determine attempts based on request.
+- `delay`: Delay between retries in milliseconds or function to determine delay based on attempt number
+- `onRetry`: Callback function called before each retry attempt
+
+You can also retry on network errors, timeouts, or any other error:
+
+```ts
+const upfetch = up(fetch, () => ({
+   retry: {
+      attempts: 2,
+      delay: 1000,
+      when: (ctx) => {
+         // Retry on timeout errors
+         if (ctx.error) return ctx.error.name === 'TimeoutError'
+         // Retry on 429 server errors
+         if (ctx.response) return ctx.response.status === 429
+         return false
+      },
+   },
+}))
+```
+
+The retry functionality respects the abort signal and will stop retrying if the request is aborted during a retry delay.
 
 ### ✔️ Error Handling
 

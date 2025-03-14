@@ -3,9 +3,11 @@ import { fallbackOptions } from './fallback-options'
 import type {
    BaseFetchFn,
    DefaultOptions,
+   DistributiveOmit,
    FallbackOptions,
    FetcherOptions,
    MaybePromise,
+   RetryContext,
 } from './types'
 import {
    abortableDelay,
@@ -90,10 +92,7 @@ export const up =
       let attempt = 0
       let request: Request
 
-      // biome-ignore lint/style/useConst:
-      let outcome:
-         | { response: Response; error: undefined }
-         | { response: undefined; error: {} } = {} as any
+      const outcome = {} as DistributiveOmit<RetryContext, 'request'>
 
       do {
          // per-try timeout

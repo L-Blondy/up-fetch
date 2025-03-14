@@ -24,6 +24,7 @@ import {
 } from '.'
 import { bodyMock } from './_mocks'
 import { fallbackOptions } from './fallback-options'
+import type { Unknown } from './types'
 
 const server = setupServer()
 beforeAll(() => server.listen())
@@ -934,7 +935,7 @@ describe('onError', () => {
          baseUrl: baseUrl,
          onError(error, request) {
             exec++
-            expectTypeOf(error).toEqualTypeOf<unknown>()
+            expectTypeOf(error).toEqualTypeOf<Unknown>()
          },
       }))
 
@@ -944,7 +945,7 @@ describe('onError', () => {
          },
          onError(error, request) {
             exec++
-            expectTypeOf(error).toEqualTypeOf<unknown>()
+            expectTypeOf(error).toEqualTypeOf<Unknown>()
          },
       }).catch(() => {})
       expect(exec).toBe(2)
@@ -1363,7 +1364,7 @@ describe('retry', () => {
                if (response) {
                   expectTypeOf(response).toEqualTypeOf<Response>()
                } else {
-                  expectTypeOf(error).toEqualTypeOf<{}>()
+                  expectTypeOf(error).toEqualTypeOf<Unknown>()
                }
                expect(response instanceof Response).toBe(true)
                return 0
@@ -1656,7 +1657,7 @@ describe('retry', () => {
          timeout: 50,
          retry: {
             attempts: 2,
-            when: (ctx) => (ctx.error as any)?.name === 'TimeoutError',
+            when: (ctx: any) => ctx.error?.name === 'TimeoutError',
             delay: 0,
          },
          onRetry(context) {

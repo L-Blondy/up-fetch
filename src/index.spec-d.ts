@@ -3,7 +3,7 @@ import { describe, expectTypeOf, test } from 'vitest'
 import { z } from 'zod'
 import { up } from '.'
 import { fallbackOptions } from './fallback-options'
-import type { JsonifiableArray, JsonifiableObject } from './types'
+import type { JsonifiableArray, JsonifiableObject, Unknown } from './types'
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
@@ -167,7 +167,7 @@ test('callback types', async () => {
          expectTypeOf(request).toEqualTypeOf<Request>()
       },
       onError(error, request) {
-         expectTypeOf(error).toEqualTypeOf<unknown>()
+         expectTypeOf(error).toEqualTypeOf<Unknown>()
          expectTypeOf(request).toEqualTypeOf<Request>()
       },
       onSuccess(data, request) {

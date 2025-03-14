@@ -57,9 +57,13 @@ type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    'body' | 'headers' | 'method'
 > & {}
 
-type Unknown = {} // anything except null | undefined
+/**
+ * Works with type guards like `isResponseError` and `isValidationError`
+ * and does not allow property access without checks
+ */
+export type Unknown = {}
 
-type RetryContext =
+export type RetryContext =
    | {
         response: Response
         error: undefined
@@ -119,7 +123,7 @@ export type DefaultOptions<
    /** HTTP method to use for the request */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: unknown, request: Request) => void
+   onError?: (error: Unknown, request: Request) => void
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => void
    /** Callback executed before each retry */
@@ -168,7 +172,7 @@ export type FetcherOptions<
    /** HTTP method */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: unknown, request: Request) => void
+   onError?: (error: Unknown, request: Request) => void
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => void
    /** Callback executed before each retry */
