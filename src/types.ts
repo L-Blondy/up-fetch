@@ -57,19 +57,21 @@ type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    'body' | 'headers' | 'method'
 > & {}
 
-type RetryWhen = (
-   context:
-      | {
-           response: Response
-           error: undefined
-           request: Request
-        }
-      | {
-           response: undefined
-           error: {}
-           request: Request
-        },
-) => MaybePromise<boolean>
+type Unknown = {} // anything except null | undefined
+
+type RetryContext =
+   | {
+        response: Response
+        error: undefined
+        request: Request
+     }
+   | {
+        response: undefined
+        error: Unknown
+        request: Request
+     }
+
+type RetryWhen = (context: RetryContext) => MaybePromise<boolean>
 
 type RetryAttempts =
    | number
@@ -77,21 +79,7 @@ type RetryAttempts =
 
 type RetryDelay =
    | number
-   | ((
-        context:
-           | {
-                attempt: number
-                response: Response
-                error: undefined
-                request: Request
-             }
-           | {
-                attempt: number
-                response: undefined
-                error: {}
-                request: Request
-             },
-     ) => MaybePromise<number>)
+   | ((context: RetryContext & { attempt: number }) => MaybePromise<number>)
 
 export type RetryOptions = {
    attempts?: RetryAttempts
@@ -100,19 +88,7 @@ export type RetryOptions = {
 }
 
 type OnRetry = (
-   context:
-      | {
-           attempt: number
-           response: undefined
-           error: {}
-           request: Request
-        }
-      | {
-           attempt: number
-           response: Response
-           error: undefined
-           request: Request
-        },
+   context: RetryContext & { attempt: number },
 ) => MaybePromise<void>
 
 export type FallbackOptions = {
@@ -143,7 +119,7 @@ export type DefaultOptions<
    /** HTTP method to use for the request */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: any, request: Request) => void
+   onError?: (error: unknown, request: Request) => void
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => void
    /** Callback executed before each retry */
@@ -192,7 +168,7 @@ export type FetcherOptions<
    /** HTTP method */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: any, request: Request) => void
+   onError?: (error: unknown, request: Request) => void
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => void
    /** Callback executed before each retry */

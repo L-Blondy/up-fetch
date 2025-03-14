@@ -30,6 +30,8 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
+const baseUrl = 'https://example.com'
+
 describe('isJsonifiable', () => {
    test.each`
       body                            | output
@@ -55,12 +57,12 @@ describe('isJsonifiable', () => {
 
 describe('Should receive the upfetch arguments (up to 3)', () => {
    test.each`
-      input                             | options                 | ctx
-      ${'https://example.com'}          | ${{ method: 'DELETE' }} | ${{ is: 'ctx' }}
-      ${new URL('https://example.com')} | ${{ method: 'DELETE' }} | ${'context'}
+      input               | options                 | ctx
+      ${baseUrl}          | ${{ method: 'DELETE' }} | ${{ is: 'ctx' }}
+      ${new URL(baseUrl)} | ${{ method: 'DELETE' }} | ${'context'}
    `('%#', async ({ input, options, ctx }) => {
       server.use(
-         http.delete('https://example.com', () => {
+         http.delete(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
@@ -86,7 +88,7 @@ describe('Should receive the upfetch arguments (up to 3)', () => {
 describe('reject', () => {
    test('should throw ResponseError by default when response.ok is false', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
@@ -94,7 +96,7 @@ describe('reject', () => {
       let catchCount = 0
 
       const upfetch = up(fetch, (input) => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
       }))
 
@@ -107,7 +109,7 @@ describe('reject', () => {
 
    test('should not throw when reject returns false', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
@@ -115,7 +117,7 @@ describe('reject', () => {
       let catchCount = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          reject: () => false,
       }))
@@ -128,7 +130,7 @@ describe('reject', () => {
 
    test('should execute reject before up.parseRejected', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
@@ -136,7 +138,7 @@ describe('reject', () => {
       let catchCount = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          reject: () => {
             expect(catchCount).toBe(0)
@@ -159,7 +161,7 @@ describe('reject', () => {
 
    test('should execute reject before upfetch.parseRejected', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
@@ -167,7 +169,7 @@ describe('reject', () => {
       let catchCount = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          reject: () => {
             expect(catchCount).toBe(0)
@@ -191,7 +193,7 @@ describe('reject', () => {
 
    test('should support asynchronous reject functions', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
@@ -199,7 +201,7 @@ describe('reject', () => {
       let catchCount = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          reject: async () => {
             return new Promise((resolve) => {
@@ -226,7 +228,7 @@ describe('reject', () => {
 describe('body', () => {
    test('should ignore up.body', async () => {
       server.use(
-         http.post('https://example.com', async ({ request }) => {
+         http.post(baseUrl, async ({ request }) => {
             const body = await request.text()
             if (count === 1) {
                expect(body).toBe('')
@@ -241,7 +243,7 @@ describe('body', () => {
       let count = 1
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          method: 'POST',
          body: 'my body',
       }))
@@ -273,7 +275,7 @@ describe('headers', () => {
          ${null}                         | ${false}
       `('%#', async ({ body, expected }) => {
          server.use(
-            http.post('https://example.com', async ({ request }) => {
+            http.post(baseUrl, async ({ request }) => {
                const hasApplicationJsonHeader =
                   request.headers.get('content-type') === 'application/json'
                expect(hasApplicationJsonHeader).toEqual(expected)
@@ -282,7 +284,7 @@ describe('headers', () => {
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             method: 'POST',
             serializeBody: (body) => JSON.stringify(body),
          }))
@@ -303,7 +305,7 @@ describe('headers', () => {
          ${bodyMock.classJsonifiable} | ${false}
       `('%#', async ({ body, expected }) => {
          server.use(
-            http.post('https://example.com', async ({ request }) => {
+            http.post(baseUrl, async ({ request }) => {
                const hasApplicationJsonHeader =
                   request.headers.get('content-type') === 'application/json'
                expect(hasApplicationJsonHeader).toEqual(expected)
@@ -312,7 +314,7 @@ describe('headers', () => {
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             method: 'POST',
             serializeBody: () => new FormData(),
          }))
@@ -333,14 +335,14 @@ describe('headers', () => {
          ${bodyMock.classJsonifiable}
       `('%#', async ({ body }) => {
          server.use(
-            http.post('https://example.com', async ({ request }) => {
+            http.post(baseUrl, async ({ request }) => {
                expect(request.headers.get('content-type')).toEqual('html/text')
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             headers: { 'content-type': 'html/text' },
             method: 'POST',
          }))
@@ -357,7 +359,7 @@ describe('headers', () => {
          ${{ a: '2' }}              | ${new Headers({ a: '3' })} | ${{ a: '3' }}
       `('%#', async ({ upHeaders, upfetchHeaders, finalHeaders }) => {
          server.use(
-            http.post('https://example.com', async ({ request }) => {
+            http.post(baseUrl, async ({ request }) => {
                expect(
                   Object.fromEntries([...request.headers.entries()]),
                ).toEqual(finalHeaders)
@@ -368,7 +370,7 @@ describe('headers', () => {
          const upfetch = up(fetch, () => ({
             headers: upHeaders,
          }))
-         await upfetch('https://example.com', {
+         await upfetch(baseUrl, {
             headers: upfetchHeaders,
             method: 'POST',
          })
@@ -377,14 +379,14 @@ describe('headers', () => {
 
    test('should support removing an up.headers[key] by setting upfetch.headers[key] to undefined', async () => {
       server.use(
-         http.post('https://example.com', async ({ request }) => {
+         http.post(baseUrl, async ({ request }) => {
             expect(request.headers.get('content-type')).toEqual(null)
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          headers: { 'content-type': 'text/html' },
          method: 'POST',
       }))
@@ -404,7 +406,7 @@ describe('params', () => {
          ${new URL('https://example.com/?hello=people')} | ${{ hello: 'world' }} | ${{ hello: 'test' }}   | ${'https://example.com/?hello=people&hello=test'}
       `('%#', async ({ input, upParams, upfetchParams, finalUrl }) => {
          server.use(
-            http.get('https://example.com', ({ request }) => {
+            http.get(baseUrl, ({ request }) => {
                expect(request.url).toEqual(finalUrl)
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
             }),
@@ -422,14 +424,14 @@ describe('params', () => {
 
    test('should support removing an up.params[key] by setting upfetch.params[key] to undefined', async () => {
       server.use(
-         http.get('https://example.com', ({ request }) => {
+         http.get(baseUrl, ({ request }) => {
             expect(new URL(request.url).search).toEqual('?hello=world')
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          params: { hello: 'world', input: 'test' },
       }))
 
@@ -440,7 +442,7 @@ describe('params', () => {
 
    test('should strip top level undefined values from the queryString', async () => {
       server.use(
-         http.get('https://example.com', ({ request }) => {
+         http.get(baseUrl, ({ request }) => {
             expect(request.url).toEqual('https://example.com/')
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
@@ -450,7 +452,7 @@ describe('params', () => {
          params: { key: 'value' },
       }))
 
-      await upfetch('https://example.com', {
+      await upfetch(baseUrl, {
          params: { key: undefined },
       })
    })
@@ -459,13 +461,13 @@ describe('params', () => {
 describe('serializeParams', () => {
    test('should receive the params object for serialization', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          serializeParams(params) {
             expect(params).toEqual({ a: 1 })
             return ''
@@ -484,7 +486,7 @@ describe('serializeParams', () => {
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          serializeParams(params) {
             expect(params).toEqual({ a: 1 })
             return fallbackOptions.serializeParams(params)
@@ -500,7 +502,7 @@ describe('serializeParams', () => {
          ${() => '?should=work'}
       `('%#', async ({ serializeParams }) => {
          server.use(
-            http.get('https://example.com', ({ request }) => {
+            http.get(baseUrl, ({ request }) => {
                expect(new URL(request.url).search).toEqual('?should=work')
 
                return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -508,7 +510,7 @@ describe('serializeParams', () => {
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             serializeParams,
          }))
          await upfetch('/')
@@ -517,7 +519,7 @@ describe('serializeParams', () => {
 
    test('should be called even if no params are defined', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
@@ -525,7 +527,7 @@ describe('serializeParams', () => {
       let count = 1
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          serializeParams() {
             count++
             return ''
@@ -537,7 +539,7 @@ describe('serializeParams', () => {
 
    test('should allow upfetch.serializeParams to override up.serializeParams', async () => {
       server.use(
-         http.get('https://example.com', ({ request }) => {
+         http.get(baseUrl, ({ request }) => {
             expect(new URL(request.url).search).toEqual('?from=upfetch')
 
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -545,7 +547,7 @@ describe('serializeParams', () => {
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          serializeParams: () => 'from=up',
       }))
       await upfetch('', { serializeParams: () => 'from=upfetch' })
@@ -575,7 +577,7 @@ describe('serializeBody', () => {
       'Should be called on any non-nullish an non-string body',
       async ({ body, shouldCallSerializeBody }) => {
          server.use(
-            http.post('https://example.com', async ({ request }) => {
+            http.post(baseUrl, async ({ request }) => {
                const actualBody = await request.text()
                expect(actualBody === 'serialized').toBe(shouldCallSerializeBody)
 
@@ -584,7 +586,7 @@ describe('serializeBody', () => {
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             method: 'POST',
          }))
          await upfetch('', {
@@ -598,7 +600,7 @@ describe('serializeBody', () => {
 
    test('serializeBody in upfetch should override serializeBody in up', async () => {
       server.use(
-         http.post('https://example.com', async ({ request }) => {
+         http.post(baseUrl, async ({ request }) => {
             expect(await request.text()).toEqual('from=upfetch')
 
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
@@ -606,7 +608,7 @@ describe('serializeBody', () => {
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          serializeBody: () => 'from=up',
       }))
       await upfetch('', {
@@ -620,13 +622,13 @@ describe('serializeBody', () => {
 describe('parseResponse', () => {
    test('should parse JSON responses by default', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
       }))
       const data = await upfetch('')
       expect(data).toEqual({ hello: 'world' })
@@ -634,13 +636,13 @@ describe('parseResponse', () => {
 
    test('should parse TEXT responses by default', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.text('some text', { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
       }))
       const data = await upfetch('')
       expect(data).toEqual('some text')
@@ -648,13 +650,13 @@ describe('parseResponse', () => {
 
    test('should provide response and request to parseResponse function', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.text('some text', { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          parseResponse(res, request) {
             expect(res instanceof Response).toEqual(true)
             expect(request.url).toEqual('https://example.com/')
@@ -666,7 +668,7 @@ describe('parseResponse', () => {
 
    test('should execute parseResponse before onSuccess callback', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.text('some text', { status: 200 })
          }),
       )
@@ -674,7 +676,7 @@ describe('parseResponse', () => {
       let count = 1
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          parseResponse(res) {
             expect(count).toEqual(1)
             count++
@@ -691,7 +693,7 @@ describe('parseResponse', () => {
 
    test('should also receive responses with empty body', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return new Response(null, { status: 200 })
          }),
       )
@@ -699,7 +701,7 @@ describe('parseResponse', () => {
       let count = 1
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          parseResponse(res) {
             expect(res.body).toEqual(null)
             expect(count).toEqual(1)
@@ -713,13 +715,13 @@ describe('parseResponse', () => {
 
    test('should allow upfetch.parseResponse to override up.parseResponse', async () => {
       server.use(
-         http.post('https://example.com', async () => {
+         http.post(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          parseResponse: () => Promise.resolve('from=up'),
       }))
       const data = await upfetch('', {
@@ -735,13 +737,13 @@ describe('parseResponse', () => {
 describe('parseRejected', () => {
    test('should parse JSON error responses by default', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
       }))
       await upfetch('').catch((error) => {
@@ -751,13 +753,13 @@ describe('parseRejected', () => {
 
    test('should parse TEXT error responses by default', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.text('some text', { status: 400 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
       }))
       await upfetch('').catch((error) => {
@@ -767,13 +769,13 @@ describe('parseRejected', () => {
 
    test('should provide response and request to parseRejected', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.text('some text', { status: 400 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          parseRejected(res, request) {
             expect(res instanceof Response).toEqual(true)
@@ -788,7 +790,7 @@ describe('parseRejected', () => {
 
    test('should execute parseRejected before onError callback', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.text('some text', { status: 400 })
          }),
       )
@@ -796,7 +798,7 @@ describe('parseRejected', () => {
       let count = 1
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          parseRejected(res) {
             expect(count).toEqual(1)
@@ -815,7 +817,7 @@ describe('parseRejected', () => {
 
    test('should receive error responses with empty body', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return new Response(null, { status: 300 })
          }),
       )
@@ -823,7 +825,7 @@ describe('parseRejected', () => {
       let count = 1
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          parseRejected(res) {
             expect(res.body).toEqual(null)
@@ -838,13 +840,13 @@ describe('parseRejected', () => {
 
    test('should allow upfetch.parseRejected to override up.parseRejected', async () => {
       server.use(
-         http.post('https://example.com', async () => {
+         http.post(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          parseRejected: () => Promise.resolve('from=up'),
       }))
@@ -861,14 +863,14 @@ describe('parseRejected', () => {
 describe('onError', () => {
    test('should receive validation errors', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
       let exec = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          onError(error, request) {
             if (isValidationError(error)) {
                exec++
@@ -891,14 +893,14 @@ describe('onError', () => {
 
    test('should receive the response errors', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 400 })
          }),
       )
       let exec = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          onError(error, request) {
             if (isResponseError(error)) {
@@ -921,7 +923,7 @@ describe('onError', () => {
 
    test('should receive any error', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
@@ -929,20 +931,20 @@ describe('onError', () => {
       let exec = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          onError(error, request) {
             exec++
-            expectTypeOf(error).toEqualTypeOf<any>()
+            expectTypeOf(error).toEqualTypeOf<unknown>()
          },
       }))
 
       await upfetch('', {
          parseResponse: () => {
-            throw new Error('any error')
+            throw new Error('unknown error')
          },
          onError(error, request) {
             exec++
-            expectTypeOf(error).toEqualTypeOf<any>()
+            expectTypeOf(error).toEqualTypeOf<unknown>()
          },
       }).catch(() => {})
       expect(exec).toBe(2)
@@ -952,7 +954,7 @@ describe('onError', () => {
 describe('onSuccess', () => {
    test('should execute onSuccess when no error occurs', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
@@ -960,7 +962,7 @@ describe('onSuccess', () => {
       let exec = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          onSuccess() {
             expect(exec).toBe(0)
             exec++
@@ -978,13 +980,13 @@ describe('onSuccess', () => {
 
    test('should provide validated data and request to onSuccess callback', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
       let exec = 0
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          onSuccess(data, request) {
             exec++
             expect(data).toEqual({ hello: 'world!' })
@@ -1010,7 +1012,7 @@ describe('onSuccess', () => {
 
    test('should skip onSuccess when parseResponse throws an error', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
@@ -1018,7 +1020,7 @@ describe('onSuccess', () => {
       let exec = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          onSuccess() {
             exec++
             throw new Error('onSuccess should not be called')
@@ -1043,7 +1045,7 @@ describe('onSuccess', () => {
 describe('onRequest', () => {
    test('should execute onRequest', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
@@ -1051,7 +1053,7 @@ describe('onRequest', () => {
       let exec = 0
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          onRequest() {
             expect(exec).toBe(0)
@@ -1070,13 +1072,13 @@ describe('onRequest', () => {
 
    test('should provide request object to onRequest callback', async () => {
       server.use(
-         http.get('https://example.com', () => {
+         http.get(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
       let exec = 0
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          retry: { attempts: 0 },
          onRequest(request) {
             exec++
@@ -1102,13 +1104,13 @@ describe('timeout', () => {
    // test for node 18 & 19
    test('Should not crash', async () => {
       server.use(
-         http.get('https://example.com', async () => {
+         http.get(baseUrl, async () => {
             return HttpResponse.json({}, { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
-         baseUrl: 'https://example.com',
+         baseUrl: baseUrl,
          timeout: 1,
       }))
 
@@ -1118,14 +1120,14 @@ describe('timeout', () => {
    if (majorNodeVersion >= 20) {
       test('should apply up.timeout when upfetch.timeout is not defined', async () => {
          server.use(
-            http.get('https://example.com', async () => {
+            http.get(baseUrl, async () => {
                await scheduler.wait(2)
                return HttpResponse.json({}, { status: 200 })
             }),
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             timeout: 1,
          }))
 
@@ -1139,14 +1141,14 @@ describe('timeout', () => {
 
       test('should allow upfetch.timeout to override up.timeout', async () => {
          server.use(
-            http.get('https://example.com', async () => {
+            http.get(baseUrl, async () => {
                await scheduler.wait(2)
                return HttpResponse.json({}, { status: 200 })
             }),
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             timeout: undefined,
          }))
 
@@ -1160,14 +1162,14 @@ describe('timeout', () => {
 
       test('should maintain timeout functionality when an AbortSignal is passed to upfetch.signal', async () => {
          server.use(
-            http.get('https://example.com', async () => {
+            http.get(baseUrl, async () => {
                await scheduler.wait(2)
                return HttpResponse.json({}, { status: 200 })
             }),
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             timeout: 1,
          }))
 
@@ -1183,14 +1185,14 @@ describe('timeout', () => {
 
       test('should maintain upfetch.signal functionality when timeout is defined', async () => {
          server.use(
-            http.get('https://example.com', async () => {
+            http.get(baseUrl, async () => {
                await scheduler.wait(10000)
                return HttpResponse.json({}, { status: 200 })
             }),
          )
 
          const upfetch = up(fetch, () => ({
-            baseUrl: 'https://example.com',
+            baseUrl: baseUrl,
             timeout: 9000,
          }))
 
@@ -1219,14 +1221,14 @@ describe('timeout', () => {
 
          test('should gracefully handle environments without AbortSignal.any and AbortSignal.timeout', async () => {
             server.use(
-               http.get('https://example.com', async () => {
+               http.get(baseUrl, async () => {
                   await scheduler.wait(2)
                   return HttpResponse.json({}, { status: 200 })
                }),
             )
 
             const upfetch = up(fetch, () => ({
-               baseUrl: 'https://example.com',
+               baseUrl: baseUrl,
             }))
 
             const controller = new AbortController()
@@ -1241,8 +1243,6 @@ describe('timeout', () => {
    }
 })
 describe('retry', () => {
-   const baseUrl = 'https://example.com'
-
    test('should call retry.when with the response', async () => {
       const upfetch = up(fetch, () => ({
          baseUrl,
@@ -1272,13 +1272,13 @@ describe('retry', () => {
       expect(spy).toHaveBeenCalledTimes(1)
    })
 
-   test('should not call retry.when or retry.delay when retry.attempts returns 0', async () => {
+   test('should not call retry.attempts or retry.delay when retry.when returns false', async () => {
       const upfetch = up(fetch, () => ({
          baseUrl,
          reject: () => false,
          retry: {
-            when: whenSpy,
-            attempts: () => 0,
+            when: () => false,
+            attempts: attemptsSpy,
             delay: () => {
                delaySpy()
                return 0
@@ -1290,11 +1290,11 @@ describe('retry', () => {
             HttpResponse.json({ hello: 'world' }, { status: 500 }),
          ),
       )
-      const whenSpy = vi.fn()
+      const attemptsSpy = vi.fn()
       const delaySpy = vi.fn()
 
       await upfetch('/')
-      expect(whenSpy).not.toHaveBeenCalled()
+      expect(attemptsSpy).not.toHaveBeenCalled()
       expect(delaySpy).not.toHaveBeenCalled()
    })
 
@@ -1404,38 +1404,6 @@ describe('retry', () => {
       expect(spy).toHaveBeenCalledTimes(2)
    })
 
-   test('should call retry.attempts, then retry.when then retry.delay', async () => {
-      let exec = 0
-      const upfetch = up(fetch, () => ({
-         baseUrl,
-         reject: () => false,
-         retry: {
-            attempts: () => {
-               expect(++exec).toBe(1)
-               return 1
-            },
-            when: () => {
-               expect(++exec).toBe(2)
-               return true
-            },
-            delay: () => {
-               expect(++exec).toBe(3)
-               return 0
-            },
-         },
-      }))
-
-      server.use(
-         http.get(baseUrl, async () => {
-            return HttpResponse.json({ hello: 'world' }, { status: 500 })
-         }),
-      )
-
-      await upfetch('/', {
-         retry: { when: () => false },
-      })
-   })
-
    test('should allow upfetch.attempts to override up.attempts', async () => {
       const upfetch = up(fetch, () => ({
          baseUrl,
@@ -1511,64 +1479,6 @@ describe('retry', () => {
 
       await expect(upfetch('/')).rejects.toThrow('delay error')
       expect(spy).toHaveBeenCalledTimes(1) // Only initial request, no retries due to error
-   })
-
-   test('should not retry when request times out', async () => {
-      const upfetch = up(fetch, () => ({
-         baseUrl,
-         timeout: 100, // Set a short timeout
-         reject: () => false,
-         retry: {
-            when: () => true,
-            delay: 100,
-            attempts: 2,
-         },
-      }))
-
-      server.use(
-         http.get(baseUrl, async () => {
-            await new Promise((resolve) => setTimeout(resolve, 200)) // Delay longer than timeout
-            return HttpResponse.json({ hello: 'world' }, { status: 500 })
-         }),
-      )
-
-      let exec = 0
-
-      await upfetch('/').catch((error) => {
-         exec++
-         expect(error.name).toBe('TimeoutError')
-      })
-      expect(exec).toBe(1)
-   })
-
-   test('should not retry when request is aborted', async () => {
-      const controller = new AbortController()
-      const upfetch = up(fetch, () => ({
-         baseUrl,
-         reject: () => false,
-         retry: {
-            when: () => true,
-            delay: 100,
-            attempts: 2,
-         },
-      }))
-
-      server.use(
-         http.get(baseUrl, async () => {
-            await new Promise((resolve) => setTimeout(resolve, 100)) // Add delay to ensure we can abort
-            return HttpResponse.json({ hello: 'world' }, { status: 500 })
-         }),
-      )
-
-      let exec = 0
-
-      const promise = upfetch('/', { signal: controller.signal })
-      controller.abort()
-      await promise.catch((error) => {
-         exec++
-         expect(error.name).toBe('AbortError')
-      })
-      expect(exec).toBe(1)
    })
 
    test('should not call onRetry when no retry is needed', async () => {
@@ -1690,15 +1600,10 @@ describe('retry', () => {
       expect(Date.now() - now).toBeLessThan(50)
    })
 
-   test('should retry once for GET requests that provide a response, with a delay of 1s', async () => {
+   test('By Default, should retry once for GET requests that provide a response, with a delay of 1s', async () => {
       const upfetch = up(fetch, () => ({
          baseUrl,
          reject: () => false,
-         retry: {
-            when: () => true,
-            attempts: 1,
-            delay: 1000,
-         },
       }))
 
       const spy = vi.fn()
@@ -1722,7 +1627,11 @@ describe('retry', () => {
 
       const upfetch = up(fetch, () => ({
          baseUrl: 'https://does.not.exist/',
-         retry: { attempts: 2, when: (ctx) => !!ctx.error },
+         retry: {
+            attempts: 2,
+            delay: 0,
+            when: (ctx) => !!ctx.error,
+         },
          onRetry(context) {
             spy()
          },
@@ -1737,15 +1646,19 @@ describe('retry', () => {
 
       server.use(
          http.get(baseUrl, async () => {
-            await scheduler.wait(1000)
+            await scheduler.wait(10000)
             return HttpResponse.json({}, { status: 200 })
          }),
       )
 
       const upfetch = up(fetch, () => ({
          baseUrl,
-         timeout: 1,
-         retry: { attempts: 2, when: (ctx) => !!ctx.error },
+         timeout: 50,
+         retry: {
+            attempts: 2,
+            when: (ctx) => (ctx.error as any)?.name === 'TimeoutError',
+            delay: 0,
+         },
          onRetry(context) {
             spy()
          },
@@ -1753,5 +1666,41 @@ describe('retry', () => {
 
       await upfetch('/').catch(() => {})
       expect(spy).toHaveBeenCalledTimes(2)
+   })
+
+   test('Type: when ctx.error is defined, ctx.response is undefined', () => {
+      up(fetch, () => ({
+         baseUrl,
+         timeout: 50,
+         retry: {
+            attempts: 0,
+            when: (ctx) => {
+               if (ctx.error) {
+                  expectTypeOf(ctx.response).toBeUndefined()
+               }
+               if (ctx.response) {
+                  expectTypeOf(ctx.error).toBeUndefined()
+               }
+               return false
+            },
+            delay(ctx) {
+               if (ctx.error) {
+                  expectTypeOf(ctx.response).toBeUndefined()
+               }
+               if (ctx.response) {
+                  expectTypeOf(ctx.error).toBeUndefined()
+               }
+               return 0
+            },
+         },
+         onRetry(ctx) {
+            if (ctx.error) {
+               expectTypeOf(ctx.response).toBeUndefined()
+            }
+            if (ctx.response) {
+               expectTypeOf(ctx.error).toBeUndefined()
+            }
+         },
+      }))
    })
 })

@@ -227,9 +227,7 @@ const upfetch = up(fetch, () => ({
 The retry functionality is provided via an **adapter** rather than being integrated directly into the core library. This design choice helps keep the base bundle size as small as possible, since many applications don't require retry capabilities.
 
 ```ts
-import { withRetry } from 'up-fetch/adapters'
-
-const upfetch = up(withRetry(fetch), () => ({
+const upfetch = up(fetch, () => ({
    retry: {
       attempts: 3,
       delay: 1000,
@@ -237,14 +235,14 @@ const upfetch = up(withRetry(fetch), () => ({
 }))
 ```
 
-**By default:** one attempt will be made for GET requests with any non 2xx response, with a delay of 1000ms.
+**By default:** one attempt will be made for GET requests for any non 2xx response, with a delay of 1000ms.
 
 ```ts
-const upfetch = up(withRetry(fetch), () => ({
+const upfetch = up(fetch, () => ({
    // default retry strategy
    retry: {
+      when: (ctx) => ctx.response?.ok === false,
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
-      when: (ctx) => !ctx.response.ok,
       delay: 1000,
    },
 }))

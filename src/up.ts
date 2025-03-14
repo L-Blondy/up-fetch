@@ -10,7 +10,6 @@ import type {
 import {
    abortableDelay,
    isJsonifiable,
-   isPlainObject,
    mergeHeaders,
    resolveUrl,
    validate,
@@ -57,23 +56,24 @@ export const up =
          ...fallbackOptions,
          ...defaultOpts,
          ...fetcherOpts,
+         ...(emptyOptions as { body: BodyInit | null | undefined }),
+         retry: {
+            ...fallbackOptions.retry,
+            ...defaultOpts.retry,
+            ...fetcherOpts.retry,
+         },
       }
 
-      Object.entries(defaultOpts).forEach(([name, value]) => {
-         // merge event handlers
-         if (/^on[A-Z]/.test(name)) {
-            ;(options as any)[name] = (...args: unknown[]) => {
-               defaultOpts[name]?.(...args)
-               fetcherOpts[name]?.(...args)
+      // merge event handlers
+      Object.keys(defaultOpts).forEach((key) => {
+         if (/^on[A-Z]/.test(key)) {
+            ;(options as any)[key] = (...args: unknown[]) => {
+               defaultOpts[key]?.(...args)
+               fetcherOpts[key]?.(...args)
             }
-         }
-         // merge plain objects
-         if (isPlainObject(value) && isPlainObject(fetcherOpts[name])) {
-            ;(options as any)[name] = { ...value, ...fetcherOpts[name] }
          }
       })
 
-      // @ts-expect-error
       options.body =
          fetcherOpts.body === null || fetcherOpts.body === undefined
             ? (fetcherOpts.body as null | undefined)
@@ -87,58 +87,60 @@ export const up =
          fetcherOpts.headers,
       ])
 
-      options.signal = withTimeout(options.signal, options.timeout)
-
-      const request = new Request(
-         resolveUrl(
-            options.baseUrl,
-            input,
-            defaultOpts.params,
-            fetcherOpts.params,
-            options.serializeParams,
-         ),
-         options,
-      )
-
-      const maxAttempt =
-         typeof options.retry.attempts === 'function'
-            ? await options.retry.attempts({ request })
-            : options.retry.attempts
       let attempt = 0
+      let request: Request
+
       // biome-ignore lint/style/useConst:
       let outcome:
          | { response: Response; error: undefined }
          | { response: undefined; error: {} } = {} as any
 
       do {
+         // per-try timeout
+         options.signal = withTimeout(fetcherOpts.signal, options.timeout)
+
+         request = new Request(
+            resolveUrl(
+               options.baseUrl,
+               input,
+               defaultOpts.params,
+               fetcherOpts.params,
+               options.serializeParams,
+            ),
+            options,
+         )
          options.onRequest?.(request)
          try {
+            // Request has some quirks, better pass the url instead
             outcome.response = await fetchFn(request.url, options, ctx)
          } catch (e: any) {
             outcome.error = e
          }
 
          if (
-            ++attempt <= maxAttempt &&
-            (await options.retry.when({ request, ...outcome }))
-         ) {
-            await abortableDelay(
-               typeof options.retry.delay === 'function'
-                  ? await options.retry.delay({ attempt, request, ...outcome })
-                  : options.retry.delay,
-               options.signal,
-            )
-            options.onRetry?.({ attempt, request, ...outcome })
-         }
-      } while (attempt <= maxAttempt)
+            !(await options.retry.when({ request, ...outcome })) ||
+            ++attempt >
+               (typeof options.retry.attempts === 'function'
+                  ? await options.retry.attempts({ request })
+                  : options.retry.attempts)
+         )
+            break
+
+         await abortableDelay(
+            typeof options.retry.delay === 'function'
+               ? await options.retry.delay({ attempt, request, ...outcome })
+               : options.retry.delay,
+            options.signal,
+         )
+         options.onRetry?.({ attempt, request, ...outcome })
+         // biome-ignore lint/correctness/noConstantCondition: <explanation>
+      } while (true)
 
       if (outcome.error) {
          defaultOpts.onError?.(outcome.error, request)
          throw outcome.error
       }
       const response = outcome.response as Response
-
-      // Request has some quirks, better pass the url instead
 
       if (!(await options.reject(response))) {
          let parsed: Awaited<TParsedData>

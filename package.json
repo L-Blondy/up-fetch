@@ -12,6 +12,7 @@
       "src"
    ],
    "exports": {
+      "./package.json": "./package.json",
       ".": {
          "import": {
             "types": "./dist/index.d.ts",
@@ -21,18 +22,7 @@
             "types": "./dist/index.d.cts",
             "default": "./dist/index.cjs"
          }
-      },
-      "./adapters": {
-         "import": {
-            "types": "./dist/adapters.d.ts",
-            "default": "./dist/adapters.js"
-         },
-         "require": {
-            "types": "./dist/adapters.d.cts",
-            "default": "./dist/adapters.cjs"
-         }
-      },
-      "./package.json": "./package.json"
+      }
    },
    "scripts": {
       "build": "tsup",

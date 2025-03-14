@@ -59,7 +59,7 @@ export const isJsonifiable = (
    Array.isArray(value) ||
    typeof value?.toJSON === 'function'
 
-export const isPlainObject = (value: any): value is Record<string, any> =>
+const isPlainObject = (value: any): value is Record<string, any> =>
    value && typeof value === 'object' && value.constructor?.name === 'Object'
 
 export const resolveUrl = (
@@ -94,7 +94,6 @@ export const resolveUrl = (
 
 export const abortableDelay = (delay: number, signal?: AbortSignal) =>
    new Promise<void>((resolve, reject) => {
-      signal?.throwIfAborted()
       signal?.addEventListener('abort', handleAbort, { once: true })
 
       const token = setTimeout(() => {

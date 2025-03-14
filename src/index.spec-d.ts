@@ -167,7 +167,7 @@ test('callback types', async () => {
          expectTypeOf(request).toEqualTypeOf<Request>()
       },
       onError(error, request) {
-         expectTypeOf(error).toEqualTypeOf<any>()
+         expectTypeOf(error).toEqualTypeOf<unknown>()
          expectTypeOf(request).toEqualTypeOf<Request>()
       },
       onSuccess(data, request) {
