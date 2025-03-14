@@ -6,7 +6,7 @@ export class ResponseError<TData = any> extends Error {
    status: number
 
    constructor(res: Response, data: TData, request: Request) {
-      super(`Request failed with status ${res.status}`)
+      super(`[${res.status}] ${res.statusText}`)
       this.data = data
       this.name = 'ResponseError'
       this.response = res
