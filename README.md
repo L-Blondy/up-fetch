@@ -279,8 +279,6 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-The retry functionality respects the abort signal and will stop retrying if the request is aborted during a retry delay.
-
 ### ✔️ Error Handling
 
 #### 👉 <samp>ResponseError</samp>
