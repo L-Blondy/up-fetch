@@ -19,9 +19,9 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
-## 🔄 Migrate from v1
+## 🔄 Coming from v1?
 
-Check out our [Migration Guide](./MIGRATION_v1_v2.md) - breaking changes only affect advanced use cases. \
+Check out our [Migration Guide](./MIGRATION_v1_v2.md). \
 Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fetch/tree/v1.3.6/README.md).
 
 ## Table of Contents
