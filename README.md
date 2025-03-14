@@ -235,12 +235,11 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-**By default:** one attempt will be made for GET requests for any non 2xx response, with a delay of 1000ms.
-
-Here is the default config:
+**By default** one attempt will be made for GET requests for any non 2xx response, with a delay of 1000ms:
 
 ```ts
 const upfetch = up(fetch, () => ({
+   // default retry config
    retry: {
       when: (ctx) => ctx.response?.ok === false,
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
@@ -249,7 +248,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Retry options can be overriden on a per request basis:
+Retry options can be overriden on a per-request basis:
 
 ```ts
 // for this delete request retry 3 times with exponential backoff
@@ -261,13 +260,6 @@ await upfetch('/api/data', {
    },
 })
 ```
-
-The retry configuration supports:
-
-- `when`: Function that determines if a retry should happen based on the response or error
-- `attempts`: Number of retry attempts or function to determine attempts based on request.
-- `delay`: Delay between retries in milliseconds or function to determine delay based on attempt number
-- `onRetry`: Callback function called before each retry attempt
 
 You can also retry on network errors, timeouts, or any other error:
 
@@ -592,13 +584,15 @@ function up(
 | Option                           | Signature                      | Description                                                                                               |
 | -------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for all requests.                                                                                |
-| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                      |
 | `onError`                        | `(error, request) => void`     | Executes on error.                                                                                        |
 | `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                         |
+| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                      |
+| `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                               |
 | `params`                         | `object`                       | The default query parameters.                                                                             |
 | `parseResponse`                  | `(response, request) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
 | `parseRejected`                  | `(response, request) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
 | `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
+| `retry`                          | `RetryOptions`                 | The default retry options.                                                                                |
 | `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.<br/> Restrict the valid `body` type by typing its first argument.            |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
 | `timeout`                        | `number`                       | The default timeout in milliseconds.                                                                      |
@@ -620,18 +614,30 @@ Options:
 | Option                           | Signature                      | Description                                                                                                                   |
 | -------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                     |
-| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                                          |
 | `onError`                        | `(error, request) => void`     | Executes on error.                                                                                                            |
 | `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                                             |
+| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                                          |
+| `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                                                   |
 | `params`                         | `object`                       | The query parameters.                                                                                                         |
 | `parseResponse`                  | `(response, request) => data`  | The success response parser.                                                                                                  |
 | `parseRejected`                  | `(response, request) => error` | The error response parser.                                                                                                    |
 | `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
+| `retry`                          | `RetryOptions`                 | The retry options.                                                                                                            |
 | `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification][standard-schema]. |
 | `serializeBody`                  | `(body) => BodyInit`           | The body serializer.<br/> Restrict the valid `body` type by typing its first argument.                                        |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                               |
 | `timeout`                        | `number`                       | The timeout in milliseconds.                                                                                                  |
 | _...and all other fetch options_ |                                |                                                                                                                               |
+
+<br/>
+
+### <samp>RetryOptions</samp>
+
+| Option     | Signature            | Description                                                                                  |
+| ---------- | -------------------- | -------------------------------------------------------------------------------------------- |
+| `when`     | `(ctx) => boolean`   | Function that determines if a retry should happen based on the response or error             |
+| `attempts` | `number \| function` | Number of retry attempts or function to determine attempts based on request.                 |
+| `delay`    | `number \| function` | Delay between retries in milliseconds or function to determine delay based on attempt number |
 
 <br/>
 
