@@ -56,7 +56,7 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.2kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.4kB gzipped, no dependency
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
