@@ -1,5 +1,5 @@
-# upfetch - 高级 fetch 客户端构建器
-
+<h1 align="center">upfetch - 高级 fetch 客户端构建器</h1>
+<br>
 <p align="center">
 <img src="https://raw.githubusercontent.com/L-Blondy/up-fetch/refs/heads/master/logos/upfetch-logo-gold.svg" alt="upfetch">
 </p>
@@ -18,6 +18,11 @@ _upfetch_ 是一个高级的 fetch 客户端构建器，具有标准模式验证
 > **警告**
 > 此中文翻译由人工智能生成。如果您发现任何错误或有改进建议，欢迎提交 Pull Request。
 
+## 🔄 从 v1 版本迁移
+
+查看我们的 [迁移指南](./MIGRATION_v1_v2.md) - 重大更改仅影响高级用例。\
+寻找 v1 版本的文档？[点击这里](https://github.com/L-Blondy/up-fetch/tree/v1.3.6/README.md)。
+
 ## 目录
 
 - [亮点](#️-亮点)
@@ -29,6 +34,7 @@ _upfetch_ 是一个高级的 fetch 客户端构建器，具有标准模式验证
    - [模式验证](#️-模式验证)
    - [生命周期钩子](#️-生命周期钩子)
    - [超时设置](#️-超时设置)
+   - [重试](#️-重试)
    - [错误处理](#️-错误处理)
 - [使用方法](#️-使用方法)
    - [身份验证](#️-身份验证)
@@ -214,6 +220,54 @@ const upfetch = up(fetch, () => ({
    timeout: 5000,
 }))
 ```
+
+### ✔️ 重试
+
+重试功能通过适配器提供，而不是直接集成到核心库中。这种设计选择有助于保持基础包的体积尽可能小，因为许多应用程序并不需要重试功能。
+
+```ts
+import { withRetry } from 'up-fetch/adapters'
+
+const upfetch = up(withRetry(fetch), () => ({
+   retry: {
+      enabled: true, // 当 !response.ok 时重试
+      times: 3,
+      delay: 1000,
+   },
+}))
+```
+
+所有重试选项都可以是函数，以实现精细控制。每个函数都接收一个包含相关信息的上下文对象。
+
+默认行为：
+
+```ts
+const upfetch = up(withRetry(fetch), () => ({
+   retry: {
+      // 对所有非 2XX 响应启用重试
+      enabled: ({ response, request }) => !response.ok,
+      // 仅对 GET 请求重试一次
+      times: ({ response, request }) => (request.method === 'GET' ? 1 : 0),
+      // 重试之间的延迟为 1000ms
+      delay: 1000,
+   },
+}))
+```
+
+你可以在每个请求的基础上覆盖单个选项：
+
+```ts
+await upfetch('/api/data', {
+   method: 'DELETE',
+   retry: {
+      times: 3,
+      // 指数退避
+      delay: ({ attempt }) => attempt ** 2 * 1000,
+   },
+})
+```
+
+💡 超时时间是按操作应用的，而不是按重试次数。如果请求超时，将不会进行任何重试尝试。
 
 ### ✔️ 错误处理
 

@@ -13,21 +13,16 @@
 </p>
 <br>
 
-_upfetch_ is an advanced fetch client builder with standard schema validation, automatic response parsing, smart defaults and more. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
+_upfetch_ is an advanced fetch client builder with standard schema validation,
+automatic response parsing, smart defaults and more. Designed to make data fetching
+type-safe and developer-friendly while keeping the familiar fetch API.
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
-## 🚀 Try v2 Beta!
+## 🔄 Coming from v1?
 
-The **Retry** feature is now available in beta! \
-Give it a try with:
-
-```bash
-npm i up-fetch@2.0.0-beta.10
-```
-
-Check out the [Migration Guide](https://github.com/L-Blondy/up-fetch/blob/v2.0/MIGRATION_v1_v2.md) for details about changes and how to upgrade. \
-For a complete overview of new features, see the [v2 documentation](https://github.com/L-Blondy/up-fetch/tree/v2.0/README.md).
+Retries are here! Check out our [Migration Guide](./MIGRATION_v1_v2.md). \
+Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fetch/tree/v1.3.6/README.md).
 
 ## Table of Contents
 
@@ -40,6 +35,7 @@ For a complete overview of new features, see the [v2 documentation](https://gith
    - [Schema Validation](#️-schema-validation)
    - [Lifecycle Hooks](#️-lifecycle-hooks)
    - [Timeout](#️-timeout)
+   - [Retry](#️-retry)
    - [Error Handling](#️-error-handling)
 - [Usage](#️-usage)
    - [Authentication](#️-authentication)
@@ -60,7 +56,7 @@ For a complete overview of new features, see the [v2 documentation](https://gith
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.2kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.4kB gzipped, no dependency
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
@@ -223,6 +219,63 @@ Set a default timeout for all requests:
 ```ts
 const upfetch = up(fetch, () => ({
    timeout: 5000,
+}))
+```
+
+### ✔️ Retry
+
+The retry functionality allows you to automatically retry failed requests with configurable attempts, delay, and condition.
+
+```ts
+const upfetch = up(fetch, () => ({
+   retry: {
+      attempts: 3,
+      delay: 1000,
+   },
+}))
+```
+
+**By default** one attempt will be made for GET requests for any non 2xx response, with a delay of 1000ms:
+
+```ts
+const upfetch = up(fetch, () => ({
+   // default retry config
+   retry: {
+      when: (ctx) => ctx.response?.ok === false,
+      attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
+      delay: 1000,
+   },
+}))
+```
+
+Retry options can be overriden on a per-request basis:
+
+```ts
+// for this delete request retry 3 times with exponential backoff
+await upfetch('/api/data', {
+   method: 'DELETE',
+   retry: {
+      attempts: 3,
+      delay: (ctx) => ctx.attempt ** 2 * 1000,
+   },
+})
+```
+
+You can also retry on network errors, timeouts, or any other error:
+
+```ts
+const upfetch = up(fetch, () => ({
+   retry: {
+      attempts: 2,
+      delay: 1000,
+      when: (ctx) => {
+         // Retry on timeout errors
+         if (ctx.error) return ctx.error.name === 'TimeoutError'
+         // Retry on 429 server errors
+         if (ctx.response) return ctx.response.status === 429
+         return false
+      },
+   },
 }))
 ```
 
@@ -519,23 +572,28 @@ Creates a new upfetch instance with optional default options.
 ```ts
 function up(
    fetchFn: typeof globalThis.fetch,
-   getDefaultOptions?: (fetcherOptions: FetcherOptions) => DefaultOptions,
+   getDefaultOptions?: (
+      input: RequestInit,
+      options: FetcherOptions,
+   ) => DefaultOptions | Promise<DefaultOptions>,
 ): UpFetch
 ```
 
 | Option                           | Signature                      | Description                                                                                               |
 | -------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for all requests.                                                                                |
+| `onError`                        | `(error, request) => void`     | Executes on error.                                                                                        |
+| `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                         |
+| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                      |
+| `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                               |
 | `params`                         | `object`                       | The default query parameters.                                                                             |
-| `onRequest`                      | `(options) => void`            | Executes before the request is made.                                                                      |
-| `onError`                        | `(error, options) => void`     | Executes on error.                                                                                        |
-| `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
-| `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
-| `parseRejected`                  | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
+| `parseResponse`                  | `(response, request) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
+| `parseRejected`                  | `(response, request) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
+| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
+| `retry`                          | `RetryOptions`                 | The default retry options.                                                                                |
 | `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.<br/> Restrict the valid `body` type by typing its first argument.            |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
 | `timeout`                        | `number`                       | The default timeout in milliseconds.                                                                      |
-| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
 | _...and all other fetch options_ |                                |                                                                                                           |
 
 ### <samp>upfetch(url, options?)</samp>
@@ -554,15 +612,30 @@ Options:
 | Option                           | Signature                      | Description                                                                                                                   |
 | -------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                     |
+| `onError`                        | `(error, request) => void`     | Executes on error.                                                                                                            |
+| `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                                             |
+| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                                          |
+| `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                                                   |
 | `params`                         | `object`                       | The query parameters.                                                                                                         |
-| `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                  |
-| `parseRejected`                  | `(response, options) => error` | The error response parser.                                                                                                    |
+| `parseResponse`                  | `(response, request) => data`  | The success response parser.                                                                                                  |
+| `parseRejected`                  | `(response, request) => error` | The error response parser.                                                                                                    |
+| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
+| `retry`                          | `RetryOptions`                 | The retry options.                                                                                                            |
 | `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification][standard-schema]. |
 | `serializeBody`                  | `(body) => BodyInit`           | The body serializer.<br/> Restrict the valid `body` type by typing its first argument.                                        |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                               |
 | `timeout`                        | `number`                       | The timeout in milliseconds.                                                                                                  |
-| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
 | _...and all other fetch options_ |                                |                                                                                                                               |
+
+<br/>
+
+### <samp>RetryOptions</samp>
+
+| Option     | Signature            | Description                                                                                  |
+| ---------- | -------------------- | -------------------------------------------------------------------------------------------- |
+| `when`     | `(ctx) => boolean`   | Function that determines if a retry should happen based on the response or error             |
+| `attempts` | `number \| function` | Number of retry attempts or function to determine attempts based on request.                 |
+| `delay`    | `number \| function` | Delay between retries in milliseconds or function to determine delay based on attempt number |
 
 <br/>
 
