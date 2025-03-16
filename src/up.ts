@@ -1,4 +1,8 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
+import {
+   withRequestStreaming,
+   withResponseStreaming,
+} from './experiment/streaming'
 import { fallbackOptions } from './fallback-options'
 import type {
    BaseFetchFn,
@@ -110,7 +114,9 @@ export const up =
          )
          options.onRequest?.(request)
          try {
-            outcome.response = await fetchFn(request, options, ctx)
+            outcome.response = await withRequestStreaming(
+               withResponseStreaming(fetchFn),
+            )(request, options, ctx)
          } catch (e: any) {
             outcome.error = e
          }
