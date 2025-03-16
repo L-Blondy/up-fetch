@@ -7,6 +7,9 @@ const baseUrl = 'http://a.b.c'
 const encoder = new TextEncoder()
 
 const server = setupServer(
+   http.get(`${baseUrl}/empty`, () => {
+      return new HttpResponse(null, {})
+   }),
    http.get(`${baseUrl}/chatbot`, () => {
       const stream = new ReadableStream({
          start(controller) {
@@ -26,21 +29,43 @@ const server = setupServer(
          },
       })
    }),
+   http.get(`${baseUrl}/nostream`, () => {
+      return HttpResponse.text('hello', {
+         status: 200,
+         statusText: 'status text',
+         headers: { some: 'header' },
+      })
+   }),
 )
 
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-test('response streaming', async () => {
+test('should call onDownloadProgress with ratio 1 when body is empty', async () => {
    const $fetch = withResponseStreaming(fetch)
    const spy = vi.fn()
-   const result = await $fetch(`${baseUrl}/chatbot`, {
+   const response = await $fetch(`${baseUrl}/empty`, {
       onDownloadProgress(progress, chunk) {
          spy(progress, chunk)
       },
    })
-   expect(await result.text()).toEqual('BrandNewWorld')
+   expect(await response.body).toBeNull()
+   expect(spy).toHaveBeenCalledWith(
+      { ratio: 1, totalBytes: 0, transferredBytes: 0 },
+      new Uint8Array(),
+   )
+})
+
+test('should call onDownloadProgress for each chunk', async () => {
+   const $fetch = withResponseStreaming(fetch)
+   const spy = vi.fn()
+   const response = await $fetch(`${baseUrl}/chatbot`, {
+      onDownloadProgress(progress, chunk) {
+         spy(progress, chunk)
+      },
+   })
+   expect(await response.text()).toEqual('BrandNewWorld')
    expect(spy).toHaveBeenNthCalledWith(
       1,
       { ratio: 0, totalBytes: 13, transferredBytes: 0 },
@@ -61,4 +86,29 @@ test('response streaming', async () => {
       { ratio: 1, totalBytes: 13, transferredBytes: 13 },
       expect.any(Uint8Array),
    )
+})
+
+test('should work with normal endpoints', async () => {
+   const $fetch = withResponseStreaming(fetch)
+   const spy = vi.fn()
+   const response = await $fetch(`${baseUrl}/nostream`, {
+      onDownloadProgress(progress, chunk) {
+         spy(progress, chunk)
+      },
+   })
+   expect(await response.text()).toEqual('hello')
+   expect(spy).toHaveBeenCalledWith(
+      { ratio: 1, totalBytes: 5, transferredBytes: 5 },
+      expect.any(Uint8Array),
+   )
+})
+
+test('should preserve headers, status, and statusText ', async () => {
+   const $fetch = withResponseStreaming(fetch)
+   const response = await $fetch(`${baseUrl}/nostream`, {
+      onDownloadProgress() {},
+   })
+   expect(response.status).toEqual(200)
+   expect(response.statusText).toEqual('status text')
+   expect(response.headers.get('some')).toEqual('header')
 })

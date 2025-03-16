@@ -1524,12 +1524,12 @@ describe('retry', () => {
       expect(onRetrySpy).toHaveBeenCalledTimes(2)
       expect(onRetrySpy).toHaveBeenNthCalledWith(1, {
          attempt: 1,
-         response: expect.any(HttpResponse),
+         response: expect.any(Response),
          request: expect.any(Request),
       })
       expect(onRetrySpy).toHaveBeenNthCalledWith(2, {
          attempt: 2,
-         response: expect.any(HttpResponse),
+         response: expect.any(Response),
          request: expect.any(Request),
       })
    })
