@@ -46,67 +46,75 @@ test('should call onDownloadProgress with ratio 1 when body is empty', async () 
    const $fetch = withResponseStreaming(fetch)
    const spy = vi.fn()
    const response = await $fetch(`${baseUrl}/empty`, {
-      onDownloadProgress(progress, chunk) {
-         spy(progress, chunk)
+      onResponseStreaming(streaming) {
+         spy(streaming)
       },
    })
    expect(await response.body).toBeNull()
-   expect(spy).toHaveBeenCalledWith(
-      { ratio: 1, totalBytes: 0, transferredBytes: 0 },
-      new Uint8Array(),
-   )
+   expect(spy).toHaveBeenCalledWith({
+      progress: 1,
+      totalBytes: 0,
+      transferredBytes: 0,
+      chunk: new Uint8Array(),
+   })
 })
 
 test('should call onDownloadProgress for each chunk', async () => {
    const $fetch = withResponseStreaming(fetch)
    const spy = vi.fn()
    const response = await $fetch(`${baseUrl}/chatbot`, {
-      onDownloadProgress(progress, chunk) {
-         spy(progress, chunk)
+      onResponseStreaming(streaming) {
+         spy(streaming)
       },
    })
    expect(await response.text()).toEqual('BrandNewWorld')
-   expect(spy).toHaveBeenNthCalledWith(
-      1,
-      { ratio: 0, totalBytes: 13, transferredBytes: 0 },
-      new Uint8Array(),
-   )
-   expect(spy).toHaveBeenNthCalledWith(
-      2,
-      { ratio: 5 / 13, totalBytes: 13, transferredBytes: 5 },
-      expect.any(Uint8Array),
-   )
-   expect(spy).toHaveBeenNthCalledWith(
-      3,
-      { ratio: 8 / 13, totalBytes: 13, transferredBytes: 8 },
-      expect.any(Uint8Array),
-   )
-   expect(spy).toHaveBeenNthCalledWith(
-      4,
-      { ratio: 1, totalBytes: 13, transferredBytes: 13 },
-      expect.any(Uint8Array),
-   )
+   expect(spy).toHaveBeenNthCalledWith(1, {
+      progress: 0,
+      totalBytes: 13,
+      transferredBytes: 0,
+      chunk: new Uint8Array(),
+   })
+   expect(spy).toHaveBeenNthCalledWith(2, {
+      progress: 5 / 13,
+      totalBytes: 13,
+      transferredBytes: 5,
+      chunk: expect.any(Uint8Array),
+   })
+   expect(spy).toHaveBeenNthCalledWith(3, {
+      progress: 8 / 13,
+      totalBytes: 13,
+      transferredBytes: 8,
+      chunk: expect.any(Uint8Array),
+   })
+   expect(spy).toHaveBeenNthCalledWith(4, {
+      progress: 1,
+      totalBytes: 13,
+      transferredBytes: 13,
+      chunk: expect.any(Uint8Array),
+   })
 })
 
 test('should work with normal endpoints', async () => {
    const $fetch = withResponseStreaming(fetch)
    const spy = vi.fn()
    const response = await $fetch(`${baseUrl}/nostream`, {
-      onDownloadProgress(progress, chunk) {
-         spy(progress, chunk)
+      onResponseStreaming(streaming) {
+         spy(streaming)
       },
    })
    expect(await response.text()).toEqual('hello')
-   expect(spy).toHaveBeenCalledWith(
-      { ratio: 1, totalBytes: 5, transferredBytes: 5 },
-      expect.any(Uint8Array),
-   )
+   expect(spy).toHaveBeenCalledWith({
+      progress: 1,
+      totalBytes: 5,
+      transferredBytes: 5,
+      chunk: expect.any(Uint8Array),
+   })
 })
 
 test('should preserve headers, status, and statusText ', async () => {
    const $fetch = withResponseStreaming(fetch)
    const response = await $fetch(`${baseUrl}/nostream`, {
-      onDownloadProgress() {},
+      onResponseStreaming() {},
    })
    expect(response.status).toEqual(200)
    expect(response.statusText).toEqual('status text')

@@ -6,14 +6,12 @@ export function withResponseStreaming<TFetchFn extends BaseFetchFn>(
    return async (
       input: Parameters<TFetchFn>[0],
       options: Parameters<TFetchFn>[1] & {
-         onDownloadProgress?: (
-            progress: {
-               ratio: number
-               totalBytes: number
-               transferredBytes: number
-            },
-            chunk: Uint8Array,
-         ) => void
+         onResponseStreaming?: (streaming: {
+            progress: number
+            totalBytes: number
+            transferredBytes: number
+            chunk: Uint8Array
+         }) => void
       } = {},
       ctx?: Parameters<TFetchFn>[2],
    ) => {
@@ -23,25 +21,25 @@ export function withResponseStreaming<TFetchFn extends BaseFetchFn>(
       const totalBytes = +(response.headers.get('content-length') || 0)
       let transferredBytes = 0
 
-      options.onDownloadProgress?.(
-         { ratio: body ? 0 : 1, totalBytes, transferredBytes },
-         new Uint8Array(),
-      )
-      if (!body || !options.onDownloadProgress) return response
+      options.onResponseStreaming?.({
+         progress: body ? 0 : 1,
+         totalBytes,
+         transferredBytes,
+         chunk: new Uint8Array(),
+      })
+      if (!body || !options.onResponseStreaming) return response
 
       return new Response(
          new ReadableStream({
             async start(controller) {
                for await (const chunk of body) {
                   transferredBytes += chunk.byteLength
-                  options.onDownloadProgress(
-                     {
-                        ratio: totalBytes ? transferredBytes / totalBytes : 0,
-                        transferredBytes,
-                        totalBytes,
-                     },
+                  options.onResponseStreaming({
+                     progress: totalBytes ? transferredBytes / totalBytes : 0,
+                     transferredBytes,
+                     totalBytes,
                      chunk,
-                  )
+                  })
                   controller.enqueue(chunk)
                }
                controller.close()
