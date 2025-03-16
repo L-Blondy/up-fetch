@@ -86,9 +86,18 @@ type RetryDelay =
    | ((context: RetryContext & { attempt: number }) => MaybePromise<number>)
 
 export type RetryOptions = {
+   /**
+    * The number of attempts to make before giving up
+    */
    attempts?: RetryAttempts
-   when?: RetryWhen
+   /**
+    * The delay before retrying
+    */
    delay?: RetryDelay
+   /**
+    * Function to determine if a retry attempt should be made
+    */
+   when?: RetryWhen
 }
 
 type OnRetry = (
@@ -99,11 +108,7 @@ export type FallbackOptions = {
    parseRejected: ParseRejected
    parseResponse: ParseResponse<any>
    reject: (response: Response) => MaybePromise<boolean>
-   retry: {
-      attempts: RetryAttempts
-      when: RetryWhen
-      delay: RetryDelay
-   }
+   retry: Required<RetryOptions>
    serializeParams: SerializeParams
    serializeBody: SerializeBody<BodyInit | JsonifiableObject | JsonifiableArray>
 }
@@ -139,11 +144,7 @@ export type DefaultOptions<
    /** Function to determine if a response should throw an error */
    reject?: (response: Response) => MaybePromise<boolean>
    /** The default retry options. Will be merged with the fetcher options */
-   retry?: {
-      attempts?: RetryAttempts
-      when?: RetryWhen
-      delay?: RetryDelay
-   }
+   retry?: RetryOptions
    /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
    serializeBody?: SerializeBody<TDefaultRawBody>
    /** Function to serialize URL parameters */
@@ -188,11 +189,7 @@ export type FetcherOptions<
    /** Function to determine if a response should throw an error */
    reject?: (response: Response) => MaybePromise<boolean>
    /** The fetch retry options. Merged with the default retry options */
-   retry?: {
-      attempts?: RetryAttempts
-      when?: RetryWhen
-      delay?: RetryDelay
-   }
+   retry?: RetryOptions
    /** JSON Schema for request/response validation */
    schema?: TSchema
    /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
