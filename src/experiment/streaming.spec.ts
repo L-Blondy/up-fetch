@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { afterAll, afterEach, beforeAll, expect, test, vi } from 'vitest'
-import { withResponseStreaming } from './streaming'
+import { withStreaming } from './streaming'
 
 const baseUrl = 'http://a.b.c'
 const encoder = new TextEncoder()
@@ -43,7 +43,7 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 test('should call onDownloadProgress with ratio 1 when body is empty', async () => {
-   const $fetch = withResponseStreaming(fetch)
+   const $fetch = withStreaming(fetch)
    const spy = vi.fn()
    const response = await $fetch(`${baseUrl}/empty`, {
       onResponseStreaming(streaming) {
@@ -60,7 +60,7 @@ test('should call onDownloadProgress with ratio 1 when body is empty', async () 
 })
 
 test('should call onDownloadProgress for each chunk', async () => {
-   const $fetch = withResponseStreaming(fetch)
+   const $fetch = withStreaming(fetch)
    const spy = vi.fn()
    const response = await $fetch(`${baseUrl}/chatbot`, {
       onResponseStreaming(streaming) {
@@ -95,7 +95,7 @@ test('should call onDownloadProgress for each chunk', async () => {
 })
 
 test('should work with normal endpoints', async () => {
-   const $fetch = withResponseStreaming(fetch)
+   const $fetch = withStreaming(fetch)
    const spy = vi.fn()
    const response = await $fetch(`${baseUrl}/nostream`, {
       onResponseStreaming(streaming) {
@@ -112,7 +112,7 @@ test('should work with normal endpoints', async () => {
 })
 
 test('should preserve headers, status, and statusText ', async () => {
-   const $fetch = withResponseStreaming(fetch)
+   const $fetch = withStreaming(fetch)
    const response = await $fetch(`${baseUrl}/nostream`, {
       onResponseStreaming() {},
    })

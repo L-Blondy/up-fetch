@@ -1,6 +1,6 @@
 import type { BaseFetchFn } from 'src/types'
 
-export const withResponseStreaming =
+const withResponseStreaming =
    <TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) =>
    async (
       input: Parameters<TFetchFn>[0],
@@ -52,7 +52,7 @@ export const withResponseStreaming =
       )
    }
 
-export const withRequestStreaming =
+const withRequestStreaming =
    <TFetchFn extends BaseFetchFn>(fetchFn: TFetchFn) =>
    async (
       input: string | Request | URL,
@@ -118,3 +118,7 @@ export const withRequestStreaming =
       })
       return fetchFn(request, options, ctx)
    }
+
+export const withStreaming = <TFetchFn extends BaseFetchFn>(
+   fetchFn: TFetchFn,
+) => withResponseStreaming(withRequestStreaming(fetchFn))
