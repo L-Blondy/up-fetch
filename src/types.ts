@@ -58,8 +58,8 @@ type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
 > & {}
 
 /**
- * Works with type guards like `isResponseError` and `isValidationError`
- * and does not allow property access without checks
+ * while `unknown` does not work with type guards, `{}` does
+ * `{}` behaves like `unknown` when trying to access properties (ts gives an error)
  */
 export type Unknown = {}
 
