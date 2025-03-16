@@ -110,8 +110,7 @@ export const up =
          )
          options.onRequest?.(request)
          try {
-            // Request has some quirks, better pass the url instead
-            outcome.response = await fetchFn(request.url, options, ctx)
+            outcome.response = await fetchFn(request, options, ctx)
          } catch (e: any) {
             outcome.error = e
          }
