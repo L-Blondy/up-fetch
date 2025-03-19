@@ -96,9 +96,13 @@ type OnRetry = (
 ) => MaybePromise<void>
 
 export type Progress = {
+   /** Progress ratio (0-1) */
    ratio: number
+   /** Total bytes, 0 if unknown */
    totalBytes: number
+   /** Transferred bytes  */
    transferredBytes: number
+   /** The last streamed chunk */
    chunk: Uint8Array
 }
 
