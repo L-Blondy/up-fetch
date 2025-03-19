@@ -9,6 +9,7 @@ export const toStreamableResponse = (
    response: Response,
    onProgress?: (progress: Progress) => void,
 ): Response => {
+   if (!onProgress) return response
    const totalBytes = +(response.headers.get('content-length') || 0)
 
    return new Response(
@@ -21,6 +22,7 @@ export const toStreamableRequest = async (
    request: Request,
    onProgress?: (progress: Progress) => void,
 ): Promise<Request> => {
+   if (!onProgress) return request
    let totalBytes = 0
 
    for await (const chunk of request.clone().body ?? []) {
@@ -37,19 +39,19 @@ export const toStreamableRequest = async (
 const toReadableStream = (
    reqOrRes: Request | Response,
    totalBytes: number,
-   onProgress?: (progress: Progress) => void,
+   onProgress: (progress: Progress) => void,
 ) => {
    const body: (Response | Request)['body'] =
       reqOrRes.body || (reqOrRes as any)._bodyInit
    let transferredBytes = 0
 
-   onProgress?.({
+   onProgress({
       ratio: body ? 0 : 1,
       totalBytes,
       transferredBytes,
       chunk: new Uint8Array(),
    })
-   if (!body || !onProgress) return reqOrRes.body
+   if (!body) return reqOrRes.body
 
    return new ReadableStream({
       async start(controller) {
