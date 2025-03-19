@@ -26,8 +26,6 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
 
 ## Table of Contents
 
-## Table of Contents
-
 - [Highlights](#️-highlights)
 - [QuickStart](#️-quickstart)
 - [Key Features](#️-key-features)
