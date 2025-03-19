@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { fallbackOptions } from './fallback-options'
-import { ResponseError } from './response-error'
+import { fallbackOptions } from '../fallback-options'
+import { ResponseError } from '../response-error'
 
 /**
  * These tests assert the current default behaviors of the fallback options.

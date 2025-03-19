@@ -1,5 +1,6 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import { fallbackOptions } from './fallback-options'
+import { toStreamableRequest, toStreamableResponse } from './stream'
 import type {
    BaseFetchFn,
    DefaultOptions,
@@ -13,6 +14,7 @@ import {
    abortableDelay,
    isJsonifiable,
    mergeHeaders,
+   omit,
    resolveUrl,
    validate,
    withTimeout,
@@ -43,7 +45,7 @@ export const up =
       > = StandardSchemaV1<TParsedData>,
       TRawBody = TDefaultRawBody,
    >(
-      input: Exclude<Parameters<TFetchFn>[0], Request>,
+      input: Parameters<TFetchFn>[0],
       fetcherOpts: FetcherOptions<
          TFetchFn,
          TSchema,
@@ -98,19 +100,27 @@ export const up =
          // per-try timeout
          options.signal = withTimeout(fetcherOpts.signal, options.timeout)
 
-         request = new Request(
-            resolveUrl(
-               options.baseUrl,
-               input,
-               defaultOpts.params,
-               fetcherOpts.params,
-               options.serializeParams,
+         request = await toStreamableRequest(
+            new Request(
+               input.url
+                  ? input // Request
+                  : resolveUrl(
+                       options.baseUrl,
+                       input, // string | URL
+                       defaultOpts.params,
+                       fetcherOpts.params,
+                       options.serializeParams,
+                    ),
+               options,
             ),
-            options,
+            options.onStreamRequest,
          )
          options.onRequest?.(request)
          try {
-            outcome.response = await fetchFn(request, options, ctx)
+            outcome.response = toStreamableResponse(
+               await fetchFn(request, omit(options, ['body']), ctx),
+               options.onStreamResponse,
+            )
          } catch (e: any) {
             outcome.error = e
          }

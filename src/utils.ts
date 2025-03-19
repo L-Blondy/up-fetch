@@ -16,11 +16,9 @@ export const mergeHeaders = (headerInits: (RawHeaders | undefined)[]) => {
       // casting `init` to `HeadersInit` because `Record<string, any>` is
       // properly transformed to `Record<string,string>` by `new Headers(init)`
       new Headers(init as HeadersInit | undefined).forEach((value, key) => {
-         if (value === 'null' || value === 'undefined') {
-            delete res[key]
-         } else {
-            res[key] = value
-         }
+         value === 'null' || value === 'undefined'
+            ? delete res[key]
+            : (res[key] = value)
       })
    })
    return res
@@ -41,13 +39,13 @@ export const withTimeout = (
         )
       : signal
 
-const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
+export const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
    obj?: O,
    keys: K[] | readonly K[] = [],
 ): DistributiveOmit<O, K> => {
    const copy = { ...obj } as DistributiveOmit<O, K>
    for (const key in copy) {
-      if (keys.includes(key as any)) delete copy[key]
+      keys.includes(key as any) && delete copy[key]
    }
    return copy
 }
