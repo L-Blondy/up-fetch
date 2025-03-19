@@ -113,6 +113,7 @@ export const up =
                     ),
                options,
             ),
+            options.onUploadProgress,
          )
          options.onRequest?.(request)
          try {
