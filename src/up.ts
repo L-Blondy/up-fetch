@@ -44,7 +44,7 @@ export const up =
       > = StandardSchemaV1<TParsedData>,
       TRawBody = TDefaultRawBody,
    >(
-      input: Exclude<Parameters<TFetchFn>[0], Request>,
+      input: Parameters<TFetchFn>[0],
       fetcherOpts: FetcherOptions<
          TFetchFn,
          TSchema,
@@ -101,10 +101,10 @@ export const up =
 
          request = new Request(
             input.url
-               ? input
+               ? input // Request
                : resolveUrl(
                     options.baseUrl,
-                    input,
+                    input, // string | URL
                     defaultOpts.params,
                     fetcherOpts.params,
                     options.serializeParams,
