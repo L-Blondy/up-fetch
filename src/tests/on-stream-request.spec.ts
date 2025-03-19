@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { up } from 'src/up'
@@ -62,20 +63,22 @@ test('should call onStreamRequest for each chunk', async () => {
 })
 
 test('should also chunk formData', async () => {
-   const sizeInMb = 10
    const upfetch = up(fetch, () => ({ baseUrl }))
    let exec = 0
+   const image = fs.readFileSync(new URL('./2000@2x.png', import.meta.url))
    const formData = new FormData()
-   formData.append('file', createLargeBlob(sizeInMb), 'large-file.bin')
+   formData.append(
+      'image',
+      new File([image], '2000@2x.png', { type: 'image/png' }),
+   )
 
    await upfetch('/large-blob', {
       method: 'POST',
       body: formData,
       onStreamRequest(progress) {
          ++exec
-         expect(progress.totalBytes).toBeGreaterThanOrEqual(sizeInMb * _1mb)
+         expect(progress.totalBytes).toBe(122640) // the size of the file
       },
    })
-   // once initially, then once per chunk
-   expect(exec).toBeGreaterThanOrEqual(sizeInMb + 1)
+   expect(exec).toBeGreaterThanOrEqual(3)
 })
