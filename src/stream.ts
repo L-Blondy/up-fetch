@@ -1,9 +1,4 @@
-type Progress = {
-   ratio: number
-   totalBytes: number
-   transferredBytes: number
-   chunk: Uint8Array
-}
+import type { Progress } from './types'
 
 export const toStreamableResponse = (
    response: Response,
