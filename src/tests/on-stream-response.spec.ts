@@ -61,28 +61,23 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-test('should call onDownloadProgress with ratio 1 when body is empty', async () => {
+test('should not call onStreamResponse when body is empty', async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
    const data = await upfetch(`${baseUrl}/empty`, {
-      onDownloadProgress(progress) {
+      onStreamResponse(progress) {
          spy(progress)
       },
    })
    expect(data).toBe(null)
-   expect(spy).toHaveBeenCalledWith({
-      ratio: 1,
-      totalBytes: 0,
-      transferredBytes: 0,
-      chunk: new Uint8Array(),
-   })
+   expect(spy).not.toHaveBeenCalled()
 })
 
-test('should call onDownloadProgress for each chunk', async () => {
+test('should call onStreamResponse for each chunk', async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
    const data = await upfetch(`${baseUrl}/chatbot`, {
-      onDownloadProgress(progress) {
+      onStreamResponse(progress) {
          spy(progress)
       },
    })
@@ -117,7 +112,7 @@ test('should work with normal endpoints', async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
    const data = await upfetch(`${baseUrl}/nostream`, {
-      onDownloadProgress(progress) {
+      onStreamResponse(progress) {
          spy(progress)
       },
    })
@@ -134,7 +129,7 @@ test('should preserve headers, status, and statusText', async () => {
    const upfetch = up(fetch)
    const response = await upfetch(`${baseUrl}/nostream`, {
       parseResponse: (res) => res,
-      onDownloadProgress() {},
+      onStreamResponse() {},
    })
    expect(response.status).toEqual(200)
    expect(response.statusText).toEqual('status text')

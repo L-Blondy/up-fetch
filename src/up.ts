@@ -113,13 +113,13 @@ export const up =
                     ),
                options,
             ),
-            options.onUploadProgress,
+            options.onStreamRequest,
          )
          options.onRequest?.(request)
          try {
             outcome.response = toStreamableResponse(
                await fetchFn(request, omit(options, ['body']), ctx),
-               options.onDownloadProgress,
+               options.onStreamResponse,
             )
          } catch (e: any) {
             outcome.error = e

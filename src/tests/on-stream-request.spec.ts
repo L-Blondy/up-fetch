@@ -24,35 +24,30 @@ afterAll(() => server.close())
 test('should work as usual', async () => {
    const upfetch = up(fetch, () => ({ baseUrl }))
    const data = await upfetch('/text', {
-      onUploadProgress() {},
+      onStreamRequest() {},
    })
    expect(data).toBe('hello')
 })
 
-test('should call onUploadProgress at least once with ratio 1 when body is empty', async () => {
+test('should call not onStreamRequest when body is empty', async () => {
    const upfetch = up(fetch, () => ({ baseUrl }))
    const spy = vi.fn()
    await upfetch('/text', {
-      onUploadProgress(progress) {
+      onStreamRequest(progress) {
          spy(progress)
       },
    })
-   expect(spy).toHaveBeenCalledWith({
-      ratio: 1,
-      totalBytes: 0,
-      transferredBytes: 0,
-      chunk: new Uint8Array(),
-   })
+   expect(spy).not.toHaveBeenCalledWith()
 })
 
-test('should call onUploadProgress for each chunk', async () => {
+test('should call onStreamRequest for each chunk', async () => {
    const sizeInMb = 10
    const upfetch = up(fetch, () => ({ baseUrl }))
    const spy = vi.fn()
    await upfetch('/large-blob', {
       method: 'POST',
       body: createLargeBlob(sizeInMb),
-      onUploadProgress(progress) {
+      onStreamRequest(progress) {
          spy(progress)
       },
    })
@@ -76,7 +71,7 @@ test('should also chunk formData', async () => {
    await upfetch('/large-blob', {
       method: 'POST',
       body: formData,
-      onUploadProgress(progress) {
+      onStreamRequest(progress) {
          ++exec
          expect(progress.totalBytes).toBeGreaterThanOrEqual(sizeInMb * _1mb)
       },

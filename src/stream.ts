@@ -7,9 +7,9 @@ type Progress = {
 
 export const toStreamableResponse = (
    response: Response,
-   onProgress?: (progress: Progress) => void,
+   onProgress?: (progress: Progress, response: Response) => void,
 ): Response => {
-   if (!onProgress) return response
+   if (!onProgress || !response.body) return response
    const totalBytes = +(response.headers.get('content-length') || 0)
 
    return new Response(
@@ -20,12 +20,13 @@ export const toStreamableResponse = (
 
 export const toStreamableRequest = async (
    request: Request,
-   onProgress?: (progress: Progress) => void,
+   onProgress?: (progress: Progress, request: Request) => void,
 ): Promise<Request> => {
-   if (!onProgress) return request
+   if (!onProgress || !request.body) return request
    let totalBytes = 0
 
-   for await (const chunk of request.clone().body ?? []) {
+   // biome-ignore lint/style/noNonNullAssertion:
+   for await (const chunk of request.clone().body!) {
       totalBytes += chunk.byteLength
    }
 
@@ -36,33 +37,38 @@ export const toStreamableRequest = async (
    })
 }
 
-const toReadableStream = (
-   reqOrRes: Request | Response,
+const toReadableStream = <R extends Request | Response>(
+   reqOrRes: R,
    totalBytes: number,
-   onProgress: (progress: Progress) => void,
+   onProgress: (progress: Progress, reqOrRes: R) => void,
 ) => {
-   const body: (Response | Request)['body'] =
+   const body: NonNullable<(Response | Request)['body']> =
       reqOrRes.body || (reqOrRes as any)._bodyInit
    let transferredBytes = 0
 
-   onProgress({
-      ratio: body ? 0 : 1,
-      totalBytes,
-      transferredBytes,
-      chunk: new Uint8Array(),
-   })
-   if (!body) return reqOrRes.body
+   onProgress(
+      {
+         ratio: body ? 0 : 1,
+         totalBytes,
+         transferredBytes,
+         chunk: new Uint8Array(),
+      },
+      reqOrRes,
+   )
 
    return new ReadableStream({
       async start(controller) {
          for await (const chunk of body) {
             transferredBytes += chunk.byteLength
-            onProgress({
-               ratio: transferredBytes / totalBytes,
-               transferredBytes,
-               totalBytes,
-               chunk,
-            })
+            onProgress(
+               {
+                  ratio: transferredBytes / totalBytes,
+                  transferredBytes,
+                  totalBytes,
+                  chunk,
+               },
+               reqOrRes,
+            )
             controller.enqueue(chunk)
          }
          controller.close()
