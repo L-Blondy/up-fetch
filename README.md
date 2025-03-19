@@ -61,7 +61,7 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
-- 💫 **Upload & Download Progress** - Use our **streaming** api to track upload or download progress
+- 💫 **Upload & Download Progress** - No extra config needed
 - 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
 
 ## ➡️ QuickStart
@@ -320,6 +320,15 @@ try {
 }
 ```
 
+### ✔️ Upload & Download Progress
+
+Use the [streaming] API to track upload or download progress.
+
+````ts
+
+
+
+
 ## ➡️ Usage
 
 ### ✔️ Authentication
@@ -330,7 +339,7 @@ You can easily add authentication to all requests by setting a default header:
 const upfetch = up(fetch, () => ({
    headers: { Authorization: localStorage.getItem('bearer-token') },
 }))
-```
+````
 
 The bearer token will be retrieved from `localStorage` before each request.
 
