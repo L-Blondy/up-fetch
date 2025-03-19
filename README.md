@@ -21,9 +21,10 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 
 ## Coming from v1?
 
-Retries, upload progress and download progress are here! \
 Check out our [Migration Guide](./MIGRATION_v1_v2.md). \
 Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fetch/tree/v1.3.6/README.md).
+
+## Table of Contents
 
 ## Table of Contents
 
@@ -38,12 +39,14 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
    - [Timeout](#️-timeout)
    - [Retry](#️-retry)
    - [Error Handling](#️-error-handling)
+   - [Upload & Download Progress](#️-upload--download-progress)
 - [Usage](#️-usage)
    - [Authentication](#️-authentication)
    - [Delete a default option](#️-delete-a-default-option)
    - [FormData](#️-formdata)
    - [HTTP Agent](#️-http-agent)
    - [Multiple fetch clients](#️-multiple-fetch-clients)
+   - [Streaming](#️-streaming)
 - [Advanced Usage](#️-advanced-usage)
    - [Error as value](#️-error-as-value)
    - [Custom response parsing](#️-custom-response-parsing)
@@ -57,11 +60,10 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.7kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.4kB gzipped, no dependency
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
-- 💫 **Upload & Download Progress** - No extra config needed
 - 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
 
 ## ➡️ QuickStart
@@ -320,32 +322,6 @@ try {
 }
 ```
 
-### ✔️ Upload & Download Progress
-
-Use the [streaming] API to track upload or download progress.
-
-👉 Upload progress:
-
-```ts
-upfetch('/file', {
-   method: 'POST',
-   body: largeFile,
-   onStreamRequest({ ratio }) {
-      console.log(`Progress: ${ratio}`)
-   },
-})
-```
-
-👉 Download progress:
-
-```ts
-upfetch('/file/1', {
-   onStreamResponse({ ratio }) {
-      console.log(`Progress: ${ratio}`)
-   },
-})
-```
-
 ## ➡️ Usage
 
 ### ✔️ Authentication
@@ -451,10 +427,6 @@ const fetchFile = up(fetch, () => ({
    },
 }))
 ```
-
-### ✔️ Streaming
-
-<!-- TODO: add streaming example -->
 
 ## ➡️ Advanced Usage
 
