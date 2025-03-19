@@ -324,10 +324,27 @@ try {
 
 Use the [streaming] API to track upload or download progress.
 
-````ts
+```ts
+upfetch('/file', {
+   method: 'POST',
+   body: largeFile,
+   onStreamRequest(progress) {
+      console.log(`Upload progress: ${progress.ratio}`)
+      console.log(`Transferred Bytes: ${progress.transferredBytes}`)
+      console.log(`Total Bytes: ${progress.totalBytes}`)
+   },
+})
+```
 
-
-
+```ts
+upfetch('/file/1', {
+   onStreamResponse(progress) {
+      console.log(`Download progress: ${progress.ratio}`)
+      console.log(`Transferred Bytes: ${progress.transferredBytes}`)
+      console.log(`Total Bytes: ${progress.totalBytes}`)
+   },
+})
+```
 
 ## ➡️ Usage
 
@@ -339,7 +356,7 @@ You can easily add authentication to all requests by setting a default header:
 const upfetch = up(fetch, () => ({
    headers: { Authorization: localStorage.getItem('bearer-token') },
 }))
-````
+```
 
 The bearer token will be retrieved from `localStorage` before each request.
 
@@ -434,6 +451,10 @@ const fetchFile = up(fetch, () => ({
    },
 }))
 ```
+
+### ✔️ Streaming
+
+TODO
 
 ## ➡️ Advanced Usage
 
