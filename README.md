@@ -454,7 +454,7 @@ const fetchFile = up(fetch, () => ({
 
 ### ✔️ Streaming
 
-// TODO
+<!-- TODO: add streaming example -->
 
 ## ➡️ Advanced Usage
 
