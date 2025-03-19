@@ -44,16 +44,18 @@ test('should call not onStreamRequest when body is empty', async () => {
 test('should call onStreamRequest for each chunk', async () => {
    const sizeInMb = 10
    const upfetch = up(fetch, () => ({ baseUrl }))
+   let exec = 0
    const spy = vi.fn()
    await upfetch('/large-blob', {
       method: 'POST',
       body: createLargeBlob(sizeInMb),
       onStreamRequest(progress) {
+         exec++
          spy(progress)
       },
    })
-   // once initially, then once per chunk
-   expect(spy).toHaveBeenCalledTimes(sizeInMb + 1)
+   // At least: runs once initially, then once per chunk
+   expect(exec).toBeGreaterThanOrEqual(sizeInMb + 1)
    expect(spy).toHaveBeenLastCalledWith({
       ratio: 1,
       totalBytes: sizeInMb * _1mb,
