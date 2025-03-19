@@ -39,7 +39,7 @@ export const withTimeout = (
         )
       : signal
 
-const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
+export const omit = <O extends object, K extends KeyOf<O> | (string & {})>(
    obj?: O,
    keys: K[] | readonly K[] = [],
 ): DistributiveOmit<O, K> => {

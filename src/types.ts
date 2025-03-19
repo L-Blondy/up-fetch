@@ -95,6 +95,13 @@ type OnRetry = (
    context: RetryContext & { attempt: number },
 ) => MaybePromise<void>
 
+export type Progress = {
+   ratio: number
+   totalBytes: number
+   transferredBytes: number
+   chunk: Uint8Array
+}
+
 export type FallbackOptions = {
    parseRejected: ParseRejected
    parseResponse: ParseResponse<any>
@@ -122,6 +129,8 @@ export type DefaultOptions<
    headers?: RawHeaders
    /** HTTP method to use for the request */
    method?: Method
+   /** Callback executed each time a chunk of the response stream is received */
+   onDownloadProgress?: (progress: Progress) => void
    /** Callback executed when the request fails */
    onError?: (error: Unknown, request: Request) => void
    /** Callback executed before the request is made */
@@ -130,6 +139,8 @@ export type DefaultOptions<
    onRetry?: OnRetry
    /** Callback executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => void
+   /** Callback executed each time a chunk of the request stream is sent */
+   onUploadProgress?: (progress: Progress) => void
    /** URL parameters to be serialized and appended to the URL */
    params?: Params
    /** Function to parse response errors */
@@ -171,6 +182,8 @@ export type FetcherOptions<
    headers?: RawHeaders
    /** HTTP method */
    method?: Method
+   /** Callback executed each time a chunk of the response stream is received */
+   onDownloadProgress?: (progress: Progress) => void
    /** Callback executed when the request fails */
    onError?: (error: Unknown, request: Request) => void
    /** Callback executed before the request is made */
@@ -179,6 +192,8 @@ export type FetcherOptions<
    onRetry?: OnRetry
    /** Callback executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => void
+   /** Callback executed each time a chunk of the request stream is sent */
+   onUploadProgress?: (progress: Progress) => void
    /** URL parameters */
    params?: Params
    /** Function to parse response errors */

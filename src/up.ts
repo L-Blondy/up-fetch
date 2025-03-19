@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import { fallbackOptions } from './fallback-options'
-import { streamResponse } from './stream'
+import { toStreamableRequest, toStreamableResponse } from './stream'
 import type {
    BaseFetchFn,
    DefaultOptions,
@@ -14,6 +14,7 @@ import {
    abortableDelay,
    isJsonifiable,
    mergeHeaders,
+   omit,
    resolveUrl,
    validate,
    withTimeout,
@@ -99,22 +100,25 @@ export const up =
          // per-try timeout
          options.signal = withTimeout(fetcherOpts.signal, options.timeout)
 
-         request = new Request(
-            input.url
-               ? input // Request
-               : resolveUrl(
-                    options.baseUrl,
-                    input, // string | URL
-                    defaultOpts.params,
-                    fetcherOpts.params,
-                    options.serializeParams,
-                 ),
-            options,
+         request = await toStreamableRequest(
+            new Request(
+               input.url
+                  ? input // Request
+                  : resolveUrl(
+                       options.baseUrl,
+                       input, // string | URL
+                       defaultOpts.params,
+                       fetcherOpts.params,
+                       options.serializeParams,
+                    ),
+               options,
+            ),
          )
          options.onRequest?.(request)
          try {
-            outcome.response = streamResponse(
-               await fetchFn(request, options, ctx),
+            outcome.response = toStreamableResponse(
+               await fetchFn(request, omit(options, ['body']), ctx),
+               options.onDownloadProgress,
             )
          } catch (e: any) {
             outcome.error = e

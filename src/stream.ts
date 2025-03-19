@@ -5,58 +5,23 @@ type Progress = {
    chunk: Uint8Array
 }
 
-export const streamResponse = (
+export const toStreamableResponse = (
    response: Response,
    onProgress?: (progress: Progress) => void,
 ): Response => {
-   const body: Response['body'] = response.body || (response as any)._bodyInit
    const totalBytes = +(response.headers.get('content-length') || 0)
-   let transferredBytes = 0
-
-   onProgress?.({
-      ratio: body ? 0 : 1,
-      totalBytes,
-      transferredBytes,
-      chunk: new Uint8Array(),
-   })
-   if (!body || !onProgress) return response
 
    return new Response(
-      new ReadableStream({
-         async start(controller) {
-            for await (const chunk of body) {
-               transferredBytes += chunk.byteLength
-               onProgress({
-                  ratio: transferredBytes / totalBytes,
-                  transferredBytes,
-                  totalBytes,
-                  chunk,
-               })
-               controller.enqueue(chunk)
-            }
-            controller.close()
-         },
-      }),
+      toReadableStream(response, totalBytes, onProgress),
       response,
    )
 }
 
-export const streamRequest = async (
+export const toStreamableRequest = async (
    request: Request,
    onProgress?: (progress: Progress) => void,
-) => {
-   let transferredBytes = 0
+): Promise<Request> => {
    let totalBytes = 0
-   const body = request.body
-
-   onProgress?.({
-      ratio: body ? 0 : 1,
-      totalBytes,
-      transferredBytes,
-      chunk: new Uint8Array(),
-   })
-
-   if (!body || !onProgress) return request
 
    for await (const chunk of request.clone().body ?? []) {
       totalBytes += chunk.byteLength
@@ -65,20 +30,40 @@ export const streamRequest = async (
    return new Request(request, {
       // @ts-expect-error Request types are out of date
       duplex: 'half',
-      body: new ReadableStream({
-         async start(controller) {
-            for await (const chunk of body) {
-               transferredBytes += chunk.byteLength
-               onProgress({
-                  ratio: transferredBytes / totalBytes,
-                  transferredBytes,
-                  totalBytes,
-                  chunk,
-               })
-               controller.enqueue(chunk)
-            }
-            controller.close()
-         },
-      }),
+      body: toReadableStream(request, totalBytes, onProgress),
+   })
+}
+
+const toReadableStream = (
+   reqOrRes: Request | Response,
+   totalBytes: number,
+   onProgress?: (progress: Progress) => void,
+) => {
+   const body: (Response | Request)['body'] =
+      reqOrRes.body || (reqOrRes as any)._bodyInit
+   let transferredBytes = 0
+
+   onProgress?.({
+      ratio: body ? 0 : 1,
+      totalBytes,
+      transferredBytes,
+      chunk: new Uint8Array(),
+   })
+   if (!body || !onProgress) return reqOrRes.body
+
+   return new ReadableStream({
+      async start(controller) {
+         for await (const chunk of body) {
+            transferredBytes += chunk.byteLength
+            onProgress({
+               ratio: transferredBytes / totalBytes,
+               transferredBytes,
+               totalBytes,
+               chunk,
+            })
+            controller.enqueue(chunk)
+         }
+         controller.close()
+      },
    })
 }
