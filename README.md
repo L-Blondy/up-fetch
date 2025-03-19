@@ -324,7 +324,7 @@ try {
 
 Use the [streaming] API to track upload or download progress.
 
-Upload progress:
+👉 Upload progress:
 
 ```ts
 upfetch('/file', {
@@ -338,7 +338,7 @@ upfetch('/file', {
 })
 ```
 
-Download progress:
+👉 Download progress:
 
 ```ts
 upfetch('/file/1', {
