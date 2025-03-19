@@ -100,15 +100,15 @@ export const up =
          options.signal = withTimeout(fetcherOpts.signal, options.timeout)
 
          request = new Request(
-            'url' in input 
+            input.url
                ? input
                : resolveUrl(
-                  options.baseUrl,
-                  input,
-                  defaultOpts.params,
-                  fetcherOpts.params,
-                  options.serializeParams,
-               ),
+                    options.baseUrl,
+                    input,
+                    defaultOpts.params,
+                    fetcherOpts.params,
+                    options.serializeParams,
+                 ),
             options,
          )
          options.onRequest?.(request)
