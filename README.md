@@ -19,7 +19,7 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
 
 ## 🚀 Try v2 Beta!
 
-Retries, download & progress, streaming, and more are available in the latest beta! \
+Retries, download & upload progress, streaming, and more are available in the latest beta! \
 Give it a try with:
 
 ```bash
