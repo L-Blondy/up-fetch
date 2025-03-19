@@ -1,9 +1,48 @@
 import * as v from 'valibot'
 import { describe, expectTypeOf, test } from 'vitest'
 import { z } from 'zod'
-import { up } from '.'
-import { fallbackOptions } from './fallback-options'
-import type { JsonifiableArray, JsonifiableObject, Unknown } from './types'
+import { up } from '..'
+import { fallbackOptions } from '../fallback-options'
+import type { JsonifiableArray, JsonifiableObject, Unknown } from '../types'
+
+test('JsonifiableObject should support both types and interfaces', () => {
+   interface Participant {
+      id: string
+      email: string
+   }
+
+   /**
+    * 1 can pass while 2 fails
+    */
+
+   // 1
+   const participant: Participant = {
+      id: '1',
+      email: 'whatever@gmail.com',
+   } satisfies JsonifiableObject
+   // 2
+   participant satisfies JsonifiableObject
+})
+
+test('JsonifiableArray should support both types and interfaces', () => {
+   interface Participant {
+      id: string
+      email: string
+   }
+
+   /**
+    * 1 can pass while 2 fails
+    */
+
+   // 1
+   const participants: Participant[] = [
+      { id: '1', email: 'whatever@gmail.com' },
+      { id: '2', email: 'whatever@gmail.com' },
+   ] satisfies JsonifiableArray
+
+   // 2
+   participants satisfies JsonifiableArray
+})
 
 test('infer TData', async () => {
    const upfetch = up(fetch, () => ({
