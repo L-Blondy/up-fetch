@@ -19,21 +19,15 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
-## ➡️ Highlights
+## Coming from v1?
 
-- 🚀 **Lightweight** - 1.4kB gzipped, no dependency
-- 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
-- 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
-- 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
-- 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
-
-## 🔄 Coming from v1?
-
-Retries are here! Check out our [Migration Guide](./MIGRATION_v1_v2.md). \
+Retries, upload progress and download progress are here! \
+Check out our [Migration Guide](./MIGRATION_v1_v2.md). \
 Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fetch/tree/v1.3.6/README.md).
 
 ## Table of Contents
 
+- [Highlights](#️-highlights)
 - [QuickStart](#️-quickstart)
 - [Key Features](#️-key-features)
    - [Request Configuration](#️-request-configuration)
@@ -60,6 +54,14 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
 - [API Reference](#️-api-reference)
 - [Feature Comparison](#️-feature-comparison)
 - [Environment Support](#️-environment-support)
+
+## ➡️ Highlights
+
+- 🚀 **Lightweight** - 1.4kB gzipped, no dependency
+- 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
+- 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
+- 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
+- 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
 
 ## ➡️ QuickStart
 
