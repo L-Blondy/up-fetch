@@ -330,10 +330,8 @@ Use the [streaming] API to track upload or download progress.
 upfetch('/file', {
    method: 'POST',
    body: largeFile,
-   onStreamRequest(progress) {
-      console.log(`Upload progress: ${progress.ratio}`)
-      console.log(`Transferred Bytes: ${progress.transferredBytes}`)
-      console.log(`Total Bytes: ${progress.totalBytes}`)
+   onStreamRequest({ ratio }) {
+      console.log(`Progress: ${ratio}`)
    },
 })
 ```
@@ -342,10 +340,8 @@ upfetch('/file', {
 
 ```ts
 upfetch('/file/1', {
-   onStreamResponse(progress) {
-      console.log(`Download progress: ${progress.ratio}`)
-      console.log(`Transferred Bytes: ${progress.transferredBytes}`)
-      console.log(`Total Bytes: ${progress.totalBytes}`)
+   onStreamResponse({ ratio }) {
+      console.log(`Progress: ${ratio}`)
    },
 })
 ```
