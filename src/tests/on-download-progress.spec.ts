@@ -6,13 +6,6 @@ import { afterAll, afterEach, beforeAll, expect, test, vi } from 'vitest'
 const baseUrl = 'http://a.b.c'
 const encoder = new TextEncoder()
 
-function createLargeBlob(sizeInMB: number): Blob {
-   const chunkSize = 1024 * 1024 // 1MB
-   // eslint-disable-next-line unicorn/no-new-array
-   const chunks = new Array(sizeInMB).fill('x'.repeat(chunkSize))
-   return new Blob(chunks, { type: 'application/octet-stream' })
-}
-
 const server = setupServer(
    http.get(`${baseUrl}/empty`, () => {
       return new HttpResponse(null, {})
@@ -61,9 +54,6 @@ const server = setupServer(
          statusText: 'status text',
          headers: { some: 'header' },
       })
-   }),
-   http.get(`${baseUrl}/largefile`, () => {
-      return new HttpResponse(createLargeBlob(10))
    }),
 )
 
