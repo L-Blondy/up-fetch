@@ -283,7 +283,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Progress
 
-Track the Upload progress::
+👉 Upload progress::
 
 ```ts
 upfetch('/upload', {
@@ -295,7 +295,7 @@ upfetch('/upload', {
 })
 ```
 
-Track the Download progress:
+👉 Download progress:
 
 ```ts
 upfetch('/download', {
