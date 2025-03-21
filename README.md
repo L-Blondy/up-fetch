@@ -283,7 +283,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Progress
 
-Upload progress::
+Upload progress:
 
 ```ts
 upfetch('/upload', {
