@@ -19,11 +19,11 @@ _upfetch_ is an advanced fetch client builder with standard schema validation, a
 
 ## 🚀 Try v2 Beta!
 
-Retries, download & upload progress, streaming, and more are available in the latest beta! \
+Retries, Download & Upload progress, Streaming, and more are available in the latest beta! \
 Give it a try with:
 
 ```bash
-npm i up-fetch@2.0.0-beta.11
+npm i up-fetch@2.0.0-beta.12
 ```
 
 Check out the [Migration Guide](https://github.com/L-Blondy/up-fetch/blob/v2.0/MIGRATION_v1_v2.md) for details about changes and how to upgrade. \
