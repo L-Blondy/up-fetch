@@ -420,10 +420,7 @@ const fetchFile = up(fetch, () => ({
 
 ### ✔️ Streaming
 
-_upfetch_ provides powerful streaming capabilities through two handlers:
-
-- `onStreamRequest` for upload operations
-- `onStreamResponse` for download operations
+_upfetch_ provides powerful streaming capabilities through `onStreamRequest` for upload operations, and `onStreamResponse` for download operations.
 
 Both handlers receive the following event object plus the request/response:
 
