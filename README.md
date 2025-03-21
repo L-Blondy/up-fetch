@@ -422,9 +422,12 @@ const fetchFile = up(fetch, () => ({
 
 Use the `onStreamRequest` and `onStreamResponse` options to handle streaming for both upload and download operations.
 
-Both handlers receive an `event` object and the `request` or `response`
+Both streaming handlers receive:
 
-The totalBytes property of the event is read from the request / response header "Content-Length". When streaming a request, if the header is not present, the total bytes are read from the request body.
+- an `event` containing the `chunk` of data with some metadata: `totalBytes` `transferredBytes`
+- the `request` or `response`
+
+The `totalBytes` property of the event is read from the `"Content-Length"` header. When streaming a request, if the header is not present, the total bytes are read from the request body.
 
 The event also contains the chunk of data that was streamed. The chunk is a Uint8Array that can be decoded is needed
 
