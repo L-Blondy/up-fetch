@@ -42,9 +42,9 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
    - [Authentication](#️-authentication)
    - [Delete a default option](#️-delete-a-default-option)
    - [FormData](#️-formdata)
-   - [HTTP Agent](#️-http-agent)
    - [Multiple fetch clients](#️-multiple-fetch-clients)
    - [Streaming](#️-streaming)
+   - [HTTP Agent](#️-http-agent)
 - [Advanced Usage](#️-advanced-usage)
    - [Error as value](#️-error-as-value)
    - [Custom response parsing](#️-custom-response-parsing)
@@ -396,6 +396,33 @@ upfetch('https://a.b.c', {
 })
 ```
 
+### ✔️ Multiple fetch clients
+
+You can create multiple upfetch instances with different defaults:
+
+```ts
+const fetchMovie = up(fetch, () => ({
+   baseUrl: 'https://api.themoviedb.org',
+   headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${process.env.API_KEY}`,
+   },
+}))
+
+const fetchFile = up(fetch, () => ({
+   parseResponse: async (res) => {
+      const name = res.url.split('/').at(-1) ?? ''
+      const type = res.headers.get('content-type') ?? ''
+      return new File([await res.blob()], name, { type })
+   },
+}))
+```
+
+### ✔️ Streaming
+
+> **Note**
+> Response streaming will only work if the server streams the response.
+
 ### ✔️ HTTP Agent
 
 Since _upfetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
@@ -427,32 +454,6 @@ const upfetch = up(fetch, () => ({
    }),
 }))
 ```
-
-### ✔️ Multiple fetch clients
-
-You can create multiple upfetch instances with different defaults:
-
-```ts
-const fetchMovie = up(fetch, () => ({
-   baseUrl: 'https://api.themoviedb.org',
-   headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${process.env.API_KEY}`,
-   },
-}))
-
-const fetchFile = up(fetch, () => ({
-   parseResponse: async (res) => {
-      const name = res.url.split('/').at(-1) ?? ''
-      const type = res.headers.get('content-type') ?? ''
-      return new File([await res.blob()], name, { type })
-   },
-}))
-```
-
-### ✔️ Streaming
-
-<!-- TODO -->
 
 ## ➡️ Advanced Usage
 
