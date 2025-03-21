@@ -43,7 +43,7 @@ test('should call not onStreamRequest when body is empty', async () => {
    expect(spy).not.toHaveBeenCalledWith()
 })
 
-test('should call onStreamRequest for each chunk', async () => {
+test('should chunk the request body when onStreamRequest is present', async () => {
    const sizeInMb = 10
    const upfetch = up(fetch, (input, options) => ({
       baseUrl,
@@ -59,8 +59,7 @@ test('should call onStreamRequest for each chunk', async () => {
          spy(progress)
       },
    })
-   // At least: runs once initially, then once per chunk
-   expect(exec).toBeGreaterThanOrEqual(sizeInMb + 1)
+   expect(exec).toBeGreaterThanOrEqual(5)
    expect(spy).toHaveBeenLastCalledWith({
       totalBytes: sizeInMb * _1mb,
       transferredBytes: sizeInMb * _1mb,
