@@ -420,6 +420,15 @@ const fetchFile = up(fetch, () => ({
 
 ### ✔️ Streaming
 
+Streaming is supported for both requests and responses.
+
+- for request streaming, use the `onStreamRequest` option.
+- for response streaming, use the `onStreamResponse` option.
+
+```ts
+
+```
+
 > [!NOTE]
 > Response streaming will only work if the server streams the response.
 
