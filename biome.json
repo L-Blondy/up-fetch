@@ -76,7 +76,9 @@
             "useAsConstAssertion": "error",
             "useConst": "error",
             "useDefaultParameterLast": "off",
-            "useTemplate": "off"
+            "useTemplate": "off",
+            "noNonNullAssertion": "off",
+            "noInferrableTypes": "off"
          },
          "suspicious": {
             "noAssignInExpressions": "off",

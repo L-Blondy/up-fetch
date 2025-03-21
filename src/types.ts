@@ -105,9 +105,7 @@ type OnRetry = (
 ) => MaybePromise<void>
 
 export type Progress = {
-   /** Progress ratio (0-1) */
-   ratio: number
-   /** Total bytes, 0 if unknown */
+   /** Total bytes, read from the response header "Content-Length" */
    totalBytes: number
    /** Transferred bytes  */
    transferredBytes: number

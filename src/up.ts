@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import { fallbackOptions } from './fallback-options'
-import { toStreamableRequest, toStreamableResponse } from './stream'
+import { toStreamable } from './stream'
 import type {
    BaseFetchFn,
    DefaultOptions,
@@ -100,7 +100,7 @@ export const up =
          // per-try timeout
          options.signal = withTimeout(fetcherOpts.signal, options.timeout)
 
-         request = await toStreamableRequest(
+         request = await toStreamable(
             new Request(
                input.url
                   ? input // Request
@@ -117,7 +117,7 @@ export const up =
          )
          options.onRequest?.(request)
          try {
-            outcome.response = toStreamableResponse(
+            outcome.response = await toStreamable(
                await fetchFn(request, omit(options, ['body']), ctx),
                options.onStreamResponse,
             )

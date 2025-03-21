@@ -42,10 +42,7 @@ const server = setupServer(
 
       // Send the mocked response immediately.
       return new HttpResponse(stream, {
-         headers: {
-            'Content-Type': 'text/plain',
-            'Content-Length': 'BrandNewWorld'.length.toString(),
-         },
+         headers: { 'Content-Type': 'text/plain' },
       })
    }),
    http.get(`${baseUrl}/nostream`, () => {
@@ -73,6 +70,21 @@ test('should not call onStreamResponse when body is empty', async () => {
    expect(spy).not.toHaveBeenCalled()
 })
 
+test("should infer totalBytes from the 'Content-Length' header", async () => {
+   const upfetch = up(fetch)
+   const spy = vi.fn()
+   await upfetch(`${baseUrl}/chatbot`, {
+      onStreamResponse(progress) {
+         spy(progress)
+      },
+   })
+   expect(spy).toHaveBeenCalledWith({
+      totalBytes: 13,
+      transferredBytes: 0,
+      chunk: new Uint8Array(),
+   })
+})
+
 test('should call onStreamResponse for each chunk', async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
@@ -83,25 +95,52 @@ test('should call onStreamResponse for each chunk', async () => {
    })
    expect(data).toEqual('BrandNewWorld')
    expect(spy).toHaveBeenNthCalledWith(1, {
-      ratio: 0,
       totalBytes: 13,
       transferredBytes: 0,
       chunk: new Uint8Array(),
    })
    expect(spy).toHaveBeenNthCalledWith(2, {
-      ratio: 5 / 13,
       totalBytes: 13,
       transferredBytes: 5,
       chunk: expect.any(Uint8Array),
    })
    expect(spy).toHaveBeenNthCalledWith(3, {
-      ratio: 8 / 13,
       totalBytes: 13,
       transferredBytes: 8,
       chunk: expect.any(Uint8Array),
    })
    expect(spy).toHaveBeenNthCalledWith(4, {
-      ratio: 1,
+      totalBytes: 13,
+      transferredBytes: 13,
+      chunk: expect.any(Uint8Array),
+   })
+})
+
+test("should infer totalBytes from the transferredBytes if no 'Content-Length' header is present", async () => {
+   const upfetch = up(fetch)
+   const spy = vi.fn()
+   const data = await upfetch(`${baseUrl}/chatbot-nocontentlength`, {
+      onStreamResponse(progress) {
+         spy(progress)
+      },
+   })
+   expect(data).toEqual('BrandNewWorld')
+   expect(spy).toHaveBeenNthCalledWith(1, {
+      totalBytes: 0,
+      transferredBytes: 0,
+      chunk: new Uint8Array(),
+   })
+   expect(spy).toHaveBeenNthCalledWith(2, {
+      totalBytes: 5,
+      transferredBytes: 5,
+      chunk: expect.any(Uint8Array),
+   })
+   expect(spy).toHaveBeenNthCalledWith(3, {
+      totalBytes: 8,
+      transferredBytes: 8,
+      chunk: expect.any(Uint8Array),
+   })
+   expect(spy).toHaveBeenNthCalledWith(4, {
       totalBytes: 13,
       transferredBytes: 13,
       chunk: expect.any(Uint8Array),
@@ -118,7 +157,6 @@ test('should work with normal endpoints', async () => {
    })
    expect(data).toEqual('hello')
    expect(spy).toHaveBeenCalledWith({
-      ratio: 1,
       totalBytes: 5,
       transferredBytes: 5,
       chunk: expect.any(Uint8Array),

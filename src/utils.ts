@@ -101,7 +101,6 @@ export const abortableDelay = (delay: number, signal?: AbortSignal) =>
 
       function handleAbort() {
          clearTimeout(token)
-         // biome-ignore lint/style/noNonNullAssertion:
          reject(signal!.reason)
       }
    })
