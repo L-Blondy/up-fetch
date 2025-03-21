@@ -445,7 +445,6 @@ const decoder = new TextDecoder()
 
 upfetch('/ai-chatbot', {
    onStreamResponse: (event, response) => {
-      // Convert the binary chunk to text
       const text = decoder.decode(event.chunk)
       console.log(text)
    },
