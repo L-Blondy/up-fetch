@@ -420,7 +420,7 @@ const fetchFile = up(fetch, () => ({
 
 ### ✔️ Streaming
 
-> **Note**
+> [!NOTE]
 > Response streaming will only work if the server streams the response.
 
 ### ✔️ HTTP Agent
