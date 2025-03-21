@@ -36,7 +36,7 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
    - [Lifecycle Hooks](#️-lifecycle-hooks)
    - [Timeout](#️-timeout)
    - [Retry](#️-retry)
-   - [Progress](#️-upload--download-progress)
+   - [Progress](#️-progress)
    - [Error Handling](#️-error-handling)
 - [Usage](#️-usage)
    - [Authentication](#️-authentication)
@@ -279,6 +279,30 @@ const upfetch = up(fetch, () => ({
       },
    },
 }))
+```
+
+### ✔️ Progress
+
+Track the Upload progress::
+
+```ts
+upfetch('/upload', {
+   method: 'POST',
+   body: new File(['large file'], 'foo.txt'),
+   onStreamRequest: ({ transferredBytes, totalBytes }) => {
+      console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
+   },
+})
+```
+
+Track the Download progress:
+
+```ts
+upfetch('/download', {
+   onStreamResponse: ({ transferredBytes, totalBytes }) => {
+      console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
+   },
+})
 ```
 
 ### ✔️ Error Handling
