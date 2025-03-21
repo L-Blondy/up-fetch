@@ -58,12 +58,12 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-test('should not call onStreamResponse when body is empty', async () => {
+test('should not call onResponseStreaming when body is empty', async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
    const data = await upfetch(`${baseUrl}/empty`, {
-      onStreamResponse(progress) {
-         spy(progress)
+      onResponseStreaming(event) {
+         spy(event)
       },
    })
    expect(data).toBe(null)
@@ -74,8 +74,8 @@ test("should infer totalBytes from the 'Content-Length' header", async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
    await upfetch(`${baseUrl}/chatbot`, {
-      onStreamResponse(progress) {
-         spy(progress)
+      onResponseStreaming(event) {
+         spy(event)
       },
    })
    expect(spy).toHaveBeenCalledWith({
@@ -85,12 +85,12 @@ test("should infer totalBytes from the 'Content-Length' header", async () => {
    })
 })
 
-test('should call onStreamResponse for each chunk', async () => {
+test('should call onResponseStreaming for each chunk', async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
    const data = await upfetch(`${baseUrl}/chatbot`, {
-      onStreamResponse(progress) {
-         spy(progress)
+      onResponseStreaming(event) {
+         spy(event)
       },
    })
    expect(data).toEqual('BrandNewWorld')
@@ -120,8 +120,8 @@ test("should infer totalBytes from the transferredBytes if no 'Content-Length' h
    const upfetch = up(fetch)
    const spy = vi.fn()
    const data = await upfetch(`${baseUrl}/chatbot-nocontentlength`, {
-      onStreamResponse(progress) {
-         spy(progress)
+      onResponseStreaming(event) {
+         spy(event)
       },
    })
    expect(data).toEqual('BrandNewWorld')
@@ -151,8 +151,8 @@ test('should work with normal endpoints', async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
    const data = await upfetch(`${baseUrl}/nostream`, {
-      onStreamResponse(progress) {
-         spy(progress)
+      onResponseStreaming(event) {
+         spy(event)
       },
    })
    expect(data).toEqual('hello')
@@ -167,7 +167,7 @@ test('should preserve headers, status, and statusText', async () => {
    const upfetch = up(fetch)
    const response = await upfetch(`${baseUrl}/nostream`, {
       parseResponse: (res) => res,
-      onStreamResponse() {},
+      onResponseStreaming() {},
    })
    expect(response.status).toEqual(200)
    expect(response.statusText).toEqual('status text')

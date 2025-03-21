@@ -289,7 +289,7 @@ Upload progress::
 upfetch('/upload', {
    method: 'POST',
    body: new File(['large file'], 'foo.txt'),
-   onStreamRequest: ({ transferredBytes, totalBytes }) => {
+   onRequestStreaming: ({ transferredBytes, totalBytes }) => {
       console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
    },
 })
@@ -299,7 +299,7 @@ Download progress:
 
 ```ts
 upfetch('/download', {
-   onStreamResponse: ({ transferredBytes, totalBytes }) => {
+   onResponseStreaming: ({ transferredBytes, totalBytes }) => {
       console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
    },
 })
@@ -420,7 +420,7 @@ const fetchFile = up(fetch, () => ({
 
 ### ✔️ Streaming
 
-_upfetch_ provides powerful streaming capabilities through `onStreamRequest` for upload operations, and `onStreamResponse` for download operations.
+_upfetch_ provides powerful streaming capabilities through `onRequestStreaming` for upload operations, and `onResponseStreaming` for download operations.
 
 Both handlers receive the following event object plus the request/response:
 
@@ -441,7 +441,7 @@ Here's an example of processing a streamed response from an AI chatbot:
 const decoder = new TextDecoder()
 
 upfetch('/ai-chatbot', {
-   onStreamResponse: (event, response) => {
+   onResponseStreaming: (event, response) => {
       const text = decoder.decode(event.chunk)
       console.log(text)
    },

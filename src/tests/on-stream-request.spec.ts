@@ -27,23 +27,23 @@ afterAll(() => server.close())
 test('should work as usual', async () => {
    const upfetch = up(fetch, () => ({ baseUrl }))
    const data = await upfetch('/text', {
-      onStreamRequest() {},
+      onRequestStreaming() {},
    })
    expect(data).toBe('hello')
 })
 
-test('should call not onStreamRequest when body is empty', async () => {
+test('should call not onRequestStreaming when body is empty', async () => {
    const upfetch = up(fetch, () => ({ baseUrl }))
    const spy = vi.fn()
    await upfetch('/text', {
-      onStreamRequest(event) {
+      onRequestStreaming(event) {
          spy(event)
       },
    })
    expect(spy).not.toHaveBeenCalledWith()
 })
 
-test('should chunk the request body when onStreamRequest is present', async () => {
+test('should chunk the request body when onRequestStreaming is present', async () => {
    const sizeInMb = 10
    const upfetch = up(fetch, () => ({ baseUrl }))
    let exec = 0
@@ -51,7 +51,7 @@ test('should chunk the request body when onStreamRequest is present', async () =
    await upfetch('/large-blob', {
       method: 'POST',
       body: createLargeBlob(sizeInMb),
-      onStreamRequest(event) {
+      onRequestStreaming(event) {
          exec++
          spy(event)
       },
@@ -79,7 +79,7 @@ if (majorNodeVersion > 18) {
       await upfetch('/large-blob', {
          method: 'POST',
          body: formData,
-         onStreamRequest(event) {
+         onRequestStreaming(event) {
             ++exec
             expect(event.totalBytes).toBe(122640) // the size of the file
          },
