@@ -424,8 +424,8 @@ Use the `onStreamRequest` and `onStreamResponse` options to handle streaming for
 
 Both streaming handlers receive:
 
-- an `event` containing the `chunk` of data with some metadata: `totalBytes` `transferredBytes`
-- the `request` or `response`
+- an `event` containing the `chunk` of data with some metadata: `totalBytes` and `transferredBytes`
+- the request / response depending on the handler
 
 The `totalBytes` property of the event is read from the `"Content-Length"` header. When streaming a request, if the header is not present, the total bytes are read from the request body.
 
