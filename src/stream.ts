@@ -1,8 +1,8 @@
-import type { Progress } from './types'
+import type { StreamingEvent } from './types'
 
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
-   onStream?: (progress: Progress, reqOrRes: R) => void,
+   onStream?: (event: StreamingEvent, reqOrRes: R) => void,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
    const body: (Request | Request)['body'] =

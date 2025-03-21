@@ -420,13 +420,23 @@ const fetchFile = up(fetch, () => ({
 
 ### ✔️ Streaming
 
-Streaming is supported for both requests and responses.
+Use the `onStreamRequest` and `onStreamResponse` options to handle streaming for both upload and download operations.
 
-- for request streaming, use the `onStreamRequest` option.
-- for response streaming, use the `onStreamResponse` option.
+Both handlers receive an `event` object and the `request` or `response`
+
+The totalBytes property of the event is read from the request / response header "Content-Length". When streaming a request, if the header is not present, the total bytes are read from the request body.
+
+The event also contains the chunk of data that was streamed. The chunk is a Uint8Array that can be decoded is needed
 
 ```ts
+const decoder = new TextDecoder()
 
+upfetch('/ai-chatbot', {
+   onStreamResponse: (event, response) => {
+      const text = decoder.decode(event.chunk)
+      console.log(text)
+   },
+})
 ```
 
 > [!NOTE]

@@ -104,13 +104,13 @@ type OnRetry = (
    context: RetryContext & { attempt: number },
 ) => MaybePromise<void>
 
-export type Progress = {
+export type StreamingEvent = {
+   /** The last streamed chunk */
+   chunk: Uint8Array
    /** Total bytes, read from the response header "Content-Length" */
    totalBytes: number
    /** Transferred bytes  */
    transferredBytes: number
-   /** The last streamed chunk */
-   chunk: Uint8Array
 }
 
 export type FallbackOptions = {
@@ -143,9 +143,9 @@ export type DefaultOptions<
    /** Callback executed before each retry */
    onRetry?: OnRetry
    /** Callback executed each time a chunk of the response stream is received */
-   onStreamResponse?: (progress: Progress, response: Response) => void
+   onStreamResponse?: (event: StreamingEvent, response: Response) => void
    /** Callback executed each time a chunk of the request stream is sent */
-   onStreamRequest?: (progress: Progress, request: Request) => void
+   onStreamRequest?: (event: StreamingEvent, request: Request) => void
    /** Callback executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => void
    /** URL parameters to be serialized and appended to the URL */
@@ -192,11 +192,11 @@ export type FetcherOptions<
    /** Callback executed before each retry */
    onRetry?: OnRetry
    /** Callback executed each time a chunk of the response stream is received */
-   onStreamResponse?: (progress: Progress, response: Response) => void
+   onStreamResponse?: (event: StreamingEvent, response: Response) => void
    /** Callback executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => void
    /** Callback executed each time a chunk of the request stream is sent */
-   onStreamRequest?: (progress: Progress, request: Request) => void
+   onStreamRequest?: (event: StreamingEvent, request: Request) => void
    /** URL parameters */
    params?: Params
    /** Function to parse response errors */

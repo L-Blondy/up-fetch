@@ -36,8 +36,8 @@ test('should call not onStreamRequest when body is empty', async () => {
    const upfetch = up(fetch, () => ({ baseUrl }))
    const spy = vi.fn()
    await upfetch('/text', {
-      onStreamRequest(progress) {
-         spy(progress)
+      onStreamRequest(event) {
+         spy(event)
       },
    })
    expect(spy).not.toHaveBeenCalledWith()
@@ -51,9 +51,9 @@ test('should chunk the request body when onStreamRequest is present', async () =
    await upfetch('/large-blob', {
       method: 'POST',
       body: createLargeBlob(sizeInMb),
-      onStreamRequest(progress) {
+      onStreamRequest(event) {
          exec++
-         spy(progress)
+         spy(event)
       },
    })
    expect(exec).toBeGreaterThanOrEqual(5)
@@ -79,9 +79,9 @@ if (majorNodeVersion > 18) {
       await upfetch('/large-blob', {
          method: 'POST',
          body: formData,
-         onStreamRequest(progress) {
+         onStreamRequest(event) {
             ++exec
-            expect(progress.totalBytes).toBe(122640) // the size of the file
+            expect(event.totalBytes).toBe(122640) // the size of the file
          },
       })
       expect(exec).toBeGreaterThanOrEqual(3)
