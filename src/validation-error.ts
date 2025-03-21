@@ -6,12 +6,12 @@ export class ValidationError<TData = any> extends Error {
    data: TData
 
    constructor(result: StandardSchemaV1.FailureResult, data: TData) {
-      super('Validation error')
+      super(JSON.stringify(result.issues))
       this.name = 'ValidationError'
       this.issues = result.issues
       this.data = data
    }
 }
 
-export let isValidationError = (error: any): error is ValidationError =>
+export const isValidationError = (error: unknown): error is ValidationError =>
    error instanceof ValidationError

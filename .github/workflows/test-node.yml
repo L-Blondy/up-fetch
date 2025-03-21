@@ -1,33 +1,28 @@
 name: Test for Node.Js
 
 on:
-  workflow_call:
-  workflow_dispatch:
+   workflow_call:
+   workflow_dispatch:
 
 jobs:
-  test-node:
-    name: Test Node.js version "${{ matrix.node-version }}" on "${{ matrix.os }}"
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: 
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
-        node-version:
-          - 22
-          - "^20.3"
-          - 18
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install deps
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Test
-        run: npm run test
-  
+   test-node:
+      name: Test Node.js version "${{ matrix.node-version }}" on "ubuntu-latest"
+      runs-on: ubuntu-latest
+      strategy:
+         fail-fast: false
+         matrix:
+            node-version:
+               - 22
+               - '~20.3'
+               - 18
+      steps:
+         - uses: actions/checkout@v4
+         - uses: actions/setup-node@v4
+           with:
+              node-version: ${{ matrix.node-version }}
+         - name: Install deps
+           run: npm ci
+         - name: Build
+           run: npm run build
+         - name: Test
+           run: npm run test

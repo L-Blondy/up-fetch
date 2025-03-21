@@ -1,5 +1,13 @@
-import type { DistributiveOmit, MaybePromise } from './utils'
 import type { StandardSchemaV1 } from '@standard-schema/spec'
+
+export type KeyOf<O> = O extends unknown ? keyof O : never
+
+export type DistributiveOmit<
+   TObject extends object,
+   TKey extends KeyOf<TObject> | (string & {}),
+> = TObject extends unknown ? Omit<TObject, TKey> : never
+
+export type MaybePromise<T> = T | Promise<T>
 
 type JsonPrimitive = string | number | boolean | null | undefined
 
@@ -9,37 +17,20 @@ export type JsonifiableArray =
    | Array<JsonPrimitive | JsonifiableObject | JsonifiableArray>
    | ReadonlyArray<JsonPrimitive | JsonifiableObject | JsonifiableArray>
 
-type Interceptor =
-   | keyof DefaultOptions<any, any, any>
-   | keyof FetcherOptions<any, any, any, any> extends infer U
-   ? U extends `on${infer V}`
-      ? `on${V}`
-      : never
-   : never
+export type BaseFetchFn = (
+   input: any,
+   options?: any,
+   ctx?: any,
+) => Promise<Response>
 
-type TupleToUnion<U extends string, R extends any[] = []> = {
-   [S in U]: Exclude<U, S> extends never
-      ? [...R, S]
-      : TupleToUnion<Exclude<U, S>, [...R, S]>
-}[U]
-
-export type Interceptors = TupleToUnion<Interceptor>
-
-export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
-
-export type ParseResponse<TFetchFn extends BaseFetchFn, TParsedData> = (
+type ParseResponse<TParsedData> = (
    response: Response,
-   options: ResolvedOptions<TFetchFn>,
+   request: Request,
 ) => MaybePromise<TParsedData>
 
-export type ParseRejected<TFetchFn extends BaseFetchFn> = (
-   res: Response,
-   options: ResolvedOptions<TFetchFn>,
-) => any
+type ParseRejected = (response: Response, request: Request) => any
 
-export type SerializeBody<TRawBody> = (
-   body: TRawBody,
-) => BodyInit | null | undefined
+type SerializeBody<TRawBody> = (body: TRawBody) => BodyInit | null | undefined
 
 export type SerializeParams = (params: Params) => string
 
@@ -61,38 +52,72 @@ type Method =
    | 'HEAD'
    | (string & {})
 
-export type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
+type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
    NonNullable<Parameters<TFetch>[1]>,
    'body' | 'headers' | 'method'
 > & {}
 
-export type ResolvedOptions<
-   TFetchFn extends BaseFetchFn,
-   TSchema extends StandardSchemaV1 = any,
-   TParsedData = any,
-   TRawBody = any,
-> = BaseOptions<TFetchFn> & {
-   baseUrl?: string
-   readonly body?: BodyInit | null
-   headers: Record<string, string>
-   readonly input: Request | string
-   method?: Method
-   params: Params
-   parseRejected: ParseRejected<TFetchFn>
-   parseResponse: ParseResponse<TFetchFn, TParsedData>
-   rawBody?: TRawBody | null | undefined
-   reject: (response: Response) => MaybePromise<boolean>
-   schema?: TSchema
-   serializeBody: SerializeBody<TRawBody>
-   serializeParams: SerializeParams
-   signal?: AbortSignal
-   timeout?: number
+/**
+ * while `unknown` does not work with type guards, `{}` does
+ * `{}` behaves like `unknown` when trying to access properties (ts gives an error)
+ */
+export type Unknown = {}
+
+export type RetryContext =
+   | {
+        response: Response
+        error: undefined
+        request: Request
+     }
+   | {
+        response: undefined
+        error: Unknown
+        request: Request
+     }
+
+type RetryWhen = (context: RetryContext) => MaybePromise<boolean>
+
+type RetryAttempts =
+   | number
+   | ((context: { request: Request }) => MaybePromise<number>)
+
+type RetryDelay =
+   | number
+   | ((context: RetryContext & { attempt: number }) => MaybePromise<number>)
+
+export type RetryOptions = {
+   /**
+    * The number of attempts to make before giving up
+    */
+   attempts?: RetryAttempts
+   /**
+    * The delay before retrying
+    */
+   delay?: RetryDelay
+   /**
+    * Function to determine if a retry attempt should be made
+    */
+   when?: RetryWhen
 }
 
-export type FallbackOptions<TFetchFn extends BaseFetchFn> = {
-   parseRejected: ParseRejected<TFetchFn>
-   parseResponse: ParseResponse<TFetchFn, any>
+type OnRetry = (
+   context: RetryContext & { attempt: number },
+) => MaybePromise<void>
+
+export type StreamingEvent = {
+   /** The last streamed chunk */
+   chunk: Uint8Array
+   /** Total bytes, read from the response header "Content-Length" */
+   totalBytes: number
+   /** Transferred bytes  */
+   transferredBytes: number
+}
+
+export type FallbackOptions = {
+   parseRejected: ParseRejected
+   parseResponse: ParseResponse<any>
    reject: (response: Response) => MaybePromise<boolean>
+   retry: Required<RetryOptions>
    serializeParams: SerializeParams
    serializeBody: SerializeBody<BodyInit | JsonifiableObject | JsonifiableArray>
 }
@@ -111,34 +136,34 @@ export type DefaultOptions<
    headers?: RawHeaders
    /** HTTP method to use for the request */
    method?: Method
-   /** Callback executed before the request is made */
-   onRequest?: (options: ResolvedOptions<TFetchFn>) => void
    /** Callback executed when the request fails */
-   onError?: (error: any, options: ResolvedOptions<TFetchFn>) => void
+   onError?: (error: Unknown, request: Request) => void
+   /** Callback executed before the request is made */
+   onRequest?: (request: Request) => void
+   /** Callback executed each time a chunk of the request stream is sent */
+   onRequestStreaming?: (event: StreamingEvent, request: Request) => void
+   /** Callback executed each time a chunk of the response stream is received */
+   onResponseStreaming?: (event: StreamingEvent, response: Response) => void
+   /** Callback executed before each retry */
+   onRetry?: OnRetry
    /** Callback executed when the request succeeds */
-   onSuccess?: (data: any, options: ResolvedOptions<TFetchFn>) => void
+   onSuccess?: (data: any, request: Request) => void
    /** URL parameters to be serialized and appended to the URL */
    params?: Params
    /** Function to parse response errors */
-   parseRejected?: ParseRejected<TFetchFn>
+   parseRejected?: ParseRejected
    /** Function to parse the response data */
-   parseResponse?: ParseResponse<TFetchFn, TDefaultParsedData>
-   /**
-    * @deprecated Will be renamed `parseRejected` in v2.0
-    */
-   parseResponseError?: ParseRejected<TFetchFn>
+   parseResponse?: ParseResponse<TDefaultParsedData>
    /** Function to determine if a response should throw an error */
    reject?: (response: Response) => MaybePromise<boolean>
+   /** The default retry options. Will be merged with the fetcher options */
+   retry?: RetryOptions
    /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
    serializeBody?: SerializeBody<TDefaultRawBody>
    /** Function to serialize URL parameters */
    serializeParams?: SerializeParams
    /** AbortSignal to cancel the request */
    signal?: AbortSignal
-   /**
-    * @deprecated Will be renamed `reject` in v2.0
-    */
-   throwResponseError?: (response: Response) => MaybePromise<boolean>
    /** Request timeout in milliseconds */
    timeout?: number
 }
@@ -160,18 +185,28 @@ export type FetcherOptions<
    headers?: RawHeaders
    /** HTTP method */
    method?: Method
+   /** Callback executed when the request fails */
+   onError?: (error: Unknown, request: Request) => void
+   /** Callback executed before the request is made */
+   onRequest?: (request: Request) => void
+   /** Callback executed each time a chunk of the request stream is sent */
+   onRequestStreaming?: (event: StreamingEvent, request: Request) => void
+   /** Callback executed each time a chunk of the response stream is received */
+   onResponseStreaming?: (event: StreamingEvent, response: Response) => void
+   /** Callback executed before each retry */
+   onRetry?: OnRetry
+   /** Callback executed when the request succeeds */
+   onSuccess?: (data: any, request: Request) => void
    /** URL parameters */
    params?: Params
    /** Function to parse response errors */
-   parseRejected?: ParseRejected<TFetchFn>
+   parseRejected?: ParseRejected
    /** Function to parse the response data */
-   parseResponse?: ParseResponse<TFetchFn, TParsedData>
-   /**
-    * @deprecated Will be renamed `parseRejected` in v2.0
-    */
-   parseResponseError?: ParseRejected<TFetchFn>
+   parseResponse?: ParseResponse<TParsedData>
    /** Function to determine if a response should throw an error */
    reject?: (response: Response) => MaybePromise<boolean>
+   /** The fetch retry options. Merged with the default retry options */
+   retry?: RetryOptions
    /** JSON Schema for request/response validation */
    schema?: TSchema
    /** Function to serialize request body. Restrict the valid `body` type by typing its first argument. */
@@ -180,10 +215,6 @@ export type FetcherOptions<
    serializeParams?: SerializeParams
    /** AbortSignal to cancel the request */
    signal?: AbortSignal
-   /**
-    * @deprecated Will be renamed `reject` in v2.0
-    */
-   throwResponseError?: (response: Response) => MaybePromise<boolean>
    /** Request timeout in milliseconds */
    timeout?: number
 }
