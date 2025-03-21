@@ -35,11 +35,13 @@ _upfetch_ 是一个高级的 fetch 客户端构建器，具有标准模式验证
    - [生命周期钩子](#️-生命周期钩子)
    - [超时设置](#️-超时设置)
    - [重试](#️-重试)
+   - [进度](#️-进度)
    - [错误处理](#️-错误处理)
 - [使用方法](#️-使用方法)
    - [身份验证](#️-身份验证)
    - [删除默认选项](#️-删除默认选项)
    - [表单数据](#️-表单数据)
+   - [流式传输](#️-流式传输)
    - [HTTP 代理](#️-http-代理)
    - [多个 fetch 客户端](#️-多个-fetch-客户端)
 - [高级用法](#️-高级用法)
@@ -55,7 +57,7 @@ _upfetch_ 是一个高级的 fetch 客户端构建器，具有标准模式验证
 
 ## ➡️ 亮点
 
-- 🚀 **轻量级** - 压缩后仅 1.2kB，无依赖
+- 🚀 **轻量级** - 压缩后仅 1.7kB，无依赖
 - 🔒 **类型安全** - 使用 [zod][zod]、[valibot][valibot] 或 [arktype][arktype] 验证 API 响应
 - 🛠️ **实用的 API** - 使用对象作为 `params` 和 `body`，自动获取解析后的响应
 - 🎨 **灵活配置** - 一次设置 `baseUrl` 或 `headers` 等默认值，随处使用
@@ -223,51 +225,84 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ 重试
 
-重试功能通过适配器提供，而不是直接集成到核心库中。这种设计选择有助于保持基础包的体积尽可能小，因为许多应用程序并不需要重试功能。
+重试功能允许您自动重试失败的请求，可配置尝试次数、延迟和条件。
 
 ```ts
-import { withRetry } from 'up-fetch/adapters'
-
-const upfetch = up(withRetry(fetch), () => ({
+const upfetch = up(fetch, () => ({
    retry: {
-      enabled: true, // 当 !response.ok 时重试
-      times: 3,
+      attempts: 3,
       delay: 1000,
    },
 }))
 ```
 
-所有重试选项都可以是函数，以实现精细控制。每个函数都接收一个包含相关信息的上下文对象。
-
-默认行为：
+**默认情况下**，对于任何非 2xx 响应的 GET 请求将重试一次，延迟为 1000ms：
 
 ```ts
-const upfetch = up(withRetry(fetch), () => ({
+const upfetch = up(fetch, () => ({
+   // 默认重试配置
    retry: {
-      // 对所有非 2XX 响应启用重试
-      enabled: ({ response, request }) => !response.ok,
-      // 仅对 GET 请求重试一次
-      times: ({ response, request }) => (request.method === 'GET' ? 1 : 0),
-      // 重试之间的延迟为 1000ms
+      when: (ctx) => ctx.response?.ok === false,
+      attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
       delay: 1000,
    },
 }))
 ```
 
-你可以在每个请求的基础上覆盖单个选项：
+可以在每个请求的基础上覆盖重试选项：
 
 ```ts
+// 对于这个删除请求，重试 3 次并使用指数退避
 await upfetch('/api/data', {
    method: 'DELETE',
    retry: {
-      times: 3,
-      // 指数退避
-      delay: ({ attempt }) => attempt ** 2 * 1000,
+      attempts: 3,
+      delay: (ctx) => ctx.attempt ** 2 * 1000,
    },
 })
 ```
 
-💡 超时时间是按操作应用的，而不是按重试次数。如果请求超时，将不会进行任何重试尝试。
+您还可以在网络错误、超时或任何其他错误时重试：
+
+```ts
+const upfetch = up(fetch, () => ({
+   retry: {
+      attempts: 2,
+      delay: 1000,
+      when: (ctx) => {
+         // 在超时错误时重试
+         if (ctx.error) return ctx.error.name === 'TimeoutError'
+         // 在 429 服务器错误时重试
+         if (ctx.response) return ctx.response.status === 429
+         return false
+      },
+   },
+}))
+```
+
+### ✔️ 进度
+
+上传进度：
+
+```ts
+upfetch('/upload', {
+   method: 'POST',
+   body: new File(['large file'], 'foo.txt'),
+   onRequestStreaming: ({ transferredBytes, totalBytes }) => {
+      console.log(`进度：${transferredBytes} / ${totalBytes}`)
+   },
+})
+```
+
+下载进度：
+
+```ts
+upfetch('/download', {
+   onResponseStreaming: ({ transferredBytes, totalBytes }) => {
+      console.log(`进度：${transferredBytes} / ${totalBytes}`)
+   },
+})
+```
 
 ### ✔️ 错误处理
 
@@ -360,6 +395,58 @@ upfetch('https://a.b.c', {
 })
 ```
 
+### ✔️ 多个 fetch 客户端
+
+你可以创建多个具有不同默认值的 upfetch 实例：
+
+```ts
+const fetchMovie = up(fetch, () => ({
+   baseUrl: 'https://api.themoviedb.org',
+   headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${process.env.API_KEY}`,
+   },
+}))
+
+const fetchFile = up(fetch, () => ({
+   parseResponse: async (res) => {
+      const name = res.url.split('/').at(-1) ?? ''
+      const type = res.headers.get('content-type') ?? ''
+      return new File([await res.blob()], name, { type })
+   },
+}))
+```
+
+### ✔️ 流式传输
+
+_upfetch_ 通过 `onRequestStreaming` 提供上传操作的流式传输功能，通过 `onResponseStreaming` 提供下载操作的流式传输功能。
+
+这两个处理器都接收以下事件对象以及请求/响应：
+
+```ts
+type StreamingEvent = {
+   chunk: Uint8Array // 当前正在流式传输的数据块
+   totalBytes: number // 数据的总大小
+   transferredBytes: number // 已传输的数据量
+}
+```
+
+事件的 `totalBytes` 属性从 `"Content-Length"` 头部读取。\
+对于请求流式传输，如果头部不存在，总字节数将从请求体中读取。
+
+以下是处理 AI 聊天机器人流式响应的示例：
+
+```ts
+const decoder = new TextDecoder()
+
+upfetch('/ai-chatbot', {
+   onResponseStreaming: (event, response) => {
+      const text = decoder.decode(event.chunk)
+      console.log(text)
+   },
+})
+```
+
 ### ✔️ HTTP 代理
 
 由于 _upfetch_ 是 _"fetch 无关的"_，你可以使用 [undici](https://github.com/nodejs/undici) 代替原生 fetch 实现。
@@ -389,22 +476,6 @@ const upfetch = up(fetch, () => ({
       keepAliveTimeout: 10,
       keepAliveMaxTimeout: 10,
    }),
-}))
-```
-
-### ✔️ 多个 fetch 客户端
-
-你可以创建多个具有不同默认值的 upfetch 实例：
-
-```ts
-const fetchJson = up(fetch)
-
-const fetchBlob = up(fetch, () => ({
-   parseResponse: (res) => res.blob(),
-}))
-
-const fetchText = up(fetch, () => ({
-   parseResponse: (res) => res.text(),
 }))
 ```
 
@@ -556,23 +627,30 @@ const upfetch = up(fetch, (input, options) => ({
 ```ts
 function up(
    fetchFn: typeof globalThis.fetch,
-   getDefaultOptions?: (fetcherOptions: FetcherOptions) => DefaultOptions,
+   getDefaultOptions?: (
+      input: RequestInit,
+      options: FetcherOptions,
+   ) => DefaultOptions | Promise<DefaultOptions>,
 ): UpFetch
 ```
 
 | 选项                         | 签名                           | 描述                                                                    |
 | ---------------------------- | ------------------------------ | ----------------------------------------------------------------------- |
 | `baseUrl`                    | `string`                       | 所有请求的基础 URL。                                                    |
+| `onError`                    | `(error, request) => void`     | 发生错误时执行。                                                        |
+| `onSuccess`                  | `(data, request) => void`      | 请求成功完成时执行。                                                    |
+| `onRequest`                  | `(request) => void`            | 在发出请求之前执行。                                                    |
+| `onRetry`                    | `(ctx) => void`                | 在每次重试之前执行。                                                    |
+| `onRequestStreaming`         | `(event, request) => void`     | 每次发送请求数据块时执行。                                              |
+| `onResponseStreaming`        | `(event, response) => void`    | 每次接收响应数据块时执行。                                              |
 | `params`                     | `object`                       | 默认查询参数。                                                          |
-| `onRequest`                  | `(options) => void`            | 在发出请求之前执行。                                                    |
-| `onError`                    | `(error, options) => void`     | 发生错误时执行。                                                        |
-| `onSuccess`                  | `(data, options) => void`      | 请求成功完成时执行。                                                    |
-| `parseResponse`              | `(response, options) => data`  | 默认成功响应解析器。<br/>如果省略，将自动解析 `json` 和 `text` 响应。   |
-| `parseRejected`              | `(response, options) => error` | 默认错误响应解析器。<br/>如果省略，将自动解析 `json` 和 `text` 响应。   |
+| `parseResponse`              | `(response, request) => data`  | 默认成功响应解析器。<br/>如果省略，将自动解析 `json` 和 `text` 响应。   |
+| `parseRejected`              | `(response, request) => error` | 默认错误响应解析器。<br/>如果省略，将自动解析 `json` 和 `text` 响应。   |
+| `reject`                     | `(response) => boolean`        | 决定何时拒绝响应。                                                      |
+| `retry`                      | `RetryOptions`                 | 默认重试选项。                                                          |
 | `serializeBody`              | `(body) => BodyInit`           | 默认请求体序列化器。<br/>通过类型化其第一个参数限制有效的 `body` 类型。 |
 | `serializeParams`            | `(params) => string`           | 默认查询参数序列化器。                                                  |
 | `timeout`                    | `number`                       | 默认超时时间（毫秒）。                                                  |
-| `reject`                     | `(response) => boolean`        | 决定何时拒绝响应。                                                      |
 | _...以及所有其他 fetch 选项_ |                                |                                                                         |
 
 ### <samp>upfetch(url, options?)</samp>
@@ -591,15 +669,32 @@ function upfetch(
 | 选项                         | 签名                           | 描述                                                                                     |
 | ---------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
 | `baseUrl`                    | `string`                       | 请求的基础 URL。                                                                         |
+| `onError`                    | `(error, request) => void`     | 发生错误时执行。                                                                         |
+| `onSuccess`                  | `(data, request) => void`      | 请求成功完成时执行。                                                                     |
+| `onRequest`                  | `(request) => void`            | 在发出请求之前执行。                                                                     |
+| `onRetry`                    | `(ctx) => void`                | 在每次重试之前执行。                                                                     |
+| `onRequestStreaming`         | `(event, request) => void`     | 每次发送请求数据块时执行。                                                               |
+| `onResponseStreaming`        | `(event, response) => void`    | 每次接收响应数据块时执行。                                                               |
 | `params`                     | `object`                       | 查询参数。                                                                               |
-| `parseResponse`              | `(response, options) => data`  | 成功响应解析器。                                                                         |
-| `parseRejected`              | `(response, options) => error` | 错误响应解析器。                                                                         |
+| `parseResponse`              | `(response, request) => data`  | 成功响应解析器。                                                                         |
+| `parseRejected`              | `(response, request) => error` | 错误响应解析器。                                                                         |
+| `reject`                     | `(response) => boolean`        | 决定何时拒绝响应。                                                                       |
+| `retry`                      | `RetryOptions`                 | 重试选项。                                                                               |
 | `schema`                     | `StandardSchemaV1`             | 用于验证响应的模式。<br/>模式必须遵循 [Standard Schema Specification][standard-schema]。 |
 | `serializeBody`              | `(body) => BodyInit`           | 请求体序列化器。<br/>通过类型化其第一个参数限制有效的 `body` 类型。                      |
 | `serializeParams`            | `(params) => string`           | 查询参数序列化器。                                                                       |
 | `timeout`                    | `number`                       | 超时时间（毫秒）。                                                                       |
-| `reject`                     | `(response) => boolean`        | 决定何时拒绝响应。                                                                       |
 | _...以及所有其他 fetch 选项_ |                                |                                                                                          |
+
+<br/>
+
+### <samp>RetryOptions</samp>
+
+| 选项       | 签名                 | 描述                                               |
+| ---------- | -------------------- | -------------------------------------------------- |
+| `when`     | `(ctx) => boolean`   | 基于响应或错误决定是否应该重试的函数               |
+| `attempts` | `number \| function` | 重试次数或基于请求确定重试次数的函数               |
+| `delay`    | `number \| function` | 重试之间的延迟（毫秒）或基于尝试次数确定延迟的函数 |
 
 <br/>
 

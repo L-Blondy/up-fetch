@@ -58,7 +58,7 @@ Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fe
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.4kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.7kB gzipped, no dependency
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
@@ -641,6 +641,8 @@ function up(
 | `onError`                        | `(error, request) => void`     | Executes on error.                                                                                        |
 | `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                         |
 | `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                      |
+| `onRequestStreaming`             | `(event, request) => void`     | Executes each time a request chunk is send.                                                               |
+| `onResponseStreaming`            | `(event, response) => void`    | Executes each time a response chunk is received.                                                          |
 | `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                               |
 | `params`                         | `object`                       | The default query parameters.                                                                             |
 | `parseResponse`                  | `(response, request) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
@@ -671,6 +673,8 @@ Options:
 | `onError`                        | `(error, request) => void`     | Executes on error.                                                                                                            |
 | `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                                             |
 | `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                                          |
+| `onRequestStreaming`             | `(event, request) => void`     | Executes each time a request chunk is send.                                                                                   |
+| `onResponseStreaming`            | `(event, response) => void`    | Executes each time a response chunk is received.                                                                              |
 | `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                                                   |
 | `params`                         | `object`                       | The query parameters.                                                                                                         |
 | `parseResponse`                  | `(response, request) => data`  | The success response parser.                                                                                                  |
