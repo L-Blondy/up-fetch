@@ -450,6 +450,10 @@ const fetchFile = up(fetch, () => ({
 }))
 ```
 
+### ✔️ Streaming
+
+<!-- TODO -->
+
 ## ➡️ Advanced Usage
 
 ### ✔️ Error as value
