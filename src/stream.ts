@@ -8,8 +8,10 @@ export async function toStreamable<R extends Request | Response>(
    const body: (Request | Request)['body'] =
       reqOrRes.body || (reqOrRes as any)._bodyInit
    if (!onStream || !body) return reqOrRes
-   let totalBytes: number = +(reqOrRes.headers.get('content-length') || 0)
-   if (!totalBytes && !isResponse) {
+   const contentLength = reqOrRes.headers.get('content-length')
+   let totalBytes: number = +(contentLength || 0)
+   // For the Request, when no "Content-Length" header is present, we read the total bytes from the body
+   if (!isResponse && !contentLength) {
       for await (const chunk of reqOrRes.clone().body!) {
          totalBytes += chunk.byteLength
       }

@@ -45,10 +45,7 @@ test('should call not onStreamRequest when body is empty', async () => {
 
 test('should chunk the request body when onStreamRequest is present', async () => {
    const sizeInMb = 10
-   const upfetch = up(fetch, (input, options) => ({
-      baseUrl,
-      headers: { 'Content-Length': options.body?.size },
-   }))
+   const upfetch = up(fetch, () => ({ baseUrl }))
    let exec = 0
    const spy = vi.fn()
    await upfetch('/large-blob', {
