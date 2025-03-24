@@ -21,7 +21,7 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 
 ## Coming from v1?
 
-Check out our [Migration Guide](./MIGRATION_v1_v2.md). \
+Check out the [v2.0 Release Notes](https://github.com/L-Blondy/up-fetch/releases/tag/v2.0.0). \
 Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fetch/tree/v1.3.6/README.md).
 
 ## Table of Contents
