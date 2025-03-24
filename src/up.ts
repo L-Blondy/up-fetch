@@ -1,27 +1,43 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
-import { resolveOptions } from './resolve-options'
+import { fallbackOptions } from './fallback-options'
+import { toStreamable } from './stream'
 import type {
-   FetcherOptions,
-   DefaultOptions,
    BaseFetchFn,
+   DefaultOptions,
+   DistributiveOmit,
    FallbackOptions,
+   FetcherOptions,
+   MaybePromise,
+   RetryContext,
 } from './types'
-import { emptyOptions, validate } from './utils'
+import {
+   abortableDelay,
+   isJsonifiable,
+   mergeHeaders,
+   omit,
+   resolveUrl,
+   validate,
+   withTimeout,
+} from './utils'
 
-export function up<
-   TFetchFn extends BaseFetchFn,
-   TDefaultParsedData = any,
-   TDefaultRawBody = Parameters<FallbackOptions<any>['serializeBody']>[0],
->(
-   fetchFn: TFetchFn,
-   getDefaultOptions: (
-      input: Parameters<TFetchFn>[0],
-      fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
-      ctx?: Parameters<TFetchFn>[2],
-   ) => DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody> = () =>
-      emptyOptions,
-) {
-   return <
+const emptyOptions = {} as any
+
+export const up =
+   <
+      TFetchFn extends BaseFetchFn,
+      TDefaultParsedData = any,
+      TDefaultRawBody = Parameters<FallbackOptions['serializeBody']>[0],
+   >(
+      fetchFn: TFetchFn,
+      getDefaultOptions: (
+         input: Exclude<Parameters<TFetchFn>[0], Request>,
+         fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
+         ctx?: Parameters<TFetchFn>[2],
+      ) => MaybePromise<
+         DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody>
+      > = () => emptyOptions,
+   ) =>
+   async <
       TParsedData = TDefaultParsedData,
       TSchema extends StandardSchemaV1<
          TParsedData,
@@ -38,46 +54,129 @@ export function up<
       > = emptyOptions,
       ctx?: Parameters<TFetchFn>[2],
    ) => {
-      let defaultOpts = getDefaultOptions(input, fetcherOpts, ctx)
-      let options = resolveOptions(input, defaultOpts, fetcherOpts)
-      defaultOpts.onRequest?.(options)
+      const defaultOpts = await getDefaultOptions(input, fetcherOpts, ctx)
 
-      return fetchFn(options.input, options, ctx)
-         .catch((error) => {
-            defaultOpts.onError?.(error, options)
-            throw error
-         })
-         .then(async (response: Response) => {
-            if (!(await options.reject(response))) {
-               let parsed: Awaited<TParsedData>
-               try {
-                  parsed = await options.parseResponse(response, options)
-               } catch (error: any) {
-                  defaultOpts.onError?.(error, options)
-                  throw error
-               }
-               let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
-               try {
-                  data = options.schema
-                     ? await validate(options.schema, parsed)
-                     : parsed
-               } catch (error: any) {
-                  defaultOpts.onError?.(error, options)
-                  throw error
-               }
-               defaultOpts.onSuccess?.(data, options)
-               return data
-            } else {
-               let respError: any
-               try {
-                  respError = await options.parseRejected(response, options)
-               } catch (error: any) {
-                  defaultOpts.onError?.(error, options)
-                  throw error
-               }
-               defaultOpts.onError?.(respError, options)
-               throw respError
+      const options = {
+         ...fallbackOptions,
+         ...defaultOpts,
+         ...fetcherOpts,
+         ...(emptyOptions as { body: BodyInit | null | undefined }),
+         retry: {
+            ...fallbackOptions.retry,
+            ...defaultOpts.retry,
+            ...fetcherOpts.retry,
+         },
+      }
+
+      // merge event handlers
+      Object.keys(defaultOpts).forEach((key) => {
+         if (/^on[A-Z]/.test(key)) {
+            ;(options as any)[key] = (...args: unknown[]) => {
+               defaultOpts[key]?.(...args)
+               fetcherOpts[key]?.(...args)
             }
-         })
+         }
+      })
+
+      options.body =
+         fetcherOpts.body === null || fetcherOpts.body === undefined
+            ? (fetcherOpts.body as null | undefined)
+            : options.serializeBody(fetcherOpts.body)
+
+      options.headers = mergeHeaders([
+         isJsonifiable(fetcherOpts.body) && typeof options.body === 'string'
+            ? { 'content-type': 'application/json' }
+            : {},
+         defaultOpts.headers,
+         fetcherOpts.headers,
+      ])
+
+      let attempt = 0
+      let request: Request
+
+      const outcome = {} as DistributiveOmit<RetryContext, 'request'>
+
+      do {
+         // per-try timeout
+         options.signal = withTimeout(fetcherOpts.signal, options.timeout)
+
+         request = await toStreamable(
+            new Request(
+               input.url
+                  ? input // Request
+                  : resolveUrl(
+                       options.baseUrl,
+                       input, // string | URL
+                       defaultOpts.params,
+                       fetcherOpts.params,
+                       options.serializeParams,
+                    ),
+               options,
+            ),
+            options.onRequestStreaming,
+         )
+         options.onRequest?.(request)
+         try {
+            outcome.response = await toStreamable(
+               await fetchFn(request, omit(options, ['body']), ctx),
+               options.onResponseStreaming,
+            )
+         } catch (e: any) {
+            outcome.error = e
+         }
+
+         if (
+            !(await options.retry.when({ request, ...outcome })) ||
+            ++attempt >
+               (typeof options.retry.attempts === 'function'
+                  ? await options.retry.attempts({ request })
+                  : options.retry.attempts)
+         )
+            break
+
+         await abortableDelay(
+            typeof options.retry.delay === 'function'
+               ? await options.retry.delay({ attempt, request, ...outcome })
+               : options.retry.delay,
+            options.signal,
+         )
+         options.onRetry?.({ attempt, request, ...outcome })
+         // biome-ignore lint/correctness/noConstantCondition: <explanation>
+      } while (true)
+
+      if (outcome.error) {
+         defaultOpts.onError?.(outcome.error, request)
+         throw outcome.error
+      }
+      const response = outcome.response as Response
+
+      if (!(await options.reject(response))) {
+         let parsed: Awaited<TParsedData>
+         try {
+            parsed = await options.parseResponse(response, request)
+         } catch (error: any) {
+            options.onError?.(error, request)
+            throw error
+         }
+         let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
+         try {
+            data = options.schema
+               ? await validate(options.schema, parsed)
+               : parsed
+         } catch (error: any) {
+            options.onError?.(error, request)
+            throw error
+         }
+         options.onSuccess?.(data, request)
+         return data
+      }
+      let respError: any
+      try {
+         respError = await options.parseRejected(response, request)
+      } catch (error: any) {
+         options.onError?.(error, request)
+         throw error
+      }
+      options.onError?.(respError, request)
+      throw respError
    }
-}

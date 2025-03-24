@@ -26,7 +26,7 @@ Legend:
 | Extendable instance         | ❌                                             | ❌                                         | ✅                                         | ✅                                 |
 | Hooks/Interceptors          | ✅                                             | ✅                                         | ✅                                         | ✅                                 |
 | Instance Configuration      | ✅                                             | ✅                                         | ✅                                         | ✅                                 |
-| Retry                       | ❌                                             | ✅                                         | ✅                                         | ✅                                 |
+| Retry                       | ✅                                             | ✅                                         | ✅                                         | ✅                                 |
 | Schema Validation           | ✅                                             | ❌                                         | ❌                                         | ❌                                 |
 | Timeout                     | ✅                                             | 🟧 (2)                                     | ✅                                         | ✅                                 |
 | Zero Dependencies           | ✅                                             | ❌                                         | ✅                                         | ✅                                 |

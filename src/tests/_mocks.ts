@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 class NonJsonifiable {
    a: number
    constructor() {
@@ -20,6 +19,7 @@ dataview.setInt16(0, 256, true /* littleEndian */)
 formData.append('username', 'me')
 const getStream = () =>
    new ReadableStream({
+      // biome-ignore lint/suspicious/useAwait: <explanation>
       async start(controller) {
          controller.enqueue('This ')
          controller.enqueue('is ')

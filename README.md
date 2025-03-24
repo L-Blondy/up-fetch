@@ -13,21 +13,16 @@
 </p>
 <br>
 
-_upfetch_ is an advanced fetch client builder with standard schema validation, automatic response parsing, smart defaults and more. Designed to make data fetching type-safe and developer-friendly while keeping the familiar fetch API.
+_upfetch_ is an advanced fetch client builder with standard schema validation,
+automatic response parsing, smart defaults and more. Designed to make data fetching
+type-safe and developer-friendly while keeping the familiar fetch API.
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
-## 🚀 Try v2 Beta!
+## Coming from v1?
 
-Retries, Download & Upload progress, Streaming, and more are available in the latest beta! \
-Give it a try with:
-
-```bash
-npm i up-fetch@2.0.0-beta.12
-```
-
-Check out the [Migration Guide](https://github.com/L-Blondy/up-fetch/blob/v2.0/MIGRATION_v1_v2.md) for details about changes and how to upgrade. \
-For a complete overview of new features, see the [v2 documentation](https://github.com/L-Blondy/up-fetch/tree/v2.0/README.md).
+Check out our [Migration Guide](./MIGRATION_v1_v2.md). \
+Looking for the v1 documentation? [Click here](https://github.com/L-Blondy/up-fetch/tree/v1.3.6/README.md).
 
 ## Table of Contents
 
@@ -40,13 +35,16 @@ For a complete overview of new features, see the [v2 documentation](https://gith
    - [Schema Validation](#️-schema-validation)
    - [Lifecycle Hooks](#️-lifecycle-hooks)
    - [Timeout](#️-timeout)
+   - [Retry](#️-retry)
+   - [Progress](#️-progress)
    - [Error Handling](#️-error-handling)
 - [Usage](#️-usage)
    - [Authentication](#️-authentication)
    - [Delete a default option](#️-delete-a-default-option)
    - [FormData](#️-formdata)
-   - [HTTP Agent](#️-http-agent)
    - [Multiple fetch clients](#️-multiple-fetch-clients)
+   - [Streaming](#️-streaming)
+   - [HTTP Agent](#️-http-agent)
 - [Advanced Usage](#️-advanced-usage)
    - [Error as value](#️-error-as-value)
    - [Custom response parsing](#️-custom-response-parsing)
@@ -60,7 +58,7 @@ For a complete overview of new features, see the [v2 documentation](https://gith
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.2kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.7kB gzipped, no dependency
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
@@ -226,6 +224,87 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
+### ✔️ Retry
+
+The retry functionality allows you to automatically retry failed requests with configurable attempts, delay, and condition.
+
+```ts
+const upfetch = up(fetch, () => ({
+   retry: {
+      attempts: 3,
+      delay: 1000,
+   },
+}))
+```
+
+**By default** one attempt will be made for GET requests for any non 2xx response, with a delay of 1000ms:
+
+```ts
+const upfetch = up(fetch, () => ({
+   // default retry config
+   retry: {
+      when: (ctx) => ctx.response?.ok === false,
+      attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
+      delay: 1000,
+   },
+}))
+```
+
+Retry options can be overriden on a per-request basis:
+
+```ts
+// for this delete request retry 3 times with exponential backoff
+await upfetch('/api/data', {
+   method: 'DELETE',
+   retry: {
+      attempts: 3,
+      delay: (ctx) => ctx.attempt ** 2 * 1000,
+   },
+})
+```
+
+You can also retry on network errors, timeouts, or any other error:
+
+```ts
+const upfetch = up(fetch, () => ({
+   retry: {
+      attempts: 2,
+      delay: 1000,
+      when: (ctx) => {
+         // Retry on timeout errors
+         if (ctx.error) return ctx.error.name === 'TimeoutError'
+         // Retry on 429 server errors
+         if (ctx.response) return ctx.response.status === 429
+         return false
+      },
+   },
+}))
+```
+
+### ✔️ Progress
+
+Upload progress:
+
+```ts
+upfetch('/upload', {
+   method: 'POST',
+   body: new File(['large file'], 'foo.txt'),
+   onRequestStreaming: ({ transferredBytes, totalBytes }) => {
+      console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
+   },
+})
+```
+
+Download progress:
+
+```ts
+upfetch('/download', {
+   onResponseStreaming: ({ transferredBytes, totalBytes }) => {
+      console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
+   },
+})
+```
+
 ### ✔️ Error Handling
 
 #### 👉 <samp>ResponseError</samp>
@@ -317,6 +396,58 @@ upfetch('https://a.b.c', {
 })
 ```
 
+### ✔️ Multiple fetch clients
+
+You can create multiple upfetch instances with different defaults:
+
+```ts
+const fetchMovie = up(fetch, () => ({
+   baseUrl: 'https://api.themoviedb.org',
+   headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${process.env.API_KEY}`,
+   },
+}))
+
+const fetchFile = up(fetch, () => ({
+   parseResponse: async (res) => {
+      const name = res.url.split('/').at(-1) ?? ''
+      const type = res.headers.get('content-type') ?? ''
+      return new File([await res.blob()], name, { type })
+   },
+}))
+```
+
+### ✔️ Streaming
+
+_upfetch_ provides powerful streaming capabilities through `onRequestStreaming` for upload operations, and `onResponseStreaming` for download operations.
+
+Both handlers receive the following event object plus the request/response:
+
+```ts
+type StreamingEvent = {
+   chunk: Uint8Array // The current chunk of data being streamed
+   totalBytes: number // Total size of the data
+   transferredBytes: number // Amount of data transferred so far
+}
+```
+
+The `totalBytes` property of the event is read from the `"Content-Length"` header. \
+For request streaming, if the header is not present, the total bytes are read from the request body.
+
+Here's an example of processing a streamed response from an AI chatbot:
+
+```ts
+const decoder = new TextDecoder()
+
+upfetch('/ai-chatbot', {
+   onResponseStreaming: (event, response) => {
+      const text = decoder.decode(event.chunk)
+      console.log(text)
+   },
+})
+```
+
 ### ✔️ HTTP Agent
 
 Since _upfetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
@@ -346,28 +477,6 @@ const upfetch = up(fetch, () => ({
       keepAliveTimeout: 10,
       keepAliveMaxTimeout: 10,
    }),
-}))
-```
-
-### ✔️ Multiple fetch clients
-
-You can create multiple upfetch instances with different defaults:
-
-```ts
-const fetchMovie = up(fetch, () => ({
-   baseUrl: 'https://api.themoviedb.org',
-   headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${process.env.API_KEY}`,
-   },
-}))
-
-const fetchFile = up(fetch, () => ({
-   parseResponse: async (res) => {
-      const name = res.url.split('/').at(-1) ?? ''
-      const type = res.headers.get('content-type') ?? ''
-      return new File([await res.blob()], name, { type })
-   },
 }))
 ```
 
@@ -519,23 +628,30 @@ Creates a new upfetch instance with optional default options.
 ```ts
 function up(
    fetchFn: typeof globalThis.fetch,
-   getDefaultOptions?: (fetcherOptions: FetcherOptions) => DefaultOptions,
+   getDefaultOptions?: (
+      input: RequestInit,
+      options: FetcherOptions,
+   ) => DefaultOptions | Promise<DefaultOptions>,
 ): UpFetch
 ```
 
 | Option                           | Signature                      | Description                                                                                               |
 | -------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for all requests.                                                                                |
+| `onError`                        | `(error, request) => void`     | Executes on error.                                                                                        |
+| `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                         |
+| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                      |
+| `onRequestStreaming`             | `(event, request) => void`     | Executes each time a request chunk is send.                                                               |
+| `onResponseStreaming`            | `(event, response) => void`    | Executes each time a response chunk is received.                                                          |
+| `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                               |
 | `params`                         | `object`                       | The default query parameters.                                                                             |
-| `onRequest`                      | `(options) => void`            | Executes before the request is made.                                                                      |
-| `onError`                        | `(error, options) => void`     | Executes on error.                                                                                        |
-| `onSuccess`                      | `(data, options) => void`      | Executes when the request successfully completes.                                                         |
-| `parseResponse`                  | `(response, options) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
-| `parseRejected`                  | `(response, options) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
+| `parseResponse`                  | `(response, request) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
+| `parseRejected`                  | `(response, request) => error` | The default error response parser. <br/>If omitted `json` and `text` response are parsed automatically    |
+| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
+| `retry`                          | `RetryOptions`                 | The default retry options.                                                                                |
 | `serializeBody`                  | `(body) => BodyInit`           | The default body serializer.<br/> Restrict the valid `body` type by typing its first argument.            |
 | `serializeParams`                | `(params) => string`           | The default query parameter serializer.                                                                   |
 | `timeout`                        | `number`                       | The default timeout in milliseconds.                                                                      |
-| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                       |
 | _...and all other fetch options_ |                                |                                                                                                           |
 
 ### <samp>upfetch(url, options?)</samp>
@@ -554,15 +670,32 @@ Options:
 | Option                           | Signature                      | Description                                                                                                                   |
 | -------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | `baseUrl`                        | `string`                       | Base URL for the request.                                                                                                     |
+| `onError`                        | `(error, request) => void`     | Executes on error.                                                                                                            |
+| `onSuccess`                      | `(data, request) => void`      | Executes when the request successfully completes.                                                                             |
+| `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                                          |
+| `onRequestStreaming`             | `(event, request) => void`     | Executes each time a request chunk is send.                                                                                   |
+| `onResponseStreaming`            | `(event, response) => void`    | Executes each time a response chunk is received.                                                                              |
+| `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                                                   |
 | `params`                         | `object`                       | The query parameters.                                                                                                         |
-| `parseResponse`                  | `(response, options) => data`  | The success response parser.                                                                                                  |
-| `parseRejected`                  | `(response, options) => error` | The error response parser.                                                                                                    |
+| `parseResponse`                  | `(response, request) => data`  | The success response parser.                                                                                                  |
+| `parseRejected`                  | `(response, request) => error` | The error response parser.                                                                                                    |
+| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
+| `retry`                          | `RetryOptions`                 | The retry options.                                                                                                            |
 | `schema`                         | `StandardSchemaV1`             | The schema to validate the response against.<br/>The schema must follow the [Standard Schema Specification][standard-schema]. |
 | `serializeBody`                  | `(body) => BodyInit`           | The body serializer.<br/> Restrict the valid `body` type by typing its first argument.                                        |
 | `serializeParams`                | `(params) => string`           | The query parameter serializer.                                                                                               |
 | `timeout`                        | `number`                       | The timeout in milliseconds.                                                                                                  |
-| `reject`                         | `(response) => boolean`        | Decide when to reject the response.                                                                                           |
 | _...and all other fetch options_ |                                |                                                                                                                               |
+
+<br/>
+
+### <samp>RetryOptions</samp>
+
+| Option     | Signature            | Description                                                                                  |
+| ---------- | -------------------- | -------------------------------------------------------------------------------------------- |
+| `when`     | `(ctx) => boolean`   | Function that determines if a retry should happen based on the response or error             |
+| `attempts` | `number \| function` | Number of retry attempts or function to determine attempts based on request.                 |
+| `delay`    | `number \| function` | Delay between retries in milliseconds or function to determine delay based on attempt number |
 
 <br/>
 

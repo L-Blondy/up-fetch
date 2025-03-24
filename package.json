@@ -1,6 +1,6 @@
 {
    "name": "up-fetch",
-   "version": "1.3.6",
+   "version": "2.0.0-beta.12",
    "description": "Advanced fetch client builder for typescript.",
    "type": "module",
    "main": "dist/index.cjs",
@@ -12,6 +12,7 @@
       "src"
    ],
    "exports": {
+      "./package.json": "./package.json",
       ".": {
          "import": {
             "types": "./dist/index.d.ts",
@@ -21,19 +22,15 @@
             "types": "./dist/index.d.cts",
             "default": "./dist/index.cjs"
          }
-      },
-      "./package.json": "./package.json"
+      }
    },
    "scripts": {
-      "lint": "eslint . && tsc --noEmit",
       "build": "tsup",
       "dev": "vitest",
-      "test": "vitest run",
-      "release:pre:beta": "git pull && node scripts/check-beta-version.js && npm run lint && npm run test && npm run build",
-      "release:pre:stable": "git pull && node scripts/check-stable-version.js && npm run lint && npm run test && npm run build",
-      "release:stable": "npm run release:pre:stable && npm publish && npm run release:post",
-      "release:beta": "npm run release:pre:beta && npm publish --tag beta && npm run release:post",
-      "release:post": "git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push"
+      "knip": "knip",
+      "lint": "biome check && tsc --noEmit",
+      "release": "bun scripts/release.ts && git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
+      "test": "vitest run && npm run lint"
    },
    "keywords": [
       "fetch",
@@ -53,20 +50,18 @@
    "author": "Laurent Blondy",
    "license": "MIT",
    "devDependencies": {
-      "@eslint/js": "^9.20.0",
+      "@biomejs/biome": "1.9.4",
       "@standard-schema/spec": "^1.0.0",
-      "@types/node": "^22.13.1",
-      "eslint": "^9.20.0",
-      "eslint-plugin-prefer-let": "^4.0.0",
+      "@types/node": "^22.13.10",
       "jsdom": "^26.0.0",
-      "msw": "^2.7.0",
-      "prettier": "^3.5.0",
-      "tsup": "^8.3.6",
+      "knip": "^5.45.0",
+      "msw": "^2.7.3",
+      "prettier": "^3.5.3",
+      "tsup": "^8.4.0",
       "typescript": "5.7.3",
-      "typescript-eslint": "^8.24.0",
-      "valibot": ">=1.0.0-rc.0",
-      "vitest": "^3.0.5",
-      "zod": "3.24.1"
+      "valibot": "^1.0.0-rc.3",
+      "vitest": "^3.0.8",
+      "zod": "3.24.2"
    },
    "publishConfig": {
       "access": "public",
