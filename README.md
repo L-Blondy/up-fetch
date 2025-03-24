@@ -247,10 +247,8 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-Retry options can be overriden on a per-request basis:
-
 <details>
-<summary>Example</summary>
+<summary>Retry options can be overriden on a per-request basis</summary>
 
 ```ts
 // for this delete request retry 3 times with exponential backoff
@@ -265,10 +263,8 @@ await upfetch('/api/data', {
 
 </details>
 
-You can also retry on network errors, timeouts, or any other error:
-
 <details>
-<summary>Example</summary>
+<summary>You can also retry on network errors, timeouts, or any other error</summary>
 
 ```ts
 const upfetch = up(fetch, () => ({
