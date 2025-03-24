@@ -238,7 +238,6 @@ const upfetch = up(fetch, () => ({
 
 ```ts
 const upfetch = up(fetch, () => ({
-   // default retry config
    retry: {
       when: (ctx) => ctx.response?.ok === false,
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
