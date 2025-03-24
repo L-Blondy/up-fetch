@@ -55,7 +55,7 @@ Coming from v1 ? Check out the [v2 release notes](https://github.com/L-Blondy/up
 
 ## ➡️ Highlights
 
-- 🚀 **Lightweight** - 1.7kB gzipped, no dependency
+- 🚀 **Lightweight** - 1.6kB gzipped, no dependency
 - 🔒 **Typesafe** - Validate API responses with [zod][zod], [valibot][valibot] or [arktype][arktype]
 - 🛠️ **Practical API** - Use objects for `params` and `body`, get parsed responses automatically
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
