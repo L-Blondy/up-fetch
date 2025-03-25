@@ -53,34 +53,29 @@ describe('headers', () => {
       })
    })
 
-   describe('should not set content-type to application/json when body is jsonifiable but serializes to non-string', () => {
-      test.each`
-         body                         | expected
-         ${{}}                        | ${false}
-         ${{ a: 1 }}                  | ${false}
-         ${[1, 2]}                    | ${false}
-         ${bodyMock.classJsonifiable} | ${false}
-      `('%#', async ({ body, expected }) => {
-         server.use(
-            http.post(baseUrl, async ({ request }) => {
-               const hasApplicationJsonHeader =
-                  request.headers.get('content-type') === 'application/json'
-               expect(hasApplicationJsonHeader).toEqual(expected)
-               return HttpResponse.json({ hello: 'world' }, { status: 200 })
-            }),
-         )
+   test('should not set content-type to application/json when body is jsonifiable but serializes to non-string', async () => {
+      server.use(
+         http.post(baseUrl, async ({ request }) => {
+            expect(
+               request.headers
+                  .get('content-type')
+                  ?.includes('application/json'),
+            ).toEqual(false)
+            expect(
+               request.headers
+                  .get('content-type')
+                  ?.includes('multipart/form-data'),
+            ).toEqual(true)
+            return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         }),
+      )
 
-         const upfetch = up(fetch, () => ({
-            baseUrl: baseUrl,
-            method: 'POST',
-            serializeBody: () => new FormData(),
-         }))
-         await upfetch('', {
-            body,
-            // @ts-ignore the global fetch type does not include "duplex"
-            duplex: body?.getReader ? 'half' : undefined,
-         })
-      })
+      const upfetch = up(fetch, () => ({
+         baseUrl: baseUrl,
+         method: 'POST',
+         serializeBody: () => new FormData(),
+      }))
+      await upfetch('', { body: { a: 1 } })
    })
 
    describe('should respect existing content-type header when already set', () => {

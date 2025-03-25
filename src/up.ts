@@ -116,9 +116,15 @@ export const up =
             options.onRequestStreaming,
          )
          options.onRequest?.(request)
+
          try {
             outcome.response = await toStreamable(
-               await fetchFn(request, omit(options, ['body']), ctx),
+               await fetchFn(
+                  request,
+                  // do not override the request body & patch headers again
+                  { ...omit(options, ['body']), headers: request.headers },
+                  ctx,
+               ),
                options.onResponseStreaming,
             )
          } catch (e: any) {
