@@ -31,7 +31,6 @@ type-safe and developer-friendly while keeping the familiar fetch API.
    - [Lifecycle Hooks](#️-lifecycle-hooks)
    - [Timeout](#️-timeout)
    - [Retry](#️-retry)
-   - [Progress](#️-progress)
    - [Error Handling](#️-error-handling)
 - [Usage](#️-usage)
    - [Authentication](#️-authentication)
@@ -39,6 +38,7 @@ type-safe and developer-friendly while keeping the familiar fetch API.
    - [FormData](#️-formdata)
    - [Multiple fetch clients](#️-multiple-fetch-clients)
    - [Streaming](#️-streaming)
+   - [Progress](#️-progress)
    - [HTTP Agent](#️-http-agent)
 - [Advanced Usage](#️-advanced-usage)
    - [Error as value](#️-error-as-value)
@@ -282,30 +282,6 @@ const upfetch = up(fetch, () => ({
 
 </details>
 
-### ✔️ Progress
-
-Upload progress:
-
-```ts
-upfetch('/upload', {
-   method: 'POST',
-   body: new File(['large file'], 'foo.txt'),
-   onRequestStreaming: ({ transferredBytes, totalBytes }) => {
-      console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
-   },
-})
-```
-
-Download progress:
-
-```ts
-upfetch('/download', {
-   onResponseStreaming: ({ transferredBytes, totalBytes }) => {
-      console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
-   },
-})
-```
-
 ### ✔️ Error Handling
 
 #### 👉 <samp>ResponseError</samp>
@@ -445,6 +421,30 @@ upfetch('/ai-chatbot', {
    onResponseStreaming: (event, response) => {
       const text = decoder.decode(event.chunk)
       console.log(text)
+   },
+})
+```
+
+### ✔️ Progress
+
+Upload progress:
+
+```ts
+upfetch('/upload', {
+   method: 'POST',
+   body: new File(['large file'], 'foo.txt'),
+   onRequestStreaming: ({ transferredBytes, totalBytes }) => {
+      console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
+   },
+})
+```
+
+Download progress:
+
+```ts
+upfetch('/download', {
+   onResponseStreaming: ({ transferredBytes, totalBytes }) => {
+      console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
    },
 })
 ```
