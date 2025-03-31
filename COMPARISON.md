@@ -46,17 +46,17 @@ Legend:
 
 [up-fetch-size-badge]: https://img.shields.io/bundlephobia/minzip/up-fetch?label=
 [up-fetch-size-link]: https://bundlephobia.com/package/up-fetch
-[up-fetch-issues-badge]: https://img.shields.io/github/issues/L-Blondy/up-fetch
+[up-fetch-issues-badge]: https://img.shields.io/github/issues/L-Blondy/up-fetch?label=
 [up-fetch-issues-link]: https://github.com/L-Blondy/up-fetch/issues
 [ofetch-size-badge]: https://img.shields.io/bundlephobia/minzip/ofetch?label=
 [ofetch-size-link]: https://bundlephobia.com/package/ofetch
-[ofetch-issues-badge]: https://img.shields.io/github/issues/unjs/ofetch
+[ofetch-issues-badge]: https://img.shields.io/github/issues/unjs/ofetch?label=
 [ofetch-issues-link]: https://github.com/unjs/ofetch/issues
 [wretch-size-badge]: https://img.shields.io/bundlephobia/minzip/wretch?label=
 [wretch-size-link]: https://bundlephobia.com/package/wretch
-[wretch-issues-badge]: https://img.shields.io/github/issues/elbywan/wretch
+[wretch-issues-badge]: https://img.shields.io/github/issues/elbywan/wretch?label=
 [wretch-issues-link]: https://github.com/elbywan/wretch/issues
 [ky-size-badge]: https://img.shields.io/bundlephobia/minzip/ky?label=
 [ky-size-link]: https://bundlephobia.com/package/ky
-[ky-issues-badge]: https://img.shields.io/github/issues/sindresorhus/ky
+[ky-issues-badge]: https://img.shields.io/github/issues/sindresorhus/ky?label=
 [ky-issues-link]: https://github.com/sindresorhus/ky/issues
