@@ -1,5 +1,5 @@
+import { up } from 'src/up'
 import { test } from 'vitest'
-import { up } from '../../dist/index'
 
 /**
  * @see https://github.com/L-Blondy/up-fetch/issues/43

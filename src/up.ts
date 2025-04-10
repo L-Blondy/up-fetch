@@ -1,4 +1,3 @@
-import type { StandardSchemaV1 } from '@standard-schema/spec'
 import { fallbackOptions } from './fallback-options'
 import { toStreamable } from './stream'
 import type {
@@ -9,6 +8,7 @@ import type {
    FetcherOptions,
    MaybePromise,
    RetryContext,
+   UpFetch,
 } from './types'
 import {
    abortableDelay,
@@ -36,24 +36,8 @@ export const up =
       ) => MaybePromise<
          DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody>
       > = () => emptyOptions,
-   ) =>
-   async <
-      TParsedData = TDefaultParsedData,
-      TSchema extends StandardSchemaV1<
-         TParsedData,
-         any
-      > = StandardSchemaV1<TParsedData>,
-      TRawBody = TDefaultRawBody,
-   >(
-      input: Parameters<TFetchFn>[0],
-      fetcherOpts: FetcherOptions<
-         TFetchFn,
-         TSchema,
-         TParsedData,
-         TRawBody
-      > = emptyOptions,
-      ctx?: Parameters<TFetchFn>[2],
-   ) => {
+   ): UpFetch<TDefaultParsedData, TDefaultRawBody, TFetchFn> =>
+   async (input, fetcherOpts = emptyOptions, ctx) => {
       const defaultOpts = await getDefaultOptions(input, fetcherOpts, ctx)
 
       const options = {
@@ -157,14 +141,14 @@ export const up =
       const response = outcome.response as Response
 
       if (!(await options.reject(response))) {
-         let parsed: Awaited<TParsedData>
+         let parsed: any
          try {
             parsed = await options.parseResponse(response, request)
          } catch (error: any) {
             options.onError?.(error, request)
             throw error
          }
-         let data: Awaited<StandardSchemaV1.InferOutput<TSchema>>
+         let data: any
          try {
             data = options.schema
                ? await validate(options.schema, parsed)

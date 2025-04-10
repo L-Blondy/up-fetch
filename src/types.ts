@@ -218,3 +218,20 @@ export type FetcherOptions<
    /** Request timeout in milliseconds */
    timeout?: number
 }
+
+export type UpFetch<
+   TDefaultParsedData,
+   TDefaultRawBody,
+   TFetchFn extends BaseFetchFn,
+> = <
+   TParsedData = TDefaultParsedData,
+   TSchema extends StandardSchemaV1<
+      TParsedData,
+      any
+   > = StandardSchemaV1<TParsedData>,
+   TRawBody = TDefaultRawBody,
+>(
+   input: Parameters<TFetchFn>[0],
+   fetcherOpts?: FetcherOptions<TFetchFn, TSchema, TParsedData, TRawBody>,
+   ctx?: Parameters<TFetchFn>[2],
+) => Promise<StandardSchemaV1.InferOutput<TSchema>>
