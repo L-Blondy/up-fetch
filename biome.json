@@ -96,6 +96,7 @@
             "noDuplicateParameters": "error",
             "noEmptyBlockStatements": "off",
             "noExplicitAny": "off",
+            "noExportsInTest": "off",
             "noExtraNonNullAssertion": "error",
             "noFallthroughSwitchClause": "error",
             "noFunctionAssign": "error",

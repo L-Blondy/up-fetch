@@ -6,8 +6,6 @@ import { up } from '../../dist/index'
  *
  * due to `declaration: true` in tsconfig.json
  */
-
-// biome-ignore lint/suspicious/noExportsInTest:
 export const upfetch = up(fetch)
 
 test('placeholder', () => {})
