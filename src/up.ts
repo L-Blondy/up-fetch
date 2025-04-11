@@ -3,8 +3,8 @@ import { toStreamable } from './stream'
 import type {
    BaseFetchFn,
    DefaultOptions,
+   DefaultRawBody,
    DistributiveOmit,
-   FallbackOptions,
    FetcherOptions,
    MaybePromise,
    RetryContext,
@@ -26,7 +26,7 @@ export const up =
    <
       TFetchFn extends BaseFetchFn,
       TDefaultParsedData = any,
-      TDefaultRawBody = Parameters<FallbackOptions['serializeBody']>[0],
+      TDefaultRawBody = DefaultRawBody,
    >(
       fetchFn: TFetchFn,
       getDefaultOptions: (

@@ -3,7 +3,12 @@ import { describe, expectTypeOf, test } from 'vitest'
 import { z } from 'zod'
 import { up } from '..'
 import { fallbackOptions } from '../fallback-options'
-import type { JsonifiableArray, JsonifiableObject, Unknown } from '../types'
+import type {
+   DefaultRawBody,
+   JsonifiableArray,
+   JsonifiableObject,
+   Unknown,
+} from '../types'
 
 test('JsonifiableObject should support both types and interfaces', () => {
    interface Participant {
@@ -178,18 +183,14 @@ test('The defaultSerializer of params should expect 1 arg only (the params)', as
 test('The defaultSerializer of body should expect 1 arg only (the body)', async () => {
    const upfetch = up(fetch, () => ({
       serializeBody(body) {
-         expectTypeOf(body).toEqualTypeOf<
-            BodyInit | JsonifiableObject | JsonifiableArray
-         >()
+         expectTypeOf(body).toEqualTypeOf<DefaultRawBody>()
          return fallbackOptions.serializeBody(body)
       },
    }))
 
    await upfetch('', {
       serializeBody(body) {
-         expectTypeOf(body).toEqualTypeOf<
-            BodyInit | JsonifiableObject | JsonifiableArray
-         >()
+         expectTypeOf(body).toEqualTypeOf<DefaultRawBody>()
          return fallbackOptions.serializeBody(body)
       },
    })
@@ -228,9 +229,7 @@ test('callback types', async () => {
          return ''
       },
       serializeBody(body) {
-         expectTypeOf(body).toEqualTypeOf<
-            BodyInit | JsonifiableObject | JsonifiableArray
-         >()
+         expectTypeOf(body).toEqualTypeOf<DefaultRawBody>()
          return ''
       },
    }))
@@ -250,9 +249,7 @@ test('callback types', async () => {
          return ''
       },
       serializeBody(body) {
-         expectTypeOf(body).toEqualTypeOf<
-            BodyInit | JsonifiableObject | JsonifiableArray
-         >()
+         expectTypeOf(body).toEqualTypeOf<DefaultRawBody>()
          return ''
       },
    })

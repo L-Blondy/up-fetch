@@ -14,7 +14,7 @@ type JsonPrimitive = string | number | boolean | null | undefined
 export type JsonifiableObject = Record<PropertyKey, any>
 
 export type JsonifiableArray =
-   | Array<JsonPrimitive | JsonifiableObject | JsonifiableArray>
+   | Array<JsonPrimitive | JsonifiableObject | Array<any> | ReadonlyArray<any>>
    | ReadonlyArray<JsonPrimitive | JsonifiableObject | JsonifiableArray>
 
 export type BaseFetchFn = (
@@ -113,13 +113,15 @@ export type StreamingEvent = {
    transferredBytes: number
 }
 
+export type DefaultRawBody = BodyInit | JsonifiableObject | JsonifiableArray
+
 export type FallbackOptions = {
    parseRejected: ParseRejected
    parseResponse: ParseResponse<any>
    reject: (response: Response) => MaybePromise<boolean>
    retry: Required<RetryOptions>
    serializeParams: SerializeParams
-   serializeBody: SerializeBody<BodyInit | JsonifiableObject | JsonifiableArray>
+   serializeBody: SerializeBody<DefaultRawBody>
 }
 
 /**

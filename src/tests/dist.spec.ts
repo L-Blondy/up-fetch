@@ -1,6 +1,6 @@
-import { up } from 'src/up'
 import { expectTypeOf, test } from 'vitest'
 import { z } from 'zod'
+import { up } from '../../dist'
 
 /**
  * testing the build output with `declaration: true` in tsconfig.json
