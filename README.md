@@ -267,9 +267,9 @@ const upfetch = up(fetch, () => ({
 <summary>Retry based on the request method</summary>
 
 ```ts
-// One retry for GET requests, no retries for other methods:
 const upfetch = up(fetch, () => ({
    retry: {
+      // One retry for GET requests, no retries for other methods:
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
       delay: 1000,
    },
