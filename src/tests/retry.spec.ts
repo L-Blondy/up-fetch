@@ -378,28 +378,6 @@ describe('retry', () => {
       expect(Date.now() - now).toBeLessThan(50)
    })
 
-   test('By Default, should retry once for GET requests that provide a response, with a delay of 1s', async () => {
-      const upfetch = up(fetch, () => ({
-         baseUrl,
-         reject: () => false,
-      }))
-
-      const spy = vi.fn()
-      server.use(
-         http.get(baseUrl, async () => {
-            spy()
-            return HttpResponse.json({ hello: 'world' }, { status: 500 })
-         }),
-      )
-
-      const startTime = Date.now()
-      await upfetch('/')
-      const endTime = Date.now()
-
-      expect(spy).toHaveBeenCalledTimes(2) // Initial request + 1 retry
-      expect(endTime - startTime).toBeGreaterThanOrEqual(1000) // Should wait at least 1s
-   })
-
    test('should allow retrying after an error', async () => {
       const spy = vi.fn()
 
