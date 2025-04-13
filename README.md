@@ -233,30 +233,64 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-**By default** one attempt will be made for GET requests for any non 2xx response, with a delay of 1000ms:
+#### Examples:
+
+<details>
+<summary>Per-request retry config</summary>
+
+```ts
+await upfetch('/api/data', {
+   method: 'DELETE',
+   retry: {
+      attempts: 2,
+   },
+})
+```
+
+</details>
+
+<details>
+<summary>Exponential retry delay</summary>
 
 ```ts
 const upfetch = up(fetch, () => ({
    retry: {
-      when: (ctx) => ctx.response?.ok === false,
+      attempts: 3,
+      delay: (ctx) => ctx.attempt ** 2 * 1000,
+   },
+}))
+```
+
+</details>
+
+<details>
+<summary>Retry based on the request method</summary>
+
+One retry for GET requests, no retries for other methods:
+
+```ts
+const upfetch = up(fetch, () => ({
+   retry: {
       attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
       delay: 1000,
    },
 }))
 ```
 
+</details>
+
 <details>
-<summary>Per-request retry config</summary>
+<summary>Retry based on the response status</summary>
 
 ```ts
-// for this delete request retry 3 times with exponential backoff
-await upfetch('/api/data', {
-   method: 'DELETE',
+const upfetch = up(fetch, () => ({
    retry: {
-      attempts: 3,
-      delay: (ctx) => ctx.attempt ** 2 * 1000,
+      when: (ctx) =>
+         [408, 413, 429, 500, 502, 503, 504].includes(ctx.response?.status),
+      attempts: 1,
+      delay: 1000,
    },
-})
+}))
 ```
 
 </details>

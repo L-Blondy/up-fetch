@@ -31,7 +31,7 @@ export const fallbackOptions: FallbackOptions = {
 
    retry: {
       when: (ctx) => ctx.response?.ok === false,
-      attempts: (ctx) => (ctx.request.method === 'GET' ? 1 : 0),
-      delay: 1000,
+      attempts: 0,
+      delay: 0,
    },
 }
