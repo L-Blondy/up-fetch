@@ -233,7 +233,7 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-#### Examples:
+Examples:
 
 <details>
 <summary>Per-request retry config</summary>
