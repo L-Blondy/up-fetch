@@ -37,7 +37,7 @@ _upfetch_ 是一个高级的 fetch 客户端构建器，具有标准模式验证
    - [多个 fetch 客户端](#️-多个-fetch-客户端)
    - [流式传输](#️-流式传输)
    - [进度](#️-进度)
-   - [HTTP 代理](#️-http-代理)
+    <!-- - [HTTP 代理](#️-http-代理) -->
 - [高级用法](#️-高级用法)
    - [错误作为值](#️-错误作为值)
    - [自定义响应解析](#️-自定义响应解析)
@@ -478,6 +478,7 @@ upfetch('/ai-chatbot', {
 })
 ```
 
+<!--
 ### ✔️ HTTP 代理
 
 由于 _upfetch_ 是 _"fetch 无关的"_，你可以使用 [undici](https://github.com/nodejs/undici) 代替原生 fetch 实现。
@@ -508,7 +509,7 @@ const upfetch = up(fetch, () => ({
       keepAliveMaxTimeout: 10,
    }),
 }))
-```
+``` -->
 
 ## ➡️ 高级用法
 

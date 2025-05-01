@@ -39,7 +39,7 @@ type-safe and developer-friendly while keeping the familiar fetch API.
    - [Multiple fetch clients](#️-multiple-fetch-clients)
    - [Streaming](#️-streaming)
    - [Progress](#️-progress)
-   - [HTTP Agent](#️-http-agent)
+    <!-- - [HTTP Agent](#️-http-agent) -->
 - [Advanced Usage](#️-advanced-usage)
    - [Error as value](#️-error-as-value)
    - [Custom response parsing](#️-custom-response-parsing)
@@ -482,6 +482,7 @@ upfetch('/download', {
 })
 ```
 
+<!--
 ### ✔️ HTTP Agent
 
 Since _upfetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
@@ -512,7 +513,7 @@ const upfetch = up(fetch, () => ({
       keepAliveMaxTimeout: 10,
    }),
 }))
-```
+``` -->
 
 ## ➡️ Advanced Usage
 
