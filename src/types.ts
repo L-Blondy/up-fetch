@@ -17,11 +17,7 @@ export type JsonifiableArray =
    | Array<JsonPrimitive | JsonifiableObject | Array<any> | ReadonlyArray<any>>
    | ReadonlyArray<JsonPrimitive | JsonifiableObject | JsonifiableArray>
 
-export type BaseFetchFn = (
-   input: any,
-   options?: any,
-   ctx?: any,
-) => Promise<Response>
+export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
 
 type ParseResponse<TParsedData> = (
    response: Response,
