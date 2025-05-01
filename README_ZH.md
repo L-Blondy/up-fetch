@@ -630,8 +630,8 @@ const upfetch = up(fetch, () => ({
 ```ts
 const upfetch = up(fetch, (input, options) => ({
    baseUrl: 'https://example.com/',
+   // 仅为受保护路由添加身份验证
    headers: {
-      // 仅为受保护路由添加身份验证
       Authorization:
          typeof input === 'string' && input.startsWith('/api/protected/')
             ? `Bearer ${getToken()}`

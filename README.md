@@ -634,8 +634,8 @@ The default options receive the fetcher arguments, this allows you to tailor the
 ```ts
 const upfetch = up(fetch, (input, options) => ({
    baseUrl: 'https://example.com/',
+   // Add authentication only for protected routes
    headers: {
-      // Add authentication only for protected routes
       Authorization:
          typeof input === 'string' && input.startsWith('/api/protected/')
             ? `Bearer ${getToken()}`
