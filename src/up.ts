@@ -1,12 +1,12 @@
 import { fallbackOptions } from './fallback-options'
 import { toStreamable } from './stream'
 import type {
-   BaseFetchFn,
    DefaultOptions,
    DefaultRawBody,
    DistributiveOmit,
    FetcherOptions,
    MaybePromise,
+   MinFetchFn,
    RetryContext,
    UpFetch,
 } from './types'
@@ -24,13 +24,13 @@ const emptyOptions = {} as any
 
 export const up =
    <
-      TFetchFn extends BaseFetchFn,
+      TFetchFn extends MinFetchFn,
       TDefaultParsedData = any,
       TDefaultRawBody = DefaultRawBody,
    >(
       fetchFn: TFetchFn,
       getDefaultOptions: (
-         input: Exclude<Parameters<TFetchFn>[0], Request>,
+         input: Parameters<TFetchFn>[0],
          fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
          ctx?: Parameters<TFetchFn>[2],
       ) => MaybePromise<
@@ -90,7 +90,7 @@ export const up =
                   ? input // Request
                   : resolveUrl(
                        options.baseUrl,
-                       input, // string | URL
+                       input as unknown as string | URL,
                        defaultOpts.params,
                        fetcherOpts.params,
                        options.serializeParams,

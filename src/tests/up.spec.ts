@@ -20,30 +20,27 @@ const baseUrl = 'https://example.com'
 
 describe('Should receive the upfetch arguments (up to 3)', () => {
    test.each`
-      input               | options                 | ctx
+      expectedInput       | expectedOptions         | expectedCtx
       ${baseUrl}          | ${{ method: 'DELETE' }} | ${{ is: 'ctx' }}
       ${new URL(baseUrl)} | ${{ method: 'DELETE' }} | ${'context'}
-   `('%#', async ({ input, options, ctx }) => {
+   `('%#', async ({ expectedInput, expectedOptions, expectedCtx }) => {
       server.use(
          http.delete(baseUrl, () => {
             return HttpResponse.json({ hello: 'world' }, { status: 200 })
          }),
       )
 
-      const upfetch = up(
-         fetch,
-         (receivedInput, receivedOptions, receivedCtx) => {
-            expectTypeOf(receivedInput).toEqualTypeOf<string | URL>()
-            expectTypeOf(receivedOptions).toEqualTypeOf<
-               FetcherOptions<typeof fetch, any, any, any>
-            >()
-            expect(receivedInput).toBe(input)
-            expect(receivedOptions).toBe(options)
-            expect(receivedCtx).toBe(ctx)
-            return {}
-         },
-      )
+      const upfetch = up(fetch, (input, options, ctx) => {
+         expectTypeOf(input).toEqualTypeOf<RequestInfo | URL>()
+         expectTypeOf(options).toEqualTypeOf<
+            FetcherOptions<typeof fetch, any, any, any>
+         >()
+         expect(input).toBe(expectedInput)
+         expect(options).toBe(expectedOptions)
+         expect(ctx).toBe(expectedCtx)
+         return {}
+      })
 
-      await upfetch(input, options, ctx)
+      await upfetch(expectedInput, expectedOptions, expectedCtx)
    })
 })

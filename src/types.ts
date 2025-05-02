@@ -17,7 +17,11 @@ export type JsonifiableArray =
    | Array<JsonPrimitive | JsonifiableObject | Array<any> | ReadonlyArray<any>>
    | ReadonlyArray<JsonPrimitive | JsonifiableObject | JsonifiableArray>
 
-export type BaseFetchFn = (input: any, options?: any, ctx?: any) => Promise<any>
+export type MinFetchFn = (
+   input: Request,
+   options?: any,
+   ctx?: any,
+) => Promise<Response>
 
 type ParseResponse<TParsedData> = (
    response: Response,
@@ -48,7 +52,7 @@ type Method =
    | 'HEAD'
    | (string & {})
 
-type BaseOptions<TFetch extends BaseFetchFn> = DistributiveOmit<
+type BaseOptions<TFetch extends MinFetchFn> = DistributiveOmit<
    NonNullable<Parameters<TFetch>[1]>,
    'body' | 'headers' | 'method'
 > & {}
@@ -124,7 +128,7 @@ export type FallbackOptions = {
  * Default configuration options for the fetch client
  */
 export type DefaultOptions<
-   TFetchFn extends BaseFetchFn,
+   TFetchFn extends MinFetchFn,
    TDefaultParsedData,
    TDefaultRawBody,
 > = BaseOptions<TFetchFn> & {
@@ -170,7 +174,7 @@ export type DefaultOptions<
  * Options for individual fetch requests
  */
 export type FetcherOptions<
-   TFetchFn extends BaseFetchFn,
+   TFetchFn extends MinFetchFn,
    TSchema extends StandardSchemaV1,
    TParsedData,
    TRawBody,
@@ -220,7 +224,7 @@ export type FetcherOptions<
 export type UpFetch<
    TDefaultParsedData,
    TDefaultRawBody,
-   TFetchFn extends BaseFetchFn,
+   TFetchFn extends MinFetchFn,
 > = <
    TParsedData = TDefaultParsedData,
    TSchema extends StandardSchemaV1<

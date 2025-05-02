@@ -272,14 +272,23 @@ test('base fetch type should be extended', () => {
 })
 
 describe('up should accept a fetcher with', () => {
-   test('narrower input', () => {
+   test('wide input', () => {
       type FetchFn = (
-         input: string,
+         input: Request | string | URL,
          options: Parameters<typeof fetch>[1],
       ) => Promise<Response>
       const fetchFn: FetchFn = (() => {}) as any
       const upfetch = up(fetchFn)
-      upfetch('')
+      upfetch(new Request(''))
+   })
+   test('narrow input', () => {
+      type FetchFn = (
+         input: Request,
+         options: Parameters<typeof fetch>[1],
+      ) => Promise<Response>
+      const fetchFn: FetchFn = (() => {}) as any
+      const upfetch = up(fetchFn)
+      upfetch(new Request(''))
       // @ts-expect-error accept string only
       upfetch(new URL(''))
    })
