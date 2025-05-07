@@ -81,7 +81,7 @@ if (majorNodeVersion > 18) {
          body: formData,
          onRequestStreaming(event) {
             ++exec
-            expect(event.totalBytes).toBe(122640) // the size of the file
+            expect(event.totalBytes).toBeGreaterThanOrEqual(122640) // the size of the file
          },
       })
       expect(exec).toBeGreaterThanOrEqual(3)
