@@ -12,6 +12,7 @@ jobs:
          fail-fast: false
          matrix:
             node-version:
+               - 24
                - 22
                - '~20.3'
                - 18
