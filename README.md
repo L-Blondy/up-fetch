@@ -390,7 +390,7 @@ Also works for single `params` and `headers`:
 
 ```ts
 upfetch('/todos', {
-   header: { Authorization: undefined },
+   headers: { Authorization: undefined },
 })
 ```
 
