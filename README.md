@@ -358,7 +358,9 @@ try {
 
 ### ✔️ Authentication
 
-You can easily add authentication to all requests by setting a default header:
+You can easily add authentication to all requests by setting a default header. 
+
+Retrieve the token from `localStorage` before each request:
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -366,7 +368,13 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-The bearer token will be retrieved from `localStorage` before each request.
+Retrieve an async token:
+
+```ts
+const upfetch = up(fetch, async () => ({
+   headers: { Authorization: await getToken() },
+}))
+```
 
 ### ✔️ Delete a default option
 
@@ -375,6 +383,14 @@ Simply pass `undefined`:
 ```ts
 upfetch('/todos', {
    signal: undefined,
+})
+```
+
+Also works for single `params` and `headers`:
+
+```ts
+upfetch('/todos', {
+   header: { Authorization: undefined },
 })
 ```
 
