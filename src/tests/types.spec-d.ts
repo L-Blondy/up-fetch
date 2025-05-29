@@ -341,3 +341,10 @@ describe('up should accept a fetcher with', () => {
       upfetch('', {}, {}, '')
    })
 })
+
+test('up should not be too strict with the default options type', () => {
+   up(fetch, () => ({
+      cache: 'default',
+      credentials: 'include',
+   }))
+})
