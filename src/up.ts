@@ -24,7 +24,7 @@ const emptyOptions = {} as any
 
 export const up =
    <
-      TFetchFn extends MinFetchFn,
+      const TFetchFn extends MinFetchFn,
       TDefaultParsedData = any,
       TDefaultRawBody = DefaultRawBody,
    >(
