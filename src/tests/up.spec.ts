@@ -44,3 +44,10 @@ describe('Should receive the upfetch arguments (up to 3)', () => {
       await upfetch(expectedInput, expectedOptions, expectedCtx)
    })
 })
+
+test('Should not be too strict with the default options type', () => {
+   up(fetch, () => ({
+      cache: 'default',
+      credentials: 'include',
+   }))
+})
