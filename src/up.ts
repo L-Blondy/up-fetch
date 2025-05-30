@@ -24,19 +24,20 @@ const emptyOptions = {} as any
 
 export const up =
    <
-      TFetchFn extends MinFetchFn,
-      TDefaultParsedData = any,
-      TDefaultRawBody = DefaultRawBody,
+      const TFetchFn extends MinFetchFn,
+      const TDefaultOptions extends DefaultOptions<
+         TFetchFn,
+         any,
+         any
+      > = DefaultOptions<TFetchFn, any, DefaultRawBody>,
    >(
       fetchFn: TFetchFn,
       getDefaultOptions: (
          input: Parameters<TFetchFn>[0],
          fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
          ctx?: Parameters<TFetchFn>[2],
-      ) => MaybePromise<
-         DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody>
-      > = () => emptyOptions,
-   ): UpFetch<TDefaultParsedData, TDefaultRawBody, TFetchFn> =>
+      ) => MaybePromise<TDefaultOptions> = () => emptyOptions,
+   ): UpFetch<TFetchFn, TDefaultOptions> =>
    async (input, fetcherOpts = emptyOptions, ctx) => {
       const defaultOpts = await getDefaultOptions(input, fetcherOpts, ctx)
 
@@ -95,7 +96,7 @@ export const up =
                        fetcherOpts.params,
                        options.serializeParams,
                     ),
-               options,
+               options as any,
             ),
             options.onRequestStreaming,
          )

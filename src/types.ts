@@ -7,6 +7,14 @@ export type DistributiveOmit<
    TKey extends KeyOf<TObject> | (string & {}),
 > = TObject extends unknown ? Omit<TObject, TKey> : never
 
+type IsNull<T> = [T] extends [null] ? true : false
+
+type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
+   ? IsNull<T> extends false // `any` can be `null`, but `unknown` can't be
+      ? true
+      : false
+   : false
+
 export type MaybePromise<T> = T | Promise<T>
 
 type JsonPrimitive = string | number | boolean | null | undefined
@@ -36,9 +44,7 @@ export type SerializeParams = (params: Params) => string
 
 export type Params = Record<string, any>
 
-export type RawHeaders =
-   | HeadersInit
-   | Record<string, string | number | null | undefined>
+export type HeadersObject = Record<string, string | number | null | undefined>
 
 type Method =
    | 'GET'
@@ -124,6 +130,16 @@ export type FallbackOptions = {
    serializeBody: SerializeBody<DefaultRawBody>
 }
 
+export type GetDefaultParsedData<TDefaultOptions> =
+   TDefaultOptions extends DefaultOptions<MinFetchFn, infer U, any> ? U : never
+
+export type GetDefaultRawBody<TDefaultOptions> =
+   TDefaultOptions extends DefaultOptions<MinFetchFn, any, infer U>
+      ? IsUnknown<U> extends true
+         ? DefaultRawBody
+         : U
+      : never
+
 /**
  * Default configuration options for the fetch client
  */
@@ -135,7 +151,7 @@ export type DefaultOptions<
    /** Base URL to prepend to all request URLs */
    baseUrl?: string
    /** Request headers to be sent with each request */
-   headers?: RawHeaders
+   headers?: HeadersInit | HeadersObject
    /** HTTP method to use for the request */
    method?: Method
    /** Callback executed when the request fails */
@@ -184,7 +200,7 @@ export type FetcherOptions<
    /** Request body data */
    body?: NoInfer<TRawBody> | null | undefined
    /** Request headers */
-   headers?: RawHeaders
+   headers?: HeadersInit | HeadersObject
    /** HTTP method */
    method?: Method
    /** Callback executed when the request fails */
@@ -222,16 +238,15 @@ export type FetcherOptions<
 }
 
 export type UpFetch<
-   TDefaultParsedData,
-   TDefaultRawBody,
    TFetchFn extends MinFetchFn,
+   TDefaultOptions extends DefaultOptions<MinFetchFn, any, any>,
 > = <
-   TParsedData = TDefaultParsedData,
+   TParsedData = GetDefaultParsedData<TDefaultOptions>,
    TSchema extends StandardSchemaV1<
       TParsedData,
       any
    > = StandardSchemaV1<TParsedData>,
-   TRawBody = TDefaultRawBody,
+   TRawBody = GetDefaultRawBody<TDefaultOptions>,
 >(
    input: Parameters<TFetchFn>[0],
    fetcherOpts?: FetcherOptions<TFetchFn, TSchema, TParsedData, TRawBody>,
