@@ -342,13 +342,17 @@ describe('up should accept a fetcher with', () => {
    })
 })
 
-test('up should not be too strict with the default options type', () => {
-   const upfetch = up(fetch, () => ({
+test('Should not need "as const"', () => {
+   const upfetch1 = up(fetch, () => ({
       cache: 'default',
       credentials: 'include',
    }))
 
-   upfetch('', {
-      credentials: 'include',
-   })
+   upfetch1('', { credentials: 'include' })
+
+   // @ts-expect-error invalid option value
+   const upfetch2 = up(fetch, () => ({ credentials: '' }))
+
+   // @ts-expect-error invalid option value
+   upfetch2('', { credentials: 'includes' })
 })

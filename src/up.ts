@@ -5,6 +5,8 @@ import type {
    DefaultRawBody,
    DistributiveOmit,
    FetcherOptions,
+   GetDefaultParsedData,
+   GetDefaultRawBody,
    MaybePromise,
    MinFetchFn,
    RetryContext,
@@ -25,18 +27,23 @@ const emptyOptions = {} as any
 export const up =
    <
       const TFetchFn extends MinFetchFn,
-      TDefaultParsedData = any,
-      TDefaultRawBody = DefaultRawBody,
+      const TDefaultOptions extends DefaultOptions<
+         TFetchFn,
+         any,
+         any
+      > = DefaultOptions<TFetchFn, any, DefaultRawBody>,
    >(
       fetchFn: TFetchFn,
       getDefaultOptions: (
          input: Parameters<TFetchFn>[0],
          fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
          ctx?: Parameters<TFetchFn>[2],
-      ) => MaybePromise<
-         DefaultOptions<TFetchFn, TDefaultParsedData, TDefaultRawBody>
-      > = () => emptyOptions,
-   ): UpFetch<TDefaultParsedData, TDefaultRawBody, TFetchFn> =>
+      ) => MaybePromise<TDefaultOptions> = () => emptyOptions,
+   ): UpFetch<
+      GetDefaultParsedData<TDefaultOptions>,
+      GetDefaultRawBody<TDefaultOptions>,
+      TFetchFn
+   > =>
    async (input, fetcherOpts = emptyOptions, ctx) => {
       const defaultOpts = await getDefaultOptions(input, fetcherOpts, ctx)
 
@@ -95,7 +102,7 @@ export const up =
                        fetcherOpts.params,
                        options.serializeParams,
                     ),
-               options,
+               options as any,
             ),
             options.onRequestStreaming,
          )

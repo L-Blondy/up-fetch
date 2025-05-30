@@ -1,16 +1,18 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 import type {
    DistributiveOmit,
+   HeadersObject,
    JsonifiableArray,
    JsonifiableObject,
    KeyOf,
    Params,
-   RawHeaders,
    SerializeParams,
 } from './types'
 import { ValidationError } from './validation-error'
 
-export const mergeHeaders = (headerInits: (RawHeaders | undefined)[]) => {
+export const mergeHeaders = (
+   headerInits: (HeadersInit | HeadersObject | undefined)[],
+) => {
    const res: Record<string, string> = {}
    headerInits.forEach((init) => {
       // casting `init` to `HeadersInit` because `Record<string, any>` is
