@@ -5,8 +5,6 @@ import type {
    DefaultRawBody,
    DistributiveOmit,
    FetcherOptions,
-   GetDefaultParsedData,
-   GetDefaultRawBody,
    MaybePromise,
    MinFetchFn,
    RetryContext,
@@ -39,11 +37,7 @@ export const up =
          fetcherOpts: FetcherOptions<TFetchFn, any, any, any>,
          ctx?: Parameters<TFetchFn>[2],
       ) => MaybePromise<TDefaultOptions> = () => emptyOptions,
-   ): UpFetch<
-      GetDefaultParsedData<TDefaultOptions>,
-      GetDefaultRawBody<TDefaultOptions>,
-      TFetchFn
-   > =>
+   ): UpFetch<TFetchFn, TDefaultOptions> =>
    async (input, fetcherOpts = emptyOptions, ctx) => {
       const defaultOpts = await getDefaultOptions(input, fetcherOpts, ctx)
 

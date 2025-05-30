@@ -238,16 +238,15 @@ export type FetcherOptions<
 }
 
 export type UpFetch<
-   TDefaultParsedData,
-   TDefaultRawBody,
    TFetchFn extends MinFetchFn,
+   TDefaultOptions extends DefaultOptions<MinFetchFn, any, any>,
 > = <
-   TParsedData = TDefaultParsedData,
+   TParsedData = GetDefaultParsedData<TDefaultOptions>,
    TSchema extends StandardSchemaV1<
       TParsedData,
       any
    > = StandardSchemaV1<TParsedData>,
-   TRawBody = TDefaultRawBody,
+   TRawBody = GetDefaultRawBody<TDefaultOptions>,
 >(
    input: Parameters<TFetchFn>[0],
    fetcherOpts?: FetcherOptions<TFetchFn, TSchema, TParsedData, TRawBody>,
