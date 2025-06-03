@@ -130,10 +130,10 @@ export type FallbackOptions = {
    serializeBody: SerializeBody<DefaultRawBody>
 }
 
-export type GetDefaultParsedData<TDefaultOptions> =
+type GetDefaultParsedData<TDefaultOptions> =
    TDefaultOptions extends DefaultOptions<MinFetchFn, infer U, any> ? U : never
 
-export type GetDefaultRawBody<TDefaultOptions> =
+type GetDefaultRawBody<TDefaultOptions> =
    TDefaultOptions extends DefaultOptions<MinFetchFn, any, infer U>
       ? IsUnknown<U> extends true
          ? DefaultRawBody
