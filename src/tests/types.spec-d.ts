@@ -341,3 +341,18 @@ describe('up should accept a fetcher with', () => {
       upfetch('', {}, {}, '')
    })
 })
+
+test('Should not need "as const"', () => {
+   const upfetch1 = up(fetch, () => ({
+      cache: 'default',
+      credentials: 'include',
+   }))
+
+   upfetch1('', { credentials: 'include' })
+
+   // @ts-expect-error invalid option value
+   const upfetch2 = up(fetch, () => ({ credentials: '' }))
+
+   // @ts-expect-error invalid option value
+   upfetch2('', { credentials: 'includes' })
+})
