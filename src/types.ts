@@ -238,8 +238,12 @@ export type FetcherOptions<
 }
 
 export type UpFetch<
-   TFetchFn extends MinFetchFn,
-   TDefaultOptions extends DefaultOptions<MinFetchFn, any, any>,
+   TFetchFn extends MinFetchFn = typeof fetch,
+   TDefaultOptions extends DefaultOptions<
+      MinFetchFn,
+      any,
+      any
+   > = DefaultOptions<MinFetchFn, any, any>,
 > = <
    TParsedData = GetDefaultParsedData<TDefaultOptions>,
    TSchema extends StandardSchemaV1<
