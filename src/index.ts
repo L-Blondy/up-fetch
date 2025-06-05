@@ -4,6 +4,8 @@ export type {
    DefaultOptions,
    RetryOptions,
    UpFetch,
+   GetDefaultParsedData,
+   GetDefaultRawBody,
 } from './types'
 export { ResponseError, isResponseError } from './response-error'
 export { type ValidationError, isValidationError } from './validation-error'

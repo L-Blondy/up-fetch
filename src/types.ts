@@ -130,10 +130,10 @@ export type FallbackOptions = {
    serializeBody: SerializeBody<DefaultRawBody>
 }
 
-type GetDefaultParsedData<TDefaultOptions> =
+export type GetDefaultParsedData<TDefaultOptions> =
    TDefaultOptions extends DefaultOptions<MinFetchFn, infer U, any> ? U : never
 
-type GetDefaultRawBody<TDefaultOptions> =
+export type GetDefaultRawBody<TDefaultOptions> =
    TDefaultOptions extends DefaultOptions<MinFetchFn, any, infer U>
       ? IsUnknown<U> extends true
          ? DefaultRawBody
@@ -253,6 +253,6 @@ export type UpFetch<
    TRawBody = GetDefaultRawBody<TDefaultOptions>,
 >(
    input: Parameters<TFetchFn>[0],
-   fetcherOpts?: FetcherOptions<TFetchFn, TSchema, TParsedData, TRawBody>,
+   options?: FetcherOptions<TFetchFn, TSchema, TParsedData, TRawBody>,
    ctx?: Parameters<TFetchFn>[2],
 ) => Promise<StandardSchemaV1.InferOutput<TSchema>>
