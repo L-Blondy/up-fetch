@@ -5,7 +5,7 @@ export async function toStreamable<R extends Request | Response>(
    onStream?: (event: StreamingEvent, reqOrRes: R) => void,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
-   const body: (Request | Request)['body'] =
+   const body: (Response | Request)['body'] =
       reqOrRes.body || (reqOrRes as any)._bodyInit
    if (!onStream || !body) return reqOrRes
    const contentLength = reqOrRes.headers.get('content-length')
