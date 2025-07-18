@@ -1,5 +1,10 @@
 import type { StreamingEvent } from './types'
 
+/**
+ * Safari does not support for await...of iteration on response/request bodies,
+ * so we use the ReadableStream reader API directly
+ */
+
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
    onStream?: (event: StreamingEvent, reqOrRes: R) => void,
@@ -12,8 +17,11 @@ export async function toStreamable<R extends Request | Response>(
    let totalBytes: number = +(contentLength || 0)
    // For the Request, when no "Content-Length" header is present, we read the total bytes from the body
    if (!isResponse && !contentLength) {
-      for await (const chunk of reqOrRes.clone().body!) {
-         totalBytes += chunk.byteLength
+      const reader = reqOrRes.clone().body!.getReader()
+      while (true) {
+         const { value, done } = await reader.read()
+         if (done) break
+         totalBytes += value.byteLength
       }
    }
 
@@ -22,11 +30,14 @@ export async function toStreamable<R extends Request | Response>(
 
    const stream = new ReadableStream({
       async start(controller) {
-         for await (const chunk of reqOrRes.body!) {
-            transferredBytes += chunk.byteLength
+         const reader = reqOrRes.body!.getReader()
+         while (true) {
+            const { value, done } = await reader.read()
+            if (done) break
+            transferredBytes += value.byteLength
             totalBytes = Math.max(totalBytes, transferredBytes)
-            onStream({ totalBytes, transferredBytes, chunk }, reqOrRes)
-            controller.enqueue(chunk)
+            onStream({ totalBytes, transferredBytes, chunk: value }, reqOrRes)
+            controller.enqueue(value)
          }
          controller.close()
       },
