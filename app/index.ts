@@ -30,12 +30,15 @@ async function test() {
 }
 
 test().then((outcome) => {
+   document
+      .getElementById('window-safari')!
+      .append(String(!!(window as any).safari))
    document.getElementById('is-safari')!.append(String(isSafari))
    document.getElementById('is-webkit')!.append(String(isWebkit))
    document.getElementById('outcome')!.append(
       JSON.stringify(
          {
-            data: outcome.data,
+            success: !!outcome.data,
             error: outcome.error
                ? {
                     name: outcome.error.name,
