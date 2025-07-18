@@ -27,6 +27,6 @@
       "target": "ES2020",
       "verbatimModuleSyntax": true
    },
-   "include": ["src", "vitest.config.ts", "tsup.config.ts"],
+   "include": ["src", "vitest.config.ts", "tsup.config.ts", "app"],
    "exclude": ["./dist"]
 }
