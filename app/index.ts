@@ -1,54 +1,42 @@
 import { up } from '../src/up'
 
+// const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
 const isWebkit =
    /AppleWebKit/i.test(window.navigator.userAgent) &&
    !/Chrome/i.test(window.navigator.userAgent)
 
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-
-async function test() {
-   let outcome: any
-   try {
-      const data = await up(fetch)(
-         'https://jsonplaceholder.typicode.com/posts',
-         {
-            method: 'POST',
-            body: {
-               title: 'foo',
-               body: 'bar',
-               userId: 1,
-            },
-            onRequestStreaming() {},
-            onResponseStreaming() {},
-         },
-      )
-      outcome = { data }
-   } catch (error) {
-      outcome = { error }
-   }
-   return outcome
+async function request() {
+   return up(fetch)('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      body: { title: 'foo', body: 'bar', userId: 1 },
+      onRequestStreaming() {},
+   })
+      .then(() => ({ success: true, error: undefined }))
+      .catch((error) => ({ success: false, error: error.message }))
 }
 
-test().then((outcome) => {
-   document
-      .getElementById('window-safari')!
-      .append(String(!!(window as any).safari))
-   document.getElementById('is-safari')!.append(String(isSafari))
+async function response() {
+   return up(fetch)('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      body: { title: 'foo', body: 'bar', userId: 1 },
+      onResponseStreaming() {},
+   })
+      .then(() => ({ success: true, error: undefined }))
+      .catch((error) => ({ success: false, error: error.message }))
+}
+
+async function main() {
+   const requestOutcome = await request()
+   const responseOutcome = await response()
+
    document.getElementById('is-webkit')!.append(String(isWebkit))
-   document.getElementById('outcome')!.append(
-      JSON.stringify(
-         {
-            success: !!outcome.data,
-            error: outcome.error
-               ? {
-                    name: outcome.error.name,
-                    message: outcome.error.message,
-                    stack: outcome.error.stack,
-                 }
-               : undefined,
-         },
-         null,
-         3,
-      ),
-   )
-})
+   document
+      .getElementById('request-streaming')!
+      .append(JSON.stringify(requestOutcome, null, 3))
+   document
+      .getElementById('response-streaming')!
+      .append(JSON.stringify(responseOutcome, null, 3))
+}
+
+main()
