@@ -155,17 +155,23 @@ export type DefaultOptions<
    /** HTTP method to use for the request */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: Unknown, request: Request) => void
+   onError?: (error: Unknown, request: Request) => MaybePromise<void>
    /** Callback executed before the request is made */
-   onRequest?: (request: Request) => void
+   onRequest?: (request: Request) => MaybePromise<void>
    /** Callback executed each time a chunk of the request stream is sent */
-   onRequestStreaming?: (event: StreamingEvent, request: Request) => void
+   onRequestStreaming?: (
+      event: StreamingEvent,
+      request: Request,
+   ) => MaybePromise<void>
    /** Callback executed each time a chunk of the response stream is received */
-   onResponseStreaming?: (event: StreamingEvent, response: Response) => void
+   onResponseStreaming?: (
+      event: StreamingEvent,
+      response: Response,
+   ) => MaybePromise<void>
    /** Callback executed before each retry */
    onRetry?: OnRetry
    /** Callback executed when the request succeeds */
-   onSuccess?: (data: any, request: Request) => void
+   onSuccess?: (data: any, request: Request) => MaybePromise<void>
    /** URL parameters to be serialized and appended to the URL */
    params?: Params
    /** Function to parse response errors */
@@ -204,17 +210,23 @@ export type FetcherOptions<
    /** HTTP method */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: Unknown, request: Request) => void
+   onError?: (error: Unknown, request: Request) => MaybePromise<void>
    /** Callback executed before the request is made */
-   onRequest?: (request: Request) => void
+   onRequest?: (request: Request) => MaybePromise<void>
    /** Callback executed each time a chunk of the request stream is sent */
-   onRequestStreaming?: (event: StreamingEvent, request: Request) => void
+   onRequestStreaming?: (
+      event: StreamingEvent,
+      request: Request,
+   ) => MaybePromise<void>
    /** Callback executed each time a chunk of the response stream is received */
-   onResponseStreaming?: (event: StreamingEvent, response: Response) => void
+   onResponseStreaming?: (
+      event: StreamingEvent,
+      response: Response,
+   ) => MaybePromise<void>
    /** Callback executed before each retry */
    onRetry?: OnRetry
    /** Callback executed when the request succeeds */
-   onSuccess?: (data: any, request: Request) => void
+   onSuccess?: (data: any, request: Request) => MaybePromise<void>
    /** URL parameters */
    params?: Params
    /** Function to parse response errors */

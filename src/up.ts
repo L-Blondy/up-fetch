@@ -56,9 +56,15 @@ export const up =
       // merge event handlers
       Object.keys(defaultOpts).forEach((key) => {
          if (/^on[A-Z]/.test(key)) {
+            // Merges two event handlers.
+            // The resulting function is sync if both functions are sync,
+            // async if at least one is async.
             ;(options as any)[key] = (...args: unknown[]) => {
-               defaultOpts[key]?.(...args)
-               fetcherOpts[key]?.(...args)
+               const maybePromise = defaultOpts[key]?.(...args)
+               if (maybePromise instanceof Promise) {
+                  return maybePromise.then(() => fetcherOpts[key]?.(...args))
+               }
+               return fetcherOpts[key]?.(...args)
             }
          }
       })
@@ -100,7 +106,7 @@ export const up =
             ),
             options.onRequestStreaming,
          )
-         options.onRequest?.(request)
+         await options.onRequest?.(request)
 
          try {
             outcome.response = await toStreamable(
@@ -131,12 +137,12 @@ export const up =
                : options.retry.delay,
             options.signal,
          )
-         options.onRetry?.({ attempt, request, ...outcome })
+         await options.onRetry?.({ attempt, request, ...outcome })
          // biome-ignore lint/correctness/noConstantCondition: <explanation>
       } while (true)
 
       if (outcome.error) {
-         defaultOpts.onError?.(outcome.error, request)
+         await options.onError?.(outcome.error, request)
          throw outcome.error
       }
       const response = outcome.response as Response
@@ -146,7 +152,7 @@ export const up =
          try {
             parsed = await options.parseResponse(response, request)
          } catch (error: any) {
-            options.onError?.(error, request)
+            await options.onError?.(error, request)
             throw error
          }
          let data: any
@@ -155,19 +161,19 @@ export const up =
                ? await validate(options.schema, parsed)
                : parsed
          } catch (error: any) {
-            options.onError?.(error, request)
+            await options.onError?.(error, request)
             throw error
          }
-         options.onSuccess?.(data, request)
+         await options.onSuccess?.(data, request)
          return data
       }
       let respError: any
       try {
          respError = await options.parseRejected(response, request)
       } catch (error: any) {
-         options.onError?.(error, request)
+         await options.onError?.(error, request)
          throw error
       }
-      options.onError?.(respError, request)
+      await options.onError?.(respError, request)
       throw respError
    }
