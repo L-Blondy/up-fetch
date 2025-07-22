@@ -56,7 +56,7 @@ export const up =
       // merge event handlers
       Object.keys(defaultOpts).forEach((key) => {
          if (/^on[A-Z]/.test(key)) {
-            // Merges two event handlers. T
+            // Merges two event handlers.
             // The resulting function is sync if both functions are sync,
             // async if at least one is async.
             ;(options as any)[key] = (...args: unknown[]) => {
