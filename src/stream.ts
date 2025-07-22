@@ -26,7 +26,10 @@ export async function toStreamable<R extends Request | Response>(
    }
 
    let transferredBytes = 0
-   onStream({ totalBytes, transferredBytes, chunk: new Uint8Array() }, reqOrRes)
+   await onStream(
+      { totalBytes, transferredBytes, chunk: new Uint8Array() },
+      reqOrRes,
+   )
 
    const stream = new ReadableStream({
       async start(controller) {
@@ -36,7 +39,10 @@ export async function toStreamable<R extends Request | Response>(
             if (done) break
             transferredBytes += value.byteLength
             totalBytes = Math.max(totalBytes, transferredBytes)
-            onStream({ totalBytes, transferredBytes, chunk: value }, reqOrRes)
+            await onStream(
+               { totalBytes, transferredBytes, chunk: value },
+               reqOrRes,
+            )
             controller.enqueue(value)
          }
          controller.close()
