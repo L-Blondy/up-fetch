@@ -12,7 +12,7 @@ async function request() {
       body: { title: 'foo', body: 'bar', userId: 1 },
       onRequestStreaming() {},
    })
-      .then(() => ({ success: true, error: undefined }))
+      .then((data) => ({ success: true, error: undefined, data }))
       .catch((error) => ({ success: false, error: error.message }))
 }
 
@@ -22,7 +22,7 @@ async function response() {
       body: { title: 'foo', body: 'bar', userId: 1 },
       onResponseStreaming() {},
    })
-      .then(() => ({ success: true, error: undefined }))
+      .then((data) => ({ success: true, error: undefined, data }))
       .catch((error) => ({ success: false, error: error.message }))
 }
 
