@@ -3,6 +3,7 @@ import { up } from '../src/up'
 // const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
 const isWebkit =
+   typeof window !== 'undefined' &&
    /AppleWebKit/i.test(window.navigator.userAgent) &&
    !/Chrome/i.test(window.navigator.userAgent)
 
