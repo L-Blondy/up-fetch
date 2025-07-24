@@ -5,11 +5,10 @@ import type { StreamingEvent } from './types'
  * so we use the ReadableStream reader API directly
  */
 
-const isWebkit =
-   typeof window !== 'undefined' &&
-   /AppleWebKit/i.test(window.window.navigator.userAgent) &&
-   !/Chrome/i.test(navigator.userAgent)
-console.log({ isWebkit })
+// const isWebkit =
+//    typeof window !== 'undefined' &&
+//    /AppleWebKit/i.test(window.window.navigator.userAgent) &&
+//    !/Chrome/i.test(navigator.userAgent)
 
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
