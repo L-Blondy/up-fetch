@@ -1,4 +1,4 @@
-# Results
+# Results when no feature detection is performed
 
 OPERA MACOS
 
