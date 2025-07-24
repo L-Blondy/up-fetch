@@ -47,17 +47,17 @@ async function response() {
 }
 
 async function main() {
-   const duplex = checkRequest()
+   const req = checkRequest()
    const requestOutcome = await request()
    const responseOutcome = await response()
 
    document.getElementById('is-webkit')!.append(String(isWebkit))
    document
       .getElementById('request-streaming')!
-      .append(JSON.stringify({ ...requestOutcome, duplex }, null, 3))
+      .append(JSON.stringify({ ...requestOutcome, ...req }, null, 3))
    document
       .getElementById('response-streaming')!
-      .append(JSON.stringify({ ...responseOutcome, duplex }, null, 3))
+      .append(JSON.stringify({ ...responseOutcome, ...req }, null, 3))
 }
 
 main()
