@@ -7,7 +7,7 @@ import type { StreamingEvent } from './types'
 
 const isWebkit =
    typeof window !== 'undefined' &&
-   /AppleWebKit/i.test(navigator.userAgent) &&
+   /AppleWebKit/i.test(window.window.navigator.userAgent) &&
    !/Chrome/i.test(navigator.userAgent)
 console.log({ isWebkit })
 
