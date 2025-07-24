@@ -9,13 +9,14 @@ const isWebkit =
    typeof window !== 'undefined' &&
    /AppleWebKit/i.test(navigator.userAgent) &&
    !/Chrome/i.test(navigator.userAgent)
+console.log({ isWebkit })
 
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
    onStream?: (event: StreamingEvent, reqOrRes: R) => void,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
-   if (isWebkit && !isResponse) return reqOrRes
+   // if (isWebkit && !isResponse) return reqOrRes
    const body: (Response | Request)['body'] =
       reqOrRes.body || (reqOrRes as any)._bodyInit
    if (!onStream || !body) return reqOrRes
