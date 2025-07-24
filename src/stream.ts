@@ -15,10 +15,10 @@ export async function toStreamable<R extends Request | Response>(
    onStream?: (event: StreamingEvent, reqOrRes: R) => void,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
-   if (isWebkit && !isResponse) return reqOrRes
+   const isNotSupported = isWebkit && !isResponse
    const body: (Response | Request)['body'] =
       reqOrRes.body || (reqOrRes as any)._bodyInit
-   if (!onStream || !body) return reqOrRes
+   if (isNotSupported || !onStream || !body) return reqOrRes
    const contentLength = reqOrRes.headers.get('content-length')
    let totalBytes: number = +(contentLength || 0)
    // For the Request, when no "Content-Length" header is present, we read the total bytes from the body
