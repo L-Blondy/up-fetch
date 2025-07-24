@@ -105,6 +105,7 @@ export const up =
                options as any,
             ),
             options.onRequestStreaming,
+            options.body
          )
          await options.onRequest?.(request)
 

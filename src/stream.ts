@@ -8,11 +8,20 @@ import type { StreamingEvent } from './types'
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
    onStream?: (event: StreamingEvent, reqOrRes: R) => void,
+   requestBody?: BodyInit | null,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
-   const body: (Response | Request)['body'] =
-      reqOrRes.body || (reqOrRes as any)._bodyInit
-   if (!onStream || !body) return reqOrRes
+
+   // Request
+   if (!onStream || (!isResponse && !requestBody)) return reqOrRes
+
+   // Response
+   const body = isResponse ? (reqOrRes.clone().body || (reqOrRes as any)._bodyInit) : undefined;
+   console.log(reqOrRes)
+   if(isResponse && !body) {
+      return reqOrRes
+   }
+
    const contentLength = reqOrRes.headers.get('content-length')
    let totalBytes: number = +(contentLength || 0)
    // For the Request, when no "Content-Length" header is present, we read the total bytes from the body
