@@ -5,11 +5,17 @@ import type { StreamingEvent } from './types'
  * so we use the ReadableStream reader API directly
  */
 
+const isWebkit =
+   typeof window !== 'undefined' &&
+   /AppleWebKit/i.test(navigator.userAgent) &&
+   !/Chrome/i.test(navigator.userAgent)
+
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
    onStream?: (event: StreamingEvent, reqOrRes: R) => void,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
+   if (isWebkit && !isResponse) return reqOrRes
    const body: (Response | Request)['body'] =
       reqOrRes.body || (reqOrRes as any)._bodyInit
    if (!onStream || !body) return reqOrRes
