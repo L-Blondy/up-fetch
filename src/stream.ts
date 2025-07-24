@@ -7,8 +7,8 @@ import type { StreamingEvent } from './types'
 
 const isWebkit =
    typeof window !== 'undefined' &&
-   /AppleWebKit/i.test(window.navigator.userAgent) &&
-   !/Chrome/i.test(window.navigator.userAgent)
+   /AppleWebKit/i.test(navigator.userAgent) &&
+   !/Chrome/i.test(navigator.userAgent)
 
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
