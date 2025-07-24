@@ -31,7 +31,7 @@ async function request() {
    return up(fetch)('https://jsonplaceholder.typicode.com/posts', {
       method: 'POST',
       body: { title: 'foo', body: 'bar', userId: 1 },
-      onRequestStreaming() {},
+      // onRequestStreaming() {},
    })
       .then((data) => ({ success: true, error: undefined, data }))
       .catch((error) => ({ success: false, error: error.message }))
@@ -41,7 +41,7 @@ async function response() {
    return up(fetch)('https://jsonplaceholder.typicode.com/posts', {
       method: 'POST',
       body: { title: 'foo', body: 'bar', userId: 1 },
-      onResponseStreaming() {},
+      // onResponseStreaming() {},
    })
       .then((data) => ({ success: true, error: undefined, data }))
       .catch((error) => ({ success: false, error: error.message }))
