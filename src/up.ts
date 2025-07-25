@@ -61,10 +61,9 @@ export const up =
             // async if at least one is async.
             ;(options as any)[key] = (...args: unknown[]) => {
                const maybePromise = defaultOpts[key]?.(...args)
-               if (maybePromise instanceof Promise) {
-                  return maybePromise.then(() => fetcherOpts[key]?.(...args))
-               }
-               return fetcherOpts[key]?.(...args)
+               return maybePromise instanceof Promise
+                  ? maybePromise.then(() => fetcherOpts[key]?.(...args))
+                  : fetcherOpts[key]?.(...args)
             }
          }
       })
