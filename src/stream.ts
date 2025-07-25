@@ -12,12 +12,12 @@ const isWebkit =
 
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
-   onStream?: (event: StreamingEvent, reqOrRes: R) => void,
+   onChunk?: (event: StreamingEvent, reqOrRes: R) => void,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
    const isNotSupported = isWebkit && !isResponse
    // clone reqOrRes here to support IOS & Safari 14, otherwise support 15+
-   if (isNotSupported || !onStream || !reqOrRes.clone().body) return reqOrRes
+   if (isNotSupported || !onChunk || !reqOrRes.clone().body) return reqOrRes
    const contentLength = reqOrRes.headers.get('content-length')
    let totalBytes: number = +(contentLength || 0)
    // For the Request, when no "Content-Length" header is present, we read the total bytes from the body
@@ -31,7 +31,7 @@ export async function toStreamable<R extends Request | Response>(
    }
 
    let transferredBytes = 0
-   await onStream(
+   await onChunk(
       { totalBytes, transferredBytes, chunk: new Uint8Array() },
       reqOrRes,
    )
@@ -44,7 +44,7 @@ export async function toStreamable<R extends Request | Response>(
             if (done) break
             transferredBytes += value.byteLength
             totalBytes = Math.max(totalBytes, transferredBytes)
-            await onStream(
+            await onChunk(
                { totalBytes, transferredBytes, chunk: value },
                reqOrRes,
             )

@@ -137,12 +137,12 @@ export const up =
                : options.retry.delay,
             options.signal,
          )
-         await options.onRetry?.({ attempt, request, ...outcome })
+         options.onRetry?.({ attempt, request, ...outcome })
          // biome-ignore lint/correctness/noConstantCondition: <explanation>
       } while (true)
 
       if (outcome.error) {
-         await options.onError?.(outcome.error, request)
+         options.onError?.(outcome.error, request)
          throw outcome.error
       }
       const response = outcome.response as Response
@@ -152,7 +152,7 @@ export const up =
          try {
             parsed = await options.parseResponse(response, request)
          } catch (error: any) {
-            await options.onError?.(error, request)
+            options.onError?.(error, request)
             throw error
          }
          let data: any
@@ -161,19 +161,19 @@ export const up =
                ? await validate(options.schema, parsed)
                : parsed
          } catch (error: any) {
-            await options.onError?.(error, request)
+            options.onError?.(error, request)
             throw error
          }
-         await options.onSuccess?.(data, request)
+         options.onSuccess?.(data, request)
          return data
       }
       let respError: any
       try {
          respError = await options.parseRejected(response, request)
       } catch (error: any) {
-         await options.onError?.(error, request)
+         options.onError?.(error, request)
          throw error
       }
-      await options.onError?.(respError, request)
+      options.onError?.(respError, request)
       throw respError
    }
