@@ -30,8 +30,7 @@
       "knip": "knip",
       "lint": "biome check && tsc --noEmit",
       "release": "bun scripts/release.ts && git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
-      "test": "vitest run && npm run lint",
-      "app": "vite ./app --host"
+      "test": "vitest run && npm run lint"
    },
    "keywords": [
       "fetch",
