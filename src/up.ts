@@ -53,7 +53,6 @@ export const up =
          },
       }
 
-      // merge event handlers
       Object.keys(defaultOpts).forEach((key) => {
          if (/^on[A-Z]/.test(key)) {
             // Merges two event handlers.
@@ -146,33 +145,32 @@ export const up =
       }
       const response = outcome.response as Response
 
-      if (!(await options.reject(response))) {
-         let parsed: any
+      if (await options.reject(response)) {
+         let respError: any
          try {
-            parsed = await options.parseResponse(response, request)
+            respError = await options.parseRejected(response, request)
          } catch (error: any) {
             options.onError?.(error, request)
             throw error
          }
-         let data: any
-         try {
-            data = options.schema
-               ? await validate(options.schema, parsed)
-               : parsed
-         } catch (error: any) {
-            options.onError?.(error, request)
-            throw error
-         }
-         options.onSuccess?.(data, request)
-         return data
+         options.onError?.(respError, request)
+         throw respError
       }
-      let respError: any
+
+      let parsed: any
       try {
-         respError = await options.parseRejected(response, request)
+         parsed = await options.parseResponse(response, request)
       } catch (error: any) {
          options.onError?.(error, request)
          throw error
       }
-      options.onError?.(respError, request)
-      throw respError
+      let data: any
+      try {
+         data = options.schema ? await validate(options.schema, parsed) : parsed
+      } catch (error: any) {
+         options.onError?.(error, request)
+         throw error
+      }
+      options.onSuccess?.(data, request)
+      return data
    }
