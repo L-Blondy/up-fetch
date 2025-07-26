@@ -51,16 +51,12 @@ export const up =
          },
       }
 
+      // Merge event handlers.
       Object.keys(defaultOpts).forEach((key) => {
          if (/^on[A-Z]/.test(key)) {
-            // Merges two event handlers.
-            // The resulting function is sync if both functions are sync,
-            // async if at least one is async.
             ;(options as any)[key] = (...args: unknown[]) => {
-               const maybePromise = defaultOpts[key]?.(...args)
-               return maybePromise instanceof Promise
-                  ? maybePromise.then(() => fetcherOpts[key]?.(...args))
-                  : fetcherOpts[key]?.(...args)
+               defaultOpts[key]?.(...args)
+               fetcherOpts[key]?.(...args)
             }
          }
       })
@@ -100,11 +96,14 @@ export const up =
                     ),
                options as any,
             ),
-            options.onRequestStreaming,
+            fetcherOpts.onRequestStreaming,
          )
 
          try {
-            await options.onRequest?.(request)
+            //https://github.com/L-Blondy/up-fetch/issues/67
+            await defaultOpts.onRequest?.(request)
+            await fetcherOpts.onRequest?.(request)
+
             response = await toStreamable(
                await fetchFn(
                   request,
@@ -112,7 +111,7 @@ export const up =
                   { ...omit(options, ['body']), headers: request.headers },
                   ctx,
                ),
-               options.onResponseStreaming,
+               fetcherOpts.onResponseStreaming,
             )
          } catch (e: any) {
             error = e

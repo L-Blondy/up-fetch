@@ -142,16 +142,6 @@ export type DefaultOptions<
    onError?: (error: unknown, request: Request) => void
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
-   /** Callback executed each time a chunk of the request stream is sent */
-   onRequestStreaming?: (
-      event: StreamingEvent,
-      request: Request,
-   ) => MaybePromise<void>
-   /** Callback executed each time a chunk of the response stream is received */
-   onResponseStreaming?: (
-      event: StreamingEvent,
-      response: Response,
-   ) => MaybePromise<void>
    /** Callback executed before each retry */
    onRetry?: (context: RetryContext & { attempt: number }) => void
    /** Callback executed when the request succeeds */

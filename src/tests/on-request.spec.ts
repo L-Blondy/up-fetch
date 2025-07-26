@@ -63,3 +63,32 @@ describe('onRequest', () => {
       expect(exec).toBe(2)
    })
 })
+
+test('should handle async onRequest callbacks in sequence', async () => {
+   server.use(
+      http.get(baseUrl, ({ request }) => {
+         expect(request.headers.get('x-test-1')).toBe('test-1')
+         expect(request.headers.get('x-test-2')).toBe('test-2')
+         return HttpResponse.json({ hello: 'world' }, { status: 200 })
+      }),
+   )
+
+   const upfetch = up(fetch, () => ({
+      baseUrl: baseUrl,
+      retry: { attempts: 0 },
+      async onRequest(request) {
+         await new Promise((resolve) => setTimeout(resolve, 10))
+         request.headers.set('x-test-1', 'test-1')
+      },
+   }))
+
+   const data = await upfetch('', {
+      async onRequest(request) {
+         expect(request.headers.get('x-test-1')).toBe('test-1')
+         await new Promise((resolve) => setTimeout(resolve, 5))
+         request.headers.set('x-test-2', 'test-2')
+      },
+   })
+
+   expect(data).toEqual({ hello: 'world' })
+})
