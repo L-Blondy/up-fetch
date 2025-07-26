@@ -63,7 +63,7 @@ type BaseOptions<TFetch extends MinFetchFn> = DistributiveOmit<
    'body' | 'headers' | 'method'
 > & {}
 
-export type RetryContext = {
+type RetryContext = {
    response: Response | undefined
    error: unknown
    request: Request
