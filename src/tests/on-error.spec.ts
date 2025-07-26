@@ -1,6 +1,5 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import type { Unknown } from 'src/types'
 import {
    afterAll,
    afterEach,
@@ -100,7 +99,7 @@ describe('onError', () => {
          baseUrl: baseUrl,
          onError(error, request) {
             exec++
-            expectTypeOf(error).toEqualTypeOf<Unknown>()
+            expectTypeOf(error).toEqualTypeOf<unknown>()
          },
       }))
 
@@ -110,7 +109,7 @@ describe('onError', () => {
          },
          onError(error, request) {
             exec++
-            expectTypeOf(error).toEqualTypeOf<Unknown>()
+            expectTypeOf(error).toEqualTypeOf<unknown>()
          },
       }).catch(() => {})
       expect(exec).toBe(2)

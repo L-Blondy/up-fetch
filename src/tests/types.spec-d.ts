@@ -7,7 +7,6 @@ import type {
    DefaultRawBody,
    JsonifiableArray,
    JsonifiableObject,
-   Unknown,
 } from '../types'
 
 test('JsonifiableObject should support both types and interfaces', () => {
@@ -207,7 +206,7 @@ test('callback types', async () => {
          expectTypeOf(request).toEqualTypeOf<Request>()
       },
       onError(error, request) {
-         expectTypeOf(error).toEqualTypeOf<Unknown>()
+         expectTypeOf(error).toEqualTypeOf<unknown>()
          expectTypeOf(request).toEqualTypeOf<Request>()
       },
       onSuccess(data, request) {

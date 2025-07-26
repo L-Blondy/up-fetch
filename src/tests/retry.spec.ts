@@ -1,7 +1,6 @@
 import { scheduler } from 'node:timers/promises'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import type { Unknown } from 'src/types'
 import {
    afterAll,
    afterEach,
@@ -141,7 +140,7 @@ describe('retry', () => {
                if (response) {
                   expectTypeOf(response).toEqualTypeOf<Response>()
                } else {
-                  expectTypeOf(error).toEqualTypeOf<Unknown>()
+                  expectTypeOf(error).toEqualTypeOf<unknown>()
                }
                expect(response instanceof Response).toBe(true)
                return 0
@@ -311,22 +310,23 @@ describe('retry', () => {
       })
    })
 
-   test('should execute up.onRequest, up.onRetry and upfetch.onRetry', async () => {
+   test('should execute up.onRequest, up.onRetry and upfetch.onRetry on each retry attempt', async () => {
       let exec = 0
 
       const upfetch = up(fetch, () => ({
          baseUrl,
          onRequest(request) {
-            // calls twice
+            // calls 3 times
             ++exec
          },
          onRetry(context) {
+            // calls 2 times
             ++exec
          },
          reject: () => false,
          retry: {
             when: () => true,
-            attempts: 1,
+            attempts: 2,
             delay: 0,
          },
       }))
@@ -337,14 +337,15 @@ describe('retry', () => {
 
       await upfetch('/', {
          onRequest(request) {
-            // calls twice
+            // calls 3 times
             ++exec
          },
          onRetry(context) {
+            // calls 2 times
             ++exec
          },
       })
-      expect(exec).toBe(6)
+      expect(exec).toBe(10)
    })
 
    test('should abort retry immediately if signal controller aborts during retry delay', async () => {
@@ -422,41 +423,5 @@ describe('retry', () => {
 
       await upfetch('/').catch(() => {})
       expect(spy).toHaveBeenCalledTimes(2)
-   })
-
-   test('Type: when ctx.error is defined, ctx.response is undefined', () => {
-      up(fetch, () => ({
-         baseUrl,
-         timeout: 50,
-         retry: {
-            attempts: 0,
-            when: (ctx) => {
-               if (ctx.error) {
-                  expectTypeOf(ctx.response).toBeUndefined()
-               }
-               if (ctx.response) {
-                  expectTypeOf(ctx.error).toBeUndefined()
-               }
-               return false
-            },
-            delay(ctx) {
-               if (ctx.error) {
-                  expectTypeOf(ctx.response).toBeUndefined()
-               }
-               if (ctx.response) {
-                  expectTypeOf(ctx.error).toBeUndefined()
-               }
-               return 0
-            },
-         },
-         onRetry(ctx) {
-            if (ctx.error) {
-               expectTypeOf(ctx.response).toBeUndefined()
-            }
-            if (ctx.response) {
-               expectTypeOf(ctx.error).toBeUndefined()
-            }
-         },
-      }))
    })
 })

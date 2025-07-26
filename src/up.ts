@@ -3,11 +3,9 @@ import { toStreamable } from './stream'
 import type {
    DefaultOptions,
    DefaultRawBody,
-   DistributiveOmit,
    FetcherOptions,
    MaybePromise,
    MinFetchFn,
-   RetryContext,
    UpFetch,
 } from './types'
 import {
@@ -82,8 +80,8 @@ export const up =
 
       let attempt = 0
       let request: Request
-
-      const outcome = {} as DistributiveOmit<RetryContext, 'request'>
+      let response: Response | undefined
+      let error: unknown
 
       do {
          // per-try timeout
@@ -104,10 +102,10 @@ export const up =
             ),
             options.onRequestStreaming,
          )
-         await options.onRequest?.(request)
 
          try {
-            outcome.response = await toStreamable(
+            await options.onRequest?.(request)
+            response = await toStreamable(
                await fetchFn(
                   request,
                   // do not override the request body & patch headers again
@@ -117,60 +115,52 @@ export const up =
                options.onResponseStreaming,
             )
          } catch (e: any) {
-            outcome.error = e
+            error = e
+            // continue to retry
          }
 
-         if (
-            !(await options.retry.when({ request, ...outcome })) ||
-            ++attempt >
-               (typeof options.retry.attempts === 'function'
-                  ? await options.retry.attempts({ request })
-                  : options.retry.attempts)
-         )
-            break
+         try {
+            if (
+               !(await options.retry.when({ request, response, error })) ||
+               ++attempt >
+                  (typeof options.retry.attempts === 'function'
+                     ? await options.retry.attempts({ request })
+                     : options.retry.attempts)
+            )
+               break
 
-         await abortableDelay(
-            typeof options.retry.delay === 'function'
-               ? await options.retry.delay({ attempt, request, ...outcome })
-               : options.retry.delay,
-            options.signal,
-         )
-         options.onRetry?.({ attempt, request, ...outcome })
+            await abortableDelay(
+               typeof options.retry.delay === 'function'
+                  ? await options.retry.delay({
+                       attempt,
+                       request,
+                       response,
+                       error,
+                    })
+                  : options.retry.delay,
+               options.signal,
+            )
+            options.onRetry?.({ attempt, request, response, error })
+         } catch (e: any) {
+            error = e
+            break // no retry
+         }
          // biome-ignore lint/correctness/noConstantCondition: <explanation>
       } while (true)
 
-      if (outcome.error) {
-         options.onError?.(outcome.error, request)
-         throw outcome.error
-      }
-      const response = outcome.response as Response
-
-      if (await options.reject(response)) {
-         let respError: any
-         try {
-            respError = await options.parseRejected(response, request)
-         } catch (error: any) {
-            options.onError?.(error, request)
-            throw error
+      try {
+         if (error) throw error
+         if (await options.reject(response!)) {
+            throw await options.parseRejected(response!, request)
          }
-         options.onError?.(respError, request)
-         throw respError
-      }
-
-      let parsed: any
-      try {
-         parsed = await options.parseResponse(response, request)
+         const parsed = await options.parseResponse(response!, request)
+         const data = options.schema
+            ? await validate(options.schema, parsed)
+            : parsed
+         options.onSuccess?.(data, request)
+         return data
       } catch (error: any) {
          options.onError?.(error, request)
          throw error
       }
-      let data: any
-      try {
-         data = options.schema ? await validate(options.schema, parsed) : parsed
-      } catch (error: any) {
-         options.onError?.(error, request)
-         throw error
-      }
-      options.onSuccess?.(data, request)
-      return data
    }

@@ -63,23 +63,11 @@ type BaseOptions<TFetch extends MinFetchFn> = DistributiveOmit<
    'body' | 'headers' | 'method'
 > & {}
 
-/**
- * while `unknown` does not work with type guards, `{}` does
- * `{}` behaves like `unknown` when trying to access properties (ts gives an error)
- */
-export type Unknown = {}
-
-export type RetryContext =
-   | {
-        response: Response
-        error: undefined
-        request: Request
-     }
-   | {
-        response: undefined
-        error: Unknown
-        request: Request
-     }
+export type RetryContext = {
+   response: Response | undefined
+   error: unknown
+   request: Request
+}
 
 type RetryWhen = (context: RetryContext) => MaybePromise<boolean>
 
@@ -151,7 +139,7 @@ export type DefaultOptions<
    /** HTTP method to use for the request */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: Unknown, request: Request) => void
+   onError?: (error: unknown, request: Request) => void
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
    /** Callback executed each time a chunk of the request stream is sent */
@@ -206,7 +194,7 @@ export type FetcherOptions<
    /** HTTP method */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: Unknown, request: Request) => void
+   onError?: (error: unknown, request: Request) => void
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
    /** Callback executed each time a chunk of the request stream is sent */
