@@ -1,6 +1,6 @@
 {
    "name": "up-fetch",
-   "version": "2.2.0-beta.2",
+   "version": "2.2.0",
    "description": "Advanced fetch client builder for typescript.",
    "type": "module",
    "main": "dist/index.cjs",
@@ -29,7 +29,8 @@
       "dev": "vitest",
       "knip": "knip",
       "lint": "biome check && tsc --noEmit",
-      "release": "bun scripts/release.ts && git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
+      "bumpp": "bumpp --recursive --no-commit --no-push --no-tag",
+      "release": "git pull && npm run bumpp &&bun scripts/release.ts && git add . && git commit -a && git tag v$npm_package_version && git push --tags && git push",
       "test": "vitest run && npm run lint"
    },
    "keywords": [
@@ -53,6 +54,7 @@
       "@biomejs/biome": "1.9.4",
       "@standard-schema/spec": "^1.0.0",
       "@types/node": "^22.13.10",
+      "bumpp": "^10.2.0",
       "jsdom": "^26.0.0",
       "knip": "^5.45.0",
       "msw": "^2.7.3",
