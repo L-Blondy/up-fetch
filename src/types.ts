@@ -63,13 +63,18 @@ type BaseOptions<TFetch extends MinFetchFn> = DistributiveOmit<
    'body' | 'headers' | 'method'
 > & {}
 
-type RetryContext = {
+type OnRetry = (context: {
    response: Response | undefined
    error: unknown
    request: Request
-}
+   attempt: number
+}) => void
 
-type RetryWhen = (context: RetryContext) => MaybePromise<boolean>
+type RetryWhen = (context: {
+   response: Response | undefined
+   error: unknown
+   request: Request
+}) => MaybePromise<boolean>
 
 type RetryAttempts =
    | number
@@ -77,7 +82,12 @@ type RetryAttempts =
 
 type RetryDelay =
    | number
-   | ((context: RetryContext & { attempt: number }) => MaybePromise<number>)
+   | ((context: {
+        response: Response | undefined
+        error: unknown
+        request: Request
+        attempt: number
+     }) => MaybePromise<number>)
 
 export type RetryOptions = {
    /**
@@ -143,7 +153,7 @@ export type DefaultOptions<
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
    /** Callback executed before each retry */
-   onRetry?: (context: RetryContext & { attempt: number }) => void
+   onRetry?: OnRetry
    /** Callback executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => void
    /** URL parameters to be serialized and appended to the URL */
@@ -198,7 +208,7 @@ export type FetcherOptions<
       response: Response,
    ) => MaybePromise<void>
    /** Callback executed before each retry */
-   onRetry?: (context: RetryContext & { attempt: number }) => void
+   onRetry?: OnRetry
    /** Callback executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => void
    /** URL parameters */

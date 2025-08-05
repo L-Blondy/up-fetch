@@ -51,16 +51,6 @@ export const up =
          },
       }
 
-      // Merge event handlers.
-      Object.keys(defaultOpts).forEach((key) => {
-         if (/^on[A-Z]/.test(key)) {
-            ;(options as any)[key] = (...args: unknown[]) => {
-               defaultOpts[key]?.(...args)
-               fetcherOpts[key]?.(...args)
-            }
-         }
-      })
-
       options.body =
          fetcherOpts.body === null || fetcherOpts.body === undefined
             ? (fetcherOpts.body as null | undefined)
@@ -128,18 +118,15 @@ export const up =
             )
                break
 
+            const retryCtx = { attempt, request, response, error }
             await abortableDelay(
                typeof options.retry.delay === 'function'
-                  ? await options.retry.delay({
-                       attempt,
-                       request,
-                       response,
-                       error,
-                    })
+                  ? await options.retry.delay(retryCtx)
                   : options.retry.delay,
                options.signal,
             )
-            options.onRetry?.({ attempt, request, response, error })
+            defaultOpts.onRetry?.(retryCtx)
+            fetcherOpts.onRetry?.(retryCtx)
          } catch (e: any) {
             error = e
             break // no retry
@@ -156,10 +143,12 @@ export const up =
          const data = options.schema
             ? await validate(options.schema, parsed)
             : parsed
-         options.onSuccess?.(data, request)
+         defaultOpts.onSuccess?.(data, request)
+         fetcherOpts.onSuccess?.(data, request)
          return data
       } catch (error: any) {
-         options.onError?.(error, request)
+         defaultOpts.onError?.(error, request)
+         fetcherOpts.onError?.(error, request)
          throw error
       }
    }
