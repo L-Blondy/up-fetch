@@ -284,8 +284,10 @@ const upfetch = up(fetch, () => ({
 ```ts
 const upfetch = up(fetch, () => ({
    retry: {
-      when: (ctx) =>
-         [408, 413, 429, 500, 502, 503, 504].includes(ctx.response?.status),
+      when({ response }) {
+         if (!response) return false
+         return [408, 413, 429, 500, 502, 503, 504].includes(response.status)
+      },
       attempts: 1,
       delay: 1000,
    },
