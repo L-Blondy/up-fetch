@@ -579,7 +579,7 @@ const upfetch = up(fetch, () => ({
 
 By default _upfetch_ throws a `ResponseError` when `reject` returns `true`.
 
-If you want to throw a custom error instead or customize the error message, you can pass a function to the `parseRejected` option.
+If you want to throw a custom error or customize the error message, you can pass a function to the `parseRejected` option.
 
 ```ts
 const upfetch = up(fetch, () => ({
