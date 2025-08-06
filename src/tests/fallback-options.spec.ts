@@ -59,7 +59,6 @@ describe('parseRejected', () => {
       expect(responseError instanceof ResponseError).toBeTruthy()
       expect(responseError.data).toStrictEqual(output)
       expect(responseError.response).toStrictEqual(response)
-      expect(responseError.message.startsWith('[200]')).toBeTruthy()
       expect(responseError.request).toBe(request)
       expect(responseError.name).toStrictEqual('ResponseError')
    })

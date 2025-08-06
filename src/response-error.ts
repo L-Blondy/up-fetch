@@ -1,17 +1,22 @@
 export class ResponseError<TData = any> extends Error {
-   override name: 'ResponseError'
    response: Response
    request: Request
    data: TData
    status: number
 
-   constructor(res: Response, data: TData, request: Request) {
-      super(`[${res.status}] ${res.statusText}`)
-      this.data = data
+   constructor(props: {
+      message: string
+      response: Response
+      data: TData
+      request: Request
+   }) {
+      // super(`[${response.status}] ${response.statusText}`)
+      super(props.message)
       this.name = 'ResponseError'
-      this.response = res
-      this.status = res.status
-      this.request = request
+      this.response = props.response
+      this.request = props.request
+      this.data = props.data
+      this.status = props.response.status
    }
 }
 

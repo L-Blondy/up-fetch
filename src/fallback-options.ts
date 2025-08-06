@@ -10,12 +10,13 @@ export const fallbackOptions: FallbackOptions = {
          .catch(() => res.text())
          .then((data) => data || null),
 
-   parseRejected: async (res, request) =>
-      new ResponseError(
-         res,
-         await fallbackOptions.parseResponse(res, request),
+   parseRejected: async (response, request) =>
+      new ResponseError({
+         message: `[${response.status}] ${response.statusText}`,
+         data: await fallbackOptions.parseResponse(response, request),
+         response,
          request,
-      ),
+      }),
 
    // TODO: find a lighter way to do this with about the same amount of code
    serializeParams: (params) =>

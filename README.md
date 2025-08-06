@@ -358,7 +358,7 @@ try {
 
 ### ✔️ Authentication
 
-You can easily add authentication to all requests by setting a default header. 
+You can easily add authentication to all requests by setting a default header.
 
 Retrieve the token from `localStorage` before each request:
 
@@ -577,14 +577,17 @@ const upfetch = up(fetch, () => ({
 
 By default _upfetch_ throws a `ResponseError` when `reject` returns `true`.
 
-If you want to throw a custom error instead, you can pass a function to the `parseRejected` option.
+If you want to throw a custom error instead or customize the error message, you can pass a function to the `parseRejected` option.
 
 ```ts
 const upfetch = up(fetch, () => ({
    parseRejected: async (response) => {
-      const status = response.status
       const data = await response.json()
-      return new CustomError(status, data)
+      const status = response.status
+      // custom error message
+      const message = `Request failed with status ${status}: ${JSON.stringify(data)}`
+      // you can return a custom error class as well
+      return new ResponseError({ message, data, request, response })
    },
 }))
 ```
