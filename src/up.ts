@@ -103,6 +103,7 @@ export const up =
                ),
                fetcherOpts.onResponseStreaming,
             )
+            error = undefined
          } catch (e: any) {
             error = e
             // continue to retry

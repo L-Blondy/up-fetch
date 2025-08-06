@@ -424,4 +424,34 @@ describe('retry', () => {
       await upfetch('/').catch(() => {})
       expect(spy).toHaveBeenCalledTimes(2)
    })
+
+   // https://github.com/L-Blondy/up-fetch/issues/75
+   test('Should cleanup the error after a successul fetch', async () => {
+      server.use(
+         http.get(baseUrl, async () => {
+            return HttpResponse.json({}, { status: 200 })
+         }),
+      )
+      const upfetch = up(fetch, () => ({
+         baseUrl,
+      }))
+
+      let exec = 0
+
+      await upfetch('/', {
+         onRequest() {
+            if (++exec === 1) {
+               throw new Error('Generate an error for the first retry')
+            }
+         },
+         retry: {
+            when({ error, response }) {
+               return !!error || !response?.ok
+            },
+            attempts: 3,
+         },
+      }).catch(() => {})
+      // first exec throws, second exec is ok
+      expect(exec).toBe(2)
+   })
 })
