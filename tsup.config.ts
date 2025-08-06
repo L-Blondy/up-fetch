@@ -1,6 +1,6 @@
-import { defineConfig } from 'tsup'
+import { type Options, defineConfig } from 'tsup'
 
-export default defineConfig({
+const options: Options = {
    entry: { index: 'src/index.ts' },
    sourcemap: true,
    clean: true,
@@ -8,5 +8,17 @@ export default defineConfig({
    dts: { resolve: ['@standard-schema/spec'] },
    format: ['esm', 'cjs'],
    outDir: 'dist',
-   minify: true,
-})
+   minify: false,
+}
+
+export default defineConfig([
+   options,
+   {
+      ...options,
+      dts: false,
+      sourcemap: false,
+      format: ['esm'],
+      minify: true,
+      outExtension: () => ({ 'js': '.min.js' }),
+   },
+])
