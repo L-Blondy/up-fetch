@@ -470,7 +470,7 @@ const decoder = new TextDecoder()
 
 upfetch('/ai-chatbot', {
    onResponseStreaming: (event, response) => {
-      const text = decoder.decode(event.chunk)
+      const text = decoder.decode(event.chunk, { stream: true })
       console.log(text)
    },
 })
