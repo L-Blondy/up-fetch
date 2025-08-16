@@ -319,7 +319,7 @@ const upfetch = up(fetch, () => ({
 
 ### ✔️ Error Handling
 
-#### 👉 <samp>ResponseError</samp>
+#### 👉 ResponseError
 
 Raised when `response.ok` is `false`. \
 Use `isResponseError` to identify this error type.
@@ -339,7 +339,7 @@ try {
 - Use the [parseRejected][api-reference] option to throw a custom error instead.
 - Use the [reject][api-reference] option to decide **when** to throw.
 
-#### 👉 <samp>ValidationError</samp>
+#### 👉 ValidationError
 
 Raised when schema validation fails. \
 Use `isValidationError` to identify this error type.
