@@ -20,14 +20,9 @@ export async function toStreamable<R extends Request | Response>(
    if (isNotSupported || !onChunk || !reqOrRes.clone().body) return reqOrRes
    const contentLength = reqOrRes.headers.get('content-length')
    let totalBytes: number = +(contentLength || 0)
-   // For the Request, when no "Content-Length" header is present, we read the total bytes from the body
+   // For the Request, when no "Content-Length" header is present, we read the total bytes from the request
    if (!isResponse && !contentLength) {
-      const reader = reqOrRes.clone().body!.getReader()
-      while (true) {
-         const { value, done } = await reader.read()
-         if (done) break
-         totalBytes += value.byteLength
-      }
+      totalBytes = (await reqOrRes.clone().arrayBuffer()).byteLength
    }
 
    let transferredBytes = 0
