@@ -450,18 +450,12 @@ const fetchFile = up(fetch, () => ({
 
 _upfetch_ provides powerful streaming capabilities through `onRequestStreaming` for upload operations, and `onResponseStreaming` for download operations.
 
-Both handlers receive the following event object plus the request/response:
+Both handlers receive the following properties:
 
-```ts
-type StreamingEvent = {
-   chunk: Uint8Array // The current chunk of data being streamed
-   totalBytes: number // Total size of the data
-   transferredBytes: number // Amount of data transferred so far
-}
-```
-
-The `totalBytes` property of the event is read from the `"Content-Length"` header. \
-For request streaming, if the header is not present, the total bytes are read from the request body.
+- `chunk: Uint8Array`: The current chunk of data being streamed
+- `transferredBytes: number`: The amount of data transferred so far
+- `totalBytes?: number`: The total size of the data, read from the `"Content-Length"` header. \
+  For request streaming, if the header is not present, totalBytes are read from the request body.
 
 Here's an example of processing a streamed response from an AI chatbot:
 
@@ -469,8 +463,8 @@ Here's an example of processing a streamed response from an AI chatbot:
 const decoder = new TextDecoder()
 
 upfetch('/ai-chatbot', {
-   onResponseStreaming: (event, response) => {
-      const text = decoder.decode(event.chunk, { stream: true })
+   onResponseStreaming: ({ chunk }) => {
+      const text = decoder.decode(chunk, { stream: true })
       console.log(text)
    },
 })
@@ -478,7 +472,7 @@ upfetch('/ai-chatbot', {
 
 ### ✔️ Progress
 
-Upload progress:
+#### 👉 Upload progress:
 
 ```ts
 upfetch('/upload', {
@@ -490,48 +484,18 @@ upfetch('/upload', {
 })
 ```
 
-Download progress:
+#### 👉 Download progress:
 
 ```ts
 upfetch('/download', {
-   onResponseStreaming: ({ transferredBytes, totalBytes }) => {
+   onResponseStreaming: ({
+      transferredBytes,
+      totalBytes = transferredBytes,
+   }) => {
       console.log(`Progress: ${transferredBytes} / ${totalBytes}`)
    },
 })
 ```
-
-<!--
-### ✔️ HTTP Agent
-
-Since _upfetch_ is _"fetch agnostic"_, you can use [undici](https://github.com/nodejs/undici) instead of the native fetch implementation.
-
-On a single request:
-
-```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch)
-
-const data = await upfetch('https://a.b.c', {
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
-})
-```
-
-On all requests:
-
-```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch, () => ({
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
-}))
-``` -->
 
 ## ➡️ Advanced Usage
 

@@ -104,10 +104,19 @@ export type RetryOptions = {
    when?: RetryWhen
 }
 
-export type StreamingEvent = {
+export type ResponseStreamingEvent = {
    /** The last streamed chunk */
    chunk: Uint8Array
-   /** Total bytes, read from the response header "Content-Length" */
+   /** Total bytes, read from the Response "Content-Length" header */
+   totalBytes: number | undefined
+   /** Transferred bytes  */
+   transferredBytes: number
+}
+
+export type RequestStreamingEvent = {
+   /** The last streamed chunk */
+   chunk: Uint8Array
+   /** Total bytes, read from the Request "Content-Length" header or from the Request body */
    totalBytes: number
    /** Transferred bytes  */
    transferredBytes: number
@@ -199,12 +208,12 @@ export type FetcherOptions<
    onRequest?: (request: Request) => MaybePromise<void>
    /** Callback executed each time a chunk of the request stream is sent */
    onRequestStreaming?: (
-      event: StreamingEvent,
+      event: RequestStreamingEvent,
       request: Request,
    ) => MaybePromise<void>
    /** Callback executed each time a chunk of the response stream is received */
    onResponseStreaming?: (
-      event: StreamingEvent,
+      event: ResponseStreamingEvent,
       response: Response,
    ) => MaybePromise<void>
    /** Callback executed before each retry */

@@ -1,4 +1,4 @@
-import type { StreamingEvent } from './types'
+import type { RequestStreamingEvent, ResponseStreamingEvent } from './types'
 
 /**
  * Safari does not support for await...of iteration on response/request bodies,
@@ -10,16 +10,22 @@ const isWebkit =
    /AppleWebKit/i.test(navigator.userAgent) &&
    !/Chrome/i.test(navigator.userAgent)
 
+type StreamingEvent<R extends Request | Response> = R extends Request
+   ? RequestStreamingEvent
+   : R extends Response
+     ? ResponseStreamingEvent
+     : never
+
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
-   onChunk?: (event: StreamingEvent, reqOrRes: R) => void,
+   onChunk?: (event: StreamingEvent<R>, reqOrRes: R) => void,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
    const isNotSupported = isWebkit && !isResponse
    // clone reqOrRes here to support IOS & Safari 14, otherwise support 15+
    if (isNotSupported || !onChunk || !reqOrRes.clone().body) return reqOrRes
    const contentLength = reqOrRes.headers.get('content-length')
-   let totalBytes: number = +(contentLength || 0)
+   let totalBytes = contentLength ? +contentLength : undefined
    // For the Request, when no "Content-Length" header is present, we read the total bytes from the request
    if (!isResponse && !contentLength) {
       totalBytes = (await reqOrRes.clone().arrayBuffer()).byteLength
@@ -27,7 +33,11 @@ export async function toStreamable<R extends Request | Response>(
 
    let transferredBytes = 0
    await onChunk(
-      { totalBytes, transferredBytes, chunk: new Uint8Array() },
+      {
+         totalBytes,
+         transferredBytes,
+         chunk: new Uint8Array(),
+      } as StreamingEvent<R>,
       reqOrRes,
    )
 
@@ -38,9 +48,12 @@ export async function toStreamable<R extends Request | Response>(
             const { value, done } = await reader.read()
             if (done) break
             transferredBytes += value.byteLength
-            totalBytes = Math.max(totalBytes, transferredBytes)
             await onChunk(
-               { totalBytes, transferredBytes, chunk: value },
+               {
+                  totalBytes,
+                  transferredBytes,
+                  chunk: value,
+               } as StreamingEvent<R>,
                reqOrRes,
             )
             controller.enqueue(value)

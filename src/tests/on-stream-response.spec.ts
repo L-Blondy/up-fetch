@@ -116,12 +116,51 @@ test('should call onResponseStreaming for each chunk', async () => {
    })
 })
 
-test("should infer totalBytes from the transferredBytes if no 'Content-Length' header is present", async () => {
+test("should have totalBytes === undefined if no 'Content-Length' header is present", async () => {
    const upfetch = up(fetch)
    const spy = vi.fn()
    const data = await upfetch(`${baseUrl}/chatbot-nocontentlength`, {
       onResponseStreaming(event) {
          spy(event)
+      },
+   })
+   expect(data).toEqual('BrandNewWorld')
+   expect(spy).toHaveBeenNthCalledWith(1, {
+      totalBytes: undefined,
+      transferredBytes: 0,
+      chunk: new Uint8Array(),
+   })
+   expect(spy).toHaveBeenNthCalledWith(2, {
+      totalBytes: undefined,
+      transferredBytes: 5,
+      chunk: expect.any(Uint8Array),
+   })
+   expect(spy).toHaveBeenNthCalledWith(3, {
+      totalBytes: undefined,
+      transferredBytes: 8,
+      chunk: expect.any(Uint8Array),
+   })
+   expect(spy).toHaveBeenNthCalledWith(4, {
+      totalBytes: undefined,
+      transferredBytes: 13,
+      chunk: expect.any(Uint8Array),
+   })
+})
+
+test('Should allow setting a default value for totalBytes', async () => {
+   const upfetch = up(fetch)
+   const spy = vi.fn()
+   const data = await upfetch(`${baseUrl}/chatbot-nocontentlength`, {
+      onResponseStreaming({
+         chunk,
+         transferredBytes,
+         totalBytes = transferredBytes,
+      }) {
+         spy({
+            chunk,
+            transferredBytes,
+            totalBytes,
+         })
       },
    })
    expect(data).toEqual('BrandNewWorld')
