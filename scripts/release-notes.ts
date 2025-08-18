@@ -39,6 +39,8 @@ async function script() {
       with: { type: 'json' },
    })
 
+   const isStable = !packageJson.default.version.includes('-')
+
    await fetch('https://api.github.com/repos/L-Blondy/up-fetch/releases', {
       method: 'POST',
       headers: {
@@ -52,7 +54,8 @@ async function script() {
          body:
             relevantMessages.map((message) => `- ${message}`).join('\n') ||
             'No notable changes',
-         make_latest: String(!packageJson.default.version.includes('-')),
+         discussion_category_name: isStable ? 'announcements' : undefined,
+         make_latest: String(isStable),
       }),
    }).then(async (res) => {
       if (!res.ok) throw new Error(`${res.statusText}: ${await res.text()}`)
