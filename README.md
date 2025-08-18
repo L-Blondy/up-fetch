@@ -484,7 +484,7 @@ upfetch('/upload', {
 })
 ```
 
-#### 👉 Download progress:
+#### 👉 Download progress:
 
 ```ts
 upfetch('/download', {
