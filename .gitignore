@@ -10,3 +10,5 @@ TEMP.md
 temp.ts
 
 /app/dist
+
+.env

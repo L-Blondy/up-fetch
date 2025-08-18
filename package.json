@@ -30,7 +30,8 @@
       "knip": "knip",
       "lint": "biome check && tsc --noEmit",
       "bumpp": "bumpp --recursive --no-commit --no-push --no-tag",
-      "release": "git pull && npm run bumpp && bun scripts/release.ts && git add . && git commit -a && git push && npm run release:tag",
+      "release": "git pull && npm run bumpp && node scripts/release.ts && npm run release:notes && git add . && git commit -a && git push && npm run release:tag",
+      "release:notes": "node --env-file .env scripts/release-notes.ts",
       "release:tag": "git tag v$npm_package_version && git push --tags",
       "test": "vitest run && npm run lint"
    },
