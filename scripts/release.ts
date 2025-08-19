@@ -22,23 +22,20 @@ async function script() {
    )
    const newGithubTag = `v${version}`
    await $`npm publish --quiet --access public --tag ${versionTag}`
-
    consola.success(`Published version ${version}`)
-
-   consola.info('fetching the previous github release tag')
+   consola.info('Fetching the previous github release tag')
    const previousGithubTag = await fetchPrevGithubTag(versionTag)
    consola.info('fetching relevant commit messages since the previous release')
-   const relevantMessages = await fetchRelevantCommitMessages(previousGithubTag)
+   const description = await generateReleaseDescription(previousGithubTag)
    // push the new tag
    await $`git tag ${newGithubTag}`
    await $`git push --tags`
-   consola.info(`creating a github release for tag ${newGithubTag}`)
+   consola.info(`Creating a github release: ${newGithubTag}\n${description}`)
    await createGithubRelease({
       githubTag: newGithubTag,
       latest: versionTag === 'latest',
-      relevantMessages,
+      description,
    })
-
    await $`git add .`
    await $`git commit -am "release: ${version}"`
    await $`git push`
@@ -65,7 +62,7 @@ function fetchPrevGithubTag(versionTag: 'beta' | 'latest') {
       })
 }
 
-async function fetchRelevantCommitMessages(previousGithubTag: string) {
+async function generateReleaseDescription(previousGithubTag: string) {
    const response = await fetch(
       `https://api.github.com/repos/L-Blondy/up-fetch/compare/${previousGithubTag}...HEAD`,
       { headers: { Accept: 'application/vnd.github+json' } },
@@ -74,28 +71,32 @@ async function fetchRelevantCommitMessages(previousGithubTag: string) {
    const data = await response.json()
    const commits = data.commits || []
    const messages = commits.map(({ commit }) => commit.message)
-   return z
-      .array(z.string())
-      .parse(messages)
-      .filter(
-         (message) =>
-            message &&
-            message !== 'docs' &&
-            !message.startsWith('chore:') &&
-            !message.startsWith('release:') &&
-            !message.startsWith('ignore:') &&
-            !message.startsWith('chore:') &&
-            !message.startsWith('ci:') &&
-            !message.startsWith('wip:') &&
-            !message.startsWith('docs:') &&
-            !message.startsWith('doc:'),
-      )
+   return (
+      z
+         .array(z.string())
+         .parse(messages)
+         .filter(
+            (message) =>
+               message &&
+               message !== 'docs' &&
+               !message.startsWith('chore:') &&
+               !message.startsWith('release:') &&
+               !message.startsWith('ignore:') &&
+               !message.startsWith('chore:') &&
+               !message.startsWith('ci:') &&
+               !message.startsWith('wip:') &&
+               !message.startsWith('docs:') &&
+               !message.startsWith('doc:'),
+         )
+         .map((message) => `- ${message}`)
+         .join('\n') || 'No notable changes'
+   )
 }
 
 async function createGithubRelease(props: {
    githubTag: string
    latest: boolean
-   relevantMessages: string[]
+   description: string
 }) {
    const response = await fetch(
       'https://api.github.com/repos/L-Blondy/up-fetch/releases',
@@ -109,10 +110,7 @@ async function createGithubRelease(props: {
          body: JSON.stringify({
             tag_name: props.githubTag,
             name: props.githubTag,
-            body:
-               props.relevantMessages
-                  .map((message) => `- ${message}`)
-                  .join('\n') || 'No notable changes',
+            body: props.description,
             discussion_category_name: props.latest
                ? 'announcements'
                : undefined,
