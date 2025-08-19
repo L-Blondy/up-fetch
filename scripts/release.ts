@@ -22,6 +22,9 @@ async function script() {
    )
    const newGithubTag = `v${version}`
    await $`npm publish --quiet --access public --tag ${versionTag}`
+
+   consola.success(`Published version ${version}`)
+
    consola.info('fetching the previous github release tag')
    const previousGithubTag = await fetchPrevGithubTag(versionTag)
    consola.info('fetching relevant commit messages since the previous release')
