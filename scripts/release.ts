@@ -1,19 +1,124 @@
 import assert from 'node:assert'
-import { execSync } from 'node:child_process'
-import packageJson from '../package.json' with { type: 'json' }
+// @ts-expect-error bun types are not installed
+import { $ } from 'bun'
+import { consola } from 'consola'
+import { z } from 'zod'
 
-const tag = packageJson.version.replace(/[.\-0-9]/g, '')
-assert(tag === 'beta' || tag === '')
+async function script() {
+   await $`git pull`
+   await $`npm run knip`
+   await $`npm run test` // includes lint
+   await $`bumpp`
+   await $`npm run build`
 
-execSync('git pull')
-try {
-   execSync('npm run knip')
-} catch (_) {
-   throw new Error('"npm run knip" failed')
+   const packageJson = await import('../package.json', {
+      with: { type: 'json' },
+   })
+   const version = packageJson.version
+   const versionTag = version.replace(/[.\-0-9]/g, '') || 'latest'
+   assert(
+      versionTag === 'beta' || versionTag === 'latest',
+      'Unexpected release tag',
+   )
+   const newGithubTag = `v${version}`
+   await $`npm publish --quiet --access public --tag ${versionTag}`
+   consola.info('fetching the previous github release tag')
+   const previousGithubTag = await fetchPrevGithubTag(versionTag)
+   consola.info('fetching relevant commit messages since the previous release')
+   const relevantMessages = await fetchRelevantCommitMessages(previousGithubTag)
+   // push the new tag
+   await $`git tag ${newGithubTag}`
+   await $`git push --tags`
+   consola.info(`creating a github release for tag ${newGithubTag}`)
+   await createGithubRelease({
+      githubTag: newGithubTag,
+      latest: versionTag === 'latest',
+      relevantMessages,
+   })
+
+   await $`git add .`
+   await $`git commit -am "release: ${version}"`
+   await $`git push`
 }
-execSync('npm run lint')
-execSync('npm run test')
-execSync('npm run build')
-tag
-   ? execSync(`npm publish --quiet --access public --tag ${tag}`)
-   : execSync('npm publish --quiet --access public')
+
+await script()
+
+function fetchPrevGithubTag(versionTag: 'beta' | 'latest') {
+   return fetch('https://api.github.com/repos/L-Blondy/up-fetch/releases', {
+      headers: { Accept: 'application/vnd.github+json' },
+   })
+      .then((res) => {
+         if (!res.ok) throw new Error(res.statusText)
+         return res.json()
+      })
+      .then((releases) => {
+         const previousRelease =
+            // when the new release is beta, the previous release is the first one
+            // otherwise, when the new release is stable, the previous release is the last latest
+            versionTag === 'beta'
+               ? releases[0]
+               : releases.find((release) => !release.tag_name.includes('beta'))
+         return previousRelease.tag_name
+      })
+}
+
+async function fetchRelevantCommitMessages(previousGithubTag: string) {
+   const response = await fetch(
+      `https://api.github.com/repos/L-Blondy/up-fetch/compare/${previousGithubTag}...HEAD`,
+      { headers: { Accept: 'application/vnd.github+json' } },
+   )
+   assert(response.ok, response.statusText)
+   const data = await response.json()
+   const commits = data.commits || []
+   const messages = commits.map(({ commit }) => commit.message)
+   return z
+      .array(z.string())
+      .parse(messages)
+      .filter(
+         (message) =>
+            message &&
+            message !== 'docs' &&
+            !message.startsWith('chore:') &&
+            !message.startsWith('release:') &&
+            !message.startsWith('ignore:') &&
+            !message.startsWith('chore:') &&
+            !message.startsWith('ci:') &&
+            !message.startsWith('wip:') &&
+            !message.startsWith('docs:') &&
+            !message.startsWith('doc:'),
+      )
+}
+
+async function createGithubRelease(props: {
+   githubTag: string
+   latest: boolean
+   relevantMessages: string[]
+}) {
+   const response = await fetch(
+      'https://api.github.com/repos/L-Blondy/up-fetch/releases',
+      {
+         method: 'POST',
+         headers: {
+            'X-GitHub-Api-Version': '2022-11-28',
+            Accept: 'application/vnd.github+json',
+            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+         },
+         body: JSON.stringify({
+            tag_name: props.githubTag,
+            name: props.githubTag,
+            body:
+               props.relevantMessages
+                  .map((message) => `- ${message}`)
+                  .join('\n') || 'No notable changes',
+            discussion_category_name: props.latest
+               ? 'announcements'
+               : undefined,
+            make_latest: String(props.latest),
+         }),
+      },
+   )
+   assert(
+      response.ok,
+      `${response.statusText}: ${JSON.stringify(await response.text(), null, 3)}`,
+   )
+}

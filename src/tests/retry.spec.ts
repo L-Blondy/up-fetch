@@ -15,7 +15,13 @@ import { up } from '..'
 
 const baseUrl = 'https://example.com'
 const server = setupServer()
-beforeAll(() => server.listen())
+beforeAll(() =>
+   server.listen({
+      onUnhandledRequest() {
+         // no warning
+      },
+   }),
+)
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 

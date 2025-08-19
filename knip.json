@@ -1,5 +1,11 @@
 {
    "$schema": "https://unpkg.com/knip@5/schema.json",
-   "ignore": ["**/*.spec.ts", "**/*.spec-d.ts", "src/experiment/**", "app/**"],
+   "ignore": [
+      "**/*.spec.ts",
+      "**/*.spec-d.ts",
+      "src/experiment/**",
+      "app/**",
+      "bump.config.ts"
+   ],
    "ignoreDependencies": ["prettier"]
 }

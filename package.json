@@ -29,10 +29,7 @@
       "dev": "vitest",
       "knip": "knip",
       "lint": "biome check && tsc --noEmit",
-      "bumpp": "bumpp --recursive --no-commit --no-push --no-tag",
-      "release": "git pull && npm run bumpp && node scripts/release.ts && npm run release:notes && git add . && git commit -a && git push && npm run release:tag",
-      "release:notes": "node --env-file .env scripts/release-notes.ts",
-      "release:tag": "git tag v$npm_package_version && git push --tags",
+      "release": "bun scripts/release.ts ",
       "test": "vitest run && npm run lint"
    },
    "keywords": [
@@ -57,6 +54,7 @@
       "@standard-schema/spec": "^1.0.0",
       "@types/node": "^22.13.10",
       "bumpp": "^10.2.0",
+      "consola": "^3.4.2",
       "jsdom": "^26.0.0",
       "knip": "^5.45.0",
       "msw": "^2.7.3",
