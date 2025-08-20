@@ -52,6 +52,7 @@
    "devDependencies": {
       "@biomejs/biome": "1.9.4",
       "@standard-schema/spec": "^1.0.0",
+      "@types/bun": "^1.2.20",
       "@types/node": "^22.13.10",
       "bumpp": "^10.2.3",
       "consola": "^3.4.2",

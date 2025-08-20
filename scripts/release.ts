@@ -1,8 +1,8 @@
 import assert from 'node:assert'
-// @ts-expect-error bun types are not installed
 import { $ } from 'bun'
 import { consola } from 'consola'
 import { z } from 'zod'
+import { up } from '../src/up'
 
 async function script() {
    await $`git pull`
@@ -15,16 +15,19 @@ async function script() {
       with: { type: 'json' },
    })
    const version = packageJson.version
-   const versionTag = version.replace(/[.\-0-9]/g, '') || 'latest'
+   const newNpmTag = version.replace(/[.\-0-9]/g, '') || 'latest'
    assert(
-      versionTag === 'beta' || versionTag === 'latest',
+      newNpmTag === 'beta' || newNpmTag === 'latest',
       'Unexpected release tag',
    )
    const newGithubTag = `v${version}`
-   await $`npm publish --quiet --access public --tag ${versionTag}`
+   await $`npm publish --quiet --access public --tag ${newNpmTag}`
    consola.success(`Published version ${version}`)
    consola.info('Fetching the previous github release tag')
-   const previousGithubTag = await fetchPrevGithubTag(versionTag)
+   const previousGithubTag = await fetchPrevGithubTag({
+      newNpmTag,
+      newGithubTag,
+   })
    consola.info('fetching relevant commit messages since the previous release')
    const description = await generateReleaseDescription(previousGithubTag)
    // push the new tag
@@ -32,8 +35,8 @@ async function script() {
    await $`git push --tags`
    consola.info(`Creating a github release: ${newGithubTag}\n${description}`)
    await createGithubRelease({
-      githubTag: newGithubTag,
-      latest: versionTag === 'latest',
+      newGithubTag,
+      latest: newNpmTag === 'latest',
       description,
    })
    await $`git add .`
@@ -43,83 +46,90 @@ async function script() {
 
 await script()
 
-function fetchPrevGithubTag(versionTag: 'beta' | 'latest') {
-   return fetch('https://api.github.com/repos/L-Blondy/up-fetch/releases', {
-      headers: { Accept: 'application/vnd.github+json' },
+const upfetch = up(fetch, () => ({
+   baseUrl: 'https://api.github.com/L-Blondy/up-fetch',
+   headers: {
+      'X-GitHub-Api-Version': '2022-11-28',
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+   },
+}))
+
+async function fetchPrevGithubTag(props: {
+   newNpmTag: 'beta' | 'latest'
+   newGithubTag: string
+}) {
+   const releases = await upfetch('/releases', {
+      schema: z.array(z.object({ tag_name: z.string() })),
    })
-      .then((res) => {
-         if (!res.ok) throw new Error(res.statusText)
-         return res.json()
-      })
-      .then((releases) => {
-         const previousRelease =
-            // when the new release is beta, the previous release is the first one
-            // otherwise, when the new release is stable, the previous release is the last latest
-            versionTag === 'beta'
-               ? releases[0]
-               : releases.find((release) => !release.tag_name.includes('beta'))
-         return previousRelease.tag_name
-      })
+   const previousRelease =
+      props.newNpmTag === 'beta'
+         ? // when the new release is beta, just grab the previous one
+           releases.find((release) => release.tag_name !== props.newGithubTag)
+         : // when the new release is stable, ignore previous beta releases
+           releases.find(
+              (release) =>
+                 release.tag_name !== props.newGithubTag &&
+                 !release.tag_name.includes('beta'),
+           )
+   assert(previousRelease, 'No previous release found')
+   return previousRelease.tag_name
 }
 
 async function generateReleaseDescription(previousGithubTag: string) {
-   const response = await fetch(
-      `https://api.github.com/repos/L-Blondy/up-fetch/compare/${previousGithubTag}...HEAD`,
-      { headers: { Accept: 'application/vnd.github+json' } },
+   // All commit messages since the last release
+   const commitMessages = await upfetch(
+      `/compare/${previousGithubTag}...HEAD`,
+      {
+         schema: z
+            .object({
+               commits: z.array(
+                  z.object({ commit: z.object({ message: z.string() }) }),
+               ),
+            })
+            .transform(({ commits }) => {
+               return commits
+                  .map(({ commit }) => commit.message)
+                  .filter(
+                     (message) =>
+                        message &&
+                        message !== 'docs' &&
+                        !message.startsWith('chore:') &&
+                        !message.startsWith('release:') &&
+                        !message.startsWith('ignore:') &&
+                        !message.startsWith('chore:') &&
+                        !message.startsWith('ci:') &&
+                        !message.startsWith('wip:') &&
+                        !message.startsWith('docs:') &&
+                        !message.startsWith('doc:'),
+                  )
+            }),
+      },
    )
-   assert(response.ok, response.statusText)
-   const data = await response.json()
-   const commits = data.commits || []
-   const messages = commits.map(({ commit }) => commit.message)
-   return (
-      z
-         .array(z.string())
-         .parse(messages)
-         .filter(
-            (message) =>
-               message &&
-               message !== 'docs' &&
-               !message.startsWith('chore:') &&
-               !message.startsWith('release:') &&
-               !message.startsWith('ignore:') &&
-               !message.startsWith('chore:') &&
-               !message.startsWith('ci:') &&
-               !message.startsWith('wip:') &&
-               !message.startsWith('docs:') &&
-               !message.startsWith('doc:'),
-         )
-         .map((message) => `- ${message}`)
-         .join('\n') || 'No notable changes'
-   )
+
+   const releaseNotes =
+      commitMessages.map((message) => `- ${message}`).join('\n') ||
+      'No notable changes'
+
+   return releaseNotes
 }
 
 async function createGithubRelease(props: {
-   githubTag: string
+   newGithubTag: string
    latest: boolean
    description: string
 }) {
-   const response = await fetch(
-      'https://api.github.com/repos/L-Blondy/up-fetch/releases',
-      {
-         method: 'POST',
-         headers: {
-            'X-GitHub-Api-Version': '2022-11-28',
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-         },
-         body: JSON.stringify({
-            tag_name: props.githubTag,
-            name: props.githubTag,
-            body: props.description,
-            discussion_category_name: props.latest
-               ? 'announcements'
-               : undefined,
-            make_latest: String(props.latest),
-         }),
+   await upfetch('/releases', {
+      method: 'POST',
+      body: {
+         tag_name: props.newGithubTag,
+         name: props.newGithubTag,
+         body: props.description,
+         discussion_category_name: props.latest ? 'announcements' : undefined,
+         make_latest: String(props.latest),
       },
-   )
-   assert(
-      response.ok,
-      `${response.statusText}: ${JSON.stringify(await response.text(), null, 3)}`,
-   )
+      async parseRejected(response) {
+         return new Error(JSON.stringify(await response.json(), null, 3))
+      },
+   })
 }
