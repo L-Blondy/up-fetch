@@ -6,7 +6,7 @@
 <br>
 <p align="center">
    <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/v/up-fetch.svg?color=EFBA5F" alt="npm version"></a>
-   <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=EFBA5F" alt="npm bundle size"></a>
+   <!-- <a href="https://bundlephobia.com/package/up-fetch"><img src="https://img.shields.io/bundlephobia/minzip/up-fetch?color=EFBA5F" alt="npm bundle size"></a> -->
    <a href="https://github.com/L-Blondy/up-fetch/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/up-fetch.svg?color=EFBA5F" alt="license"></a>
    <a href="https://github.com/L-Blondy/up-fetch/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/L-Blondy/up-fetch?color=EFBA5F" alt="commit activity"></a>
    <a href="https://www.npmjs.com/package/up-fetch"><img src="https://img.shields.io/npm/dm/up-fetch.svg?color=EFBA5F" alt="downloads per month"></a>
@@ -14,8 +14,6 @@
 <br>
 
 _upfetch_ 是一个高级的 fetch 客户端构建器，具有标准模式验证、自动响应解析、智能默认值等功能。旨在使数据获取类型安全且开发人员友好，同时保持熟悉的 fetch API。
-
-从 v1 版本升级？查看 [v2 发布说明](https://github.com/L-Blondy/up-fetch/releases/tag/v2.0.0) 了解如何升级。
 
 ## 目录
 
@@ -248,6 +246,20 @@ await upfetch('/api/data', {
 </details>
 
 <details>
+<summary>指数退避重试</summary>
+
+```ts
+const upfetch = up(fetch, () => ({
+   retry: {
+      attempts: 3,
+      delay: (ctx) => ctx.attempt ** 2 * 1000,
+   },
+}))
+```
+
+</details>
+
+<details>
 <summary>基于请求方法的重试</summary>
 
 ```ts
@@ -268,8 +280,10 @@ const upfetch = up(fetch, () => ({
 ```ts
 const upfetch = up(fetch, () => ({
    retry: {
-      when: (ctx) =>
-         [408, 413, 429, 500, 502, 503, 504].includes(ctx.response?.status),
+      when({ response }) {
+         if (!response) return false
+         return [408, 413, 429, 500, 502, 503, 504].includes(response.status)
+      },
       attempts: 1,
       delay: 1000,
    },
@@ -279,61 +293,25 @@ const upfetch = up(fetch, () => ({
 </details>
 
 <details>
-<summary>指数退避重试</summary>
+<summary>网络错误、超时或其他错误时重试</summary>
 
 ```ts
 const upfetch = up(fetch, () => ({
    retry: {
-      attempts: 3,
-      delay: (ctx) => ctx.attempt ** 2 * 1000, // 1s, 4s, 9s
-   },
-}))
-```
-
-</details>
-
-<details>
-<summary>基于错误类型的重试</summary>
-
-```ts
-const upfetch = up(fetch, () => ({
-   retry: {
+      attempts: 2,
+      delay: 1000,
       when: (ctx) => {
+         // 超时错误时重试
          if (ctx.error) return ctx.error.name === 'TimeoutError'
+         // 429 服务器错误时重试
          if (ctx.response) return ctx.response.status === 429
          return false
       },
-      attempts: 2,
-      delay: 1000,
    },
 }))
 ```
 
 </details>
-
-### ✔️ 进度
-
-上传进度：
-
-```ts
-upfetch('/upload', {
-   method: 'POST',
-   body: new File(['large file'], 'foo.txt'),
-   onRequestStreaming: ({ transferredBytes, totalBytes }) => {
-      console.log(`进度：${transferredBytes} / ${totalBytes}`)
-   },
-})
-```
-
-下载进度：
-
-```ts
-upfetch('/download', {
-   onResponseStreaming: ({ transferredBytes, totalBytes }) => {
-      console.log(`进度：${transferredBytes} / ${totalBytes}`)
-   },
-})
-```
 
 ### ✔️ 错误处理
 
@@ -378,7 +356,9 @@ try {
 
 ### ✔️ 身份验证
 
-通过设置默认 header 轻松为所有请求添加身份验证：
+你可以通过设置默认 header 轻松为所有请求添加身份验证。
+
+在每次请求之前从 `localStorage` 获取 bearer token：
 
 ```ts
 const upfetch = up(fetch, () => ({
@@ -386,7 +366,13 @@ const upfetch = up(fetch, () => ({
 }))
 ```
 
-在每次请求之前从 `localStorage` 获取 bearer token。
+获取异步 token：
+
+```ts
+const upfetch = up(fetch, async () => ({
+   headers: { Authorization: await getToken() },
+}))
+```
 
 ### ✔️ 删除默认选项
 
@@ -395,6 +381,14 @@ const upfetch = up(fetch, () => ({
 ```ts
 upfetch('/todos', {
    signal: undefined,
+})
+```
+
+对于单独的 `params` 和 `headers` 也同样适用：
+
+```ts
+upfetch('/todos', {
+   headers: { Authorization: undefined },
 })
 ```
 
@@ -450,20 +444,14 @@ const fetchFile = up(fetch, () => ({
 
 ### ✔️ 流式传输
 
-_upfetch_ 通过 `onRequestStreaming` 提供上传操作的流式传输功能，通过 `onResponseStreaming` 提供下载操作的流式传输功能。
+_upfetch_ 通过 `onRequestStreaming` 提供上传操作的强大流式传输功能，通过 `onResponseStreaming` 提供下载操作的流式传输功能。
 
-这两个处理器都接收以下事件对象以及请求/响应：
+这两个处理器都接收以下属性：
 
-```ts
-type StreamingEvent = {
-   chunk: Uint8Array // 当前正在流式传输的数据块
-   totalBytes: number // 数据的总大小
-   transferredBytes: number // 已传输的数据量
-}
-```
-
-事件的 `totalBytes` 属性从 `"Content-Length"` 头部读取。\
-对于请求流式传输，如果头部不存在，总字节数将从请求体中读取。
+- `chunk: Uint8Array`：当前正在流式传输的数据块
+- `transferredBytes: number`：到目前为止已传输的数据量
+- `totalBytes?: number`：数据的总大小，从 `"Content-Length"` 头部读取。\
+  对于请求流式传输，如果头部不存在，总字节数将从请求体中读取。
 
 以下是处理 AI 聊天机器人流式响应的示例：
 
@@ -471,45 +459,39 @@ type StreamingEvent = {
 const decoder = new TextDecoder()
 
 upfetch('/ai-chatbot', {
-   onResponseStreaming: (event, response) => {
-      const text = decoder.decode(event.chunk)
+   onResponseStreaming: ({ chunk }) => {
+      const text = decoder.decode(chunk, { stream: true })
       console.log(text)
    },
 })
 ```
 
-<!--
-### ✔️ HTTP 代理
+### ✔️ 进度
 
-由于 _upfetch_ 是 _"fetch 无关的"_，你可以使用 [undici](https://github.com/nodejs/undici) 代替原生 fetch 实现。
-
-在单个请求中：
+#### 👉 上传进度：
 
 ```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch)
-
-const data = await upfetch('https://a.b.c', {
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
+upfetch('/upload', {
+   method: 'POST',
+   body: new File(['large file'], 'foo.txt'),
+   onRequestStreaming: ({ transferredBytes, totalBytes }) => {
+      console.log(`进度：${transferredBytes} / ${totalBytes}`)
+   },
 })
 ```
 
-在所有请求中：
+#### 👉 下载进度：
 
 ```ts
-import { fetch, Agent } from 'undici'
-
-const upfetch = up(fetch, () => ({
-   dispatcher: new Agent({
-      keepAliveTimeout: 10,
-      keepAliveMaxTimeout: 10,
-   }),
-}))
-``` -->
+upfetch('/download', {
+   onResponseStreaming: ({
+      transferredBytes,
+      totalBytes = transferredBytes,
+   }) => {
+      console.log(`进度：${transferredBytes} / ${totalBytes}`)
+   },
+})
+```
 
 ## ➡️ 高级用法
 
@@ -557,14 +539,17 @@ const upfetch = up(fetch, () => ({
 
 默认情况下，当 `reject` 返回 `true` 时，_upfetch_ 会抛出 `ResponseError`。
 
-如果你想抛出自定义错误，可以向 `parseRejected` 选项传递一个函数。
+如果你想抛出自定义错误或自定义错误消息，可以向 `parseRejected` 选项传递一个函数。
 
 ```ts
 const upfetch = up(fetch, () => ({
    parseRejected: async (response) => {
-      const status = response.status
       const data = await response.json()
-      return new CustomError(status, data)
+      const status = response.status
+      // 自定义错误消息
+      const message = `Request failed with status ${status}: ${JSON.stringify(data)}`
+      // 你也可以返回自定义错误类
+      return new ResponseError({ message, data, request, response })
    },
 }))
 ```
@@ -757,7 +742,7 @@ function upfetch(
 ## ➡️ 环境支持
 
 - ✅ 浏览器 (Chrome, Firefox, Safari, Edge)
-- ✅ Node.js (20.3.0+)
+- ✅ Node.js (18.0+)
 - ✅ Bun
 - ✅ Deno
 - ✅ Cloudflare Workers
