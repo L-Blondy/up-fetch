@@ -19,7 +19,7 @@ dataview.setInt16(0, 256, true /* littleEndian */)
 formData.append('username', 'me')
 const getStream = () =>
    new ReadableStream({
-      // biome-ignore lint/suspicious/useAwait: <explanation>
+      // biome-ignore lint/suspicious/useAwait: false
       async start(controller) {
          controller.enqueue('This ')
          controller.enqueue('is ')

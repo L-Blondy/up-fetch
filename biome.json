@@ -1,5 +1,5 @@
 {
-   "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
    "vcs": {
       "enabled": false,
       "clientKind": "git",
@@ -7,23 +7,20 @@
    },
    "files": {
       "ignoreUnknown": false,
-      "include": [
+      "includes": [
          "**/*.json",
          "**/*.jsonc",
          "**/*.ts",
          "**/*.tsx",
          "**/*.js",
-         "**/*.jsx"
-      ],
-      "ignore": ["dist"]
+         "**/*.jsx",
+         "!**/dist"
+      ]
    },
    "formatter": {
       "enabled": false
    },
-   "organizeImports": {
-      "enabled": true,
-      "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
-   },
+   "assist": { "actions": { "source": { "organizeImports": "on" } } },
    "linter": {
       "enabled": true,
       "rules": {
@@ -31,11 +28,12 @@
          "complexity": {
             "noBannedTypes": "off",
             "noExtraBooleanCast": "error",
-            "noMultipleSpacesInRegularExpressionLiterals": "error",
             "noUselessCatch": "error",
             "noUselessTypeConstraint": "error",
-            "noWith": "error",
-            "noForEach": "off"
+            "noForEach": "off",
+            "noAdjacentSpacesInRegex": "error",
+            "noArguments": "error",
+            "noCommaOperator": "off"
          },
          "correctness": {
             "noConstAssign": "error",
@@ -59,26 +57,23 @@
             "noUnusedLabels": "error",
             "noUnusedPrivateClassMembers": "error",
             "noUnusedVariables": "error",
-            "useArrayLiterals": "off",
             "useIsNan": "error",
             "useValidForDirection": "error",
-            "useYield": "error"
+            "useYield": "error",
+            "useValidTypeof": "error",
+            "noUnusedFunctionParameters": "off"
          },
-         "security": {
-            "all": true
-         },
+         "security": {},
          "style": {
-            "noArguments": "error",
-            "noCommaOperator": "off",
             "noNamespace": "error",
             "noParameterAssign": "off",
-            "noVar": "off",
             "useAsConstAssertion": "error",
             "useConst": "error",
             "useDefaultParameterLast": "off",
             "useTemplate": "off",
             "noNonNullAssertion": "off",
-            "noInferrableTypes": "off"
+            "noInferrableTypes": "off",
+            "useArrayLiterals": "off"
          },
          "suspicious": {
             "noAssignInExpressions": "off",
@@ -113,14 +108,16 @@
             "useAwait": "error",
             "useGetterReturn": "error",
             "useNamespaceKeyword": "error",
-            "useValidTypeof": "error"
+            "noWith": "error",
+            "noVar": "off",
+            "noTsIgnore": "off"
          }
       },
-      "ignore": ["dist"]
+      "includes": ["**", "!**/dist"]
    },
    "overrides": [
       {
-         "include": ["**/*.spec.ts", "**/*.spec-d.ts"],
+         "includes": ["**/*.spec.ts", "**/*.spec-d.ts"],
          "linter": {
             "rules": {
                "correctness": {

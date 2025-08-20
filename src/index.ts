@@ -1,13 +1,13 @@
-export { up } from './up'
+export type { StandardSchemaV1 } from '@standard-schema/spec'
+export { isResponseError, ResponseError } from './response-error'
 export type {
-   FetcherOptions,
    DefaultOptions,
-   RetryOptions,
-   UpFetch,
+   FetcherOptions,
    GetDefaultParsedData,
    GetDefaultRawBody,
+   RetryOptions,
+   UpFetch,
 } from './types'
-export { ResponseError, isResponseError } from './response-error'
-export { type ValidationError, isValidationError } from './validation-error'
+export { up } from './up'
 export { isJsonifiable } from './utils'
-export type { StandardSchemaV1 } from '@standard-schema/spec'
+export { isValidationError, type ValidationError } from './validation-error'

@@ -132,7 +132,7 @@ export const up =
             error = e
             break // no retry
          }
-         // biome-ignore lint/correctness/noConstantCondition: <explanation>
+         // biome-ignore lint/correctness/noConstantCondition: false
       } while (true)
 
       try {

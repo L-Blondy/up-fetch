@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import { http, HttpResponse } from 'msw'
+import { HttpResponse, http } from 'msw'
 import { setupServer } from 'msw/node'
 import { up } from 'src/up'
 import { afterAll, afterEach, beforeAll, expect, test, vi } from 'vitest'
