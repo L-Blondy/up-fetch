@@ -90,7 +90,7 @@ export const up =
          )
 
          try {
-            //https://github.com/L-Blondy/up-fetch/issues/67
+            // https://github.com/L-Blondy/up-fetch/issues/67
             await defaultOpts.onRequest?.(request)
             await fetcherOpts.onRequest?.(request)
 
