@@ -219,7 +219,10 @@ export type FetcherOptions<
    /** Callback executed before each retry */
    onRetry?: OnRetry
    /** Callback executed when the request succeeds */
-   onSuccess?: (data: any, request: Request) => MaybePromise<void>
+   onSuccess?: (
+      data: NoInfer<TParsedData>,
+      request: Request,
+   ) => MaybePromise<void>
    /** URL parameters */
    params?: Params
    /** Function to parse response errors */

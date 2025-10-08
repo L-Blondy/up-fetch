@@ -60,6 +60,9 @@ test('infer TData', async () => {
 
    const data2 = await upfetch('', {
       parseResponse: (res, request) => Promise.resolve(''),
+      onSuccess(data, request) {
+         expectTypeOf(data).toEqualTypeOf<string>()
+      },
    })
    expectTypeOf(data2).toEqualTypeOf<string>()
 
