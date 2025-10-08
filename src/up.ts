@@ -148,8 +148,8 @@ export const up =
          await fetcherOpts.onSuccess?.(data, request)
          return data
       } catch (error: any) {
-         defaultOpts.onError?.(error, request)
-         fetcherOpts.onError?.(error, request)
+         await defaultOpts.onError?.(error, request)
+         await fetcherOpts.onError?.(error, request)
          throw error
       }
    }
