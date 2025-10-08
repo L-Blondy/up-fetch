@@ -319,9 +319,9 @@ describe('up should accept a fetcher with', () => {
    test('narrower args', () => {
       type FetchFn = (input: Parameters<typeof fetch>[0]) => Promise<Response>
       const fetchFn: FetchFn = (() => {}) as any
-      fetchFn('')
+      fetchFn('').catch(() => {})
       // @ts-expect-error accept one arg only
-      fetchFn('', {})
+      fetchFn('', {}).catch(() => {})
    })
 
    test('wider args', () => {

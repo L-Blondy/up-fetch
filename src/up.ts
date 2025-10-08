@@ -126,8 +126,8 @@ export const up =
                   : options.retry.delay,
                options.signal,
             )
-            defaultOpts.onRetry?.(retryCtx)
-            fetcherOpts.onRetry?.(retryCtx)
+            await defaultOpts.onRetry?.(retryCtx)
+            await fetcherOpts.onRetry?.(retryCtx)
          } catch (e: any) {
             error = e
             break // no retry
@@ -144,8 +144,8 @@ export const up =
          const data = options.schema
             ? await validate(options.schema, parsed)
             : parsed
-         defaultOpts.onSuccess?.(data, request)
-         fetcherOpts.onSuccess?.(data, request)
+         await defaultOpts.onSuccess?.(data, request)
+         await fetcherOpts.onSuccess?.(data, request)
          return data
       } catch (error: any) {
          defaultOpts.onError?.(error, request)

@@ -1,5 +1,5 @@
 {
-   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+   "$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
    "vcs": {
       "enabled": false,
       "clientKind": "git",
@@ -111,6 +111,9 @@
             "noWith": "error",
             "noVar": "off",
             "noTsIgnore": "off"
+         },
+         "nursery": {
+            "noFloatingPromises": "error"
          }
       },
       "includes": ["**", "!**/dist"]

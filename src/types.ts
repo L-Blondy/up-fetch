@@ -68,7 +68,7 @@ type OnRetry = (context: {
    error: unknown
    request: Request
    attempt: number
-}) => void
+}) => MaybePromise<void>
 
 type RetryWhen = (context: {
    response: Response | undefined
@@ -158,13 +158,13 @@ export type DefaultOptions<
    /** HTTP method to use for the request */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: unknown, request: Request) => void
+   onError?: (error: unknown, request: Request) => MaybePromise<void>
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
    /** Callback executed before each retry */
    onRetry?: OnRetry
    /** Callback executed when the request succeeds */
-   onSuccess?: (data: any, request: Request) => void
+   onSuccess?: (data: any, request: Request) => MaybePromise<void>
    /** URL parameters to be serialized and appended to the URL */
    params?: Params
    /** Function to parse response errors */
@@ -203,7 +203,7 @@ export type FetcherOptions<
    /** HTTP method */
    method?: Method
    /** Callback executed when the request fails */
-   onError?: (error: unknown, request: Request) => void
+   onError?: (error: unknown, request: Request) => MaybePromise<void>
    /** Callback executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
    /** Callback executed each time a chunk of the request stream is sent */
@@ -219,7 +219,7 @@ export type FetcherOptions<
    /** Callback executed before each retry */
    onRetry?: OnRetry
    /** Callback executed when the request succeeds */
-   onSuccess?: (data: any, request: Request) => void
+   onSuccess?: (data: any, request: Request) => MaybePromise<void>
    /** URL parameters */
    params?: Params
    /** Function to parse response errors */
