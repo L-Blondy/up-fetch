@@ -1,4 +1,8 @@
-import type { RequestStreamingEvent, ResponseStreamingEvent } from './types'
+import type {
+   MaybePromise,
+   RequestStreamingEvent,
+   ResponseStreamingEvent,
+} from './types'
 
 /**
  * Safari does not support for await...of iteration on response/request bodies,
@@ -18,7 +22,7 @@ type StreamingEvent<R extends Request | Response> = R extends Request
 
 export async function toStreamable<R extends Request | Response>(
    reqOrRes: R,
-   onChunk?: (event: StreamingEvent<R>, reqOrRes: R) => void,
+   onChunk?: (event: StreamingEvent<R>, reqOrRes: R) => MaybePromise<void>,
 ): Promise<R> {
    const isResponse = 'ok' in reqOrRes
    const isNotSupported = isWebkit && !isResponse
