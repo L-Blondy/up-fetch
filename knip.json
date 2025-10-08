@@ -7,5 +7,6 @@
       "app/**",
       "bump.config.ts"
    ],
-   "ignoreDependencies": ["prettier"]
+   "ignoreDependencies": ["prettier"],
+   "ignoreBinaries": ["gh"]
 }
