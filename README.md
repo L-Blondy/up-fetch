@@ -663,6 +663,7 @@ function up(
 | `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                      |
 | `onRequestStreaming`             | `(event, request) => void`     | Executes each time a request chunk is send.                                                               |
 | `onResponseStreaming`            | `(event, response) => void`    | Executes each time a response chunk is received.                                                          |
+| `onResponse`                     | `(response, request) => void`  | Executes once all retries are completed.                                                                  |
 | `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                               |
 | `params`                         | `object`                       | The default query parameters.                                                                             |
 | `parseResponse`                  | `(response, request) => data`  | The default success response parser. <br/>If omitted `json` and `text` response are parsed automatically. |
@@ -695,6 +696,7 @@ Options:
 | `onRequest`                      | `(request) => void`            | Executes before the request is made.                                                                                          |
 | `onRequestStreaming`             | `(event, request) => void`     | Executes each time a request chunk is send.                                                                                   |
 | `onResponseStreaming`            | `(event, response) => void`    | Executes each time a response chunk is received.                                                                              |
+| `onResponse`                     | `(response, request) => void`  | Executes once all retries are completed.                                                                                      |
 | `onRetry`                        | `(ctx) => void`                | Executes before each retry.                                                                                                   |
 | `params`                         | `object`                       | The query parameters.                                                                                                         |
 | `parseResponse`                  | `(response, request) => data`  | The success response parser.                                                                                                  |

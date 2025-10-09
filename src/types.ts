@@ -157,13 +157,15 @@ export type DefaultOptions<
    headers?: HeadersInit | HeadersObject
    /** HTTP method to use for the request */
    method?: Method
-   /** Callback executed when the request fails */
+   /** Executed when the request fails */
    onError?: (error: unknown, request: Request) => MaybePromise<void>
-   /** Callback executed before the request is made */
+   /** Executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
-   /** Callback executed before each retry */
+   /** Executed once all retries are completed */
+   onResponse?: (response: Response, request: Request) => MaybePromise<void>
+   /** Executed before each retry */
    onRetry?: OnRetry
-   /** Callback executed when the request succeeds */
+   /** Executed when the request succeeds */
    onSuccess?: (data: any, request: Request) => MaybePromise<void>
    /** URL parameters to be serialized and appended to the URL */
    params?: Params
@@ -202,23 +204,25 @@ export type FetcherOptions<
    headers?: HeadersInit | HeadersObject
    /** HTTP method */
    method?: Method
-   /** Callback executed when the request fails */
+   /** Executed when the request fails */
    onError?: (error: unknown, request: Request) => MaybePromise<void>
-   /** Callback executed before the request is made */
+   /** Executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
-   /** Callback executed each time a chunk of the request stream is sent */
+   /** Executed each time a chunk of the request stream is sent */
    onRequestStreaming?: (
       event: RequestStreamingEvent,
       request: Request,
    ) => MaybePromise<void>
-   /** Callback executed each time a chunk of the response stream is received */
+   /** Executed each time a chunk of the response stream is received */
    onResponseStreaming?: (
       event: ResponseStreamingEvent,
       response: Response,
    ) => MaybePromise<void>
-   /** Callback executed before each retry */
+   /** Executed once all retries are completed */
+   onResponse?: (response: Response, request: Request) => MaybePromise<void>
+   /** Executed before each retry */
    onRetry?: OnRetry
-   /** Callback executed when the request succeeds */
+   /** Executed when the request succeeds */
    onSuccess?: (
       data: NoInfer<TParsedData>,
       request: Request,

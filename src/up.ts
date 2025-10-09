@@ -136,6 +136,8 @@ export const up =
       } while (true)
 
       try {
+         await defaultOpts.onResponse?.(response!, request)
+         await fetcherOpts.onResponse?.(response!, request)
          if (error) throw error
          if (await options.reject(response!)) {
             throw await options.parseRejected(response!, request)
