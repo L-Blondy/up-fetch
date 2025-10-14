@@ -55,15 +55,12 @@ const notes = diffSchema
    )
    .map((message) => `- ${message}`)
    .join('\n')
+
 // push the new tag
 await $`git tag ${newGithubTag}`
 await $`git push --tags`
+await $`gh release create ${newGithubTag} --title "${newGithubTag}" --notes "${notes}" --latest=${newNpmTag === 'latest'}`
 
-if (newNpmTag === 'latest') {
-   await $`gh release create ${newGithubTag} --title "${newGithubTag}" --notes "${notes}" --discussion-category Announcements --latest`
-} else {
-   await $`gh release create ${newGithubTag} --title "${newGithubTag}" --notes "${notes}" --latest=false`
-}
 consola.info(`Github release created: ${newGithubTag}\n${notes}\n`)
 
 await $`git add .`
