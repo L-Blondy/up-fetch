@@ -1,4 +1,4 @@
-import { defineConfig, type Options } from 'tsdown'
+import { defineConfig, type Options } from 'tsup'
 
 const options: Options = {
    entry: { index: 'src/index.ts' },
@@ -19,6 +19,6 @@ export default defineConfig([
       sourcemap: false,
       format: ['esm'],
       minify: true,
-      outExtensions: () => ({ 'js': '.min.js' }),
+      outExtension: () => ({ 'js': '.min.js' }),
    },
 ])

@@ -25,7 +25,7 @@
       }
    },
    "scripts": {
-      "build": "tsdown",
+      "build": "tsup",
       "dev": "vitest",
       "knip": "knip",
       "lint": "biome check && tsc --noEmit",
@@ -59,7 +59,7 @@
       "knip": "^5.66.2",
       "msw": "^2.11.6",
       "prettier": "^3.6.2",
-      "tsdown": "^0.15.9",
+      "tsup": "^8.5.0",
       "typescript": "5.7.3",
       "undici": "7.8.0",
       "valibot": "1.0.0",
