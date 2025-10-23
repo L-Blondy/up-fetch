@@ -28,5 +28,5 @@
       "verbatimModuleSyntax": true
    },
    "include": ["src", "vitest.config.ts", "tsup.config.ts", "app"],
-   "exclude": ["./dist"]
+   "exclude": ["dist-tsup"]
 }
