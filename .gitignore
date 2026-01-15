@@ -8,6 +8,7 @@ todo.*
 PR.md
 TEMP.md
 temp.ts
+.DS_store
 
 /app/dist
 
