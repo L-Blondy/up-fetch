@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { $ } from 'bun'
+import { $, spawn } from 'bun'
 import { consola } from 'consola'
 import { z } from 'zod'
 
@@ -20,7 +20,20 @@ const version = packageJson.version
 const newNpmTag = version.replace(/[.\-0-9]/g, '') || 'latest'
 assert(newNpmTag === 'beta' || newNpmTag === 'latest', 'Unexpected release tag')
 const newGithubTag = `v${version}`
-await $`npm publish --quiet --access public --tag ${newNpmTag}`
+const proc = spawn(
+   ['npm', 'publish', '--access', 'public', '--tag', newNpmTag],
+   {
+      stdin: 'inherit',
+      stdout: 'inherit',
+      stderr: 'inherit',
+   },
+)
+const exitCode = await proc.exited
+assert(
+   exitCode === 0,
+   `npm publish fai
+   led with exit code ${exitCode}`,
+)
 consola.success(`Published version ${version}`)
 
 const releases = await $`gh release list --limit 20 --json tagName`.json()
