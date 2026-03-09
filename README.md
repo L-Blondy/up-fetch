@@ -19,17 +19,17 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
-<!-- ## ➡️ Agent Skill
+## ➡️ Agent Skill
 
 Install the `up-fetch` skill with:
 
 ```bash
-npx @tanstack/intent@latest install
-``` -->
+npx skills add L-Blondy/up-fetch
+```
 
 ## Table of Contents
 
-<!-- - [Agent Skill](#️-agent-skill) -->
+- [Agent Skill](#️-agent-skill)
 
 - [Highlights](#️-highlights)
 - [QuickStart](#️-quickstart)
