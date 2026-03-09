@@ -12,5 +12,13 @@ export { up } from './up'
 export { isJsonifiable } from './utils'
 export {
    isResponseValidationError,
+   /**
+    * @deprecated Use `isResponseValidationError` instead.
+    */
+   isResponseValidationError as isValidationError,
    ResponseValidationError,
+   /**
+    * @deprecated Use `ResponseValidationError` instead.
+    */
+   ResponseValidationError as ValidationError,
 } from './validation-error'

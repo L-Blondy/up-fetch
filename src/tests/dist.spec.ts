@@ -1,6 +1,12 @@
-import { expectTypeOf, test } from 'vitest'
+import { expect, expectTypeOf, test } from 'vitest'
 import { z } from 'zod'
-import { up } from '../../dist'
+import {
+   isResponseValidationError,
+   isValidationError,
+   ResponseValidationError,
+   up,
+   ValidationError,
+} from '../../dist'
 
 /**
  * testing the build output with `declaration: true` in tsconfig.json
@@ -25,4 +31,15 @@ test('type inference should still work after the build', () => {
    }
 
    noop(testCase)
+})
+
+test('legacy validation error exports should remain available after the build', () => {
+   expect(ValidationError).toBe(ResponseValidationError)
+   expect(isValidationError).toBe(isResponseValidationError)
+   expectTypeOf<typeof ValidationError>().toEqualTypeOf<
+      typeof ResponseValidationError
+   >()
+   expectTypeOf<typeof isValidationError>().toEqualTypeOf<
+      typeof isResponseValidationError
+   >()
 })
