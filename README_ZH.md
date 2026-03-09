@@ -15,8 +15,17 @@
 
 _upfetch_ 是一个高级的 fetch 客户端构建器，具有标准模式验证、自动响应解析、智能默认值等功能。旨在使数据获取类型安全且开发人员友好，同时保持熟悉的 fetch API。
 
+## ➡️ Agent Skill
+
+使用以下命令安装 `up-fetch` skill：
+
+```bash
+npx @tanstack/intent@latest install
+```
+
 ## 目录
 
+- [Agent Skill](#️-agent-skill)
 - [亮点](#️-亮点)
 - [快速开始](#️-快速开始)
 - [主要特性](#️-主要特性)
