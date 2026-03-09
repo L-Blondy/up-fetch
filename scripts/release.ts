@@ -1,4 +1,6 @@
 import assert from 'node:assert'
+import { readFile, writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 import { $, spawn } from 'bun'
 import { consola } from 'consola'
 import { z } from 'zod'
@@ -11,12 +13,25 @@ await $`git pull`
 await $`npm run knip`
 await $`npm run test` // includes lint
 await $`bumpp`
-await $`npm run build`
 
 const packageJson = await import('../package.json', {
    with: { type: 'json' },
 })
 const version = packageJson.version
+const skillPath = fileURLToPath(new URL('../skills/upfetch/SKILL.md', import.meta.url))
+const skillContent = await readFile(skillPath, 'utf8')
+const nextSkillContent = skillContent.replace(
+   /^library_version:\s*['"][^'"]+['"]\s*$/m,
+   `library_version: '${version}'`,
+)
+assert(
+   nextSkillContent !== skillContent,
+   `Could not update library_version in ${skillPath}`,
+)
+await writeFile(skillPath, nextSkillContent)
+
+await $`npm run build`
+
 const newNpmTag = version.replace(/[.\-0-9]/g, '') || 'latest'
 assert(newNpmTag === 'beta' || newNpmTag === 'latest', 'Unexpected release tag')
 const newGithubTag = `v${version}`

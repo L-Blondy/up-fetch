@@ -1,6 +1,6 @@
 {
    "name": "up-fetch",
-   "version": "2.6.0-beta.0",
+   "version": "2.6.0-beta.1",
    "description": "Advanced fetch client builder for typescript.",
    "type": "module",
    "main": "dist/index.cjs",
@@ -9,7 +9,9 @@
    "sideEffects": false,
    "files": [
       "dist",
-      "src"
+      "src",
+      "skills",
+      "!skills/_artifacts"
    ],
    "exports": {
       "./package.json": "./package.json",
@@ -72,6 +74,11 @@
    "repository": {
       "type": "git",
       "url": "git+https://github.com/L-Blondy/up-fetch.git"
+   },
+   "intent": {
+      "version": 1,
+      "repo": "L-Blondy/up-fetch",
+      "docs": "https://github.com/L-Blondy/up-fetch#readme"
    },
    "engines": {
       "node": ">=18"
