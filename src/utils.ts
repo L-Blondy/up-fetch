@@ -8,7 +8,7 @@ import type {
    Params,
    SerializeParams,
 } from './types'
-import { ValidationError } from './validation-error'
+import { ResponseValidationError } from './validation-error'
 
 export const mergeHeaders = (
    headerInits: (HeadersInit | HeadersObject | undefined)[],
@@ -112,6 +112,6 @@ export async function validate<TSchema extends StandardSchemaV1>(
    data: StandardSchemaV1.InferInput<TSchema>,
 ): Promise<StandardSchemaV1.InferOutput<TSchema>> {
    const result = await schema['~standard'].validate(data)
-   if (result.issues) throw new ValidationError(result, data)
+   if (result.issues) throw new ResponseValidationError(result, data)
    return result.value
 }

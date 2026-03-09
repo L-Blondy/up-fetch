@@ -10,4 +10,15 @@ export type {
 } from './types'
 export { up } from './up'
 export { isJsonifiable } from './utils'
-export { isValidationError, ValidationError } from './validation-error'
+export {
+   isResponseValidationError,
+   /**
+    * @deprecated Use `isResponseValidationError` instead.
+    */
+   isResponseValidationError as isValidationError,
+   ResponseValidationError,
+   /**
+    * @deprecated Use `ResponseValidationError` instead.
+    */
+   ResponseValidationError as ValidationError,
+} from './validation-error'
