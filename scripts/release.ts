@@ -18,7 +18,9 @@ const packageJson = await import('../package.json', {
    with: { type: 'json' },
 })
 const version = packageJson.version
-const skillPath = fileURLToPath(new URL('../skills/upfetch/SKILL.md', import.meta.url))
+const skillPath = fileURLToPath(
+   new URL('../skills/upfetch/SKILL.md', import.meta.url),
+)
 const skillContent = await readFile(skillPath, 'utf8')
 const nextSkillContent = skillContent.replace(
    /^library_version:\s*['"][^'"]+['"]\s*$/m,
@@ -87,7 +89,7 @@ const notes = diffSchema
 // push the new tag
 await $`git tag ${newGithubTag}`
 await $`git push --tags`
-await $`gh release create ${newGithubTag} --title "${newGithubTag}" --notes "${notes}" --latest=${newNpmTag === 'latest'}`
+await $`gh release create ${newGithubTag} --title "${newGithubTag}" --notes "${notes || 'No relevant change'}" --latest=${newNpmTag === 'latest'}`
 
 consola.info(`Github release created: ${newGithubTag}\n${notes}\n`)
 
