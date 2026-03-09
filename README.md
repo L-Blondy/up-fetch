@@ -339,18 +339,18 @@ try {
 - Use the [parseRejected][api-reference] option to throw a custom error instead.
 - Use the [reject][api-reference] option to decide **when** to throw.
 
-#### 👉 ValidationError
+#### 👉 ResponseValidationError
 
 Raised when schema validation fails. \
-Use `isValidationError` to identify this error type.
+Use `isResponseValidationError` to identify this error type.
 
 ```ts
-import { isValidationError } from 'up-fetch'
+import { isResponseValidationError } from 'up-fetch'
 
 try {
    await upfetch('/todos/1', { schema: todoSchema })
 } catch (error) {
-   if (isValidationError(error)) {
+   if (isResponseValidationError(error)) {
       console.log(error.issues)
    }
 }
@@ -553,7 +553,7 @@ const upfetch = up(fetch, () => ({
       // custom error message
       const message = `Request failed with status ${status}: ${JSON.stringify(data)}`
       // you can return a custom error class as well
-      return new ResponseError({ message, data, request, response })
+      return new ResponseError({ message, status, data })
    },
 }))
 ```
@@ -725,9 +725,9 @@ Options:
 
 Checks if the error is a `ResponseError`.
 
-### <samp>isValidationError(error)</samp>
+### <samp>isResponseValidationError(error)</samp>
 
-Checks if the error is a `ValidationError`.
+Checks if the error is a `ResponseValidationError`.
 
 ### <samp>isJsonifiable(value)</samp>
 

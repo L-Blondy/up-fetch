@@ -1,17 +1,20 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
 
-export class ValidationError<TData = any> extends Error {
-   override name: 'ValidationError'
+export class ResponseValidationError<TData = any> extends Error {
    issues: readonly StandardSchemaV1.Issue[]
+   kind: 'validation'
    data: TData
 
    constructor(result: StandardSchemaV1.FailureResult, data: TData) {
       super(JSON.stringify(result.issues))
-      this.name = 'ValidationError'
+      this.kind = 'validation'
       this.issues = result.issues
       this.data = data
    }
 }
 
-export const isValidationError = (error: unknown): error is ValidationError =>
-   error instanceof ValidationError
+export const isResponseValidationError = (
+   error: unknown,
+): error is ResponseValidationError =>
+   typeof error === 'object' &&
+   (error as ResponseValidationError)?.kind === 'validation'

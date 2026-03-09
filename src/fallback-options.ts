@@ -13,9 +13,8 @@ export const fallbackOptions: FallbackOptions = {
    parseRejected: async (response, request) =>
       new ResponseError({
          message: `[${response.status}] ${response.statusText}`,
+         status: response.status,
          data: await fallbackOptions.parseResponse(response, request),
-         response,
-         request,
       }),
 
    // TODO: find a lighter way to do this with about the same amount of code

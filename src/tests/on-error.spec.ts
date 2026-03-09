@@ -12,10 +12,10 @@ import {
 import { z } from 'zod'
 import {
    isResponseError,
-   isValidationError,
+   isResponseValidationError,
    type ResponseError,
+   type ResponseValidationError,
    up,
-   type ValidationError,
 } from '..'
 
 const server = setupServer()
@@ -37,9 +37,9 @@ describe('onError', () => {
       const upfetch = up(fetch, () => ({
          baseUrl: baseUrl,
          onError(error, request) {
-            if (isValidationError(error)) {
+            if (isResponseValidationError(error)) {
                exec++
-               expectTypeOf(error).toEqualTypeOf<ValidationError>()
+               expectTypeOf(error).toEqualTypeOf<ResponseValidationError>()
             }
          },
       }))
@@ -47,9 +47,9 @@ describe('onError', () => {
       await upfetch('', {
          schema: z.object({ hello: z.number() }),
          onError(error, request) {
-            if (isValidationError(error)) {
+            if (isResponseValidationError(error)) {
                exec++
-               expectTypeOf(error).toEqualTypeOf<ValidationError>()
+               expectTypeOf(error).toEqualTypeOf<ResponseValidationError>()
             }
          },
       }).catch(() => {})

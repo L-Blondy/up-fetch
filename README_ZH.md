@@ -335,18 +335,18 @@ try {
 - 使用 [parseRejected][api-reference] 选项抛出自定义错误。
 - 使用 [reject][api-reference] 选项决定**何时**抛出错误。
 
-#### 👉 <samp>ValidationError</samp>
+#### 👉 <samp>ResponseValidationError</samp>
 
 当模式验证失败时抛出。\
-使用 `isValidationError` 识别此错误类型。
+使用 `isResponseValidationError` 识别此错误类型。
 
 ```ts
-import { isValidationError } from 'up-fetch'
+import { isResponseValidationError } from 'up-fetch'
 
 try {
    await upfetch('/todos/1', { schema: todoSchema })
 } catch (error) {
-   if (isValidationError(error)) {
+   if (isResponseValidationError(error)) {
       console.log(error.issues)
    }
 }
@@ -549,7 +549,7 @@ const upfetch = up(fetch, () => ({
       // 自定义错误消息
       const message = `Request failed with status ${status}: ${JSON.stringify(data)}`
       // 你也可以返回自定义错误类
-      return new ResponseError({ message, data, request, response })
+      return new ResponseError({ message, status, data })
    },
 }))
 ```
@@ -719,9 +719,9 @@ function upfetch(
 
 检查错误是否为 `ResponseError`。
 
-### <samp>isValidationError(error)</samp>
+### <samp>isResponseValidationError(error)</samp>
 
-检查错误是否为 `ValidationError`。
+检查错误是否为 `ResponseValidationError`。
 
 ### <samp>isJsonifiable(value)</samp>
 
