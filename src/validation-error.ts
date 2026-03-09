@@ -15,6 +15,4 @@ export class ResponseValidationError<TData = any> extends Error {
 
 export const isResponseValidationError = (
    error: unknown,
-): error is ResponseValidationError =>
-   typeof error === 'object' &&
-   (error as ResponseValidationError)?.kind === 'validation'
+): error is ResponseValidationError => error instanceof ResponseValidationError

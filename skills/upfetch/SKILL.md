@@ -9,7 +9,7 @@ description: >
    validation, error handling, lifecycle timing, and runtime caveats.
 type: core
 library: up-fetch
-library_version: '2.6.0-beta.1'
+library_version: '2.6.0-beta.2'
 sources:
    - 'L-Blondy/up-fetch:README.md'
    - 'L-Blondy/up-fetch:src/up.ts'
