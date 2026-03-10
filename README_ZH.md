@@ -15,19 +15,10 @@
 
 _upfetch_ 是一个高级的 fetch 客户端构建器，具有标准模式验证、自动响应解析、智能默认值等功能。旨在使数据获取类型安全且开发人员友好，同时保持熟悉的 fetch API。
 
-## ➡️ Agent Skill
-
-使用以下命令安装 `up-fetch` skill：
-
-```bash
-npx skills add L-Blondy/up-fetch
-```
-
 ## 目录
 
-- [Agent Skill](#️-agent-skill)
-
 - [亮点](#️-亮点)
+- [Agent Skill](#️-agent-skill)
 - [快速开始](#️-快速开始)
 - [主要特性](#️-主要特性)
    - [请求配置](#️-请求配置)
@@ -65,6 +56,14 @@ npx skills add L-Blondy/up-fetch
 - 🎨 **灵活配置** - 一次设置 `baseUrl` 或 `headers` 等默认值，随处使用
 - 🎯 **全面** - 内置重试、超时、进度跟踪、流式传输、生命周期钩子等功能
 - 🤝 **熟悉的使用方式** - 与 fetch 相同的 API，但具有额外选项和合理的默认值
+
+## ➡️ Agent Skill
+
+使用以下命令安装 `up-fetch` skill：
+
+```bash
+npx skills add L-Blondy/up-fetch
+```
 
 ## ➡️ 快速开始
 

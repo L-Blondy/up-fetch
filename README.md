@@ -19,19 +19,10 @@ type-safe and developer-friendly while keeping the familiar fetch API.
 
 [中文文档 (AI 翻译)](./README_ZH.md)
 
-## ➡️ Agent Skill
-
-Install the `up-fetch` skill with:
-
-```bash
-npx skills add L-Blondy/up-fetch
-```
-
 ## Table of Contents
 
-- [Agent Skill](#️-agent-skill)
-
 - [Highlights](#️-highlights)
+- [Agent Skill](#️-agent-skill)
 - [QuickStart](#️-quickstart)
 - [Key Features](#️-key-features)
    - [Request Configuration](#️-request-configuration)
@@ -69,6 +60,14 @@ npx skills add L-Blondy/up-fetch
 - 🎨 **Flexible Config** - Set defaults like `baseUrl` or `headers` once, use everywhere
 - 🎯 **Comprehensive** - Built-in retries, timeouts, progress tracking, streaming, lifecycle hooks, and more
 - 🤝 **Familiar** - same API as fetch with additional options and sensible defaults
+
+## ➡️ Agent Skill
+
+Install the `up-fetch` skill with:
+
+```bash
+npx skills add L-Blondy/up-fetch
+```
 
 ## ➡️ QuickStart
 
