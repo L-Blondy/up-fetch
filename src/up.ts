@@ -136,11 +136,10 @@ export const up =
       } while (true)
 
       try {
-         if (response) {
-            await defaultOpts.onResponse?.(response, request)
-            await fetcherOpts.onResponse?.(response, request)
-         }
          if (error) throw error
+         await defaultOpts.onResponse?.(response!, request)
+         await fetcherOpts.onResponse?.(response!, request)
+
          if (await options.reject(response!)) {
             throw await options.parseRejected(response!, request)
          }
