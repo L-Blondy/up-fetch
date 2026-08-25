@@ -67,4 +67,29 @@ describe('onResponse', () => {
       })
       expect(exec).toBe(2)
    })
+
+   // https://github.com/L-Blondy/up-fetch/issues/88
+   test('should not execute when no response was received (network error)', async () => {
+      server.use(
+         http.get(baseUrl, () => {
+            return HttpResponse.error()
+         }),
+      )
+      let exec = 0
+      const upfetch = up(fetch, () => ({
+         baseUrl: baseUrl,
+         onResponse() {
+            exec++
+         },
+      }))
+
+      await expect(
+         upfetch('', {
+            onResponse() {
+               exec++
+            },
+         }),
+      ).rejects.toThrow()
+      expect(exec).toBe(0)
+   })
 })

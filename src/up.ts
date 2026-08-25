@@ -136,8 +136,12 @@ export const up =
       } while (true)
 
       try {
-         await defaultOpts.onResponse?.(response!, request)
-         await fetcherOpts.onResponse?.(response!, request)
+         // response is undefined when fetch itself failed (e.g. network error)
+         // https://github.com/L-Blondy/up-fetch/issues/88
+         if (response) {
+            await defaultOpts.onResponse?.(response, request)
+            await fetcherOpts.onResponse?.(response, request)
+         }
          if (error) throw error
          if (await options.reject(response!)) {
             throw await options.parseRejected(response!, request)
