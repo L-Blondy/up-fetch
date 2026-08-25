@@ -161,7 +161,7 @@ export type DefaultOptions<
    onError?: (error: unknown, request: Request) => MaybePromise<void>
    /** Executed before the request is made */
    onRequest?: (request: Request) => MaybePromise<void>
-   /** Executed once a response is received, after all retries are completed. Not executed when the fetch itself fails (e.g. network error) */
+   /** Executed when a response is received, once all retries are completed. Not executed when the fetch itself fails (e.g. network error) */
    onResponse?: (response: Response, request: Request) => MaybePromise<void>
    /** Executed before each retry */
    onRetry?: OnRetry
@@ -218,7 +218,7 @@ export type FetcherOptions<
       event: ResponseStreamingEvent,
       response: Response,
    ) => MaybePromise<void>
-   /** Executed once a response is received, after all retries are completed. Not executed when the fetch itself fails (e.g. network error) */
+   /** Executed when a response is received, once all retries are completed. Not executed when the fetch itself fails (e.g. network error) */
    onResponse?: (response: Response, request: Request) => MaybePromise<void>
    /** Executed before each retry */
    onRetry?: OnRetry

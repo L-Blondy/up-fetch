@@ -69,22 +69,19 @@ describe('onResponse', () => {
    })
 
    // https://github.com/L-Blondy/up-fetch/issues/88
-   test('should not execute when no response was received (network error)', async () => {
-      server.use(
-         http.get(baseUrl, () => {
-            return HttpResponse.error()
-         }),
-      )
+   test('should not execute when the fetch itself fails (no response)', async () => {
       let exec = 0
+
       const upfetch = up(fetch, () => ({
-         baseUrl: baseUrl,
+         retry: { attempts: 0 },
          onResponse() {
             exec++
          },
       }))
 
       await expect(
-         upfetch('', {
+         // nothing listens on this port, fetch rejects (ECONNREFUSED)
+         upfetch('http://127.0.0.1:59999', {
             onResponse() {
                exec++
             },
