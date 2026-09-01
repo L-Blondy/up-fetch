@@ -67,4 +67,56 @@ describe('onResponse', () => {
       })
       expect(exec).toBe(2)
    })
+
+   // https://github.com/L-Blondy/up-fetch/issues/88
+   test('should not execute when the fetch itself fails (no response)', async () => {
+      let exec = 0
+
+      const upfetch = up(fetch, () => ({
+         retry: { attempts: 0 },
+         onResponse() {
+            exec++
+         },
+      }))
+
+      await expect(
+         // nothing listens on this port, fetch rejects (ECONNREFUSED)
+         upfetch('http://127.0.0.1:59999', {
+            onResponse() {
+               exec++
+            },
+         }),
+      ).rejects.toThrow()
+      expect(exec).toBe(0)
+   })
+
+   // https://github.com/L-Blondy/up-fetch/issues/88
+   test('should not execute when the last retry attempt fails without a response', async () => {
+      let call = 0
+      server.use(
+         http.get(baseUrl, () => {
+            return ++call === 1
+               ? HttpResponse.json({}, { status: 500 })
+               : HttpResponse.error()
+         }),
+      )
+      let exec = 0
+      const upfetch = up(fetch, () => ({
+         baseUrl: baseUrl,
+         retry: { attempts: 1 },
+         onResponse() {
+            exec++
+         },
+      }))
+
+      await expect(
+         upfetch('', {
+            onResponse() {
+               exec++
+            },
+         }),
+      ).rejects.toThrow()
+      expect(call).toBe(2)
+      expect(exec).toBe(0)
+   })
 })
