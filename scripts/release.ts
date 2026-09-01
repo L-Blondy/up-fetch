@@ -49,7 +49,7 @@ const proc = spawn(
 const exitCode = await proc.exited
 assert(
    exitCode === 0,
-   `npm publish fai   led with exit code ${exitCode}`,
+   `npm publish failed with exit code ${exitCode}`,
 )
 consola.success(`Published version ${version}`)
 
