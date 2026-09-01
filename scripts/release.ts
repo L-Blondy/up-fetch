@@ -22,13 +22,14 @@ const skillPath = fileURLToPath(
    new URL('../skills/upfetch/SKILL.md', import.meta.url),
 )
 const skillContent = await readFile(skillPath, 'utf8')
-const nextSkillContent = skillContent.replace(
-   /^library_version:\s*['"][^'"]+['"]\s*$/m,
-   `library_version: '${version}'`,
-)
+const libraryVersionPattern = /^library_version:\s*['"][^'"]+['"]\s*$/m
 assert(
-   nextSkillContent !== skillContent,
-   `Could not update library_version in ${skillPath}`,
+   libraryVersionPattern.test(skillContent),
+   `Could not find library_version in ${skillPath}`,
+)
+const nextSkillContent = skillContent.replace(
+   libraryVersionPattern,
+   `library_version: '${version}'`,
 )
 await writeFile(skillPath, nextSkillContent)
 
