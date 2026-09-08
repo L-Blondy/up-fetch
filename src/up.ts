@@ -57,6 +57,9 @@ export const up =
             : options.serializeBody(fetcherOpts.body)
 
       options.headers = mergeHeaders([
+         input instanceof Request
+            ? input.headers
+            : undefined,
          isJsonifiable(fetcherOpts.body) && typeof options.body === 'string'
             ? { 'content-type': 'application/json' }
             : {},

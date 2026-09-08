@@ -144,4 +144,20 @@ describe('headers', () => {
       }))
       await upfetch('', { headers: { 'content-type': undefined } })
    })
+
+   test('should preserve headers from a Request input', async () => {
+      server.use(
+         http.get(baseUrl, ({ request }) => {
+            expect(request.headers.get('authorization')).toBe('Bearer token')
+            return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         }),
+      )
+
+      const upfetch = up(fetch)
+      await upfetch(
+         new Request(baseUrl, {
+            headers: { authorization: 'Bearer token' },
+         }),
+      )
+   })
 })
