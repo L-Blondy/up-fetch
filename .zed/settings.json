@@ -1,13 +1,13 @@
 {
   "languages": {
     "JavaScript": {
-      "language_servers": ["!oxlint", "..."]
+      "language_servers": ["typescript-ls", "!vtsls", "!oxlint", "..."]
     },
     "TypeScript": {
-      "language_servers": ["!oxlint", "..."]
+      "language_servers": ["typescript-ls", "!vtsls", "!oxlint", "..."]
     },
     "TSX": {
-      "language_servers": ["!oxlint", "..."]
+      "language_servers": ["typescript-ls", "!vtsls", "!oxlint", "..."]
     }
   }
 }
