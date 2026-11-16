@@ -4,18 +4,6 @@ description: >
    Load this skill for any up-fetch task: `up(fetch, getDefaultOptions?)`,
    `upfetch(url, options?)`. Covers dynamic defaults, auth, request shaping,
    validation, error handling, lifecycle timing, and runtime caveats.
-type: core
-library: up-fetch
-library_version: '2.6.2'
-sources:
-   - 'L-Blondy/up-fetch:README.md'
-   - 'L-Blondy/up-fetch:src/up.ts'
-   - 'L-Blondy/up-fetch:src/types.ts'
-   - 'L-Blondy/up-fetch:src/fallback-options.ts'
-   - 'L-Blondy/up-fetch:src/utils.ts'
-   - 'L-Blondy/up-fetch:src/stream.ts'
-   - 'L-Blondy/up-fetch:src/tests/*.spec.ts'
-   - 'L-Blondy/up-fetch:CHANGELOG.md'
 ---
 
 # upfetch

@@ -10,8 +10,7 @@
    "files": [
       "dist",
       "src",
-      "skills",
-      "!skills/_artifacts"
+      "skills"
    ],
    "exports": {
       "./package.json": "./package.json",
@@ -74,11 +73,6 @@
    "repository": {
       "type": "git",
       "url": "git+https://github.com/L-Blondy/up-fetch.git"
-   },
-   "intent": {
-      "version": 1,
-      "repo": "L-Blondy/up-fetch",
-      "docs": "https://github.com/L-Blondy/up-fetch#readme"
    },
    "engines": {
       "node": ">=18"
