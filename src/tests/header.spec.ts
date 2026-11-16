@@ -144,4 +144,23 @@ describe('headers', () => {
       }))
       await upfetch('', { headers: { 'content-type': undefined } })
    })
+
+   test('should preserve the headers of a Request input', async () => {
+      server.use(
+         http.get(baseUrl, async ({ request }) => {
+            expect(Object.fromEntries([...request.headers.entries()])).toEqual(
+               { a: 'default', b: 'request', c: 'fetcher' },
+            )
+            return HttpResponse.json({ hello: 'world' }, { status: 200 })
+         }),
+      )
+
+      const upfetch = up(fetch, () => ({
+         headers: { a: 'default', b: 'default', c: 'default' },
+      }))
+      await upfetch(
+         new Request(baseUrl, { headers: { b: 'request', c: 'request' } }),
+         { headers: { c: 'fetcher' } },
+      )
+   })
 })
