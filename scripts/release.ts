@@ -1,6 +1,4 @@
 import assert from 'node:assert'
-import { readFile, writeFile } from 'node:fs/promises'
-import { fileURLToPath } from 'node:url'
 import { $, spawn } from 'bun'
 import { consola } from 'consola'
 import { z } from 'zod'
@@ -18,21 +16,6 @@ const packageJson = await import('../package.json', {
    with: { type: 'json' },
 })
 const version = packageJson.version
-const skillPath = fileURLToPath(
-   new URL('../skills/upfetch/SKILL.md', import.meta.url),
-)
-const skillContent = await readFile(skillPath, 'utf8')
-const libraryVersionPattern = /^library_version:\s*['"][^'"]+['"]\s*$/m
-assert(
-   libraryVersionPattern.test(skillContent),
-   `Could not find library_version in ${skillPath}`,
-)
-const nextSkillContent = skillContent.replace(
-   libraryVersionPattern,
-   `library_version: '${version}'`,
-)
-await writeFile(skillPath, nextSkillContent)
-
 await $`npm run build`
 
 const newNpmTag = version.replace(/[.\-0-9]/g, '') || 'latest'
