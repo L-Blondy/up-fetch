@@ -61,6 +61,7 @@ export const up =
             ? { 'content-type': 'application/json' }
             : {},
          defaultOpts.headers,
+         (input as Request).url ? (input as Request).headers : undefined,
          fetcherOpts.headers,
       ])
 
